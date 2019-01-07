@@ -11,11 +11,9 @@ import (
 )
 
 var debug = false
+var VERSION = "v0.00.0"
 
 func main() {
-	fmt.Println("UHPPOTE-CLI v0.00.0")
-	fmt.Println()
-
 	if len(os.Args) < 2 {
 		usage()
 		return
@@ -40,14 +38,15 @@ func main() {
 }
 
 func usage() error {
-	fmt.Println("Usage: uhppote-cli <options> <command>")
+	fmt.Println("Usage: uhppote-cli [options] <command>")
 	fmt.Println()
 	fmt.Println("  Commands:")
 	fmt.Println()
-	fmt.Println("    help    Displays this message")
-	fmt.Println("            For help on a specific command use 'uhppote-cli help <command>'")
-	fmt.Println()
-	fmt.Println("    search  Searches for UHPPOTE controllers on the network")
+	fmt.Println("    help     Displays this message")
+	fmt.Println("             For help on a specific command use 'uhppote-cli help <command>'")
+	fmt.Println("    version  Displays the current version")
+	fmt.Println("    search   Searches for UHPPOTE controllers on the network")
+	fmt.Println("    get-time Returns the current time on the selected module")
 	fmt.Println()
 	fmt.Println("  Options:")
 	fmt.Println()
@@ -60,7 +59,10 @@ func usage() error {
 func parse(s string) func() error {
 	switch s {
 	case "help":
-		return usage
+		return help
+
+	case "version":
+		return version
 
 	case "search":
 		return search
@@ -68,6 +70,36 @@ func parse(s string) func() error {
 	case "get-time":
 		return gettime
 	}
+
+	return nil
+}
+
+func help() error {
+	if len(flag.Args()) > 1 {
+		switch flag.Arg(1) {
+		case "commands":
+			helpCommands()
+
+		case "version":
+			helpVersion()
+
+		case "search":
+			helpSearch()
+
+		case "get-time":
+			helpGetTime()
+
+		default:
+			return errors.New(fmt.Sprintf("Invalid command: %v. Type 'help commands' to get a list of supported commands", flag.Arg(1)))
+		}
+
+	}
+
+	return nil
+}
+
+func version() error {
+	fmt.Printf("%v\n", VERSION)
 
 	return nil
 }

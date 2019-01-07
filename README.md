@@ -22,7 +22,7 @@ Usage: *uhppote-cli \<command\> \<command options\>*
 
 Supported commands:
 - search
-- get-time <serial number>
+- get-time \<serial number\>
 
 
 
