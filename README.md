@@ -4,7 +4,7 @@ Go CLI implementation for the UHPPOTE UT0311-L04 TCP/IP Wiegand Access Control B
 
 ## Raison d'être
 
-The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Access Control Board is a 'Windows only' and is also not suitable for server use or integration with other applications.
+The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Access Control Board is 'Windows only' and is also not suitable for server use or integration with other applications.
 
 ## Status
 
@@ -18,7 +18,7 @@ The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Acc
 
 ## uhppote-cli
 
-*Usage: uhppote-cli <command> <command options>*
+Usage: *uhppote-cli \<command\> \<command options\>*
 
 Supported commands:
 - search
