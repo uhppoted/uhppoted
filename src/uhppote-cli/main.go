@@ -7,6 +7,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"time"
 	"uhppote"
 )
 
@@ -46,7 +47,8 @@ func usage() error {
 	fmt.Println("             For help on a specific command use 'uhppote-cli help <command>'")
 	fmt.Println("    version  Displays the current version")
 	fmt.Println("    search   Searches for UHPPOTE controllers on the network")
-	fmt.Println("    get-time Returns the current time on the selected module")
+	fmt.Println("    get-time Returns the current time on the selected controller")
+	fmt.Println("    set-time Sets the current time on the selected controller")
 	fmt.Println()
 	fmt.Println("  Options:")
 	fmt.Println()
@@ -69,6 +71,9 @@ func parse(s string) func() error {
 
 	case "get-time":
 		return gettime
+
+	case "set-time":
+		return settime
 	}
 
 	return nil
@@ -88,6 +93,9 @@ func help() error {
 
 		case "get-time":
 			helpGetTime()
+
+		case "set-time":
+			helpSetTime()
 
 		default:
 			return errors.New(fmt.Sprintf("Invalid command: %v. Type 'help commands' to get a list of supported commands", flag.Arg(1)))
@@ -137,6 +145,33 @@ func gettime() error {
 
 	if err == nil {
 		fmt.Printf("%s\n", datetime)
+	}
+
+	return err
+}
+
+func settime() error {
+	if len(flag.Args()) < 2 {
+		return errors.New("Missing serial number")
+	}
+
+	valid, _ := regexp.MatchString("[0-9]+", flag.Arg(1))
+
+	if !valid {
+		return errors.New(fmt.Sprintf("Invalid serial number: %v", flag.Arg(1)))
+	}
+
+	serialNumber, err := strconv.ParseUint(flag.Arg(1), 10, 32)
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("Invalid serial number: %v", flag.Arg(1)))
+	}
+
+	datetime := time.Now()
+	devicetime, err := uhppote.SetTime(uint32(serialNumber), datetime, debug)
+
+	if err == nil {
+		fmt.Printf("%s\n", devicetime)
 	}
 
 	return err

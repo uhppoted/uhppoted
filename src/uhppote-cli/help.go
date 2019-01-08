@@ -46,3 +46,22 @@ func helpGetTime() {
 	fmt.Println("  Command options:")
 	fmt.Println()
 }
+
+func helpSetTime() {
+	fmt.Println("Usage: uhppote-cli [options] set-time <serial number> [command options]")
+	fmt.Println()
+	fmt.Println(" Retrieves the current date/time referenced to the local timezone for the access control board")
+	fmt.Println(" with the corresponding serial number in the format:")
+	fmt.Println()
+	fmt.Println(" <serial number> <yyyy-mm-dd HH:mm:ss>")
+	fmt.Println()
+	fmt.Println("  Options:")
+	fmt.Println()
+	fmt.Println("    -debug  Displays vaguely useful internal information")
+	fmt.Println()
+	fmt.Println("  Command options:")
+	fmt.Println()
+	fmt.Println("    -now                       Sets the controller time to the system time of the local system")
+	fmt.Println("    -time yyyy-mm-dd HH:mm:ss  Sets the controller time to the explicitly supplied instant")
+	fmt.Println()
+}

@@ -33,4 +33,8 @@ search: build
 get-time: build
 	./bin/uhppote-cli -debug get-time 423187757
 
+set-time: build
+	./bin/uhppote-cli -debug set-time 423187757 now
+
+
 
