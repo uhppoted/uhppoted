@@ -168,6 +168,23 @@ func settime() error {
 	}
 
 	datetime := time.Now()
+
+	if len(flag.Args()) > 2 {
+		fmt.Printf("%v\n", flag.Args())
+		switch flag.Arg(2) {
+		case "-now":
+			datetime = time.Now()
+		case "-time":
+			if len(flag.Args()) < 4 {
+				return errors.New(fmt.Sprintf("Missing date/time parameter"))
+			}
+			datetime, err = time.Parse("2006-01-02 15:04:05", flag.Arg(3))
+			if err != nil {
+				return errors.New(fmt.Sprintf("Invalid date/time parameter: %v", flag.Arg(3)))
+			}
+		}
+	}
+
 	devicetime, err := uhppote.SetTime(uint32(serialNumber), datetime, debug)
 
 	if err == nil {

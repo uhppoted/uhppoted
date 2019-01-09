@@ -61,7 +61,7 @@ func helpSetTime() {
 	fmt.Println()
 	fmt.Println("  Command options:")
 	fmt.Println()
-	fmt.Println("    -now                       Sets the controller time to the system time of the local system")
-	fmt.Println("    -time yyyy-mm-dd HH:mm:ss  Sets the controller time to the explicitly supplied instant")
+	fmt.Println("    -now                         Sets the controller time to the system time of the local system")
+	fmt.Println("    -time 'yyyy-mm-dd HH:mm:ss'  Sets the controller time to the explicitly supplied instant")
 	fmt.Println()
 }

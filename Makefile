@@ -34,7 +34,7 @@ get-time: build
 	./bin/uhppote-cli -debug get-time 423187757
 
 set-time: build
-	./bin/uhppote-cli -debug set-time 423187757 now
+	./bin/uhppote-cli -debug set-time 423187757 -time '2019-01-08 12:34:56'
 
 
 
