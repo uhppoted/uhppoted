@@ -2,13 +2,12 @@ package uhppote
 
 import (
 	"encoding/binary"
-	"fmt"
 	"time"
 	"uhppote/messages"
 	"uhppote/types"
 )
 
-func SetTime(serialNumber uint32, datetime time.Time, debug bool) (*types.DateTime, error) {
+func SetTime(serialNumber uint32, datetime time.Time, u *UHPPOTE) (*types.DateTime, error) {
 	cmd := make([]byte, 64)
 
 	cmd[0] = 0x17
@@ -26,7 +25,7 @@ func SetTime(serialNumber uint32, datetime time.Time, debug bool) (*types.DateTi
 	cmd[13] = encode(datetime.Minute())
 	cmd[14] = encode(datetime.Second())
 
-	reply, err := Execute(cmd, debug)
+	reply, err := u.Execute(cmd)
 
 	if err != nil {
 		return nil, err
@@ -36,10 +35,6 @@ func SetTime(serialNumber uint32, datetime time.Time, debug bool) (*types.DateTi
 
 	if err != nil {
 		return nil, err
-	}
-
-	if debug {
-		fmt.Printf(" ... %v\n", *result)
 	}
 
 	return &result.DateTime, nil

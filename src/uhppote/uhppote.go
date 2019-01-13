@@ -8,11 +8,18 @@ import (
 	"time"
 )
 
-func Execute(cmd []byte, debug bool) ([]byte, error) {
+type UHPPOTE struct {
+	Debug bool
+}
+
+func (u *UHPPOTE) Execute(cmd []byte) ([]byte, error) {
 	reply := make([]byte, 2048)
 
-	if debug {
-		fmt.Printf(" ... sent:\n%s\n", hex.Dump(cmd))
+	if u.Debug {
+		regex := regexp.MustCompile("(?m)^(.*)")
+
+		fmt.Printf(" ... command %v bytes\n", len(cmd))
+		fmt.Printf("%s\n", regex.ReplaceAllString(hex.Dump(cmd), " ...         $1"))
 	}
 
 	local, err := net.ResolveUDPAddr("udp", "192.168.1.100:50000")
@@ -41,7 +48,7 @@ func Execute(cmd []byte, debug bool) ([]byte, error) {
 		return nil, makeErr("Failed to write to UDP socket", err)
 	}
 
-	if debug {
+	if u.Debug {
 		fmt.Printf(" ... sent %v bytes\n", N)
 	}
 
@@ -57,12 +64,18 @@ func Execute(cmd []byte, debug bool) ([]byte, error) {
 		return nil, makeErr("Failed to read from UDP socket", err)
 	}
 
-	if debug {
+	if u.Debug {
 		regex := regexp.MustCompile("(?m)^(.*)")
 
 		fmt.Printf(" ... received %v bytes from %v\n", N, remote)
-		fmt.Printf("%s\n", regex.ReplaceAllString(hex.Dump(reply[:N]), " ... $1"))
+		fmt.Printf("%s\n", regex.ReplaceAllString(hex.Dump(reply[:N]), " ...          $1"))
 	}
 
 	return reply[:N], nil
+}
+
+func close(connection net.Conn) {
+	fmt.Println(" ... closing connection")
+
+	connection.Close()
 }
