@@ -36,8 +36,10 @@ get-time: build
 	./bin/uhppote-cli -debug get-time 423187757
 
 set-time: build
-	./bin/uhppote-cli -debug set-time 423187757 -time '2019-01-08 12:34:56'
+	./bin/uhppote-cli -debug set-time 423187757 '2019-01-08 12:34:56'
 
+set-address: build
+	./bin/uhppote-cli -debug set-ip-address 423187757 '192.168.1.150' '255.255.254.0' '0.0.0.0'
 
 simulator: build
 	./bin/uhppote-simulator
