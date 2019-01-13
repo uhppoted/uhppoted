@@ -2,12 +2,11 @@ package uhppote
 
 import (
 	"encoding/binary"
-	"fmt"
 	"uhppote/messages"
 	"uhppote/types"
 )
 
-func GetTime(serialNumber uint32, debug bool) (*types.DateTime, error) {
+func GetTime(serialNumber uint32, u *UHPPOTE) (*types.DateTime, error) {
 	cmd := make([]byte, 64)
 
 	cmd[0] = 0x17
@@ -17,7 +16,7 @@ func GetTime(serialNumber uint32, debug bool) (*types.DateTime, error) {
 
 	binary.LittleEndian.PutUint32(cmd[4:8], serialNumber)
 
-	reply, err := Execute(cmd, debug)
+	reply, err := u.Execute(cmd)
 
 	if err != nil {
 		return nil, err
@@ -27,10 +26,6 @@ func GetTime(serialNumber uint32, debug bool) (*types.DateTime, error) {
 
 	if err != nil {
 		return nil, err
-	}
-
-	if debug {
-		fmt.Printf(" ... %v\n", *result)
 	}
 
 	return &result.DateTime, nil

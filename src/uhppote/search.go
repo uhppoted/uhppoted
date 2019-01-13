@@ -1,12 +1,11 @@
 package uhppote
 
 import (
-	"fmt"
 	"uhppote/messages"
 	"uhppote/types"
 )
 
-func Search(debug bool) ([]types.Device, error) {
+func Search(u *UHPPOTE) ([]types.Device, error) {
 	devices := []types.Device{}
 	cmd := make([]byte, 64)
 
@@ -15,7 +14,7 @@ func Search(debug bool) ([]types.Device, error) {
 	cmd[2] = 0x00
 	cmd[3] = 0x00
 
-	reply, err := Execute(cmd, debug)
+	reply, err := u.Execute(cmd)
 
 	if err != nil {
 		return nil, err
@@ -25,10 +24,6 @@ func Search(debug bool) ([]types.Device, error) {
 
 	if err != nil {
 		return nil, err
-	}
-
-	if debug {
-		fmt.Printf(" ... %v\n", *result)
 	}
 
 	devices = append(devices, result.Device)

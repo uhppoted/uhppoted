@@ -113,7 +113,9 @@ func version() error {
 }
 
 func search() error {
-	devices, err := uhppote.Search(debug)
+	u := uhppote.UHPPOTE{}
+	u.Debug = debug
+	devices, err := uhppote.Search(&u)
 
 	if err == nil {
 		for _, device := range devices {
@@ -141,7 +143,9 @@ func gettime() error {
 		return errors.New(fmt.Sprintf("Invalid serial number: %v", flag.Arg(1)))
 	}
 
-	datetime, err := uhppote.GetTime(uint32(serialNumber), debug)
+	u := uhppote.UHPPOTE{}
+	u.Debug = debug
+	datetime, err := uhppote.GetTime(uint32(serialNumber), &u)
 
 	if err == nil {
 		fmt.Printf("%s\n", datetime)
@@ -185,7 +189,9 @@ func settime() error {
 		}
 	}
 
-	devicetime, err := uhppote.SetTime(uint32(serialNumber), datetime, debug)
+	u := uhppote.UHPPOTE{}
+	u.Debug = debug
+	devicetime, err := uhppote.SetTime(uint32(serialNumber), datetime, &u)
 
 	if err == nil {
 		fmt.Printf("%s\n", devicetime)
