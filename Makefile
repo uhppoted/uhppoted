@@ -41,5 +41,8 @@ set-time: build
 set-address: build
 	./bin/uhppote-cli -debug set-ip-address 423187757 '192.168.1.150' '255.255.254.0' '0.0.0.0'
 
+get-auth-rec: build
+	./bin/uhppote-cli -debug get-auth-rec 423187757
+
 simulator: build
 	./bin/uhppote-simulator

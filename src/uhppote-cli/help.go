@@ -75,7 +75,7 @@ func helpSetTime() {
 func helpSetAddress() {
 	fmt.Println("Usage: uhppote-cli [options] set-address <serial number> <address> [mask] [gateway]")
 	fmt.Println()
-	fmt.Println(" Sets the controller IP address, subnet mask and gateway addresst")
+	fmt.Println(" Sets the controller IP address, subnet mask and gateway address")
 	fmt.Println()
 	fmt.Println("  serial-number  (required) controller serial number")
 	fmt.Println("  address        (required) IPv4 address")
@@ -87,5 +87,18 @@ func helpSetAddress() {
 	fmt.Println("    uhppote-cli set-address 12345678  192.168.1.100")
 	fmt.Println("    uhppote-cli set-address 12345678  192.168.1.100  255.255.255.0")
 	fmt.Println("    uhppote-cli set-address 12345678  192.168.1.100  255.255.255.0  0.0.0.0")
+	fmt.Println()
+}
+
+func helpGetAuthRec() {
+	fmt.Println("Usage: uhppote-cli [options] get-auth-rec <serial number>")
+	fmt.Println()
+	fmt.Println(" Retrieves the authorised card list")
+	fmt.Println()
+	fmt.Println("  serial-number  (required) controller serial number")
+	fmt.Println()
+	fmt.Println("  Examples:")
+	fmt.Println()
+	fmt.Println("    uhppote-cli get-autrh-rec 12345678")
 	fmt.Println()
 }

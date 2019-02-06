@@ -51,6 +51,7 @@ func usage() error {
 	fmt.Println("    get-time       Returns the current time on the selected controller")
 	fmt.Println("    set-time       Sets the current time on the selected controller")
 	fmt.Println("    set-ip-address Sets the IP address on the selected controller")
+	fmt.Println("    get-auth-rec   Gets authorisations list")
 	fmt.Println()
 	fmt.Println("  Options:")
 	fmt.Println()
@@ -79,6 +80,9 @@ func parse(s string) func() error {
 
 	case "set-ip-address":
 		return setaddress
+
+	case "get-auth-rec":
+		return getauthrec
 	}
 
 	return nil
@@ -104,6 +108,9 @@ func help() error {
 
 		case "set-address":
 			helpSetAddress()
+
+		case "get-auth-rec":
+			helpGetAuthRec()
 
 		default:
 			return errors.New(fmt.Sprintf("Invalid command: %v. Type 'help commands' to get a list of supported commands", flag.Arg(1)))
@@ -256,9 +263,33 @@ func setaddress() error {
 	u.Debug = debug
 	err = uhppote.SetAddress(uint32(serialNumber), address, mask, gateway, &u)
 
-	//if err == nil {
-	//	fmt.Printf("%s\n", devicetime)
-	//}
+	return err
+}
+
+func getauthrec() error {
+	if len(flag.Args()) < 2 {
+		return errors.New("Missing serial number")
+	}
+
+	valid, _ := regexp.MatchString("[0-9]+", flag.Arg(1))
+
+	if !valid {
+		return errors.New(fmt.Sprintf("Invalid serial number: %v", flag.Arg(1)))
+	}
+
+	serialNumber, err := strconv.ParseUint(flag.Arg(1), 10, 32)
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("Invalid serial number: %v", flag.Arg(1)))
+	}
+
+	u := uhppote.UHPPOTE{}
+	u.Debug = debug
+	authorised, err := uhppote.GetAuthRec(uint32(serialNumber), &u)
+
+	if err == nil {
+		fmt.Printf("%v\n", authorised)
+	}
 
 	return err
 }
