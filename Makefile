@@ -44,5 +44,8 @@ set-address: build
 get-auth-rec: build
 	./bin/uhppote-cli -debug get-auth-rec 423187757
 
+authorise: build
+	./bin/uhppote-cli -debug add-auth 423187757 12345 2019-01-01 2019-12-31 1,4
+
 simulator: build
 	./bin/uhppote-simulator

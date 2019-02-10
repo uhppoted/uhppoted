@@ -51,7 +51,8 @@ func usage() error {
 	fmt.Println("    get-time       Returns the current time on the selected controller")
 	fmt.Println("    set-time       Sets the current time on the selected controller")
 	fmt.Println("    set-ip-address Sets the IP address on the selected controller")
-	fmt.Println("    get-auth-rec   Gets authorisations list")
+	fmt.Println("    get-auth-rec   Gets authorised card list")
+	fmt.Println("    add-auth       Adds a card to the authorised list")
 	fmt.Println()
 	fmt.Println("  Options:")
 	fmt.Println()
@@ -83,6 +84,9 @@ func parse(s string) func() error {
 
 	case "get-auth-rec":
 		return getauthrec
+
+	case "add-auth":
+		return addauth
 	}
 
 	return nil
@@ -111,6 +115,9 @@ func help() error {
 
 		case "get-auth-rec":
 			helpGetAuthRec()
+
+		case "add-auth":
+			helpAddAuth()
 
 		default:
 			return errors.New(fmt.Sprintf("Invalid command: %v. Type 'help commands' to get a list of supported commands", flag.Arg(1)))
@@ -292,4 +299,126 @@ func getauthrec() error {
 	}
 
 	return err
+}
+
+func addauth() error {
+	serialNumber, err := getSerialNumber()
+	if err != nil {
+		return err
+	}
+
+	cardNumber, err := getCardNumber(2)
+	if err != nil {
+		return err
+	}
+
+	from, err := getDate(3, "Missing start date", "Invalid start date: %v")
+	if err != nil {
+		return err
+	}
+
+	to, err := getDate(4, "Missing end date", "Invalid end date: %v")
+	if err != nil {
+		return err
+	}
+
+	permissions, err := getPermissions(5)
+	if err != nil {
+		return err
+	}
+
+	u := uhppote.UHPPOTE{}
+	u.SerialNumber = serialNumber
+	u.Debug = debug
+	authorised, err := u.AddAuth(cardNumber, *from, *to, *permissions)
+
+	if err == nil {
+		fmt.Printf("%v\n", authorised)
+	}
+
+	return err
+}
+
+func getSerialNumber() (uint32, error) {
+	if len(flag.Args()) < 2 {
+		return 0, errors.New("Missing serial number")
+	}
+
+	valid, _ := regexp.MatchString("[0-9]+", flag.Arg(1))
+
+	if !valid {
+		return 0, errors.New(fmt.Sprintf("Invalid serial number: %v", flag.Arg(1)))
+	}
+
+	serialNumber, err := strconv.ParseUint(flag.Arg(1), 10, 32)
+
+	if err != nil {
+		return 0, errors.New(fmt.Sprintf("Invalid serial number: %v", flag.Arg(1)))
+	}
+
+	return uint32(serialNumber), err
+}
+
+func getCardNumber(index int) (uint32, error) {
+	if len(flag.Args()) < index+1 {
+		return 0, errors.New("Missing card number")
+	}
+
+	valid, _ := regexp.MatchString("[0-9]+", flag.Arg(index))
+
+	if !valid {
+		return 0, errors.New(fmt.Sprintf("Invalid card number: %v", flag.Arg(index)))
+	}
+
+	cardNumber, err := strconv.ParseUint(flag.Arg(index), 10, 32)
+
+	if err != nil {
+		return 0, errors.New(fmt.Sprintf("Invalid card number: %v", flag.Arg(index)))
+	}
+
+	return uint32(cardNumber), err
+}
+
+func getDate(index int, missing, invalid string) (*time.Time, error) {
+	if len(flag.Args()) < index+1 {
+		return nil, errors.New(missing)
+	}
+
+	valid, _ := regexp.MatchString("[0-9]{4}-[0-9]{2}-[0-9]{2}", flag.Arg(index))
+
+	if !valid {
+		return nil, errors.New(fmt.Sprintf(invalid, flag.Arg(index)))
+	}
+
+	date, err := time.Parse("2006-01-02", flag.Arg(index))
+
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf(invalid, flag.Arg(index)))
+	}
+
+	return &date, err
+}
+
+func getPermissions(index int) (*[]int, error) {
+	permissions := []int{}
+
+	if len(flag.Args()) > index {
+		re := regexp.MustCompile("\\s*([1234]\\s*)(?:,\\s*([1234])\\s*)*")
+		matches := re.FindAllStringSubmatch(flag.Arg(index), -1)
+
+		if matches == nil || len(matches) != 1 {
+			return nil, errors.New(fmt.Sprintf("Invalid door permissions '%v'", flag.Arg(index)))
+		}
+
+		for i := 1; i < len(matches[0]); i++ {
+			door, err := strconv.Atoi(matches[0][i])
+			if err != nil {
+				return nil, errors.New(fmt.Sprintf("Invalid door '%v'", matches[0][i]))
+			}
+
+			permissions = append(permissions, door)
+		}
+	}
+
+	return &permissions, nil
 }

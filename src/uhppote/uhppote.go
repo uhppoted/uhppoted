@@ -9,7 +9,8 @@ import (
 )
 
 type UHPPOTE struct {
-	Debug bool
+	SerialNumber uint32
+	Debug        bool
 }
 
 func (u *UHPPOTE) Execute(cmd []byte) ([]byte, error) {
