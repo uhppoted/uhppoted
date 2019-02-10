@@ -99,6 +99,23 @@ func helpGetAuthRec() {
 	fmt.Println()
 	fmt.Println("  Examples:")
 	fmt.Println()
-	fmt.Println("    uhppote-cli get-autrh-rec 12345678")
+	fmt.Println("    uhppote-cli get-auth-rec 12345678")
+	fmt.Println()
+}
+
+func helpAddAuth() {
+	fmt.Println("Usage: uhppote-cli [options] add-auth <serial number> <card number> <start date> <end date> <doors>")
+	fmt.Println()
+	fmt.Println(" Adds a card to the authorised list")
+	fmt.Println()
+	fmt.Println("  <serial number>  (required) controller serial number")
+	fmt.Println("  <card number>    (required) card number")
+	fmt.Println("  <start date>     (required) start date YYYY-MM-DD")
+	fmt.Println("  <end date>       (required) end date   YYYY-MM-DD")
+	fmt.Println("  <doors>          (required) list of permitted doors [1 2 3 4]")
+	fmt.Println()
+	fmt.Println("  Examples:")
+	fmt.Println()
+	fmt.Println("    uhppote-cli add-auth 12345678 654372524 2019-01-01 2019-12-31 1,2,4")
 	fmt.Println()
 }
