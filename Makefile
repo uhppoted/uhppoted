@@ -8,6 +8,7 @@ format:
 	gofmt -w=true src/uhppote-simulator/*.go
 	gofmt -w=true src/uhppote/types/*.go
 	gofmt -w=true src/uhppote/messages/*.go
+	gofmt -w=true src/encoding/bcd/*.go
 
 build: format
 	go install uhppote-cli
@@ -15,6 +16,7 @@ build: format
 
 test: build
 	go test src/uhppote/messages/*.go
+	go test src/encoding/bcd/*.go
 
 benchmark: build
 	go test -bench .
