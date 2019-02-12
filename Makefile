@@ -19,7 +19,7 @@ test: build
 	go test src/encoding/bcd/*.go
 
 benchmark: build
-	go test -bench .
+	go test src/encoding/bcd/*.go -bench .
 
 coverage: build
 	go test -cover .
