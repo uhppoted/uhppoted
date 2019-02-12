@@ -2,7 +2,9 @@ package bcd
 
 import (
 	"errors"
+	"math/rand"
 	"reflect"
+	"strconv"
 	"testing"
 )
 
@@ -36,4 +38,18 @@ func TestEncode(t *testing.T) {
 			t.Errorf("Invalid packed BCD encoding for '%s': %x", test.s, *result)
 		}
 	}
+}
+
+func BenchmarkEncode(b *testing.B) {
+	s := ""
+
+	for i := 0; i < 255; i++ {
+		s += strconv.Itoa(rand.Intn(10))
+	}
+
+	b.Run("Encode", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			Encode(s)
+		}
+	})
 }
