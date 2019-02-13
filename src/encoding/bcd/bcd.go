@@ -3,6 +3,7 @@ package bcd
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 func Encode(s string) (*[]byte, error) {
@@ -44,4 +45,64 @@ func Encode(s string) (*[]byte, error) {
 	}
 
 	return &bytes, nil
+}
+
+func Decode(bytes []byte) (string, error) {
+	var s strings.Builder
+
+	s.Grow(len(bytes) * 2)
+
+	for _, b := range bytes {
+		switch b & 0xf0 {
+		case 0x00:
+			s.WriteRune('0')
+		case 0x10:
+			s.WriteRune('1')
+		case 0x20:
+			s.WriteRune('2')
+		case 0x30:
+			s.WriteRune('3')
+		case 0x40:
+			s.WriteRune('4')
+		case 0x50:
+			s.WriteRune('5')
+		case 0x60:
+			s.WriteRune('6')
+		case 0x70:
+			s.WriteRune('7')
+		case 0x80:
+			s.WriteRune('8')
+		case 0x90:
+			s.WriteRune('9')
+		default:
+			return "", errors.New(fmt.Sprintf("Invalid BCD number: '%x'", bytes))
+		}
+
+		switch b & 0x0f {
+		case 0x00:
+			s.WriteRune('0')
+		case 0x01:
+			s.WriteRune('1')
+		case 0x02:
+			s.WriteRune('2')
+		case 0x03:
+			s.WriteRune('3')
+		case 0x04:
+			s.WriteRune('4')
+		case 0x05:
+			s.WriteRune('5')
+		case 0x06:
+			s.WriteRune('6')
+		case 0x07:
+			s.WriteRune('7')
+		case 0x08:
+			s.WriteRune('8')
+		case 0x09:
+			s.WriteRune('9')
+		default:
+			return "", errors.New(fmt.Sprintf("Invalid BCD number: '%x'", bytes))
+		}
+	}
+
+	return s.String(), nil
 }
