@@ -4,7 +4,7 @@ import "fmt"
 
 type AuthRec struct {
 	SerialNumber uint32
-	Records      uint64
+	Records      uint32
 }
 
 func (r *AuthRec) String() string {

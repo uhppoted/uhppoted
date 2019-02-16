@@ -8,6 +8,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 	"uhppote"
 )
@@ -304,7 +305,7 @@ func list_swipes() error {
 	}
 
 	u := uhppote.UHPPOTE{SerialNumber: serialNumber, Debug: debug}
-	swipe, err := u.GetSwipe(1)
+	swipe, err := u.GetSwipe(5)
 
 	if err == nil {
 		fmt.Printf("%s\n", swipe.String())
@@ -415,17 +416,12 @@ func getPermissions(index int) (*[]int, error) {
 	permissions := []int{}
 
 	if len(flag.Args()) > index {
-		re := regexp.MustCompile("\\s*([1234]\\s*)(?:,\\s*([1234])\\s*)*")
-		matches := re.FindAllStringSubmatch(flag.Arg(index), -1)
+		matches := strings.Split(flag.Arg(index), ",")
 
-		if matches == nil || len(matches) != 1 {
-			return nil, errors.New(fmt.Sprintf("Invalid door permissions '%v'", flag.Arg(index)))
-		}
-
-		for i := 1; i < len(matches[0]); i++ {
-			door, err := strconv.Atoi(matches[0][i])
+		for _, match := range matches {
+			door, err := strconv.Atoi(match)
 			if err != nil {
-				return nil, errors.New(fmt.Sprintf("Invalid door '%v'", matches[0][i]))
+				return nil, errors.New(fmt.Sprintf("Invalid door '%v'", match))
 			}
 
 			permissions = append(permissions, door)

@@ -13,7 +13,7 @@ type GetAuthRec struct {
 
 func NewGetAuthRec(msg []byte) (*GetAuthRec, error) {
 	serialNumber := binary.LittleEndian.Uint32(msg[4:8])
-	records := binary.LittleEndian.Uint64(msg[8:16])
+	records := binary.LittleEndian.Uint32(msg[8:12])
 
 	return &GetAuthRec{
 		msg[0],

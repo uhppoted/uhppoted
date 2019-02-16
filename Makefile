@@ -47,7 +47,8 @@ list-authorised: build
 	./bin/uhppote-cli -debug list-authorised 423187757
 
 authorise: build
-	./bin/uhppote-cli -debug authorise 423187757 12345 2019-01-01 2019-12-31 1,4
+	./bin/uhppote-cli -debug authorise 423187757 12345   2019-01-01 2019-12-31 1,4
+	./bin/uhppote-cli -debug authorise 423187757 6154410 2019-01-01 2019-12-31 3
 
 list-swipes: build
 	./bin/uhppote-cli --debug list-swipes 423187757
