@@ -44,15 +44,16 @@ func usage() error {
 	fmt.Println()
 	fmt.Println("  Commands:")
 	fmt.Println()
-	fmt.Println("    help           Displays this message")
-	fmt.Println("                   For help on a specific command use 'uhppote-cli help <command>'")
-	fmt.Println("    version        Displays the current version")
-	fmt.Println("    search         Searches for UHPPOTE controllers on the network")
-	fmt.Println("    get-time       Returns the current time on the selected controller")
-	fmt.Println("    set-time       Sets the current time on the selected controller")
-	fmt.Println("    set-ip-address Sets the IP address on the selected controller")
-	fmt.Println("    get-auth-rec   Gets authorised card list")
-	fmt.Println("    add-auth       Adds a card to the authorised list")
+	fmt.Println("    help            Displays this message")
+	fmt.Println("                    For help on a specific command use 'uhppote-cli help <command>'")
+	fmt.Println("    version         Displays the current version")
+	fmt.Println("    list-devices    Returns a list of found UHPPOTE controllers on the network")
+	fmt.Println("    get-time        Returns the current time on the selected controller")
+	fmt.Println("    set-time        Sets the current time on the selected controller")
+	fmt.Println("    set-ip-address  Sets the IP address on the selected controller")
+	fmt.Println("    list-authorised Retrieves list of authorised cards")
+	fmt.Println("    list-swipes     Retrieves list of card swipes")
+	fmt.Println("    authorise       Adds a card to the authorised cards list")
 	fmt.Println()
 	fmt.Println("  Options:")
 	fmt.Println()
@@ -70,8 +71,8 @@ func parse(s string) func() error {
 	case "version":
 		return version
 
-	case "search":
-		return search
+	case "list-devices":
+		return list_devices
 
 	case "get-time":
 		return gettime
@@ -82,11 +83,14 @@ func parse(s string) func() error {
 	case "set-ip-address":
 		return setaddress
 
-	case "get-auth-rec":
-		return getauthrec
+	case "list-authorised":
+		return list_authorised
 
-	case "add-auth":
-		return addauth
+	case "list-swipes":
+		return list_swipes
+
+	case "authorise":
+		return authorise
 	}
 
 	return nil
@@ -101,8 +105,8 @@ func help() error {
 		case "version":
 			helpVersion()
 
-		case "search":
-			helpSearch()
+		case "list-devices":
+			helpListDevices()
 
 		case "get-time":
 			helpGetTime()
@@ -113,11 +117,14 @@ func help() error {
 		case "set-address":
 			helpSetAddress()
 
-		case "get-auth-rec":
-			helpGetAuthRec()
+		case "list-authorised":
+			helpListAuthorised()
 
-		case "add-auth":
-			helpAddAuth()
+		case "list-swipes":
+			helpListSwipes()
+
+		case "authorise":
+			helpAuthorise()
 
 		default:
 			return errors.New(fmt.Sprintf("Invalid command: %v. Type 'help commands' to get a list of supported commands", flag.Arg(1)))
@@ -134,7 +141,7 @@ func version() error {
 	return nil
 }
 
-func search() error {
+func list_devices() error {
 	u := uhppote.UHPPOTE{}
 	u.Debug = debug
 	devices, err := uhppote.Search(&u)
@@ -273,26 +280,15 @@ func setaddress() error {
 	return err
 }
 
-func getauthrec() error {
-	if len(flag.Args()) < 2 {
-		return errors.New("Missing serial number")
-	}
-
-	valid, _ := regexp.MatchString("[0-9]+", flag.Arg(1))
-
-	if !valid {
-		return errors.New(fmt.Sprintf("Invalid serial number: %v", flag.Arg(1)))
-	}
-
-	serialNumber, err := strconv.ParseUint(flag.Arg(1), 10, 32)
-
+func list_authorised() error {
+	serialNumber, err := getSerialNumber()
 	if err != nil {
-		return errors.New(fmt.Sprintf("Invalid serial number: %v", flag.Arg(1)))
+		return err
 	}
 
-	u := uhppote.UHPPOTE{}
-	u.Debug = debug
-	authorised, err := uhppote.GetAuthRec(uint32(serialNumber), &u)
+	u := uhppote.UHPPOTE{SerialNumber: serialNumber, Debug: debug}
+
+	authorised, err := uhppote.GetAuthRec(serialNumber, &u)
 
 	if err == nil {
 		fmt.Printf("%v\n", authorised)
@@ -301,7 +297,23 @@ func getauthrec() error {
 	return err
 }
 
-func addauth() error {
+func list_swipes() error {
+	serialNumber, err := getSerialNumber()
+	if err != nil {
+		return err
+	}
+
+	u := uhppote.UHPPOTE{SerialNumber: serialNumber, Debug: debug}
+	swipe, err := u.GetSwipe(1)
+
+	if err == nil {
+		fmt.Printf("%s\n", swipe.String())
+	}
+
+	return err
+}
+
+func authorise() error {
 	serialNumber, err := getSerialNumber()
 	if err != nil {
 		return err
@@ -330,7 +342,7 @@ func addauth() error {
 	u := uhppote.UHPPOTE{}
 	u.SerialNumber = serialNumber
 	u.Debug = debug
-	authorised, err := u.AddAuth(cardNumber, *from, *to, *permissions)
+	authorised, err := u.Authorise(cardNumber, *from, *to, *permissions)
 
 	if err == nil {
 		fmt.Printf("%v\n", authorised)

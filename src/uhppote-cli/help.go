@@ -15,8 +15,8 @@ func helpVersion() {
 	fmt.Println()
 }
 
-func helpSearch() {
-	fmt.Println("Usage: uhppote-cli [options] search [command options]")
+func helpListDevices() {
+	fmt.Println("Usage: uhppote-cli [options] list-devices [command options]")
 	fmt.Println()
 	fmt.Println(" Searches the local network for UHPPOTE access control boards reponding to a poll")
 	fmt.Println(" on the default UDP port 60000. Returns a list of boards one per line in the format:")
@@ -26,8 +26,6 @@ func helpSearch() {
 	fmt.Println("  Options:")
 	fmt.Println()
 	fmt.Println("    -debug  Displays vaguely useful internal information")
-	fmt.Println()
-	fmt.Println("  Command options:")
 	fmt.Println()
 }
 
@@ -90,21 +88,34 @@ func helpSetAddress() {
 	fmt.Println()
 }
 
-func helpGetAuthRec() {
-	fmt.Println("Usage: uhppote-cli [options] get-auth-rec <serial number>")
+func helpListAuthorised() {
+	fmt.Println("Usage: uhppote-cli [options] list-authorised <serial number>")
 	fmt.Println()
-	fmt.Println(" Retrieves the authorised card list")
+	fmt.Println(" Retrieves the list of authorised cards")
 	fmt.Println()
 	fmt.Println("  serial-number  (required) controller serial number")
 	fmt.Println()
 	fmt.Println("  Examples:")
 	fmt.Println()
-	fmt.Println("    uhppote-cli get-auth-rec 12345678")
+	fmt.Println("    uhppote-cli list-authorised 12345678")
 	fmt.Println()
 }
 
-func helpAddAuth() {
-	fmt.Println("Usage: uhppote-cli [options] add-auth <serial number> <card number> <start date> <end date> <doors>")
+func helpListSwipes() {
+	fmt.Println("Usage: uhppote-cli [options] list-swipes <serial number>")
+	fmt.Println()
+	fmt.Println(" Retrieves the list of recorded card swipes")
+	fmt.Println()
+	fmt.Println("  serial-number  (required) controller serial number")
+	fmt.Println()
+	fmt.Println("  Examples:")
+	fmt.Println()
+	fmt.Println("    uhppote-cli list-swipesc 12345678")
+	fmt.Println()
+}
+
+func helpAuthorise() {
+	fmt.Println("Usage: uhppote-cli [options] authorise <serial number> <card number> <start date> <end date> <doors>")
 	fmt.Println()
 	fmt.Println(" Adds a card to the authorised list")
 	fmt.Println()
@@ -116,6 +127,6 @@ func helpAddAuth() {
 	fmt.Println()
 	fmt.Println("  Examples:")
 	fmt.Println()
-	fmt.Println("    uhppote-cli add-auth 12345678 654372524 2019-01-01 2019-12-31 1,2,4")
+	fmt.Println("    uhppote-cli authorise 12345678 918273645 2019-01-01 2019-12-31 1,2,4")
 	fmt.Println()
 }

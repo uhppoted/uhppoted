@@ -11,12 +11,25 @@ type Date struct {
 }
 
 type DateTime struct {
-	SerialNumber uint32
-	DateTime     time.Time
+	DateTime time.Time
 }
 
 func (d *DateTime) String() string {
-	return fmt.Sprintf("%v %v", d.SerialNumber, d.DateTime.Format("2006-01-02 15:04:05"))
+	return d.DateTime.Format("2006-01-02 15:04:05")
+}
+
+func DecodeDateTime(bytes []byte) (*DateTime, error) {
+	decoded, err := bcd.Decode(bytes)
+	if err != nil {
+		return nil, err
+	}
+
+	datetime, err := time.ParseInLocation("20060102150405", decoded, time.Local)
+	if err != nil {
+		return nil, err
+	}
+
+	return &DateTime{datetime}, nil
 }
 
 func (d *Date) String() string {
