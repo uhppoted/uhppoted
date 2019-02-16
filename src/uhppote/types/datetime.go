@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/bcd"
 	"fmt"
 	"time"
 )
@@ -23,15 +24,11 @@ func (d *Date) String() string {
 }
 
 func (d Date) Encode(bytes []byte) {
-	bytes[0] = bcd(d.Date.Year() / 100)
-	bytes[1] = bcd(d.Date.Year() % 100)
-	bytes[2] = bcd(int(d.Date.Month()))
-	bytes[3] = bcd(d.Date.Day())
-}
+	encoded, err := bcd.Encode(d.Date.Format("20060102"))
 
-func bcd(b int) byte {
-	msb := b / 10
-	lsb := b % 10
-
-	return byte(msb*16 + lsb)
+	if err != nil {
+		panic(fmt.Sprintf("Unexpected error encoding date %v to BCD: [%v]", d, err))
+	} else {
+		copy(bytes, *encoded)
+	}
 }
