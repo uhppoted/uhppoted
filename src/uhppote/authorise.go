@@ -7,7 +7,7 @@ import (
 	"uhppote/types"
 )
 
-func (u *UHPPOTE) AddAuth(cardNumber uint32, from, to time.Time, doors []int) (*types.Authorised, error) {
+func (u *UHPPOTE) Authorise(cardNumber uint32, from, to time.Time, doors []int) (*types.Authorised, error) {
 	cmd := make([]byte, 64)
 	permissions := make([]byte, 4)
 
