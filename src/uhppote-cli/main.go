@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 	"uhppote"
+	"uhppote-cli/commands"
 )
 
 var debug = false
@@ -84,8 +85,8 @@ func parse(s string) func() error {
 	case "set-ip-address":
 		return setaddress
 
-	case "list-authorised":
-		return list_authorised
+	case "get-authorised":
+		return getAuthorised
 
 	case "get-swipe":
 		return getSwipe
@@ -119,7 +120,7 @@ func help() error {
 			helpSetAddress()
 
 		case "list-authorised":
-			helpListAuthorised()
+			helpGetAuthorised()
 
 		case "list-swipes":
 			helpListSwipes()
@@ -281,44 +282,22 @@ func setaddress() error {
 	return err
 }
 
-func list_authorised() error {
-	serialNumber, err := getSerialNumber()
+func getAuthorised() error {
+	cmd, err := commands.NewGetAuthorisedCommand(debug)
 	if err != nil {
 		return err
 	}
 
-	u := uhppote.UHPPOTE{SerialNumber: serialNumber, Debug: debug}
-
-	authorised, err := uhppote.GetAuthRec(serialNumber, &u)
-
-	if err == nil {
-		fmt.Printf("%v\n", authorised)
-	}
-
-	return err
+	return cmd.Execute()
 }
 
 func getSwipe() error {
-	serialNumber, err := getSerialNumber()
+	cmd, err := commands.NewGetSwipeCommand(debug)
 	if err != nil {
 		return err
 	}
 
-	index, err := getUint32(2, "Missing swipe index", "Invalid swipe index: %v")
-	if err != nil {
-		return err
-	}
-
-	u := uhppote.UHPPOTE{SerialNumber: serialNumber, Debug: debug}
-	swipe, err := u.GetSwipe(index + 10)
-
-	if err == nil {
-		if swipe != nil {
-			fmt.Printf("%s\n", swipe.String())
-		}
-	}
-
-	return err
+	return cmd.Execute()
 }
 
 func authorise() error {

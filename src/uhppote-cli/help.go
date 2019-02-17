@@ -88,16 +88,16 @@ func helpSetAddress() {
 	fmt.Println()
 }
 
-func helpListAuthorised() {
-	fmt.Println("Usage: uhppote-cli [options] list-authorised <serial number>")
+func helpGetAuthorised() {
+	fmt.Println("Usage: uhppote-cli [options] get-authorised <serial number>")
 	fmt.Println()
-	fmt.Println(" Retrieves the list of authorised cards")
+	fmt.Println(" Retrieves the number of authorised cards")
 	fmt.Println()
 	fmt.Println("  serial-number  (required) controller serial number")
 	fmt.Println()
 	fmt.Println("  Examples:")
 	fmt.Println()
-	fmt.Println("    uhppote-cli list-authorised 12345678")
+	fmt.Println("    uhppote-cli get-authorised 12345678")
 	fmt.Println()
 }
 

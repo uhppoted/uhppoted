@@ -5,7 +5,7 @@ import "fmt"
 type Swipe struct {
 	Index      uint32
 	Type       byte
-	Access     bool
+	Granted    bool
 	Door       byte
 	DoorState  byte
 	Card       uint32
@@ -14,5 +14,5 @@ type Swipe struct {
 }
 
 func (s *Swipe) String() string {
-	return fmt.Sprintf("%4d: %s  %-8d %1d %-5v", s.Index, s.Timestamp.String(), s.Card, s.Door, s.Access)
+	return fmt.Sprintf("%-4d %s  %-8d %1d %-5v %d", s.Index, s.Timestamp.String(), s.Card, s.Door, s.Granted, s.RecordType)
 }
