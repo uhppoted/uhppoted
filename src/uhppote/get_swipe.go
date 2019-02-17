@@ -2,7 +2,6 @@ package uhppote
 
 import (
 	"encoding/binary"
-	"fmt"
 	"uhppote/messages"
 	"uhppote/types"
 )
@@ -29,8 +28,6 @@ func (u *UHPPOTE) GetSwipe(index uint32) (*types.Swipe, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Printf("--- DEBUG: %v\n\n", result)
 
 	return result.Swipe, nil
 }
