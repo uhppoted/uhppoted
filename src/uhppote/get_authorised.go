@@ -6,7 +6,7 @@ import (
 	"uhppote/types"
 )
 
-func GetAuthRec(serialNumber uint32, u *UHPPOTE) (*types.AuthRec, error) {
+func (u *UHPPOTE) GetAuthRec() (*types.AuthRec, error) {
 	cmd := make([]byte, 64)
 
 	cmd[0] = 0x17
@@ -14,7 +14,7 @@ func GetAuthRec(serialNumber uint32, u *UHPPOTE) (*types.AuthRec, error) {
 	cmd[2] = 0x00
 	cmd[3] = 0x00
 
-	binary.LittleEndian.PutUint32(cmd[4:8], serialNumber)
+	binary.LittleEndian.PutUint32(cmd[4:8], u.SerialNumber)
 
 	reply, err := u.Execute(cmd)
 

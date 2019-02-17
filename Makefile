@@ -5,6 +5,7 @@ all: test      \
 format: 
 	gofmt -w=true src/uhppote/*.go
 	gofmt -w=true src/uhppote-cli/*.go
+	gofmt -w=true src/uhppote-cli/commands/*.go
 	gofmt -w=true src/uhppote-simulator/*.go
 	gofmt -w=true src/uhppote/types/*.go
 	gofmt -w=true src/uhppote/messages/*.go
@@ -43,8 +44,8 @@ set-time: build
 set-address: build
 	./bin/uhppote-cli -debug set-ip-address 423187757 '192.168.1.150' '255.255.254.0' '0.0.0.0'
 
-list-authorised: build
-	./bin/uhppote-cli -debug list-authorised 423187757
+get-authorised: build
+	./bin/uhppote-cli -debug get-authorised 423187757
 
 authorise: build
 	./bin/uhppote-cli -debug authorise 423187757 12345   2019-01-01 2019-12-31 1,4

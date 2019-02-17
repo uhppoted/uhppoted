@@ -26,7 +26,7 @@ func NewGetSwipe(msg []byte) (*GetSwipe, error) {
 		swipe = &types.Swipe{
 			Index:      binary.LittleEndian.Uint32(msg[8:12]),
 			Type:       msg[12],
-			Access:     msg[13] == 0x01,
+			Granted:    msg[13] == 0x01,
 			Door:       msg[14],
 			DoorState:  msg[15],
 			Card:       binary.LittleEndian.Uint32(msg[16:20]),
