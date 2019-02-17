@@ -49,8 +49,8 @@ list-authorised: build
 authorise: build
 	./bin/uhppote-cli -debug authorise 423187757 12345   2019-01-01 2019-12-31 1,4
 
-list-swipes: build
-	./bin/uhppote-cli --debug list-swipes 423187757
+get-swipe: build
+	./bin/uhppote-cli --debug get-swipe 423187757 1
 
 simulator: build
 	./bin/uhppote-simulator

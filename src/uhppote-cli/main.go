@@ -53,8 +53,8 @@ func usage() error {
 	fmt.Println("    set-time        Sets the current time on the selected controller")
 	fmt.Println("    set-ip-address  Sets the IP address on the selected controller")
 	fmt.Println("    list-authorised Retrieves list of authorised cards")
-	fmt.Println("    list-swipes     Retrieves list of card swipes")
 	fmt.Println("    authorise       Adds a card to the authorised cards list")
+	fmt.Println("    get-swipe       Retrieves a card swipe")
 	fmt.Println()
 	fmt.Println("  Options:")
 	fmt.Println()
@@ -87,8 +87,8 @@ func parse(s string) func() error {
 	case "list-authorised":
 		return list_authorised
 
-	case "list-swipes":
-		return list_swipes
+	case "get-swipe":
+		return getSwipe
 
 	case "authorise":
 		return authorise
@@ -298,17 +298,24 @@ func list_authorised() error {
 	return err
 }
 
-func list_swipes() error {
+func getSwipe() error {
 	serialNumber, err := getSerialNumber()
 	if err != nil {
 		return err
 	}
 
+	index, err := getUint32(2, "Missing swipe index", "Invalid swipe index: %v")
+	if err != nil {
+		return err
+	}
+
 	u := uhppote.UHPPOTE{SerialNumber: serialNumber, Debug: debug}
-	swipe, err := u.GetSwipe(5)
+	swipe, err := u.GetSwipe(index + 10)
 
 	if err == nil {
-		fmt.Printf("%s\n", swipe.String())
+		if swipe != nil {
+			fmt.Printf("%s\n", swipe.String())
+		}
 	}
 
 	return err
@@ -429,4 +436,24 @@ func getPermissions(index int) (*[]int, error) {
 	}
 
 	return &permissions, nil
+}
+
+func getUint32(index int, missing, invalid string) (uint32, error) {
+	if len(flag.Args()) < index+1 {
+		return 0, errors.New(missing)
+	}
+
+	valid, _ := regexp.MatchString("[0-9]+", flag.Arg(index))
+
+	if !valid {
+		return 0, errors.New(fmt.Sprintf(invalid, flag.Arg(index)))
+	}
+
+	N, err := strconv.ParseUint(flag.Arg(index), 10, 32)
+
+	if err != nil {
+		return 0, errors.New(fmt.Sprintf(invalid, flag.Arg(index)))
+	}
+
+	return uint32(N), err
 }
