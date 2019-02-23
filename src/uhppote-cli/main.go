@@ -42,6 +42,9 @@ func parse() commands.Command {
 		case "version":
 			cmd = commands.NewVersionCommand(VERSION, debug)
 
+		case "list-devices":
+			cmd, err = commands.NewListDevicesCommand(debug)
+
 		case "get-authorised":
 			cmd, err = commands.NewGetAuthorisedCommand(debug)
 
@@ -59,9 +62,6 @@ func parse() commands.Command {
 
 func parsex(s string) func() error {
 	switch s {
-	case "list-devices":
-		return list_devices
-
 	case "get-time":
 		return gettime
 
@@ -76,26 +76,6 @@ func parsex(s string) func() error {
 	}
 
 	return nil
-}
-
-func version() error {
-	fmt.Printf("%v\n", VERSION)
-
-	return nil
-}
-
-func list_devices() error {
-	u := uhppote.UHPPOTE{}
-	u.Debug = debug
-	devices, err := uhppote.Search(&u)
-
-	if err == nil {
-		for _, device := range devices {
-			fmt.Printf("%s\n", device.String())
-		}
-	}
-
-	return err
 }
 
 func gettime() error {
