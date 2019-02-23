@@ -35,6 +35,10 @@ usage: build
 help: build
 	./bin/uhppote-cli help
 
+version: build
+	./bin/uhppote-cli version
+
+
 search: build
 	./bin/uhppote-cli -debug search
 
