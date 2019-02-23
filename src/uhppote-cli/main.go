@@ -48,6 +48,9 @@ func parse() commands.Command {
 		case "get-time":
 			cmd, err = commands.NewGetTimeCommand(debug)
 
+		case "set-time":
+			cmd, err = commands.NewSetTimeCommand(debug)
+
 		case "get-authorised":
 			cmd, err = commands.NewGetAuthorisedCommand(debug)
 
@@ -65,9 +68,6 @@ func parse() commands.Command {
 
 func parsex(s string) func() error {
 	switch s {
-	case "set-time":
-		return settime
-
 	case "set-ip-address":
 		return setaddress
 
@@ -76,47 +76,6 @@ func parsex(s string) func() error {
 	}
 
 	return nil
-}
-
-func settime() error {
-	if len(flag.Args()) < 2 {
-		return errors.New("Missing serial number")
-	}
-
-	valid, _ := regexp.MatchString("[0-9]+", flag.Arg(1))
-
-	if !valid {
-		return errors.New(fmt.Sprintf("Invalid serial number: %v", flag.Arg(1)))
-	}
-
-	serialNumber, err := strconv.ParseUint(flag.Arg(1), 10, 32)
-
-	if err != nil {
-		return errors.New(fmt.Sprintf("Invalid serial number: %v", flag.Arg(1)))
-	}
-
-	datetime := time.Now()
-
-	if len(flag.Args()) > 2 {
-		if flag.Arg(2) == "now" {
-			datetime = time.Now()
-		} else {
-			datetime, err = time.Parse("2006-01-02 15:04:05", flag.Arg(2))
-			if err != nil {
-				return errors.New(fmt.Sprintf("Invalid date/time parameter: %v", flag.Arg(3)))
-			}
-		}
-	}
-
-	u := uhppote.UHPPOTE{}
-	u.Debug = debug
-	devicetime, err := uhppote.SetTime(uint32(serialNumber), datetime, &u)
-
-	if err == nil {
-		fmt.Printf("%s\n", devicetime)
-	}
-
-	return err
 }
 
 func setaddress() error {

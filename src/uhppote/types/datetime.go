@@ -32,6 +32,16 @@ func DecodeDateTime(bytes []byte) (*DateTime, error) {
 	return &DateTime{datetime}, nil
 }
 
+func (d *DateTime) Encode(bytes []byte) {
+	encoded, err := bcd.Encode(d.DateTime.Format("20060102150405"))
+
+	if err != nil {
+		panic(fmt.Sprintf("Unexpected error encoding date-time %v to BCD: [%v]", d, err))
+	} else {
+		copy(bytes, *encoded)
+	}
+}
+
 func (d *Date) String() string {
 	return d.Date.Format("2006-01-02")
 }
