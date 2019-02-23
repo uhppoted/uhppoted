@@ -4,7 +4,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"net"
 	"os"
 	"regexp"
 	"strconv"
@@ -51,6 +50,9 @@ func parse() commands.Command {
 		case "set-time":
 			cmd, err = commands.NewSetTimeCommand(debug)
 
+		case "set-ip-address":
+			cmd, err = commands.NewSetAddressCommand(debug)
+
 		case "get-authorised":
 			cmd, err = commands.NewGetAuthorisedCommand(debug)
 
@@ -68,70 +70,11 @@ func parse() commands.Command {
 
 func parsex(s string) func() error {
 	switch s {
-	case "set-ip-address":
-		return setaddress
-
 	case "authorise":
 		return authorise
 	}
 
 	return nil
-}
-
-func setaddress() error {
-	if len(flag.Args()) < 2 {
-		return errors.New("Missing serial number")
-	}
-
-	valid, _ := regexp.MatchString("[0-9]+", flag.Arg(1))
-
-	if !valid {
-		return errors.New(fmt.Sprintf("Invalid serial number: %v", flag.Arg(1)))
-	}
-
-	serialNumber, err := strconv.ParseUint(flag.Arg(1), 10, 32)
-
-	if err != nil {
-		return errors.New(fmt.Sprintf("Invalid serial number: %v", flag.Arg(1)))
-	}
-
-	if len(flag.Args()) < 3 {
-		return errors.New("Missing IP address")
-	}
-
-	address := net.ParseIP(flag.Arg(2))
-
-	if address == nil || address.To4() == nil {
-		return errors.New(fmt.Sprintf("Invalid IP address: %v", flag.Arg(2)))
-	}
-
-	mask := net.IPv4(255, 255, 255, 0)
-	if len(flag.Args()) > 3 {
-		mask = net.ParseIP(flag.Arg(3))
-
-		if mask == nil || mask.To4() == nil {
-			mask = net.IPv4(255, 255, 255, 0)
-		}
-	}
-
-	gateway := net.IPv4(0, 0, 0, 0)
-
-	if len(flag.Args()) > 4 {
-		gateway = net.ParseIP(flag.Arg(3))
-		if gateway == nil || gateway.To4() == nil {
-			gateway = net.IPv4(0, 0, 0, 0)
-		}
-	}
-
-	address = net.IPv4(192, 168, 1, 125)
-	mask = net.IPv4(255, 255, 255, 0)
-	gateway = net.IPv4(0, 0, 0, 0)
-
-	u := uhppote.UHPPOTE{}
-	u.Debug = debug
-	err = uhppote.SetAddress(uint32(serialNumber), address, mask, gateway, &u)
-
-	return err
 }
 
 func authorise() error {

@@ -49,7 +49,7 @@ set-time: build
 	./bin/uhppote-cli -debug set-time 423187757
 
 set-address: build
-	./bin/uhppote-cli -debug set-ip-address 423187757 '192.168.1.150' '255.255.254.0' '0.0.0.0'
+	./bin/uhppote-cli -debug set-ip-address 423187757 '192.168.1.125' '255.255.255.0' '0.0.0.0'
 
 get-authorised: build
 	./bin/uhppote-cli -debug get-authorised 423187757
