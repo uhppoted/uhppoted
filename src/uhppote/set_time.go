@@ -2,12 +2,11 @@ package uhppote
 
 import (
 	"encoding/binary"
-	"time"
 	"uhppote/messages"
 	"uhppote/types"
 )
 
-func SetTime(serialNumber uint32, datetime time.Time, u *UHPPOTE) (*types.DateTime, error) {
+func (u *UHPPOTE) SetTime(datetime types.DateTime) (*types.DateTime, error) {
 	cmd := make([]byte, 64)
 
 	cmd[0] = 0x17
@@ -15,15 +14,8 @@ func SetTime(serialNumber uint32, datetime time.Time, u *UHPPOTE) (*types.DateTi
 	cmd[2] = 0x00
 	cmd[3] = 0x00
 
-	binary.LittleEndian.PutUint32(cmd[4:8], serialNumber)
-
-	cmd[8] = encode(datetime.Year() / 100)
-	cmd[9] = encode(datetime.Year() % 100)
-	cmd[10] = encode(int(datetime.Month()))
-	cmd[11] = encode(datetime.Day())
-	cmd[12] = encode(datetime.Hour())
-	cmd[13] = encode(datetime.Minute())
-	cmd[14] = encode(datetime.Second())
+	binary.LittleEndian.PutUint32(cmd[4:8], u.SerialNumber)
+	datetime.Encode(cmd[8:15])
 
 	reply, err := u.Execute(cmd)
 
@@ -38,11 +30,4 @@ func SetTime(serialNumber uint32, datetime time.Time, u *UHPPOTE) (*types.DateTi
 	}
 
 	return &result.DateTime, nil
-}
-
-func encode(b int) byte {
-	msb := b / 10
-	lsb := b % 10
-
-	return byte(msb*16 + lsb)
 }
