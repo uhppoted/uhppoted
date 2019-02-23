@@ -2,12 +2,11 @@ package uhppote
 
 import (
 	"encoding/binary"
-	"time"
 	"uhppote/messages"
 	"uhppote/types"
 )
 
-func (u *UHPPOTE) Authorise(cardNumber uint32, from, to time.Time, doors []int) (*types.Authorised, error) {
+func (u *UHPPOTE) Authorise(cardNumber uint32, from, to types.Date, doors []int) (*types.Authorised, error) {
 	cmd := make([]byte, 64)
 	permissions := make([]byte, 4)
 
@@ -32,8 +31,8 @@ func (u *UHPPOTE) Authorise(cardNumber uint32, from, to time.Time, doors []int) 
 	binary.LittleEndian.PutUint32(cmd[4:8], u.SerialNumber)
 	binary.LittleEndian.PutUint32(cmd[8:12], cardNumber)
 
-	types.Date{from}.Encode(cmd[12:16])
-	types.Date{to}.Encode(cmd[16:20])
+	from.Encode(cmd[12:16])
+	to.Encode(cmd[16:20])
 	copy(cmd[20:24], permissions)
 
 	reply, err := u.Execute(cmd)

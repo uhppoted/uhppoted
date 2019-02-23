@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"time"
+	"uhppote/types"
 )
 
 func getUint32(index int, missing, invalid string) (uint32, error) {
@@ -26,4 +28,24 @@ func getUint32(index int, missing, invalid string) (uint32, error) {
 	}
 
 	return uint32(N), err
+}
+
+func getDate(index int, missing, invalid string) (*types.Date, error) {
+	if len(flag.Args()) < index+1 {
+		return nil, errors.New(missing)
+	}
+
+	valid, _ := regexp.MatchString("[0-9]{4}-[0-9]{2}-[0-9]{2}", flag.Arg(index))
+
+	if !valid {
+		return nil, errors.New(fmt.Sprintf(invalid, flag.Arg(index)))
+	}
+
+	date, err := time.Parse("2006-01-02", flag.Arg(index))
+
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf(invalid, flag.Arg(index)))
+	}
+
+	return &types.Date{date}, err
 }
