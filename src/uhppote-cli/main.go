@@ -18,58 +18,44 @@ var debug = false
 var VERSION = "v0.00.0"
 
 func main() {
-	if len(os.Args) < 2 {
-		usage()
-		return
-	}
-
 	flag.BoolVar(&debug, "debug", false, "Displays vaguely useful information while processing a command")
 	flag.Parse()
 
-	cmd := flag.Arg(0)
-	f := parse(cmd)
+	command := parse()
 
-	if f == nil {
-		usage()
-		return
-	}
-
-	err := f()
+	err := command.Execute()
 	if err != nil {
 		fmt.Printf("%v\n", err)
 		os.Exit(1)
 	}
 }
 
-func usage() error {
-	fmt.Println("Usage: uhppote-cli [options] <command>")
-	fmt.Println()
-	fmt.Println("  Commands:")
-	fmt.Println()
-	fmt.Println("    help            Displays this message")
-	fmt.Println("                    For help on a specific command use 'uhppote-cli help <command>'")
-	fmt.Println("    version         Displays the current version")
-	fmt.Println("    list-devices    Returns a list of found UHPPOTE controllers on the network")
-	fmt.Println("    get-time        Returns the current time on the selected controller")
-	fmt.Println("    set-time        Sets the current time on the selected controller")
-	fmt.Println("    set-ip-address  Sets the IP address on the selected controller")
-	fmt.Println("    list-authorised Retrieves list of authorised cards")
-	fmt.Println("    authorise       Adds a card to the authorised cards list")
-	fmt.Println("    get-swipe       Retrieves a card swipe")
-	fmt.Println()
-	fmt.Println("  Options:")
-	fmt.Println()
-	fmt.Println("    -debug  Displays vaguely useful internal information")
-	fmt.Println()
+func parse() commands.Command {
+	var cmd commands.Command = commands.NewHelpCommand(debug)
+	var err error = nil
 
-	return nil
+	if len(os.Args) > 1 {
+		switch flag.Arg(0) {
+		case "help":
+			cmd = commands.NewHelpCommand(debug)
+
+		case "get-authorised":
+			cmd, err = commands.NewGetAuthorisedCommand(debug)
+
+		case "get-swipe":
+			cmd, err = commands.NewGetSwipeCommand(debug)
+		}
+	}
+
+	if err == nil {
+		return cmd
+	}
+
+	return commands.NewHelpCommand(debug)
 }
 
-func parse(s string) func() error {
+func parsex(s string) func() error {
 	switch s {
-	case "help":
-		return help
-
 	case "version":
 		return version
 
@@ -85,53 +71,8 @@ func parse(s string) func() error {
 	case "set-ip-address":
 		return setaddress
 
-	case "get-authorised":
-		return getAuthorised
-
-	case "get-swipe":
-		return getSwipe
-
 	case "authorise":
 		return authorise
-	}
-
-	return nil
-}
-
-func help() error {
-	if len(flag.Args()) > 1 {
-		switch flag.Arg(1) {
-		case "commands":
-			helpCommands()
-
-		case "version":
-			helpVersion()
-
-		case "list-devices":
-			helpListDevices()
-
-		case "get-time":
-			helpGetTime()
-
-		case "set-time":
-			helpSetTime()
-
-		case "set-address":
-			helpSetAddress()
-
-		case "list-authorised":
-			helpGetAuthorised()
-
-		case "list-swipes":
-			helpListSwipes()
-
-		case "authorise":
-			helpAuthorise()
-
-		default:
-			return errors.New(fmt.Sprintf("Invalid command: %v. Type 'help commands' to get a list of supported commands", flag.Arg(1)))
-		}
-
 	}
 
 	return nil
@@ -280,24 +221,6 @@ func setaddress() error {
 	err = uhppote.SetAddress(uint32(serialNumber), address, mask, gateway, &u)
 
 	return err
-}
-
-func getAuthorised() error {
-	cmd, err := commands.NewGetAuthorisedCommand(debug)
-	if err != nil {
-		return err
-	}
-
-	return cmd.Execute()
-}
-
-func getSwipe() error {
-	cmd, err := commands.NewGetSwipeCommand(debug)
-	if err != nil {
-		return err
-	}
-
-	return cmd.Execute()
 }
 
 func authorise() error {

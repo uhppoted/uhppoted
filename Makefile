@@ -32,6 +32,9 @@ clean:
 usage: build
 	./bin/uhppote-cli
 
+help: build
+	./bin/uhppote-cli help
+
 search: build
 	./bin/uhppote-cli -debug search
 
