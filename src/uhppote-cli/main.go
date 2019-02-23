@@ -14,8 +14,8 @@ import (
 	"uhppote-cli/commands"
 )
 
-var debug = false
 var VERSION = "v0.00.0"
+var debug = false
 
 func main() {
 	flag.BoolVar(&debug, "debug", false, "Displays vaguely useful information while processing a command")
@@ -39,6 +39,9 @@ func parse() commands.Command {
 		case "help":
 			cmd = commands.NewHelpCommand(debug)
 
+		case "version":
+			cmd = commands.NewVersionCommand(VERSION, debug)
+
 		case "get-authorised":
 			cmd, err = commands.NewGetAuthorisedCommand(debug)
 
@@ -56,9 +59,6 @@ func parse() commands.Command {
 
 func parsex(s string) func() error {
 	switch s {
-	case "version":
-		return version
-
 	case "list-devices":
 		return list_devices
 
