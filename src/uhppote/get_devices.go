@@ -5,7 +5,7 @@ import (
 	"uhppote/types"
 )
 
-func Search(u *UHPPOTE) ([]types.Device, error) {
+func (u *UHPPOTE) Search() ([]types.Device, error) {
 	devices := []types.Device{}
 	cmd := make([]byte, 64)
 

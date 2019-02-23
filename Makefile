@@ -38,9 +38,8 @@ help: build
 version: build
 	./bin/uhppote-cli version
 
-
-search: build
-	./bin/uhppote-cli -debug search
+list-devices: build
+	./bin/uhppote-cli -debug list-devices
 
 get-time: build
 	./bin/uhppote-cli -debug get-time 423187757
