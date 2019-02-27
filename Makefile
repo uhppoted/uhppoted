@@ -33,7 +33,7 @@ usage: build
 	./bin/uhppote-cli
 
 help: build
-	./bin/uhppote-cli help
+	./bin/uhppote-cli --bind "192.168.0.100:51234" help
 
 version: build
 	./bin/uhppote-cli version
