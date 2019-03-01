@@ -13,10 +13,9 @@ type SetAddressCommand struct {
 	Address      net.IP
 	Mask         net.IP
 	Gateway      net.IP
-	Debug        bool
 }
 
-func NewSetAddressCommand(debug bool) (*SetAddressCommand, error) {
+func NewSetAddressCommand() (*SetAddressCommand, error) {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return nil, err
@@ -50,12 +49,11 @@ func NewSetAddressCommand(debug bool) (*SetAddressCommand, error) {
 		}
 	}
 
-	return &SetAddressCommand{serialNumber, address, mask, gateway, debug}, nil
+	return &SetAddressCommand{serialNumber, address, mask, gateway}, nil
 }
 
-func (c *SetAddressCommand) Execute() error {
-	u := uhppote.UHPPOTE{SerialNumber: c.SerialNumber, Debug: c.Debug}
-	err := u.SetAddress(c.Address, c.Mask, c.Gateway)
+func (c *SetAddressCommand) Execute(u *uhppote.UHPPOTE) error {
+	err := u.SetAddress(c.SerialNumber, c.Address, c.Mask, c.Gateway)
 
 	return err
 }

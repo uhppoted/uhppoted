@@ -8,10 +8,9 @@ import (
 type GetSwipeCommand struct {
 	SerialNumber uint32
 	Index        uint32
-	Debug        bool
 }
 
-func NewGetSwipeCommand(debug bool) (*GetSwipeCommand, error) {
+func NewGetSwipeCommand() (*GetSwipeCommand, error) {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return nil, err
@@ -22,16 +21,15 @@ func NewGetSwipeCommand(debug bool) (*GetSwipeCommand, error) {
 		return nil, err
 	}
 
-	return &GetSwipeCommand{serialNumber, index, debug}, nil
+	return &GetSwipeCommand{serialNumber, index}, nil
 }
 
-func (c *GetSwipeCommand) Execute() error {
-	u := uhppote.UHPPOTE{SerialNumber: c.SerialNumber, Debug: c.Debug}
-	swipe, err := u.GetSwipe(c.Index)
+func (c *GetSwipeCommand) Execute(u *uhppote.UHPPOTE) error {
+	swipe, err := u.GetSwipe(c.SerialNumber, c.Index)
 
 	if err == nil {
 		if swipe != nil {
-			fmt.Printf("%12d %s\n", u.SerialNumber, swipe.String())
+			fmt.Printf("%12d %s\n", c.SerialNumber, swipe.String())
 		}
 	}
 

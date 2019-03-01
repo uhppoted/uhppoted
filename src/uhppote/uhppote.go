@@ -9,10 +9,9 @@ import (
 )
 
 type UHPPOTE struct {
-	BindAddress  net.IP
-	BindPort     uint
-	SerialNumber uint32
-	Debug        bool
+	BindAddress net.IP
+	BindPort    uint
+	Debug       bool
 }
 
 func (u *UHPPOTE) Execute(cmd []byte) ([]byte, error) {

@@ -16,10 +16,9 @@ type GrantCommand struct {
 	From         types.Date
 	To           types.Date
 	Permissions  []int
-	Debug        bool
 }
 
-func NewGrantCommand(debug bool) (*GrantCommand, error) {
+func NewGrantCommand() (*GrantCommand, error) {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return nil, err
@@ -45,12 +44,11 @@ func NewGrantCommand(debug bool) (*GrantCommand, error) {
 		return nil, err
 	}
 
-	return &GrantCommand{serialNumber, cardNumber, *from, *to, *permissions, debug}, nil
+	return &GrantCommand{serialNumber, cardNumber, *from, *to, *permissions}, nil
 }
 
-func (c *GrantCommand) Execute() error {
-	u := uhppote.UHPPOTE{SerialNumber: c.SerialNumber, Debug: c.Debug}
-	authorised, err := u.Authorise(c.CardNumber, c.From, c.To, c.Permissions)
+func (c *GrantCommand) Execute(u *uhppote.UHPPOTE) error {
+	authorised, err := u.Authorise(c.SerialNumber, c.CardNumber, c.From, c.To, c.Permissions)
 
 	if err == nil {
 		fmt.Printf("%v\n", authorised)

@@ -6,7 +6,7 @@ import (
 	"uhppote/types"
 )
 
-func (u *UHPPOTE) GetTime() (*types.DateTime, error) {
+func (u *UHPPOTE) GetTime(serialNumber uint32) (*types.DateTime, error) {
 	cmd := make([]byte, 64)
 
 	cmd[0] = 0x17
@@ -14,7 +14,7 @@ func (u *UHPPOTE) GetTime() (*types.DateTime, error) {
 	cmd[2] = 0x00
 	cmd[3] = 0x00
 
-	binary.LittleEndian.PutUint32(cmd[4:8], u.SerialNumber)
+	binary.LittleEndian.PutUint32(cmd[4:8], serialNumber)
 
 	reply, err := u.Execute(cmd)
 
