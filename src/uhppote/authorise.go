@@ -6,7 +6,7 @@ import (
 	"uhppote/types"
 )
 
-func (u *UHPPOTE) Authorise(cardNumber uint32, from, to types.Date, doors []int) (*types.Authorised, error) {
+func (u *UHPPOTE) Authorise(serialNumber, cardNumber uint32, from, to types.Date, doors []int) (*types.Authorised, error) {
 	cmd := make([]byte, 64)
 	permissions := make([]byte, 4)
 
@@ -28,7 +28,7 @@ func (u *UHPPOTE) Authorise(cardNumber uint32, from, to types.Date, doors []int)
 	cmd[2] = 0x00
 	cmd[3] = 0x00
 
-	binary.LittleEndian.PutUint32(cmd[4:8], u.SerialNumber)
+	binary.LittleEndian.PutUint32(cmd[4:8], serialNumber)
 	binary.LittleEndian.PutUint32(cmd[8:12], cardNumber)
 
 	from.Encode(cmd[12:16])

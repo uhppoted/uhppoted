@@ -1,5 +1,7 @@
 package commands
 
+import "uhppote"
+
 type Command interface {
-	Execute() error
+	Execute(u *uhppote.UHPPOTE) error
 }

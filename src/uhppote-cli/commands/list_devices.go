@@ -6,15 +6,13 @@ import (
 )
 
 type ListDevicesCommand struct {
-	Debug bool
 }
 
-func NewListDevicesCommand(debug bool) (*ListDevicesCommand, error) {
-	return &ListDevicesCommand{debug}, nil
+func NewListDevicesCommand() (*ListDevicesCommand, error) {
+	return &ListDevicesCommand{}, nil
 }
 
-func (c *ListDevicesCommand) Execute() error {
-	u := uhppote.UHPPOTE{Debug: c.Debug}
+func (c *ListDevicesCommand) Execute(u *uhppote.UHPPOTE) error {
 	devices, err := u.Search()
 
 	if err == nil {

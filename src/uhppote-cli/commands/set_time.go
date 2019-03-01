@@ -12,10 +12,9 @@ import (
 type SetTimeCommand struct {
 	SerialNumber uint32
 	DateTime     types.DateTime
-	Debug        bool
 }
 
-func NewSetTimeCommand(debug bool) (*SetTimeCommand, error) {
+func NewSetTimeCommand() (*SetTimeCommand, error) {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return nil, err
@@ -33,12 +32,11 @@ func NewSetTimeCommand(debug bool) (*SetTimeCommand, error) {
 		}
 	}
 
-	return &SetTimeCommand{serialNumber, types.DateTime{datetime}, debug}, nil
+	return &SetTimeCommand{serialNumber, types.DateTime{datetime}}, nil
 }
 
-func (c *SetTimeCommand) Execute() error {
-	u := uhppote.UHPPOTE{SerialNumber: c.SerialNumber, Debug: c.Debug}
-	devicetime, err := u.SetTime(c.DateTime)
+func (c *SetTimeCommand) Execute(u *uhppote.UHPPOTE) error {
+	devicetime, err := u.SetTime(c.SerialNumber, c.DateTime)
 
 	if err == nil {
 		fmt.Printf("%s\n", devicetime)

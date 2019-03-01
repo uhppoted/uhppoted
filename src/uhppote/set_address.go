@@ -7,7 +7,7 @@ import (
 	"net"
 )
 
-func (u *UHPPOTE) SetAddress(address, mask, gateway net.IP) error {
+func (u *UHPPOTE) SetAddress(serialNumber uint32, address, mask, gateway net.IP) error {
 	if address.To4() == nil {
 		return errors.New(fmt.Sprintf("Invalid IP address: %v", address))
 	}
@@ -27,7 +27,7 @@ func (u *UHPPOTE) SetAddress(address, mask, gateway net.IP) error {
 	cmd[2] = 0x00
 	cmd[3] = 0x00
 
-	binary.LittleEndian.PutUint32(cmd[4:8], u.SerialNumber)
+	binary.LittleEndian.PutUint32(cmd[4:8], serialNumber)
 
 	copy(cmd[8:12], address.To4())
 	copy(cmd[12:16], mask.To4())

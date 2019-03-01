@@ -4,16 +4,17 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"uhppote"
 )
 
 type HelpCommand struct {
 }
 
-func NewHelpCommand(debug bool) *HelpCommand {
+func NewHelpCommand() *HelpCommand {
 	return &HelpCommand{}
 }
 
-func (c *HelpCommand) Execute() error {
+func (c *HelpCommand) Execute(u *uhppote.UHPPOTE) error {
 	if len(flag.Args()) > 0 && flag.Arg(0) == "help" {
 		if len(flag.Args()) > 1 {
 			switch flag.Arg(1) {

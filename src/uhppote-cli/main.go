@@ -31,46 +31,46 @@ func main() {
 		Debug:       debug,
 	}
 
-	command := parse(u)
-	err := command.Execute()
+	command := parse()
+	err := command.Execute(&u)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 		os.Exit(1)
 	}
 }
 
-func parse(u uhppote.UHPPOTE) commands.Command {
-	var cmd commands.Command = commands.NewHelpCommand(debug)
+func parse() commands.Command {
+	var cmd commands.Command = commands.NewHelpCommand()
 	var err error = nil
 
 	if len(os.Args) > 1 {
 		switch flag.Arg(0) {
 		case "help":
-			cmd = commands.NewHelpCommand(debug)
+			cmd = commands.NewHelpCommand()
 
 		case "version":
-			cmd = commands.NewVersionCommand(VERSION, debug)
+			cmd = commands.NewVersionCommand(VERSION)
 
 		case "list-devices":
-			cmd, err = commands.NewListDevicesCommand(debug)
+			cmd, err = commands.NewListDevicesCommand()
 
 		case "get-time":
-			cmd, err = commands.NewGetTimeCommand(debug)
+			cmd, err = commands.NewGetTimeCommand()
 
 		case "set-time":
-			cmd, err = commands.NewSetTimeCommand(debug)
+			cmd, err = commands.NewSetTimeCommand()
 
 		case "set-ip-address":
-			cmd, err = commands.NewSetAddressCommand(debug)
+			cmd, err = commands.NewSetAddressCommand()
 
 		case "get-authorised":
-			cmd, err = commands.NewGetAuthorisedCommand(debug)
+			cmd, err = commands.NewGetAuthorisedCommand()
 
 		case "get-swipe":
-			cmd, err = commands.NewGetSwipeCommand(debug)
+			cmd, err = commands.NewGetSwipeCommand()
 
 		case "authorise":
-			cmd, err = commands.NewGrantCommand(debug)
+			cmd, err = commands.NewGrantCommand()
 		}
 	}
 
@@ -78,7 +78,7 @@ func parse(u uhppote.UHPPOTE) commands.Command {
 		return cmd
 	}
 
-	return commands.NewHelpCommand(debug)
+	return commands.NewHelpCommand()
 }
 
 func (b *bind) String() string {
