@@ -9,8 +9,7 @@ import (
 )
 
 type UHPPOTE struct {
-	BindAddress net.IP
-	BindPort    uint
+	BindAddress net.UDPAddr
 	Debug       bool
 }
 
@@ -24,19 +23,13 @@ func (u *UHPPOTE) Execute(cmd []byte) ([]byte, error) {
 		fmt.Printf("%s\n", regex.ReplaceAllString(hex.Dump(cmd), " ...         $1"))
 	}
 
-	local, err := net.ResolveUDPAddr("udp", "192.168.1.100:50000")
-
-	if err != nil {
-		return nil, makeErr("Failed to resolve UDP local address", err)
-	}
-
 	broadcast, err := net.ResolveUDPAddr("udp", "255.255.255.255:60000")
 
 	if err != nil {
 		return nil, makeErr("Failed to resolve UDP broadcast address", err)
 	}
 
-	connection, err := net.ListenUDP("udp", local)
+	connection, err := net.ListenUDP("udp", &u.BindAddress)
 
 	if err != nil {
 		return nil, makeErr("Failed to open UDP socket", err)
