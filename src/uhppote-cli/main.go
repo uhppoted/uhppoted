@@ -50,6 +50,9 @@ func parse() commands.Command {
 		case "list-devices":
 			cmd, err = commands.NewListDevicesCommand()
 
+		case "get-status":
+			cmd, err = commands.NewGetStatusCommand()
+
 		case "get-time":
 			cmd, err = commands.NewGetTimeCommand()
 

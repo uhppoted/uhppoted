@@ -1,3 +1,5 @@
+LOCAL = "192.168.1.100:51234"
+
 all: test      \
 	 benchmark \
      coverage
@@ -33,13 +35,16 @@ usage: build
 	./bin/uhppote-cli
 
 help: build
-	./bin/uhppote-cli --bind "192.168.0.100:51234" help
+	./bin/uhppote-cli --bind $(LOCAL) help
 
 version: build
 	./bin/uhppote-cli version
 
 list-devices: build
 	./bin/uhppote-cli -debug list-devices
+
+get-status: build
+	./bin/uhppote-cli --debug --bind $(LOCAL) get-status 423187757
 
 get-time: build
 	./bin/uhppote-cli -debug get-time 423187757
