@@ -41,13 +41,13 @@ version: build
 	./bin/uhppote-cli version
 
 list-devices: build
-	./bin/uhppote-cli -debug list-devices
+	./bin/uhppote-cli --debug list-devices
 
 get-status: build
-	./bin/uhppote-cli --debug --bind $(LOCAL) get-status 423187757
+	./bin/uhppote-cli --bind $(LOCAL) --debug get-status 423187757
 
 get-time: build
-	./bin/uhppote-cli -debug get-time 423187757
+	./bin/uhppote-cli --bind $(LOCAL) --debug get-time 423187757
 
 set-time: build
 	# ./bin/uhppote-cli -debug set-time 423187757 '2019-01-08 12:34:56'
