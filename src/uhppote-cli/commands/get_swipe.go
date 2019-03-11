@@ -35,3 +35,16 @@ func (c *GetSwipeCommand) Execute(u *uhppote.UHPPOTE) error {
 
 	return err
 }
+
+func (c *GetSwipeCommand) Help() {
+	fmt.Println("Usage: uhppote-cli [options] list-swipes <serial number>")
+	fmt.Println()
+	fmt.Println(" Retrieves the list of recorded card swipes")
+	fmt.Println()
+	fmt.Println("  serial-number  (required) controller serial number")
+	fmt.Println()
+	fmt.Println("  Examples:")
+	fmt.Println()
+	fmt.Println("    uhppote-cli list-swipesc 12345678")
+	fmt.Println()
+}

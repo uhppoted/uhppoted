@@ -27,3 +27,6 @@ func (c *GetStatusCommand) Execute(u *uhppote.UHPPOTE) error {
 
 	return err
 }
+
+func (c *GetStatusCommand) Help() {
+}
