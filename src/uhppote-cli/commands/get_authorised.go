@@ -27,3 +27,16 @@ func (c *GetAuthorisedCommand) Execute(u *uhppote.UHPPOTE) error {
 
 	return err
 }
+
+func (c *GetAuthorisedCommand) Help() {
+	fmt.Println("Usage: uhppote-cli [options] get-authorised <serial number>")
+	fmt.Println()
+	fmt.Println(" Retrieves the number of authorised cards")
+	fmt.Println()
+	fmt.Println("  serial-number  (required) controller serial number")
+	fmt.Println()
+	fmt.Println("  Examples:")
+	fmt.Println()
+	fmt.Println("    uhppote-cli get-authorised 12345678")
+	fmt.Println()
+}

@@ -57,3 +57,21 @@ func (c *SetAddressCommand) Execute(u *uhppote.UHPPOTE) error {
 
 	return err
 }
+
+func (c *SetAddressCommand) Help() {
+	fmt.Println("Usage: uhppote-cli [options] set-address <serial number> <address> [mask] [gateway]")
+	fmt.Println()
+	fmt.Println(" Sets the controller IP address, subnet mask and gateway address")
+	fmt.Println()
+	fmt.Println("  serial-number  (required) controller serial number")
+	fmt.Println("  address        (required) IPv4 address")
+	fmt.Println("  mask           (optional) IPv4 subnet mask. Defaults to 255.255.255.0")
+	fmt.Println("  gateway        (optional) IPv4 gateway address. Defaults to 0.0.0.0")
+	fmt.Println()
+	fmt.Println("  Examples:")
+	fmt.Println()
+	fmt.Println("    uhppote-cli set-address 12345678  192.168.1.100")
+	fmt.Println("    uhppote-cli set-address 12345678  192.168.1.100  255.255.255.0")
+	fmt.Println("    uhppote-cli set-address 12345678  192.168.1.100  255.255.255.0  0.0.0.0")
+	fmt.Println()
+}

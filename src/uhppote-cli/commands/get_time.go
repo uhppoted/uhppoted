@@ -27,3 +27,19 @@ func (c *GetTimeCommand) Execute(u *uhppote.UHPPOTE) error {
 
 	return err
 }
+
+func (c *GetTimeCommand) Help() {
+	fmt.Println("Usage: uhppote-cli [options] get-time <serial number> [command options]")
+	fmt.Println()
+	fmt.Println(" Retrieves the current date/time referenced to the local timezone for the access control board")
+	fmt.Println(" with the corresponding serial number in the format:")
+	fmt.Println()
+	fmt.Println(" <serial number> <yyyy-mm-dd HH:mm:ss>")
+	fmt.Println()
+	fmt.Println("  Options:")
+	fmt.Println()
+	fmt.Println("    -debug  Displays vaguely useful internal information")
+	fmt.Println()
+	fmt.Println("  Command options:")
+	fmt.Println()
+}

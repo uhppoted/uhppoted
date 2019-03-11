@@ -20,3 +20,8 @@ func (c *VersionCommand) Execute(u *uhppote.UHPPOTE) error {
 
 	return nil
 }
+
+func (c *VersionCommand) Help() {
+	fmt.Println("Displays the uhppote-cli version in the format v<major>.<minor>.<build> e.g. v1.00.10")
+	fmt.Println()
+}
