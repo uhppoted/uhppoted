@@ -8,17 +8,19 @@ import (
 	"net"
 	"os"
 	"regexp"
-	"time"
+	"uhppote-simulator/simulator"
+	"uhppote/messages"
 )
 
 var debug = false
 var VERSION = "v0.00.0"
 
 func main() {
-	flag.BoolVar(&debug, "--debug", false, "Displays simulator activity")
+	flag.BoolVar(&debug, "debug", false, "Displays simulator activity")
 	flag.Parse()
 
-	err := run(true)
+	s := simulator.Simulator{Debug: debug}
+	err := run(&s)
 
 	if err != nil {
 		fmt.Printf("%v\n", err)
@@ -40,7 +42,7 @@ func usage() error {
 	return nil
 }
 
-func run(debug bool) error {
+func run(s *simulator.Simulator) error {
 	request := make([]byte, 2048)
 	local, err := net.ResolveUDPAddr("udp", "0.0.0.0:60000")
 
@@ -63,36 +65,34 @@ func run(debug bool) error {
 			return errors.New(fmt.Sprintf("Failed to read from UDP socket [%v]", err))
 		}
 
-		if debug {
+		if s.Debug {
 			regex := regexp.MustCompile("(?m)^(.*)")
 
 			fmt.Printf(" ... received %v bytes from %v\n", N, remote)
 			fmt.Printf("%s\n", regex.ReplaceAllString(hex.Dump(request[:N]), " ... $1"))
 		}
 
-		// DUMMY REPLY
+		// ...parse request
 
-		time.Sleep(100 * time.Millisecond)
-
-		reply := []byte{
-			0x17, 0x94, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0xc0, 0xa8, 0x01, 0x7d, 0xff, 0xff, 0xff, 0x00,
-			0x00, 0x00, 0x00, 0x00, 0x00, 0x66, 0x19, 0x39, 0x55, 0x2d, 0x08, 0x92, 0x20, 0x18, 0x08, 0x16,
-			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		}
-
-		N, err = connection.WriteTo(reply, remote)
+		reply, err := s.Handle(request[:N])
 
 		if err != nil {
-			return errors.New(fmt.Sprintf("Failed to write to UDP socket [%v]", err))
+			fmt.Printf("ERROR: %v\n", err)
+		} else {
+			N, err = connection.WriteTo(reply, remote)
+
+			if err != nil {
+				return errors.New(fmt.Sprintf("Failed to write to UDP socket [%v]", err))
+			}
+
+			if s.Debug {
+				regex := regexp.MustCompile("(?m)^(.*)")
+
+				fmt.Printf(" ... sent %v bytes to %v\n", N, remote)
+				fmt.Printf("%s\n", regex.ReplaceAllString(hex.Dump(reply[:N]), " ... $1"))
+			}
 		}
 
-		if debug {
-			regex := regexp.MustCompile("(?m)^(.*)")
-
-			fmt.Printf(" ... sent %v bytes to %v\n", N, remote)
-			fmt.Printf("%s\n", regex.ReplaceAllString(hex.Dump(reply[:N]), " ... $1"))
-		}
 	}
 
 	return nil
@@ -106,6 +106,18 @@ func close(connection net.Conn) {
 
 func version() error {
 	fmt.Printf("%v\n", VERSION)
+
+	return nil
+}
+
+func parse(bytes []byte) messages.Message {
+	fmt.Printf("%v %x %x\n", len(bytes), bytes[0], bytes[1])
+	if len(bytes) == 64 && bytes[0] == 0x17 {
+		switch bytes[1] {
+		case 0x94:
+			return &messages.Search{}
+		}
+	}
 
 	return nil
 }
