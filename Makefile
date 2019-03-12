@@ -9,6 +9,7 @@ format:
 	gofmt -w=true src/uhppote-cli/*.go
 	gofmt -w=true src/uhppote-cli/commands/*.go
 	gofmt -w=true src/uhppote-simulator/*.go
+	gofmt -w=true src/uhppote-simulator/simulator/*.go
 	gofmt -w=true src/uhppote/types/*.go
 	gofmt -w=true src/uhppote/messages/*.go
 	gofmt -w=true src/encoding/bcd/*.go
@@ -66,4 +67,4 @@ get-swipe: build
 	./bin/uhppote-cli --debug get-swipe 423187757 1
 
 simulator: build
-	./bin/uhppote-simulator
+	./bin/uhppote-simulator --debug 
