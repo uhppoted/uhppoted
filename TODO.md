@@ -17,3 +17,5 @@
    * door_delay
    * door_delay_get
    * userid' 
+7. fuse
+
