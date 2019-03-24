@@ -28,6 +28,10 @@ func (c *GetAuthorisedCommand) Execute(u *uhppote.UHPPOTE) error {
 	return err
 }
 
+func (c *GetAuthorisedCommand) CLI() string {
+	return "get-authorised"
+}
+
 func (c *GetAuthorisedCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] get-authorised <serial number>")
 	fmt.Println()

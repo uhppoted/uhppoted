@@ -6,7 +6,6 @@
 4. Consistently include device serial number in output e.g. of get-time
 5. Document protocol
 6. Commands:
-   * open_door
    * get_recordIndex
    * set_recordIndex
    * set_ripp
@@ -18,4 +17,4 @@
    * door_delay_get
    * userid' 
 7. fuse
-
+8. Centralise and rationalise scattered CLI command syntax and help

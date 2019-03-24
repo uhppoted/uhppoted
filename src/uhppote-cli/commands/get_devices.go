@@ -24,6 +24,10 @@ func (c *ListDevicesCommand) Execute(u *uhppote.UHPPOTE) error {
 	return err
 }
 
+func (c *ListDevicesCommand) CLI() string {
+	return "get-devices"
+}
+
 func (c *ListDevicesCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] list-devices [command options]")
 	fmt.Println()

@@ -35,20 +35,29 @@ clean:
 usage: build
 	./bin/uhppote-cli
 
+debug: build
+	./bin/uhppote-cli --bind $(LOCAL) help version
+
 help: build
 	./bin/uhppote-cli --bind $(LOCAL) help
 
 version: build
 	./bin/uhppote-cli version
 
-list-devices: build
-	./bin/uhppote-cli --debug list-devices
+get-devices: build
+	./bin/uhppote-cli --bind $(LOCAL) --debug get-devices
 
 get-status: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug get-status 423187757
 
 get-time: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug get-time 423187757
+
+get-authorised: build
+	./bin/uhppote-cli -debug get-authorised 423187757
+
+get-swipes: build
+	./bin/uhppote-cli --debug get-swipes 423187757 1
 
 set-time: build
 	# ./bin/uhppote-cli -debug set-time 423187757 '2019-01-08 12:34:56'
@@ -57,14 +66,11 @@ set-time: build
 set-address: build
 	./bin/uhppote-cli -debug set-ip-address 423187757 '192.168.1.125' '255.255.255.0' '0.0.0.0'
 
-get-authorised: build
-	./bin/uhppote-cli -debug get-authorised 423187757
-
 authorise: build
 	./bin/uhppote-cli -debug authorise 423187757 12345   2019-01-01 2019-12-31 1,4
 
-get-swipe: build
-	./bin/uhppote-cli --debug get-swipe 423187757 1
+open: build
+	./bin/uhppote-cli --bind $(LOCAL) --debug open 423187757 4
 
 simulator: build
 	./bin/uhppote-simulator --debug 

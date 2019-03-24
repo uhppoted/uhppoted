@@ -28,6 +28,10 @@ func (c *GetTimeCommand) Execute(u *uhppote.UHPPOTE) error {
 	return err
 }
 
+func (c *GetTimeCommand) CLI() string {
+	return "get-time"
+}
+
 func (c *GetTimeCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] get-time <serial number> [command options]")
 	fmt.Println()
