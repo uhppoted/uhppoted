@@ -28,5 +28,9 @@ func (c *GetStatusCommand) Execute(u *uhppote.UHPPOTE) error {
 	return err
 }
 
+func (c *GetStatusCommand) CLI() string {
+	return "get-status"
+}
+
 func (c *GetStatusCommand) Help() {
 }

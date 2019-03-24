@@ -10,21 +10,23 @@ import (
 type HelpCommand struct {
 }
 
+var commands = []Command{
+	&VersionCommand{},
+	&OpenDoorCommand{},
+}
+
 func NewHelpCommand() *HelpCommand {
 	return &HelpCommand{}
 }
 
 func (c *HelpCommand) Execute(u *uhppote.UHPPOTE) error {
-	var cmd Command = &HelpCommand{}
+	var cmd Command = nil
 
 	if len(flag.Args()) > 0 && flag.Arg(0) == "help" {
 		if len(flag.Args()) > 1 {
 			switch flag.Arg(1) {
 			case "commands":
 				helpCommands()
-
-			case "version":
-				cmd = &VersionCommand{}
 
 			case "list-devices":
 				cmd = &ListDevicesCommand{}
@@ -45,20 +47,36 @@ func (c *HelpCommand) Execute(u *uhppote.UHPPOTE) error {
 				cmd = &GetAuthorisedCommand{}
 
 			case "get-swipe":
-				cmd = &GetSwipeCommand{}
+				cmd = &GetSwipesCommand{}
 
 			case "authorise":
 				cmd = &GrantCommand{}
 
 			default:
-				return errors.New(fmt.Sprintf("Invalid command: %v. Type 'help commands' to get a list of supported commands", flag.Arg(1)))
+				for _, c := range commands {
+					if c.CLI() == flag.Arg(1) {
+						cmd = c
+					}
+				}
 			}
 		}
+
+		if cmd == nil {
+			return errors.New(fmt.Sprintf("Invalid command: %v. Type 'help commands' to get a list of supported commands", flag.Arg(1)))
+		}
+	}
+
+	if cmd == nil {
+		cmd = &HelpCommand{}
 	}
 
 	cmd.Help()
 
 	return nil
+}
+
+func (c *HelpCommand) CLI() string {
+	return "help"
 }
 
 func (c *HelpCommand) Help() {

@@ -45,6 +45,10 @@ func (c *SetTimeCommand) Execute(u *uhppote.UHPPOTE) error {
 	return err
 }
 
+func (c *SetTimeCommand) CLI() string {
+	return "set-time"
+}
+
 func (c *SetTimeCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] set-time <serial number> [command options]")
 	fmt.Println()

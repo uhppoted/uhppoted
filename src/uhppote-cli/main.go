@@ -27,15 +27,20 @@ func main() {
 		Debug:       debug,
 	}
 
-	command := parse()
-	err := command.Execute(&u)
+	command, err := parse()
+	if err != nil {
+		fmt.Printf("\n   ERROR: %v\n\n", err)
+		os.Exit(1)
+	}
+
+	err = command.Execute(&u)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 		os.Exit(1)
 	}
 }
 
-func parse() commands.Command {
+func parse() (commands.Command, error) {
 	var cmd commands.Command = commands.NewHelpCommand()
 	var err error = nil
 
@@ -47,7 +52,7 @@ func parse() commands.Command {
 		case "version":
 			cmd = commands.NewVersionCommand(VERSION)
 
-		case "list-devices":
+		case "get-devices":
 			cmd, err = commands.NewListDevicesCommand()
 
 		case "get-status":
@@ -65,19 +70,18 @@ func parse() commands.Command {
 		case "get-authorised":
 			cmd, err = commands.NewGetAuthorisedCommand()
 
-		case "get-swipe":
-			cmd, err = commands.NewGetSwipeCommand()
+		case "get-swipes":
+			cmd, err = commands.NewGetSwipesCommand()
 
 		case "authorise":
 			cmd, err = commands.NewGrantCommand()
+
+		case "open":
+			cmd, err = commands.NewOpenDoorCommand()
 		}
 	}
 
-	if err == nil {
-		return cmd
-	}
-
-	return commands.NewHelpCommand()
+	return cmd, err
 }
 
 func (b *bind) String() string {

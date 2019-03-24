@@ -57,6 +57,10 @@ func (c *GrantCommand) Execute(u *uhppote.UHPPOTE) error {
 	return err
 }
 
+func (c *GrantCommand) CLI() string {
+	return "authorise"
+}
+
 func (c *GrantCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] authorise <serial number> <card number> <start date> <end date> <doors>")
 	fmt.Println()

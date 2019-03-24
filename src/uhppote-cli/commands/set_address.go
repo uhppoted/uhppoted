@@ -58,6 +58,10 @@ func (c *SetAddressCommand) Execute(u *uhppote.UHPPOTE) error {
 	return err
 }
 
+func (c *SetAddressCommand) CLI() string {
+	return "set-address"
+}
+
 func (c *SetAddressCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] set-address <serial number> <address> [mask] [gateway]")
 	fmt.Println()
