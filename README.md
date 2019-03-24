@@ -13,7 +13,7 @@ The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Acc
 ## Modules
 
 - uhppote-cli:       CLI for use with bash scripts
-- uhppote-simualtor: UHPPOTE simulator for development use
+- uhppote-simulator: UHPPOTE simulator for development use
 
 ## Installation
 
@@ -22,9 +22,17 @@ The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Acc
 Usage: *uhppote-cli \<command\> \<command options\>*
 
 Supported commands:
-- search
-- get-time \<serial number\>
-- set-time \<serial number\> --now
+- help
+- version
+- get-devices
+- get-status
+- get-time
+- get-authorised
+- get-swipes
+- set-time
+- set-ip-address
+- authorise
+- open
 
 ## uhppote-simulator
 
