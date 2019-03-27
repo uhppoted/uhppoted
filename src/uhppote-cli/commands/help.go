@@ -13,6 +13,8 @@ type HelpCommand struct {
 var commands = []Command{
 	&VersionCommand{},
 	&OpenDoorCommand{},
+	&GrantCommand{},
+	&RevokeCommand{},
 }
 
 func NewHelpCommand() *HelpCommand {
@@ -50,7 +52,6 @@ func (c *HelpCommand) Execute(u *uhppote.UHPPOTE) error {
 				cmd = &GetSwipesCommand{}
 
 			case "authorise":
-				cmd = &GrantCommand{}
 
 			default:
 				for _, c := range commands {
