@@ -36,7 +36,7 @@ usage: build
 	./bin/uhppote-cli
 
 debug: build
-	./bin/uhppote-cli --bind $(LOCAL) help version
+	./bin/uhppote-cli --bind $(LOCAL) help revoke
 
 help: build
 	./bin/uhppote-cli --bind $(LOCAL) help
@@ -54,10 +54,10 @@ get-time: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug get-time 423187757
 
 get-authorised: build
-	./bin/uhppote-cli -debug get-authorised 423187757
+	./bin/uhppote-cli --bind $(LOCAL) --debug get-authorised 423187757
 
 get-swipes: build
-	./bin/uhppote-cli --debug get-swipes 423187757 1
+	./bin/uhppote-cli --bind $(LOCAL) --debug get-swipes 423187757 1
 
 set-time: build
 	# ./bin/uhppote-cli -debug set-time 423187757 '2019-01-08 12:34:56'
@@ -66,8 +66,11 @@ set-time: build
 set-address: build
 	./bin/uhppote-cli -debug set-ip-address 423187757 '192.168.1.125' '255.255.255.0' '0.0.0.0'
 
-authorise: build
-	./bin/uhppote-cli -debug authorise 423187757 12345   2019-01-01 2019-12-31 1,4
+grant: build
+	./bin/uhppote-cli --bind $(LOCAL) --debug grant 423187757 12345 2019-01-01 2019-12-31 1,2,3,4
+
+revoke: build
+	./bin/uhppote-cli --bind $(LOCAL) --debug revoke 423187757 12345
 
 open: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug open 423187757 4

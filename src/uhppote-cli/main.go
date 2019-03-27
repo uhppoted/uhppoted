@@ -73,8 +73,11 @@ func parse() (commands.Command, error) {
 		case "get-swipes":
 			cmd, err = commands.NewGetSwipesCommand()
 
-		case "authorise":
+		case "grant":
 			cmd, err = commands.NewGrantCommand()
+
+		case "revoke":
+			cmd, err = commands.NewRevokeCommand()
 
 		case "open":
 			cmd, err = commands.NewOpenDoorCommand()

@@ -19,7 +19,7 @@ The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Acc
 
 ## uhppote-cli
 
-Usage: *uhppote-cli \<command\> \<command options\>*
+Usage: *uhppote-cli [--bind <address:port>] [--debug] \<command\> \<command options\>*
 
 Supported commands:
 - help
@@ -31,7 +31,8 @@ Supported commands:
 - get-swipes
 - set-time
 - set-ip-address
-- authorise
+- grant
+- revoke
 - open
 
 ## uhppote-simulator

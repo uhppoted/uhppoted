@@ -11,7 +11,6 @@
    * set_ripp
    * get_ripp
    * get_auth_rec
-   * del_auth
    * del_auth_all
    * door_delay
    * door_delay_get
