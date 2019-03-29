@@ -1,0 +1,202 @@
+\documentclass[11pt, oneside]{article}  
+\usepackage[parfill]{parskip} 
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage[iso,english]{isodate}    
+\usepackage{fontspec}
+\usepackage{tikz}
+\usetikzlibrary{shapes,snakes}
+\usepackage{color}
+
+\usepackage[paperwidth=16cm,paperheight=25cm,margin=0cm]{geometry}
+\usepackage[a4,center,noinfo]{crop}
+\usepackage{fancyhdr}
+
+\usepackage[a4,center,noinfo]{crop}
+\definecolor{airforceblue}{rgb}{0.36, 0.54, 0.66}
+\definecolor{asparagus}{rgb}{0.53, 0.66, 0.42}
+\definecolor{bisque}{rgb}{1.0, 0.89, 0.77}
+\definecolor{bittersweet}{rgb}{1.0, 0.44, 0.37}
+\definecolor{brickred}{rgb}{0.8, 0.25, 0.33}
+\definecolor{buff}{rgb}{0.94, 0.86, 0.51}
+\definecolor{celadon}{rgb}{0.67, 0.88, 0.69}
+\definecolor{corn}{rgb}{0.98, 0.93, 0.36}
+\definecolor{darkpastelblue}{rgb}{0.47, 0.62, 0.8}
+\definecolor{salmon}{rgb}{1.0, 0.55, 0.41}
+
+\definecolor{burlywood}{rgb}{0.87, 0.72, 0.53}
+\definecolor{darkpastelpurple}{rgb}{0.59, 0.44, 0.84}
+\definecolor{verylightgray}{rgb}{0.9, 0.9, 0.9}
+
+\setmainfont[Ligatures=TeX,ItalicFont={Elena Basic Regular Italic}]{Elena Basic}
+
+\title{UHPPOTE-UTO0311-L0x - PROTOCOL}
+\author{}
+\date{\today}
+
+\pagestyle{fancy} 
+\lhead{\footnotesize UHPPOTE UTO0311 L0x}
+\chead{\footnotesize PROTOCOL DESCRIPTION}
+
+\lfoot{\footnotesize UHPPOTE-UT0311-L0x Rev. 0}
+\cfoot{\footnotesize CONFIDENTIAL}
+\rfoot{\footnotesize \thepage}
+
+\renewcommand{\footrulewidth}{0.4pt}
+
+% -- MACRO'S
+
+% -- TITLE PAGE
+
+\begin{document}
+
+\thispagestyle{empty}
+
+\begin{tikzpicture}
+\draw [fill=white]   (0,0) rectangle(16,24.9);
+
+%\node[anchor=north]  (logo) at (8,20) 
+%  { \includegraphics[width=8.5cm]{twyst.png}
+%  };
+
+\node[anchor=north]  (title)  at (8,12.5) 
+  { \fontsize{16}{16}
+    \selectfont
+    \textbf{UHPPOTE UTX031 L0x}
+ };
+
+\node[anchor=north]  (subtitle)  at (8,11.25) 
+  { \fontsize{13}{16} 
+    \selectfont
+    \textit{Protocol Description}
+ };
+  
+\end{tikzpicture}
+
+% -- CONTENT
+
+\clearpage
+
+\setcounter{page}{1}
+\renewcommand{\arraystretch}{1.75}
+   
+\begingroup\centering 
+\fontsize{16}{20}
+\selectfont
+\textbf{UHPPOTE UTO0311 L0x}
+\vspace{1cm}
+
+\fontsize{13}{16}
+\selectfont
+\textit{Protocol Description}
+\vspace{0.25cm}
+
+\hrulefill
+\endgroup
+
+% -- OVERVIEW
+
+\section*{Overview}
+
+Request:
+
+{ \begin{tikzpicture}[font=\scriptsize]
+  \draw [fill=bisque] (2,1) rectangle (4,5);
+ \end{tikzpicture}
+}
+
+Reply:
+
+{ \begin{tikzpicture}[font=\scriptsize]
+  \draw [fill=bisque] (2,1) rectangle (4,5);
+ \end{tikzpicture}
+}
+
+Message elements
+
+{ \begin{tabular}{ | l | c | c | }
+   \hline
+   & TYPE & ENCODING \\ 
+   \hline
+   Device ID & uint32 & binary \\ 
+   \hline
+   Card Number & uint32 & binary \\ 
+   \hline
+   Date & YYMMDD & BCD \\ 
+   \hline
+   Time & HHmm & BCD \\ 
+   \hline
+   IP Address  & ? & ? \\ 
+   \hline
+   \end{tabular}
+   \vspace{0.5cm}
+}
+
+
+{ \begin{tabular}{ | l | c | c | }
+   \hline
+   COMMAND & CODE &  \\ 
+   \hline
+   get-devices &  &  \\ 
+   \hline
+   get-status &  &  \\ 
+   \hline
+   get-time &  &  \\ 
+   \hline
+   get-authorised &  &  \\ 
+   \hline
+   get-swipes &  &  \\
+   \hline
+   set-time &  &  \\
+   \hline
+   set-ip-address &  &  \\
+   \hline
+   grant &  &  \\
+   \hline
+   revoke &  &  \\ 
+   \hline
+   open-door &  &  \\ 
+   \hline
+   \end{tabular}
+   \vspace{0.5cm}
+}
+
+% -- get-devices
+
+\section*{GET DEVICES}
+
+<blurb>
+
+REQUEST:
+
+{ \begin{tabular}{ | l | l | }
+   \hline
+   COMMAND & \texttt{0xC0}\\ 
+   \hline
+   MESSAGE ID & \texttt 16 bit message ID \\ 
+   \hline
+   SEQ NO & \texttt 16 bit message ID  \\ 
+   \hline
+   NONCE & \texttt{8 byte nonce value} \\
+   \hline
+   \end{tabular}
+   \vspace{0.5cm}
+}
+
+RESPONSE:
+
+{ \begin{tabular}{ | l | l | }
+   \hline
+   REPLY & \texttt{0xD0}\\ 
+   \hline
+   MESSAGE ID & \texttt (message ID from request) \\ 
+   \hline
+   SEQ NO & \texttt 16 bit message ID  \\ 
+   \hline
+   NONCE & \texttt{8 byte nonce value}\\
+   \hline
+   \end{tabular}
+   \vspace{0.5cm}
+}
+
+\end{document}  
