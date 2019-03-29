@@ -12,3 +12,9 @@ pkg
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+# TeX working files
+
+protocol.aux
+protocol.log
+protocol.synctex.gz
