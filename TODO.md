@@ -6,12 +6,11 @@
 4. Consistently include device serial number in output e.g. of get-time
 5. Document protocol
 6. Commands:
+   * get_auth_rec
    * get_recordIndex
    * set_recordIndex
    * set_ripp
    * get_ripp
-   * get_auth_rec
-   * del_auth_all
    * door_delay
    * door_delay_get
    * userid' 
