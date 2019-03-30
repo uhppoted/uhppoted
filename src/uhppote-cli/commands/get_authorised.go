@@ -5,20 +5,20 @@ import (
 	"uhppote"
 )
 
-type GetAuthorisedCommand struct {
+type GetCardsCommand struct {
 	SerialNumber uint32
 }
 
-func NewGetAuthorisedCommand() (*GetAuthorisedCommand, error) {
+func NewGetCardsCommand() (*GetCardsCommand, error) {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return nil, err
 	}
 
-	return &GetAuthorisedCommand{serialNumber}, nil
+	return &GetCardsCommand{serialNumber}, nil
 }
 
-func (c *GetAuthorisedCommand) Execute(u *uhppote.UHPPOTE) error {
+func (c *GetCardsCommand) Execute(u *uhppote.UHPPOTE) error {
 	authorised, err := u.GetAuthRec(c.SerialNumber)
 
 	if err == nil {
@@ -28,19 +28,19 @@ func (c *GetAuthorisedCommand) Execute(u *uhppote.UHPPOTE) error {
 	return err
 }
 
-func (c *GetAuthorisedCommand) CLI() string {
-	return "get-authorised"
+func (c *GetCardsCommand) CLI() string {
+	return "get-cards"
 }
 
-func (c *GetAuthorisedCommand) Help() {
-	fmt.Println("Usage: uhppote-cli [options] get-authorised <serial number>")
+func (c *GetCardsCommand) Help() {
+	fmt.Println("Usage: uhppote-cli [options] get-cards <serial number>")
 	fmt.Println()
-	fmt.Println(" Retrieves the number of authorised cards")
+	fmt.Println(" Retrieves the number of cards in the controller card list")
 	fmt.Println()
 	fmt.Println("  serial-number  (required) controller serial number")
 	fmt.Println()
 	fmt.Println("  Examples:")
 	fmt.Println()
-	fmt.Println("    uhppote-cli get-authorised 12345678")
+	fmt.Println("    uhppote-cli get-cards 12345678")
 	fmt.Println()
 }

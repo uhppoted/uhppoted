@@ -12,9 +12,12 @@ type HelpCommand struct {
 
 var commands = []Command{
 	&VersionCommand{},
-	&OpenDoorCommand{},
 	&GrantCommand{},
 	&RevokeCommand{},
+	&RevokeAllCommand{},
+	&OpenDoorCommand{},
+	&GetCardsCommand{},
+	&GetSwipesCommand{},
 }
 
 func NewHelpCommand() *HelpCommand {
@@ -44,14 +47,6 @@ func (c *HelpCommand) Execute(u *uhppote.UHPPOTE) error {
 
 			case "set-address":
 				cmd = &SetAddressCommand{}
-
-			case "get-authorised":
-				cmd = &GetAuthorisedCommand{}
-
-			case "get-swipe":
-				cmd = &GetSwipesCommand{}
-
-			case "authorise":
 
 			default:
 				for _, c := range commands {
