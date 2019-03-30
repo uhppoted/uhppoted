@@ -35,11 +35,11 @@
 \date{\today}
 
 \pagestyle{fancy} 
-\lhead{\footnotesize UHPPOTE UTO0311 L0x}
+\lhead{\footnotesize UHPPOTE UTO0311 L0X}
 \chead{\footnotesize PROTOCOL DESCRIPTION}
 
-\lfoot{\footnotesize UHPPOTE-UT0311-L0x Rev. 0}
-\cfoot{\footnotesize CONFIDENTIAL}
+\lfoot{\footnotesize UHPPOTE-UT0311-L0X Rev. 0}
+\cfoot{\footnotesize UNCLASSIFIED}
 \rfoot{\footnotesize \thepage}
 
 \renewcommand{\footrulewidth}{0.4pt}
@@ -62,7 +62,7 @@
 \node[anchor=north]  (title)  at (8,12.5) 
   { \fontsize{16}{16}
     \selectfont
-    \textbf{UHPPOTE UTX031 L0x}
+    \textbf{UHPPOTE UTX031 L0X}
  };
 
 \node[anchor=north]  (subtitle)  at (8,11.25) 
@@ -83,7 +83,7 @@
 \begingroup\centering 
 \fontsize{16}{20}
 \selectfont
-\textbf{UHPPOTE UTO0311 L0x}
+\textbf{UHPPOTE UTO0311 L0X}
 \vspace{1cm}
 
 \fontsize{13}{16}
@@ -98,23 +98,46 @@
 
 \section*{Overview}
 
-Request:
+The UHPPOTE-UTO031-L0X protocol is a UDP packet protocol that provides the functionality required to:
 
-{ \begin{tikzpicture}[font=\scriptsize]
-  \draw [fill=bisque] (2,1) rectangle (4,5);
+\begin{itemize}  
+\item identify the UHPPOTE-UTO031-L0X controllers present on a TCP/IP network
+\item configure the controllers present on a TCP/IP network
+\item listen for access events from controllers present on a TCP/IP network
+\end{itemize}
+
+\textbf{
+}
+
+A request is 64 byte UDP packet with the following general format:
+
+{ \begin{tikzpicture}[]
+  \draw [] (0,0)    rectangle (16,1); 
+  \draw [] (0,0)    rectangle (1.2,1); 
+  \draw [] (1.2,0)    rectangle (2.7,1); 
+  \draw [] (2.7,0) rectangle (16,1); 
+  \draw (0.6,0.5) node [] { \large 0x17 }; 
+  \draw (1.95,0.5) node [] { \large CODE }; 
+  \draw (2.75,0.5) node [anchor=west] { \large PARAMETERS\ldots }; 
  \end{tikzpicture}
 }
 
-Reply:
+A response is 64 byte UDP packet with the following general format:
 
-{ \begin{tikzpicture}[font=\scriptsize]
-  \draw [fill=bisque] (2,1) rectangle (4,5);
+{ \begin{tikzpicture}[]
+  \draw [] (0,0)    rectangle (16,1); 
+  \draw [] (0,0)    rectangle (1.2,1); 
+  \draw [] (1.2,0)    rectangle (2.7,1); 
+  \draw [] (2.7,0) rectangle (16,1); 
+  \draw (0.6,0.5) node [] { \large 0x17 }; 
+  \draw (1.95,0.5) node [] { \large CODE }; 
+  \draw (2.75,0.5) node [anchor=west] { \large DATA\ldots }; 
  \end{tikzpicture}
 }
 
 Message elements
 
-{ \begin{tabular}{ | l | c | c | }
+{ \begin{tabular}{ | l | l | l | }
    \hline
    & TYPE & ENCODING \\ 
    \hline
@@ -126,24 +149,26 @@ Message elements
    \hline
    Time & HHmm & BCD \\ 
    \hline
-   IP Address  & ? & ? \\ 
+   IPv4  & N.N.N.N & binary[4] \\ 
+   \hline
+   MAC  & X.X.X.X.X & binary[6] \\ 
    \hline
    \end{tabular}
    \vspace{0.5cm}
 }
 
 
-{ \begin{tabular}{ | l | c | c | }
+{ \begin{tabular}{ | l | c | l | }
    \hline
-   COMMAND & CODE &  \\ 
+   COMMAND & CODE & DESCRIPTION \\ 
    \hline
-   get-devices &  &  \\ 
+   find-devices & 0x94 &  Broadcast command to identify all devices on a subnet \\ 
    \hline
    get-status &  &  \\ 
    \hline
    get-time &  &  \\ 
    \hline
-   get-authorised &  &  \\ 
+   get-cards &  &  Get the number of cards stored in the internal access list \\ 
    \hline
    get-swipes &  &  \\
    \hline
@@ -161,23 +186,27 @@ Message elements
    \vspace{0.5cm}
 }
 
-% -- get-devices
+% -- find-devices
 
-\section*{GET DEVICES}
+\section*{FIND DEVICES}
 
-<blurb>
+UDP broadcast command to identify all UHPPOTE-UTO031-L0X controllers present on the local TCP/IP network.
 
 REQUEST:
 
-{ \begin{tabular}{ | l | l | }
+{ \begin{tabular}{ | l | l | l | l | }
    \hline
-   COMMAND & \texttt{0xC0}\\ 
+   OFFSET & LENGTH & FIELD & VALUE \\ 
    \hline
-   MESSAGE ID & \texttt 16 bit message ID \\ 
+   0 & 1 & SOM & 0x17 \\ 
    \hline
-   SEQ NO & \texttt 16 bit message ID  \\ 
+   1 & 1 & CODE & 0x94 \\ 
    \hline
-   NONCE & \texttt{8 byte nonce value} \\
+   2 & 1 & PAD & 0x00 \\ 
+   \hline
+   3 & 1 & PAD & 0x00 \\ 
+   \hline
+   4 & 60 & PADDING & - \\ 
    \hline
    \end{tabular}
    \vspace{0.5cm}
@@ -185,18 +214,78 @@ REQUEST:
 
 RESPONSE:
 
-{ \begin{tabular}{ | l | l | }
+{ \begin{tabular}{ | l | l | l | l | }
    \hline
-   REPLY & \texttt{0xD0}\\ 
+   OFFSET & LENGTH & FIELD & VALUE \\ 
    \hline
-   MESSAGE ID & \texttt (message ID from request) \\ 
+   0 & 1 & SOM & 0x17 \\ 
    \hline
-   SEQ NO & \texttt 16 bit message ID  \\ 
+   1 & 1 & CODE & 0x94 \\ 
    \hline
-   NONCE & \texttt{8 byte nonce value}\\
+   2 & 1 & PAD & 0x00 \\ 
+   \hline
+   3 & 1 & PAD & 0x00 \\ 
+   \hline
+   4 & 4 & SERIAL NUMBER & uint32 \\ 
+   \hline
+   8 & 4 & IP ADDRESS & IPv4 \\ 
+   \hline
+   12 & 4 & SUBNET MASK & IPv4 \\ 
+   \hline
+   16 & 4 & GATEWAY ADDRESS & IPv4 \\ 
+   \hline
+   20 & 6 & MAC ADDRESS & MAC \\ 
+   \hline
+   26 & 2 & VERSION & VERSION \\ 
+   \hline
+   28 & 6 & DATE & DATE \\ 
+   \hline
+   34 & 30 & PADDING & - \\ 
    \hline
    \end{tabular}
    \vspace{0.5cm}
+}
+
+EXAMPLE:
+
+{ \begin{tikzpicture}[]
+  \draw [] (0,0)    rectangle (16,1); 
+  \draw [] (0,0)    rectangle (1,1); 
+  \draw [] (1,0)    rectangle (2,1); 
+  \draw [] (2,0)    rectangle (3,1); 
+  \draw [] (2,0)    rectangle (4,1); 
+  \draw [] (2,0)    rectangle (16,1); 
+  \draw (0.5,0.5) node [] { \large 17 }; 
+  \draw (1.5,0.5) node [] { \large 94 }; 
+  \draw (2.5,0.5) node [] { \large 00 }; 
+  \draw (3.5,0.5) node [] { \large 00 }; 
+ \end{tikzpicture}
+}
+
+{ \begin{tikzpicture}[]
+  \draw [] (0,0)    rectangle (16,1); 
+  \draw [] (0,0)    rectangle (1,1); 
+  \draw [] (1,0)    rectangle (2,1); 
+  \draw [] (2,0)    rectangle (3,1); 
+  \draw [] (2,0)    rectangle (4,1); 
+  \draw [] (4,0)    rectangle (5.8,1); 
+  \draw [] (5.8,0)    rectangle (7.7,1); 
+  \draw [] (7.7,0)    rectangle (9.15,1); 
+  \draw [] (9.15,0)    rectangle (11.1,1); 
+  \draw [] (11.1,0)    rectangle (12.4,1); 
+  \draw [] (12.4,0)    rectangle (14.1,1); 
+  \draw (0.5,0.5) node [] { \large 17 }; 
+  \draw (1.5,0.5) node [] { \large 94 }; 
+  \draw (2.5,0.5) node [] { \large 00 }; 
+  \draw (3.5,0.5) node [] { \large 00 }; 
+  \draw (4.1,0.5) node [anchor=west] { \small SERIAL \# }; 
+  \draw (5.9,0.5) node [anchor=west] { \small ADDRESS }; 
+  \draw (7.8,0.5) node [anchor=west] { \small MASK }; 
+  \draw (9.2,0.5) node [anchor=west] { \small GATEWAY }; 
+  \draw (11.2,0.5) node [anchor=west] { \small MAC }; 
+  \draw (12.4,0.5) node [anchor=west] { \small VERSION }; 
+  \draw (14.25,0.5) node [anchor=west] { \small DATE }; 
+ \end{tikzpicture}
 }
 
 \end{document}  
