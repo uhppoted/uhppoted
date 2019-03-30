@@ -27,13 +27,14 @@ Supported commands:
 - get-devices
 - get-status
 - get-time
-- get-authorised
+- get-cards
 - get-swipes
 - set-time
 - set-ip-address
 - grant
 - revoke
-- open
+- revoke-all
+- open-door
 
 ## uhppote-simulator
 
