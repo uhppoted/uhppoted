@@ -36,7 +36,7 @@ usage: build
 	./bin/uhppote-cli
 
 debug: build
-	./bin/uhppote-cli --bind $(LOCAL) help revoke
+	./bin/uhppote-cli --bind $(LOCAL) help get-cards
 
 help: build
 	./bin/uhppote-cli --bind $(LOCAL) help
@@ -53,8 +53,8 @@ get-status: build
 get-time: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug get-time 423187757
 
-get-authorised: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug get-authorised 423187757
+get-cards: build
+	./bin/uhppote-cli --bind $(LOCAL) --debug get-cards 423187757
 
 get-swipes: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug get-swipes 423187757 1
@@ -71,6 +71,9 @@ grant: build
 
 revoke: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug revoke 423187757 12345
+
+revoke-all: build
+	./bin/uhppote-cli --bind $(LOCAL) --debug revoke-all 423187757
 
 open: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug open 423187757 4

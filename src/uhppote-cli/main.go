@@ -67,8 +67,8 @@ func parse() (commands.Command, error) {
 		case "set-ip-address":
 			cmd, err = commands.NewSetAddressCommand()
 
-		case "get-authorised":
-			cmd, err = commands.NewGetAuthorisedCommand()
+		case "get-cards":
+			cmd, err = commands.NewGetCardsCommand()
 
 		case "get-swipes":
 			cmd, err = commands.NewGetSwipesCommand()
@@ -78,6 +78,9 @@ func parse() (commands.Command, error) {
 
 		case "revoke":
 			cmd, err = commands.NewRevokeCommand()
+
+		case "revoke-all":
+			cmd, err = commands.NewRevokeAllCommand()
 
 		case "open":
 			cmd, err = commands.NewOpenDoorCommand()
