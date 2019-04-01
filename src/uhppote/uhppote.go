@@ -6,11 +6,23 @@ import (
 	"net"
 	"regexp"
 	"time"
+	"uhppote/encoding"
+	"uhppote/messages"
 )
 
 type UHPPOTE struct {
 	BindAddress net.UDPAddr
 	Debug       bool
+}
+
+func (u *UHPPOTE) Exec(m messages.Message) ([]byte, error) {
+	request, err := uhppote.Marshal(m)
+
+	if err != nil {
+		return nil, makeErr(fmt.Sprintf("Error encoding request %v", m), err)
+	}
+
+	return u.Execute(*request)
 }
 
 func (u *UHPPOTE) Execute(cmd []byte) ([]byte, error) {
