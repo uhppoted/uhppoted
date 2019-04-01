@@ -7,10 +7,17 @@ import (
 	"uhppote/types"
 )
 
+type FindDevicesRequest struct {
+}
+
 type Search struct {
 	SOM     byte
 	MsgType byte
 	Device  types.Device
+}
+
+func NewFindDevicesRequest() (*FindDevicesRequest, error) {
+	return &FindDevicesRequest{}, nil
 }
 
 func NewSearch(msg []byte) (*Search, error) {
@@ -32,6 +39,22 @@ func NewSearch(msg []byte) (*Search, error) {
 	}
 
 	return &Search{msg[0], msg[1], device}, nil
+}
+
+func (m *FindDevicesRequest) Name() string {
+	return "FindDevicesRequest"
+}
+
+func (m *FindDevicesRequest) Code() byte {
+	return 0x94
+}
+
+func (m *Search) Name() string {
+	return "FindDevicesResponse"
+}
+
+func (m *Search) Code() byte {
+	return 0x94
 }
 
 func (s *Search) Encode() ([]byte, error) {

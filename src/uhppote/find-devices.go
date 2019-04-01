@@ -7,14 +7,13 @@ import (
 
 func (u *UHPPOTE) Search() ([]types.Device, error) {
 	devices := []types.Device{}
-	cmd := make([]byte, 64)
+	request, err := messages.NewFindDevicesRequest()
 
-	cmd[0] = 0x17
-	cmd[1] = 0x94
-	cmd[2] = 0x00
-	cmd[3] = 0x00
+	if err != nil {
+		return nil, err
+	}
 
-	reply, err := u.Execute(cmd)
+	reply, err := u.Exec(request)
 
 	if err != nil {
 		return nil, err

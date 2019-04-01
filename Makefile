@@ -6,12 +6,13 @@ all: test      \
 
 format: 
 	gofmt -w=true src/uhppote/*.go
+	gofmt -w=true src/uhppote/types/*.go
+	gofmt -w=true src/uhppote/messages/*.go
+	gofmt -w=true src/uhppote/encoding/*.go
 	gofmt -w=true src/uhppote-cli/*.go
 	gofmt -w=true src/uhppote-cli/commands/*.go
 	gofmt -w=true src/uhppote-simulator/*.go
 	gofmt -w=true src/uhppote-simulator/simulator/*.go
-	gofmt -w=true src/uhppote/types/*.go
-	gofmt -w=true src/uhppote/messages/*.go
 	gofmt -w=true src/encoding/bcd/*.go
 
 build: format
@@ -20,6 +21,7 @@ build: format
 
 test: build
 	go test src/uhppote/messages/*.go
+	go test src/uhppote/encoding/*.go
 	go test src/encoding/bcd/*.go
 
 benchmark: build

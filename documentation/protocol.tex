@@ -206,7 +206,7 @@ REQUEST:
    \hline
    3 & 1 & PAD & 0x00 \\ 
    \hline
-   4 & 60 & PADDING & - \\ 
+   4 & 60 & PADDING & 0x00 0x00 \ldots \\ 
    \hline
    \end{tabular}
    \vspace{0.5cm}
@@ -240,52 +240,67 @@ RESPONSE:
    \hline
    28 & 6 & DATE & DATE \\ 
    \hline
-   34 & 30 & PADDING & - \\ 
+   34 & 30 & PADDING & 0x00 0x00 \ldots \\ 
    \hline
    \end{tabular}
    \vspace{0.5cm}
 }
 
-EXAMPLE:
+Example:
 
-{ \begin{tikzpicture}[]
-  \draw [] (0,0)    rectangle (16,1); 
-  \draw [] (0,0)    rectangle (1,1); 
-  \draw [] (1,0)    rectangle (2,1); 
-  \draw [] (2,0)    rectangle (3,1); 
-  \draw [] (2,0)    rectangle (4,1); 
-  \draw [] (2,0)    rectangle (16,1); 
-  \draw (0.5,0.5) node [] { \large 17 }; 
-  \draw (1.5,0.5) node [] { \large 94 }; 
-  \draw (2.5,0.5) node [] { \large 00 }; 
-  \draw (3.5,0.5) node [] { \large 00 }; 
- \end{tikzpicture}
-}
+\texttt{{\color{blue}\textbf{17}} 
+{\color{red}\textbf{94}} 
+00 00 00 00 00 00  00 00 00 00 00 00 00 00}\newline
+\texttt{00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00}\newline
+\texttt{00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00}\newline
+\texttt{00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00}\newline
 
-{ \begin{tikzpicture}[]
-  \draw [] (0,0)    rectangle (16,1); 
-  \draw [] (0,0)    rectangle (1,1); 
-  \draw [] (1,0)    rectangle (2,1); 
-  \draw [] (2,0)    rectangle (3,1); 
-  \draw [] (2,0)    rectangle (4,1); 
-  \draw [] (4,0)    rectangle (5.8,1); 
-  \draw [] (5.8,0)    rectangle (7.7,1); 
-  \draw [] (7.7,0)    rectangle (9.15,1); 
-  \draw [] (9.15,0)    rectangle (11.1,1); 
-  \draw [] (11.1,0)    rectangle (12.4,1); 
-  \draw [] (12.4,0)    rectangle (14.1,1); 
-  \draw (0.5,0.5) node [] { \large 17 }; 
-  \draw (1.5,0.5) node [] { \large 94 }; 
-  \draw (2.5,0.5) node [] { \large 00 }; 
-  \draw (3.5,0.5) node [] { \large 00 }; 
-  \draw (4.1,0.5) node [anchor=west] { \small SERIAL \# }; 
-  \draw (5.9,0.5) node [anchor=west] { \small ADDRESS }; 
-  \draw (7.8,0.5) node [anchor=west] { \small MASK }; 
-  \draw (9.2,0.5) node [anchor=west] { \small GATEWAY }; 
-  \draw (11.2,0.5) node [anchor=west] { \small MAC }; 
-  \draw (12.4,0.5) node [anchor=west] { \small VERSION }; 
-  \draw (14.25,0.5) node [anchor=west] { \small DATE }; 
- \end{tikzpicture}
-}
+\texttt{{\color{blue}\textbf{17}} 
+{\color{red}\textbf{94}} 
+00 00 2d 55 39 19  c0 a8 01 7d ff ff ff 00}\newline
+\texttt{ff ff ff 00 00 66 19 39  55 2d 08 92 20 18 08 16}\newline
+\texttt{00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00}\newline
+\texttt{00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00}\newline
+
+
+%{ \begin{tikzpicture}[]
+%  \draw [] (0,0)    rectangle (16,1); 
+% \draw [] (0,0)    rectangle (1,1); 
+%  \draw [] (1,0)    rectangle (2,1); 
+%  \draw [] (2,0)    rectangle (3,1); 
+%  \draw [] (2,0)    rectangle (4,1); 
+%  \draw [] (2,0)    rectangle (16,1); 
+%  \draw (0.5,0.5) node [] { \large 17 }; 
+%  \draw (1.5,0.5) node [] { \large 94 }; 
+%  \draw (2.5,0.5) node [] { \large 00 }; 
+%  \draw (3.5,0.5) node [] { \large 00 }; 
+% \end{tikzpicture}
+%}
+
+%{ \begin{tikzpicture}[]
+%  \draw [] (0,0)    rectangle (16,1); 
+ % \draw [] (0,0)    rectangle (1,1); 
+%  \draw [] (1,0)    rectangle (2,1); 
+%  \draw [] (2,0)    rectangle (3,1); 
+%  \draw [] (2,0)    rectangle (4,1); 
+%  \draw [] (4,0)    rectangle (5.8,1); 
+%  \draw [] (5.8,0)    rectangle (7.7,1); 
+%  \draw [] (7.7,0)    rectangle (9.15,1); 
+%  \draw [] (9.15,0)    rectangle (11.1,1); 
+%  \draw [] (11.1,0)    rectangle (12.4,1); 
+%  \draw [] (12.4,0)    rectangle (14.1,1); 
+%  \draw (0.5,0.5) node [] { \large 17 }; 
+%  \draw (1.5,0.5) node [] { \large 94 }; 
+%  \draw (2.5,0.5) node [] { \large 00 }; 
+%  \draw (3.5,0.5) node [] { \large 00 }; 
+%  \draw (4.1,0.5) node [anchor=west] { \small SERIAL \# }; 
+%  \draw (5.9,0.5) node [anchor=west] { \small ADDRESS }; 
+%  \draw (7.8,0.5) node [anchor=west] { \small MASK }; 
+%  \draw (9.2,0.5) node [anchor=west] { \small GATEWAY }; 
+%  \draw (11.2,0.5) node [anchor=west] { \small MAC }; 
+%  \draw (12.4,0.5) node [anchor=west] { \small VERSION }; 
+%  \draw (14.25,0.5) node [anchor=west] { \small DATE }; 
+% \end{tikzpicture}
+%}
 
 \end{document}  
