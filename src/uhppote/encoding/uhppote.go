@@ -10,7 +10,6 @@ import (
 	"regexp"
 	"strconv"
 	"time"
-	"uhppote/messages"
 	"uhppote/types"
 )
 
@@ -24,17 +23,51 @@ var (
 	tDate    = reflect.TypeOf(types.Date{})
 )
 
-func Marshal(m messages.Message) (*[]byte, error) {
+var re = regexp.MustCompile(`offset:\s*([0-9]+)`)
+
+func Marshal(m interface{}) ([]byte, error) {
+	v := reflect.ValueOf(m)
+
+	if v.Type().Kind() == reflect.Ptr {
+		return marshal(v.Elem())
+	} else {
+		return marshal(reflect.Indirect(v))
+	}
+}
+
+func marshal(s reflect.Value) ([]byte, error) {
 	bytes := make([]byte, 64)
 
 	bytes[0] = 0x17
-	bytes[1] = m.Code
 
-	return &bytes, nil
+	if s.Kind() == reflect.Struct {
+		N := s.NumField()
+
+		for i := 0; i < N; i++ {
+			f := s.Field(i)
+			t := s.Type().Field(i)
+			tag := t.Tag.Get("uhppote")
+			matched := re.FindStringSubmatch(tag)
+
+			if matched != nil {
+				offset, _ := strconv.Atoi(matched[1])
+
+				switch t.Type {
+				case tByte:
+					bytes[offset] = byte(f.Uint())
+
+				default:
+					panic(errors.New(fmt.Sprintf("Cannot marshal field with type '%v'", t.Type)))
+				}
+			}
+		}
+	}
+
+	return bytes, nil
 }
 
 func Unmarshal(bytes []byte, m interface{}) error {
-	// ... validate message format
+	// Validate message format
 
 	if len(bytes) != 64 {
 		return errors.New(fmt.Sprintf("Invalid message length - expected 64 bytes, received %v", len(bytes)))
@@ -44,9 +77,8 @@ func Unmarshal(bytes []byte, m interface{}) error {
 		return errors.New(fmt.Sprintf("Invalid start of message - expected 0x17, received 0x%02X", bytes[0]))
 	}
 
-	// ... extract fields
+	// Unmarshall fields tagged with `uhppote:"offset:<offset>"`
 
-	re := regexp.MustCompile(`offset:\s*([0-9]+)`)
 	v := reflect.ValueOf(m)
 	s := v.Elem()
 

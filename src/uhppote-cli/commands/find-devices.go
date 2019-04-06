@@ -13,7 +13,7 @@ func NewListDevicesCommand() (*ListDevicesCommand, error) {
 }
 
 func (c *ListDevicesCommand) Execute(u *uhppote.UHPPOTE) error {
-	devices, err := u.Search()
+	devices, err := u.FindDevices()
 
 	if err == nil {
 		for _, device := range devices {

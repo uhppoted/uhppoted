@@ -8,7 +8,6 @@ import (
 	"regexp"
 	"testing"
 	"time"
-	"uhppote/messages"
 	"uhppote/types"
 )
 
@@ -24,18 +23,21 @@ var findDevicesRequest = []byte{
 }
 
 func TestMarshalFindDevicesRequest(t *testing.T) {
-	var request *messages.Message
+	request := struct {
+		MsgType byte `uhppote:"offset:1"`
+	}{
+		0x94,
+	}
 
-	request, _ = messages.NewFindDevicesRequest()
-	result, err := Marshal(*request)
+	m, err := Marshal(request)
 
 	if err != nil {
 		t.Errorf("Marshal(%s) returned unexpected error: %v", "FindDevicesRequest", err)
 		return
 	}
 
-	if !reflect.DeepEqual(*result, findDevicesRequest) {
-		t.Errorf("Invalid byte array for uhppote.Marshal(%s):\nExpected:\n%s\nReturned:\n%s", "FindDevicesRequest", print(findDevicesRequest), print(*result))
+	if !reflect.DeepEqual(m, findDevicesRequest) {
+		t.Errorf("Invalid byte array for uhppote.Marshal(%s):\nExpected:\n%s\nReturned:\n%s", "FindDevicesRequest", print(findDevicesRequest), print(m))
 		return
 	}
 }

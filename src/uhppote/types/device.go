@@ -13,8 +13,8 @@ type Device struct {
 	SubnetMask   net.IP
 	Gateway      net.IP
 	MacAddress   net.HardwareAddr
-	Version      string
-	Date         string
+	Version      Version
+	Date         Date
 }
 
 func (device *Device) String() string {
