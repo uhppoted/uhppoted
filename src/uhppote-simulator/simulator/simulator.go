@@ -7,7 +7,6 @@ import (
 	"net"
 	"regexp"
 	"time"
-	"uhppote/messages"
 )
 
 type Simulator struct {
@@ -114,12 +113,18 @@ func (s *Simulator) handle(bytes []byte) ([]byte, error) {
 	return []byte{}, errors.New(fmt.Sprintf("Invalid command %02X", bytes[1]))
 }
 
-func parse(bytes []byte) *messages.FindDevicesResponse {
+func parse(bytes []byte) interface{} {
 	fmt.Printf("%v %x %x\n", len(bytes), bytes[0], bytes[1])
 	if len(bytes) == 64 && bytes[0] == 0x17 {
 		switch bytes[1] {
 		case 0x94:
-			return &messages.FindDevicesResponse{}
+			request := struct {
+				MsgType byte `uhppote:"offset:1"`
+			}{
+				0x94,
+			}
+
+			return &request
 		}
 	}
 
@@ -129,7 +134,12 @@ func parse(bytes []byte) *messages.FindDevicesResponse {
 func (s *Simulator) search(bytes []byte) ([]byte, error) {
 	time.Sleep(100 * time.Millisecond)
 
-	msg := messages.FindDevicesResponse{}
+	msg := []byte{
+		0x17, 0x94, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0xc0, 0xa8, 0x01, 0x7d, 0xff, 0xff, 0xff, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x66, 0x19, 0x39, 0x55, 0x2d, 0x08, 0x92, 0x20, 0x18, 0x08, 0x16,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	}
 
-	return msg.Encode()
+	return msg, nil
 }

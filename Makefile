@@ -20,9 +20,10 @@ build: format
 	go install uhppote-simulator
 
 test: build
-	go test src/uhppote/messages/*.go
-	go test src/uhppote/encoding/*.go
-	go test src/encoding/bcd/*.go
+	go clean -testcache
+	go test -count=1 src/uhppote/messages/*.go
+	go test -count=1 src/uhppote/encoding/*.go
+	go test -count=1 src/encoding/bcd/*.go
 
 benchmark: build
 	go test src/encoding/bcd/*.go -bench .
