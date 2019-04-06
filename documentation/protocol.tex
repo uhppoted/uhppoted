@@ -168,7 +168,11 @@ Message elements
    \hline
    get-time &  &  \\ 
    \hline
-   get-cards &  &  Get the number of cards stored in the internal access list \\ 
+   get-cards & 0x58  &  Retrieves the number of card records stored in the internal access list \\ 
+   \hline
+   get-card-by-number & 0x5A &  Retrieves the card record for the card number from the internal access list \\ 
+   \hline
+   get-card-by-index & 0x5C &  Retrieves the card record at the index in the internal access list \\ 
    \hline
    get-swipes &  &  \\
    \hline

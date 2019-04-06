@@ -14,6 +14,7 @@ import (
 )
 
 var (
+	tBool    = reflect.TypeOf(bool(false))
 	tByte    = reflect.TypeOf(byte(0))
 	tUint16  = reflect.TypeOf(uint16(0))
 	tUint32  = reflect.TypeOf(uint32(0))
@@ -98,6 +99,15 @@ func Unmarshal(bytes []byte, m interface{}) error {
 				offset, _ := strconv.Atoi(matched[1])
 
 				switch t.Type {
+				case tBool:
+					if bytes[offset] == 0x01 {
+						f.SetBool(true)
+					} else if bytes[offset] == 0x00 {
+						f.SetBool(false)
+					} else {
+						return errors.New(fmt.Sprintf("Invalid boolean value in message: %02X:", bytes[offset]))
+					}
+
 				case tByte:
 					f.SetUint(uint64(bytes[offset]))
 
