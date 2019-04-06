@@ -6,6 +6,8 @@
 4. Consistently include device serial number in output e.g. of get-time
 5. Document protocol
 6. Commands:
+   * find-devices 
+     * Handle multiple replies 
    * get_auth_rec
    * get_recordIndex
    * set_recordIndex
