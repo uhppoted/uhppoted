@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"uhppote/encoding"
 	"uhppote/types"
 )
 
@@ -26,17 +25,7 @@ func (u *UHPPOTE) FindDevices() ([]types.Device, error) {
 		Date         types.Date       `uhppote:"offset:28"`
 	}{}
 
-	p, err := uhppote.Marshal(request)
-	if err != nil {
-		return nil, err
-	}
-
-	q, err := u.Execute(p)
-	if err != nil {
-		return nil, err
-	}
-
-	err = uhppote.Unmarshal(q, &reply)
+	err := u.Exec(request, &reply)
 	if err != nil {
 		return nil, err
 	}

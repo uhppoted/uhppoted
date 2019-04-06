@@ -56,6 +56,9 @@ func marshal(s reflect.Value) ([]byte, error) {
 				case tByte:
 					bytes[offset] = byte(f.Uint())
 
+				case tUint32:
+					binary.LittleEndian.PutUint32(bytes[offset:offset+4], uint32(f.Uint()))
+
 				default:
 					panic(errors.New(fmt.Sprintf("Cannot marshal field with type '%v'", t.Type)))
 				}

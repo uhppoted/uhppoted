@@ -19,10 +19,10 @@ func NewGetCardsCommand() (*GetCardsCommand, error) {
 }
 
 func (c *GetCardsCommand) Execute(u *uhppote.UHPPOTE) error {
-	authorised, err := u.GetAuthRec(c.SerialNumber)
+	N, err := u.GetCardCount(c.SerialNumber)
 
 	if err == nil {
-		fmt.Printf("%v\n", authorised)
+		fmt.Printf("%v\n", N)
 	}
 
 	return err

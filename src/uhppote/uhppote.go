@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"time"
 	"uhppote/encoding"
-	"uhppote/messages"
 )
 
 type UHPPOTE struct {
@@ -15,14 +14,20 @@ type UHPPOTE struct {
 	Debug       bool
 }
 
-func (u *UHPPOTE) Exec(m messages.Message) ([]byte, error) {
-	request, err := uhppote.Marshal(m)
-
+func (u *UHPPOTE) Exec(request, reply interface{}) error {
+	p, err := uhppote.Marshal(request)
 	if err != nil {
-		return nil, makeErr(fmt.Sprintf("Error encoding request %v", m), err)
+		return err
 	}
 
-	return u.Execute(request)
+	q, err := u.Execute(p)
+
+	err = uhppote.Unmarshal(q, reply)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (u *UHPPOTE) Execute(cmd []byte) ([]byte, error) {
