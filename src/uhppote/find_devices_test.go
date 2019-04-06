@@ -1,4 +1,4 @@
-package messages
+package uhppote
 
 import (
 	"net"
@@ -9,7 +9,27 @@ import (
 	"uhppote/types"
 )
 
-func TestParseFindResponse(t *testing.T) {
+func TestMarshalFindDevicesRequest(t *testing.T) {
+	request := struct {
+		MsgType byte `uhppote:"offset:1"`
+	}{
+		0x94,
+	}
+
+	m, err := Marshal(request)
+
+	if err != nil {
+		t.Errorf("Marshal(%s) returned unexpected error: %v", "FindDevicesRequest", err)
+		return
+	}
+
+	if !reflect.DeepEqual(m, findDevicesRequest) {
+		t.Errorf("Invalid byte array for uhppote.Marshal(%s):\nExpected:\n%s\nReturned:\n%s", "FindDevicesRequest", print(findDevicesRequest), print(m))
+		return
+	}
+}
+
+func TestUnmarshalFindDevicesResponse(t *testing.T) {
 	message := []byte{
 		0x17, 0x94, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0xc0, 0xa8, 0x00, 0x00, 0xff, 0xff, 0xff, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x66, 0x19, 0x39, 0x55, 0x2d, 0x08, 0x92, 0x20, 0x18, 0x08, 0x16,
