@@ -19,9 +19,12 @@ dist: format
 	mkdir -p dist/windows
 	mkdir -p dist/macosx
 	mkdir -p dist/linux
-	env GOOS=windows GOARCH=amd64  go build uhppote-cli; mv uhppote-cli.exe dist/windows
-	env GOOS=darwin  GOARCH=amd64  go build uhppote-cli; mv uhppote-cli dist/macosx
-	env GOOS=linux   GOARCH=amd64  go build uhppote-cli; mv uhppote-cli dist/linux
+	env GOOS=windows GOARCH=amd64  go build uhppote-cli;       mv uhppote-cli.exe dist/windows
+	env GOOS=darwin  GOARCH=amd64  go build uhppote-cli;       mv uhppote-cli dist/macosx
+	env GOOS=linux   GOARCH=amd64  go build uhppote-cli;       mv uhppote-cli dist/linux
+	env GOOS=windows GOARCH=amd64  go build uhppote-simulator; mv uhppote-simulator.exe dist/windows
+	env GOOS=darwin  GOARCH=amd64  go build uhppote-simulator; mv uhppote-simulator dist/macosx
+	env GOOS=linux   GOARCH=amd64  go build uhppote-simulator; mv uhppote-simulator dist/linux
 
 build: format
 	go install uhppote-cli
