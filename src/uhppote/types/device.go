@@ -5,6 +5,8 @@ import (
 	"net"
 )
 
+type Version uint16
+
 type Device struct {
 	SerialNumber uint32
 	IpAddress    net.IP

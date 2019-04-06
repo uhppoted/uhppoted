@@ -7,7 +7,9 @@ import (
 	"reflect"
 	"regexp"
 	"testing"
+	"time"
 	"uhppote/messages"
+	"uhppote/types"
 )
 
 var findDevicesRequest = []byte{
@@ -39,8 +41,6 @@ func TestMarshalFindDevicesRequest(t *testing.T) {
 }
 
 func TestUnmarshal(t *testing.T) {
-	MAC, _ := net.ParseMAC("00:66:19:39:55:2d")
-	version := []byte{0x08, 0x92}
 	message := []byte{
 		0x17, 0x94, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0xc0, 0xa8, 0x00, 0x00, 0xff, 0xff, 0xff, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x66, 0x19, 0x39, 0x55, 0x2d, 0x08, 0x92, 0x20, 0x18, 0x08, 0x16,
@@ -55,7 +55,8 @@ func TestUnmarshal(t *testing.T) {
 		SubnetMask   net.IP           `uhppote:"offset:12"`
 		Gateway      net.IP           `uhppote:"offset:16"`
 		MacAddress   net.HardwareAddr `uhppote:"offset:20"`
-		Version      [2]byte          `uhppote:offset:26"`
+		Version      types.Version    `uhppote:"offset:26"`
+		Date         types.Date       `uhppote:"offset:28"`
 	}{}
 
 	err := Unmarshal(message, &reply)
@@ -85,17 +86,19 @@ func TestUnmarshal(t *testing.T) {
 		t.Errorf("Expected subnet mask '%v', got: '%v'\n", net.IPv4(0, 0, 0, 0), reply.Gateway)
 	}
 
+	MAC, _ := net.ParseMAC("00:66:19:39:55:2d")
 	if !reflect.DeepEqual(reply.MacAddress, MAC) {
 		t.Errorf("Expected MAC address '%v', got: '%v'\n", MAC, reply.MacAddress)
 	}
 
-	if !reflect.DeepEqual(reply.Version, version) {
-		t.Errorf("Expected version '%v', got: '%v'\n", version, reply.Version)
+	if reply.Version != 0x0892 {
+		t.Errorf("Expected version '0x%04X', got: '0x%04X'\n", 0x0892, reply.Version)
 	}
 
-	//if reply.Device.Date != "2018-08-16" {
-	//	t.Errorf("SearchFrom returned incorrect 'date' from valid message: %v\n", reply.Device.Date)
-	//}
+	date, _ := time.ParseInLocation("20060102", "20180816", time.Local)
+	if reply.Date.Date != date {
+		t.Errorf("Expected date '%v', got: '%v'\n", date, reply.Date)
+	}
 }
 
 func print(m []byte) string {
