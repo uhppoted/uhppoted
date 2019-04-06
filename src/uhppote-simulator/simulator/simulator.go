@@ -114,12 +114,12 @@ func (s *Simulator) handle(bytes []byte) ([]byte, error) {
 	return []byte{}, errors.New(fmt.Sprintf("Invalid command %02X", bytes[1]))
 }
 
-func parse(bytes []byte) messages.Message {
+func parse(bytes []byte) *messages.FindDevicesResponse {
 	fmt.Printf("%v %x %x\n", len(bytes), bytes[0], bytes[1])
 	if len(bytes) == 64 && bytes[0] == 0x17 {
 		switch bytes[1] {
 		case 0x94:
-			return &messages.Search{}
+			return &messages.FindDevicesResponse{}
 		}
 	}
 
@@ -129,7 +129,7 @@ func parse(bytes []byte) messages.Message {
 func (s *Simulator) search(bytes []byte) ([]byte, error) {
 	time.Sleep(100 * time.Millisecond)
 
-	msg := messages.Search{}
+	msg := messages.FindDevicesResponse{}
 
 	return msg.Encode()
 }

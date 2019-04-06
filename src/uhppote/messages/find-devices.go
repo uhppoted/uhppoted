@@ -7,20 +7,17 @@ import (
 	"uhppote/types"
 )
 
-type FindDevicesRequest struct {
-}
-
-type Search struct {
+type FindDevicesResponse struct {
 	SOM     byte
 	MsgType byte
 	Device  types.Device
 }
 
-func NewFindDevicesRequest() (*FindDevicesRequest, error) {
-	return &FindDevicesRequest{}, nil
+func NewFindDevicesRequest() (*Message, error) {
+	return &Message{0x94, []Field{}}, nil
 }
 
-func NewSearch(msg []byte) (*Search, error) {
+func NewFindDevicesResponse(msg []byte) (*FindDevicesResponse, error) {
 	serialNumber := binary.LittleEndian.Uint32(msg[4:8])
 	ipAddress := net.IPv4(msg[8], msg[9], msg[10], msg[11])
 	subnetMask := net.IPv4(msg[12], msg[13], msg[14], msg[15])
@@ -38,26 +35,10 @@ func NewSearch(msg []byte) (*Search, error) {
 		date,
 	}
 
-	return &Search{msg[0], msg[1], device}, nil
+	return &FindDevicesResponse{msg[0], msg[1], device}, nil
 }
 
-func (m *FindDevicesRequest) Name() string {
-	return "FindDevicesRequest"
-}
-
-func (m *FindDevicesRequest) Code() byte {
-	return 0x94
-}
-
-func (m *Search) Name() string {
-	return "FindDevicesResponse"
-}
-
-func (m *Search) Code() byte {
-	return 0x94
-}
-
-func (s *Search) Encode() ([]byte, error) {
+func (s *FindDevicesResponse) Encode() ([]byte, error) {
 	reply := []byte{
 		0x17, 0x94, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0xc0, 0xa8, 0x01, 0x7d, 0xff, 0xff, 0xff, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x66, 0x19, 0x39, 0x55, 0x2d, 0x08, 0x92, 0x20, 0x18, 0x08, 0x16,

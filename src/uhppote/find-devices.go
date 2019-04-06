@@ -13,13 +13,13 @@ func (u *UHPPOTE) Search() ([]types.Device, error) {
 		return nil, err
 	}
 
-	reply, err := u.Exec(request)
+	reply, err := u.Exec(*request)
 
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := messages.NewSearch(reply)
+	result, err := messages.NewFindDevicesResponse(reply)
 
 	if err != nil {
 		return nil, err
