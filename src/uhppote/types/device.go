@@ -18,7 +18,7 @@ type Device struct {
 }
 
 func (device *Device) String() string {
-	return fmt.Sprintf("%v %v %v %v %v %v %v",
+	return fmt.Sprintf("%v %v %v %v %v %04X %s",
 		device.SerialNumber,
 		device.IpAddress,
 		device.SubnetMask,

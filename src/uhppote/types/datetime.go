@@ -14,6 +14,10 @@ type DateTime struct {
 	DateTime time.Time
 }
 
+func (d Date) String() string {
+	return d.Date.Format("2006-01-02")
+}
+
 func (d *DateTime) String() string {
 	return d.DateTime.Format("2006-01-02 15:04:05")
 }
@@ -40,10 +44,6 @@ func (d *DateTime) Encode(bytes []byte) {
 	} else {
 		copy(bytes, *encoded)
 	}
-}
-
-func (d *Date) String() string {
-	return d.Date.Format("2006-01-02")
 }
 
 func (d Date) Encode(bytes []byte) {
