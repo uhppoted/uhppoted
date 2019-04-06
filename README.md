@@ -17,6 +17,13 @@ The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Acc
 
 ## Installation
 
+## uhppote
+
+Supported commands:
+- FindDevices
+- GetCards
+- GetCardByIndex
+
 ## uhppote-cli
 
 Usage: *uhppote-cli [--bind <address:port>] [--debug] \<command\> \<command options\>*

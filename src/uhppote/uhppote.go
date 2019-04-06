@@ -87,7 +87,5 @@ func (u *UHPPOTE) Execute(cmd []byte) ([]byte, error) {
 }
 
 func close(connection net.Conn) {
-	fmt.Println(" ... closing connection")
-
 	connection.Close()
 }

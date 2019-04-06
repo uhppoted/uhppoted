@@ -70,7 +70,7 @@ set-address: build
 	./bin/uhppote-cli -debug set-ip-address 423187757 '192.168.1.125' '255.255.255.0' '0.0.0.0'
 
 grant: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug grant 423187757 12345 2019-01-01 2019-12-31 1,2,3,4
+	./bin/uhppote-cli --bind $(LOCAL) --debug grant 423187757 12345 2019-01-01 2019-12-31 1,4
 
 revoke: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug revoke 423187757 12345
