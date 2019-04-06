@@ -48,7 +48,8 @@ version: build
 	./bin/uhppote-cli version
 
 get-devices: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug get-devices
+	#./bin/uhppote-cli --bind $(LOCAL) --debug get-devices
+	./bin/uhppote-cli --bind "0.0.0.0:51234" --debug get-devices
 
 get-status: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug get-status 423187757
