@@ -1,4 +1,7 @@
+DEBUG = "--debug"
 LOCAL = "192.168.1.100:51234"
+CARD = "6154412"
+SERIALNO = "423187757"
 
 all: test      \
 	 benchmark \
@@ -32,6 +35,7 @@ build: format
 
 test: build
 	go clean -testcache
+	go test -count=1 src/uhppote/*.go
 	go test -count=1 src/uhppote/messages/*.go
 	go test -count=1 src/uhppote/encoding/*.go
 	go test -count=1 src/encoding/bcd/*.go
@@ -50,7 +54,7 @@ usage: build
 	./bin/uhppote-cli
 
 debug: build
-	./bin/uhppote-cli --bind "0.0.0.0:51234" --debug get-devices
+	./bin/uhppote-cli --bind $(LOCAL) --debug help get-card
 
 help: build
 	./bin/uhppote-cli --bind $(LOCAL) help
@@ -68,7 +72,10 @@ get-time: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug get-time 423187757
 
 get-cards: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug get-cards 423187757
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-cards 423187757
+
+get-card: build
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-card $(SERIALNO) $(CARD)
 
 get-swipes: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug get-swipes 423187757 1
@@ -84,7 +91,7 @@ grant: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug grant 423187757 12345 2019-01-01 2019-12-31 1,4
 
 revoke: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug revoke 423187757 12345
+	./bin/uhppote-cli --bind $(LOCAL) --debug revoke 423187757 615441
 
 revoke-all: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug revoke-all 423187757

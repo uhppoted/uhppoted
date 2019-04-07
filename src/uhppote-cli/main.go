@@ -70,6 +70,9 @@ func parse() (commands.Command, error) {
 		case "get-cards":
 			cmd, err = commands.NewGetCardsCommand()
 
+		case "get-card":
+			cmd, err = commands.NewGetCardCommand()
+
 		case "get-swipes":
 			cmd, err = commands.NewGetSwipesCommand()
 
