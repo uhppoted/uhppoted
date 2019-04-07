@@ -35,7 +35,7 @@ func (u *UHPPOTE) FindDevices() ([]types.Device, error) {
 	}
 
 	if reply.MsgType != 0x94 {
-		return nil, errors.New(fmt.Sprint("FindDevices returned incorrect message type: %02x\n", reply.MsgType))
+		return nil, errors.New(fmt.Sprintf("FindDevices returned incorrect message type: %02x\n", reply.MsgType))
 	}
 
 	devices := []types.Device{}
