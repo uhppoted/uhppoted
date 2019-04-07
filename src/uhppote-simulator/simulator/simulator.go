@@ -7,11 +7,21 @@ import (
 	"net"
 	"regexp"
 	"time"
+	"uhppote"
+	codec "uhppote/encoding"
+	"uhppote/types"
 )
 
 type Simulator struct {
-	Interrupt chan int
-	Debug     bool
+	Interrupt    chan int
+	Debug        bool
+	SerialNumber uint32
+	IpAddress    net.IP
+	SubnetMask   net.IP
+	Gateway      net.IP
+	MacAddress   net.HardwareAddr
+	Version      types.Version
+	Date         types.Date
 }
 
 func (s *Simulator) Stop() {
@@ -105,7 +115,7 @@ func (s *Simulator) handle(bytes []byte) ([]byte, error) {
 
 	switch bytes[1] {
 	case 0x94:
-		return s.search(bytes)
+		return s.find(bytes)
 	default:
 		return []byte{}, errors.New(fmt.Sprintf("Invalid command %02X", bytes[1]))
 	}
@@ -113,33 +123,24 @@ func (s *Simulator) handle(bytes []byte) ([]byte, error) {
 	return []byte{}, errors.New(fmt.Sprintf("Invalid command %02X", bytes[1]))
 }
 
-func parse(bytes []byte) interface{} {
-	fmt.Printf("%v %x %x\n", len(bytes), bytes[0], bytes[1])
-	if len(bytes) == 64 && bytes[0] == 0x17 {
-		switch bytes[1] {
-		case 0x94:
-			request := struct {
-				MsgType byte `uhppote:"offset:1"`
-			}{
-				0x94,
-			}
-
-			return &request
-		}
-	}
-
-	return nil
-}
-
-func (s *Simulator) search(bytes []byte) ([]byte, error) {
+func (s *Simulator) find(bytes []byte) ([]byte, error) {
 	time.Sleep(100 * time.Millisecond)
 
-	msg := []byte{
-		0x17, 0x94, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0xc0, 0xa8, 0x01, 0x7d, 0xff, 0xff, 0xff, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x66, 0x19, 0x39, 0x55, 0x2d, 0x08, 0x92, 0x20, 0x18, 0x08, 0x16,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	response := uhppote.FindDevicesResponse{
+		MsgType:      0x94,
+		SerialNumber: s.SerialNumber,
+		IpAddress:    s.IpAddress,
+		SubnetMask:   s.SubnetMask,
+		Gateway:      s.Gateway,
+		MacAddress:   s.MacAddress,
+		Version:      s.Version,
+		Date:         s.Date,
 	}
 
-	return msg, nil
+	reply, err := codec.Marshal(response)
+	if err != nil {
+		return nil, err
+	}
+
+	return reply, nil
 }
