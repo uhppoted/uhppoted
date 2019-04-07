@@ -54,7 +54,7 @@ usage: build
 	./bin/uhppote-cli
 
 debug: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug help get-card
+	./bin/uhppote-cli --bind $(LOCAL) --debug help get-devices
 
 help: build
 	./bin/uhppote-cli --bind $(LOCAL) help

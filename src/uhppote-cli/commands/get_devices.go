@@ -5,14 +5,14 @@ import (
 	"uhppote"
 )
 
-type ListDevicesCommand struct {
+type GetDevicesCommand struct {
 }
 
-func NewListDevicesCommand() (*ListDevicesCommand, error) {
-	return &ListDevicesCommand{}, nil
+func NewGetDevicesCommand() (*GetDevicesCommand, error) {
+	return &GetDevicesCommand{}, nil
 }
 
-func (c *ListDevicesCommand) Execute(u *uhppote.UHPPOTE) error {
+func (c *GetDevicesCommand) Execute(u *uhppote.UHPPOTE) error {
 	devices, err := u.FindDevices()
 
 	if err == nil {
@@ -24,12 +24,12 @@ func (c *ListDevicesCommand) Execute(u *uhppote.UHPPOTE) error {
 	return err
 }
 
-func (c *ListDevicesCommand) CLI() string {
+func (c *GetDevicesCommand) CLI() string {
 	return "get-devices"
 }
 
-func (c *ListDevicesCommand) Help() {
-	fmt.Println("Usage: uhppote-cli [options] list-devices [command options]")
+func (c *GetDevicesCommand) Help() {
+	fmt.Println("Usage: uhppote-cli [options] get-devices [command options]")
 	fmt.Println()
 	fmt.Println(" Searches the local network for UHPPOTE access control boards reponding to a poll")
 	fmt.Println(" on the default UDP port 60000. Returns a list of boards one per line in the format:")

@@ -23,6 +23,7 @@ Supported commands:
 - FindDevices
 - GetCards
 - GetCardByIndex
+- GetCardById
 
 ## uhppote-cli
 
@@ -35,6 +36,7 @@ Supported commands:
 - get-status
 - get-time
 - get-cards
+- get-card
 - get-swipes
 - set-time
 - set-ip-address

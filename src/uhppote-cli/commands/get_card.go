@@ -25,19 +25,11 @@ func NewGetCardCommand() (*GetCardCommand, error) {
 }
 
 func (c *GetCardCommand) Execute(u *uhppote.UHPPOTE) error {
-	N, err := u.GetCards(c.SerialNumber)
-
+	record, err := u.GetCardById(c.SerialNumber, c.CardNumber)
 	if err != nil {
 		return err
 	}
-
-	for index := uint32(0); index < N.Records; index++ {
-		record, err := u.GetCardByIndex(c.SerialNumber, index+1)
-		if err != nil {
-			return err
-		}
-		fmt.Printf("%v\n", record)
-	}
+	fmt.Printf("%v\n", record)
 
 	return nil
 }
