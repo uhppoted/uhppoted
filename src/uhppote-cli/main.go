@@ -53,7 +53,7 @@ func parse() (commands.Command, error) {
 			cmd = commands.NewVersionCommand(VERSION)
 
 		case "get-devices":
-			cmd, err = commands.NewListDevicesCommand()
+			cmd, err = commands.NewGetDevicesCommand()
 
 		case "get-status":
 			cmd, err = commands.NewGetStatusCommand()

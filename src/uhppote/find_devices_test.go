@@ -23,7 +23,7 @@ func TestMarshalFindDevicesRequest(t *testing.T) {
 	m, err := uhppote.Marshal(request)
 
 	if err != nil {
-		t.Errorf("Marshal(%s) returned unexpected error: %v", "FindDevicesRequest", err)
+		t.Errorf("Unexpected error: %v", err)
 		return
 	}
 
@@ -46,40 +46,40 @@ func TestUnmarshalFindDevicesResponse(t *testing.T) {
 	err := uhppote.Unmarshal(message, &reply)
 
 	if err != nil {
-		t.Errorf("Fins returned error from valid message: %v\n", err)
+		t.Errorf("Unexpected error: %v\n", err)
 	}
 
 	if reply.MsgType != 0x94 {
-		t.Errorf("Fins returned incorrect 'message type' from valid message: %02x\n", reply.MsgType)
+		t.Errorf("Incorrect 'message type' from valid message: %02x\n", reply.MsgType)
 	}
 
 	if reply.SerialNumber != 423187757 {
-		t.Errorf("Fins returned incorrect 'serial number' from valid message: %v\n", reply.SerialNumber)
+		t.Errorf("Incorrect 'serial number' from valid message: %v\n", reply.SerialNumber)
 	}
 
 	if !reflect.DeepEqual(reply.IpAddress, net.IPv4(192, 168, 0, 0)) {
-		t.Errorf("Fins returned incorrect 'IP address' from valid message: %v\n", reply.IpAddress)
+		t.Errorf("Incorrect 'IP address' from valid message: %v\n", reply.IpAddress)
 	}
 
 	if !reflect.DeepEqual(reply.SubnetMask, net.IPv4(255, 255, 255, 0)) {
-		t.Errorf("Fins returned incorrect 'subnet mask' from valid message: %v\n", reply.SubnetMask)
+		t.Errorf("Incorrect 'subnet mask' from valid message: %v\n", reply.SubnetMask)
 	}
 
 	if !reflect.DeepEqual(reply.Gateway, net.IPv4(0, 0, 0, 0)) {
-		t.Errorf("Fins returned incorrect 'gateway' from valid message: %v\n", reply.Gateway)
+		t.Errorf("Incorrect 'gateway' from valid message: %v\n", reply.Gateway)
 	}
 
 	MAC, _ := net.ParseMAC("00:66:19:39:55:2d")
 	if !reflect.DeepEqual(reply.MacAddress, MAC) {
-		t.Errorf("Fins returned incorrect 'MAC address' from valid message: %v\n", reply.MacAddress)
+		t.Errorf("Incorrect 'MAC address' from valid message: %v\n", reply.MacAddress)
 	}
 
 	if reply.Version != 0x0892 {
-		t.Errorf("Fins returned incorrect 'version' from valid message: %v\n", reply.Version)
+		t.Errorf("Incorrect 'version' from valid message: %v\n", reply.Version)
 	}
 
 	date, _ := time.ParseInLocation("20060102", "20180816", time.Local)
 	if reply.Date.Date != date {
-		t.Errorf("Fins returned incorrect 'date' from valid message: %v\n", reply.Date)
+		t.Errorf("Incorrect 'date' from valid message: %v\n", reply.Date)
 	}
 }

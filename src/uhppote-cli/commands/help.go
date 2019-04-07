@@ -12,12 +12,14 @@ type HelpCommand struct {
 
 var commands = []Command{
 	&VersionCommand{},
+	&GetDevicesCommand{},
+	&GetCardsCommand{},
+	&GetCardCommand{},
+	&GetSwipesCommand{},
 	&GrantCommand{},
 	&RevokeCommand{},
 	&RevokeAllCommand{},
 	&OpenDoorCommand{},
-	&GetCardsCommand{},
-	&GetSwipesCommand{},
 }
 
 func NewHelpCommand() *HelpCommand {
@@ -32,9 +34,6 @@ func (c *HelpCommand) Execute(u *uhppote.UHPPOTE) error {
 			switch flag.Arg(1) {
 			case "commands":
 				helpCommands()
-
-			case "list-devices":
-				cmd = &ListDevicesCommand{}
 
 			case "get-status":
 				cmd = &GetStatusCommand{}
