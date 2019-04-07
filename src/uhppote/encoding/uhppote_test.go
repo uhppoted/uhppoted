@@ -13,22 +13,29 @@ import (
 
 func TestMarshal(t *testing.T) {
 	expected := []byte{
-		0x17, 0x58, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x17, 0x58, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0xc0, 0xa8, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x66, 0x19, 0x39, 0x55, 0x2d, 0x08, 0x92, 0x20, 0x18, 0x08, 0x16, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	}
 
+	mac, _ := net.ParseMAC("00:66:19:39:55:2d")
+	date, _ := time.ParseInLocation("20060102", "20180816", time.Local)
+
 	request := struct {
-		MsgType      byte   `uhppote:"offset:1"`
-		SerialNumber uint32 `uhppote:"offset:4"`
+		MsgType    byte             `uhppote:"offset:1"`
+		Uint32     uint32           `uhppote:"offset:4"`
+		Address    net.IP           `uhppote:"offset:8"`
+		MacAddress net.HardwareAddr `uhppote:"offset:16"`
+		Version    types.Version    `uhppote:"offset:22"`
+		Date       types.Date       `uhppote:"offset:24"`
 	}{
-		0x58,
-		423187757,
+		MsgType:    0x58,
+		Uint32:     423187757,
+		Address:    net.IPv4(192, 168, 1, 2),
+		MacAddress: mac,
+		Version:    0x0892,
+		Date:       types.Date{date},
 	}
 
 	m, err := Marshal(request)
@@ -53,16 +60,16 @@ func TestUnmarshal(t *testing.T) {
 	}
 
 	reply := struct {
-		Code         byte             `uhppote:"offset:1"`
-		SerialNumber uint32           `uhppote:"offset:4"`
-		IpAddress    net.IP           `uhppote:"offset:8"`
-		SubnetMask   net.IP           `uhppote:"offset:12"`
-		Gateway      net.IP           `uhppote:"offset:16"`
-		MacAddress   net.HardwareAddr `uhppote:"offset:20"`
-		Version      types.Version    `uhppote:"offset:26"`
-		Date         types.Date       `uhppote:"offset:28"`
-		Door1        bool             `uhppote:"offset:32"`
-		Door2        bool             `uhppote:"offset:33"`
+		MsgType    byte             `uhppote:"offset:1"`
+		Uint32     uint32           `uhppote:"offset:4"`
+		Address    net.IP           `uhppote:"offset:8"`
+		SubnetMask net.IP           `uhppote:"offset:12"`
+		Gateway    net.IP           `uhppote:"offset:16"`
+		MacAddress net.HardwareAddr `uhppote:"offset:20"`
+		Version    types.Version    `uhppote:"offset:26"`
+		Date       types.Date       `uhppote:"offset:28"`
+		Door1      bool             `uhppote:"offset:32"`
+		Door2      bool             `uhppote:"offset:33"`
 	}{}
 
 	err := Unmarshal(message, &reply)
@@ -72,16 +79,16 @@ func TestUnmarshal(t *testing.T) {
 		return
 	}
 
-	if reply.Code != 0x94 {
-		t.Errorf("Expected command code 0x%02X, got: 0x%02X\n", 0x94, reply.Code)
+	if reply.MsgType != 0x94 {
+		t.Errorf("Expected 'byte':0x%02X, got: 0x%02X\n", 0x94, reply.MsgType)
 	}
 
-	if reply.SerialNumber != 423187757 {
-		t.Errorf("Expected serial number %v, got: %v\n", 423187757, reply.SerialNumber)
+	if reply.Uint32 != 423187757 {
+		t.Errorf("Expected 'uint32':%v, got: %v\n", 423187757, reply.Uint32)
 	}
 
-	if !reflect.DeepEqual(reply.IpAddress, net.IPv4(192, 168, 0, 0)) {
-		t.Errorf("Expected IP address '%v', got: '%v'\n", net.IPv4(192, 168, 0, 0), reply.IpAddress)
+	if !reflect.DeepEqual(reply.Address, net.IPv4(192, 168, 0, 0)) {
+		t.Errorf("Expected IP address '%v', got: '%v'\n", net.IPv4(192, 168, 0, 0), reply.Address)
 	}
 
 	if !reflect.DeepEqual(reply.SubnetMask, net.IPv4(255, 255, 255, 0)) {

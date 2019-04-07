@@ -60,6 +60,19 @@ func marshal(s reflect.Value) ([]byte, error) {
 				case tUint32:
 					binary.LittleEndian.PutUint32(bytes[offset:offset+4], uint32(f.Uint()))
 
+				case tIPv4:
+					copy(bytes[offset:offset+4], f.MethodByName("To4").Call([]reflect.Value{})[0].Bytes())
+
+				case tMAC:
+					copy(bytes[offset:offset+6], f.Bytes())
+
+				case tVersion:
+					binary.BigEndian.PutUint16(bytes[offset:offset+2], uint16(f.Uint()))
+
+				case tDate:
+					slice := reflect.ValueOf(bytes[offset : offset+6])
+					f.MethodByName("Encode").Call([]reflect.Value{slice})
+
 				default:
 					panic(errors.New(fmt.Sprintf("Cannot marshal field with type '%v'", t.Type)))
 				}
