@@ -10,10 +10,8 @@ import (
 )
 
 func TestMarshalFindDevicesRequest(t *testing.T) {
-	request := struct {
-		MsgType byte `uhppote:"offset:1"`
-	}{
-		0x94,
+	request := FindDevicesRequest{
+		MsgType: 0x94,
 	}
 
 	m, err := Marshal(request)
@@ -37,16 +35,7 @@ func TestUnmarshalFindDevicesResponse(t *testing.T) {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	}
 
-	reply := struct {
-		MsgType      byte             `uhppote:"offset:1"`
-		SerialNumber uint32           `uhppote:"offset:4"`
-		IpAddress    net.IP           `uhppote:"offset:8"`
-		SubnetMask   net.IP           `uhppote:"offset:12"`
-		Gateway      net.IP           `uhppote:"offset:16"`
-		MacAddress   net.HardwareAddr `uhppote:"offset:20"`
-		Version      types.Version    `uhppote:"offset:26"`
-		Date         types.Date       `uhppote:"offset:28"`
-	}{}
+	reply := FindDevicesResponse{}
 
 	err := uhppote.Unmarshal(message, &reply)
 

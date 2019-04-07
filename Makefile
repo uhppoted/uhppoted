@@ -50,7 +50,7 @@ usage: build
 	./bin/uhppote-cli
 
 debug: build
-	./bin/uhppote-cli --bind $(LOCAL) help get-cards
+	./bin/uhppote-cli --bind "0.0.0.0:51234" --debug get-devices
 
 help: build
 	./bin/uhppote-cli --bind $(LOCAL) help
