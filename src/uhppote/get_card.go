@@ -6,28 +6,32 @@ import (
 	"uhppote/types"
 )
 
+type GetCardByIndexRequest struct {
+	MsgType      byte   `uhppote:"offset:1"`
+	SerialNumber uint32 `uhppote:"offset:4"`
+	Index        uint32 `uhppote:"offset:8"`
+}
+
+type GetCardResponse struct {
+	MsgType      byte       `uhppote:"offset:1"`
+	SerialNumber uint32     `uhppote:"offset:4"`
+	CardNumber   uint32     `uhppote:"offset:8"`
+	From         types.Date `uhppote:"offset:12"`
+	To           types.Date `uhppote:"offset:16"`
+	Door1        bool       `uhppote:"offset:20"`
+	Door2        bool       `uhppote:"offset:21"`
+	Door3        bool       `uhppote:"offset:22"`
+	Door4        bool       `uhppote:"offset:23"`
+}
+
 func (u *UHPPOTE) GetCardByIndex(serialNumber, index uint32) (*types.Card, error) {
-	request := struct {
-		MsgType      byte   `uhppote:"offset:1"`
-		SerialNumber uint32 `uhppote:"offset:4"`
-		Index        uint32 `uhppote:"offset:8"`
-	}{
-		0x5C,
-		serialNumber,
-		index,
+	request := GetCardByIndexRequest{
+		MsgType:      0x5C,
+		SerialNumber: serialNumber,
+		Index:        index,
 	}
 
-	reply := struct {
-		MsgType      byte       `uhppote:"offset:1"`
-		SerialNumber uint32     `uhppote:"offset:4"`
-		CardNumber   uint32     `uhppote:"offset:8"`
-		From         types.Date `uhppote:"offset:12"`
-		To           types.Date `uhppote:"offset:16"`
-		Door1        bool       `uhppote:"offset:20"`
-		Door2        bool       `uhppote:"offset:21"`
-		Door3        bool       `uhppote:"offset:22"`
-		Door4        bool       `uhppote:"offset:23"`
-	}{}
+	reply := GetCardResponse{}
 
 	err := u.Exec(request, &reply)
 	if err != nil {
