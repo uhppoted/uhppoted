@@ -1,32 +1,41 @@
 package uhppote
 
 import (
-	"encoding/binary"
-	"uhppote/messages"
+	"errors"
+	"fmt"
 	"uhppote/types"
 )
 
-func (u *UHPPOTE) GetTime(serialNumber uint32) (*types.DateTime, error) {
-	cmd := make([]byte, 64)
+type GetTimeRequest struct {
+	MsgType      byte   `uhppote:"offset:1"`
+	SerialNumber uint32 `uhppote:"offset:4"`
+}
 
-	cmd[0] = 0x17
-	cmd[1] = 0x32
-	cmd[2] = 0x00
-	cmd[3] = 0x00
+type GetTimeResponse struct {
+	MsgType      byte           `uhppote:"offset:1"`
+	SerialNumber uint32         `uhppote:"offset:4"`
+	DateTime     types.DateTime `uhppote:"offset:8"`
+}
 
-	binary.LittleEndian.PutUint32(cmd[4:8], serialNumber)
+func (u *UHPPOTE) GetTime(serialNumber uint32) (*types.Time, error) {
+	request := GetTimeRequest{
+		MsgType:      0x32,
+		SerialNumber: serialNumber,
+	}
 
-	reply, err := u.Execute(cmd)
+	reply := GetTimeResponse{}
 
+	err := u.Exec(request, &reply)
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := messages.NewGetTime(reply)
-
-	if err != nil {
-		return nil, err
+	if reply.MsgType != 0x32 {
+		return nil, errors.New(fmt.Sprintf("GetTime returned incorrect message type: %02X\n", reply.MsgType))
 	}
 
-	return &result.DateTime, nil
+	return &types.Time{
+		SerialNumber: reply.SerialNumber,
+		DateTime:     reply.DateTime,
+	}, nil
 }

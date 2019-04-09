@@ -22,7 +22,7 @@ func (c *GetTimeCommand) Execute(u *uhppote.UHPPOTE) error {
 	datetime, err := u.GetTime(c.SerialNumber)
 
 	if err == nil {
-		fmt.Printf("%s\n", datetime)
+		fmt.Printf("%v\n", datetime)
 	}
 
 	return err
