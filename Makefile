@@ -1,7 +1,8 @@
 DEBUG = "--debug"
 LOCAL = "192.168.1.100:51234"
-CARD = "6154412"
-SERIALNO = "423187757"
+CARD = 6154412
+SERIALNO = 423187757
+DOOR = 4
 
 all: test      \
 	 benchmark \
@@ -54,7 +55,7 @@ usage: build
 	./bin/uhppote-cli
 
 debug: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug help get-devices
+	./bin/uhppote-cli --bind $(LOCAL) --debug help get-door-delay
 
 help: build
 	./bin/uhppote-cli --bind $(LOCAL) help
@@ -73,6 +74,9 @@ get-time: build
 
 get-cards: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-cards 423187757
+
+get-door-delay: build
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-door-delay $(SERIALNO) $(DOOR)
 
 get-card: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-card $(SERIALNO) $(CARD)

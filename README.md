@@ -21,13 +21,15 @@ The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Acc
 
 Supported commands:
 - FindDevices
+- GetTime
 - GetCards
 - GetCardByIndex
 - GetCardById
+- GetDoorDelay
 
 ## uhppote-cli
 
-Usage: *uhppote-cli [--bind <address:port>] [--debug] \<command\> \<command options\>*
+Usage: *uhppote-cli [--bind <address:port>] [--debug] \<command\> \<arguments\>*
 
 Supported commands:
 - help
@@ -35,6 +37,7 @@ Supported commands:
 - get-devices
 - get-status
 - get-time
+- get-door-delay
 - get-cards
 - get-card
 - get-swipes

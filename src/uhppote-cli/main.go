@@ -13,6 +13,10 @@ type bind struct {
 	address net.UDPAddr
 }
 
+var cli = []commands.Command{
+	&commands.GetDoorDelayCommand{},
+}
+
 var VERSION = "v0.00.0"
 var debug = false
 var local = bind{net.UDPAddr{net.IPv4(0, 0, 0, 0), 60001, ""}}
@@ -87,6 +91,13 @@ func parse() (commands.Command, error) {
 
 		case "open":
 			cmd, err = commands.NewOpenDoorCommand()
+
+		default:
+			for _, c := range cli {
+				if c.CLI() == flag.Arg(0) {
+					cmd = c
+				}
+			}
 		}
 	}
 
