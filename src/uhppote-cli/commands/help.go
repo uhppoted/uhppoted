@@ -19,6 +19,7 @@ var commands = []Command{
 	&GrantCommand{},
 	&RevokeCommand{},
 	&RevokeAllCommand{},
+	&GetDoorDelayCommand{},
 	&OpenDoorCommand{},
 }
 
