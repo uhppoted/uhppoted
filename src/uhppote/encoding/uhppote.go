@@ -14,14 +14,15 @@ import (
 )
 
 var (
-	tBool    = reflect.TypeOf(bool(false))
-	tByte    = reflect.TypeOf(byte(0))
-	tUint16  = reflect.TypeOf(uint16(0))
-	tUint32  = reflect.TypeOf(uint32(0))
-	tIPv4    = reflect.TypeOf(net.IPv4(0, 0, 0, 0))
-	tMAC     = reflect.TypeOf(net.HardwareAddr{})
-	tVersion = reflect.TypeOf(types.Version(0))
-	tDate    = reflect.TypeOf(types.Date{})
+	tBool     = reflect.TypeOf(bool(false))
+	tByte     = reflect.TypeOf(byte(0))
+	tUint16   = reflect.TypeOf(uint16(0))
+	tUint32   = reflect.TypeOf(uint32(0))
+	tIPv4     = reflect.TypeOf(net.IPv4(0, 0, 0, 0))
+	tMAC      = reflect.TypeOf(net.HardwareAddr{})
+	tVersion  = reflect.TypeOf(types.Version(0))
+	tDate     = reflect.TypeOf(types.Date{})
+	tDateTime = reflect.TypeOf(types.DateTime{})
 )
 
 var re = regexp.MustCompile(`offset:\s*([0-9]+)`)
@@ -146,6 +147,19 @@ func Unmarshal(bytes []byte, m interface{}) error {
 					}
 
 					date, err := time.ParseInLocation("20060102", decoded, time.Local)
+					if err != nil {
+						return err
+					}
+
+					f.Field(0).Set(reflect.ValueOf(date))
+
+				case tDateTime:
+					decoded, err := bcd.Decode(bytes[offset : offset+7])
+					if err != nil {
+						return err
+					}
+
+					date, err := time.ParseInLocation("20060102150405", decoded, time.Local)
 					if err != nil {
 						return err
 					}
