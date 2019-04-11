@@ -12,7 +12,6 @@
    * set_recordIndex
    * set_ripp
    * get_ripp
-   * door_delay
    * userid' 
 7. fuse
 8. Centralise and rationalise scattered CLI command syntax and help
