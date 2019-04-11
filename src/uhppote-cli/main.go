@@ -14,7 +14,9 @@ type bind struct {
 }
 
 var cli = []commands.Command{
+	&commands.HelpCommand{},
 	&commands.GetDoorDelayCommand{},
+	&commands.SetDoorDelayCommand{},
 }
 
 var VERSION = "v0.00.0"
@@ -50,9 +52,6 @@ func parse() (commands.Command, error) {
 
 	if len(os.Args) > 1 {
 		switch flag.Arg(0) {
-		case "help":
-			cmd = commands.NewHelpCommand()
-
 		case "version":
 			cmd = commands.NewVersionCommand(VERSION)
 
