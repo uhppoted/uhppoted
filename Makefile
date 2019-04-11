@@ -2,7 +2,7 @@ DEBUG = "--debug"
 LOCAL = "192.168.1.100:51234"
 CARD = 6154412
 SERIALNO = 423187757
-DOOR = 4
+DOOR = 3
 
 all: test      \
 	 benchmark \
@@ -55,7 +55,7 @@ usage: build
 	./bin/uhppote-cli
 
 debug: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug help get-door-delay
+	./bin/uhppote-cli --bind $(LOCAL) --debug help set-addresx
 
 help: build
 	./bin/uhppote-cli --bind $(LOCAL) help
@@ -67,13 +67,13 @@ get-devices: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug get-devices
 
 get-status: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug get-status 423187757
+	./bin/uhppote-cli --bind $(LOCAL) --debug get-status $(SERIALNO)
 
 get-time: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug get-time 423187757
+	./bin/uhppote-cli --bind $(LOCAL) --debug get-time $(SERIALNO)
 
 get-cards: build
-	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-cards 423187757
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-cards $(SERIALNO)
 
 get-door-delay: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-door-delay $(SERIALNO) $(DOOR)
@@ -82,7 +82,7 @@ get-card: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-card $(SERIALNO) $(CARD)
 
 get-swipes: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug get-swipes 423187757 1
+	./bin/uhppote-cli --bind $(LOCAL) --debug get-swipes $(SERIALNO) 1
 
 set-time: build
 	# ./bin/uhppote-cli -debug set-time 423187757 '2019-01-08 12:34:56'
@@ -91,17 +91,20 @@ set-time: build
 set-address: build
 	./bin/uhppote-cli -debug set-ip-address 423187757 '192.168.1.125' '255.255.255.0' '0.0.0.0'
 
+set-door-delay: build
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-door-delay $(SERIALNO) $(DOOR) 5
+
 grant: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug grant 423187757 12345 2019-01-01 2019-12-31 1,4
+	./bin/uhppote-cli --bind $(LOCAL) --debug grant $(SERIALNO) 12345 2019-01-01 2019-12-31 1,4
 
 revoke: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug revoke 423187757 615441
+	./bin/uhppote-cli --bind $(LOCAL) --debug revoke $(SERIALNO) 615441
 
 revoke-all: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug revoke-all 423187757
+	./bin/uhppote-cli --bind $(LOCAL) --debug revoke-all $(SERIALNO)
 
 open: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug open 423187757 4
+	./bin/uhppote-cli --bind $(LOCAL) --debug open $(SERIALNO) 4
 
 simulator: build
 	./bin/uhppote-simulator --debug 

@@ -47,7 +47,7 @@ func (c *GetDoorDelayCommand) Help() {
 	fmt.Println()
 	fmt.Println("  Examples:")
 	fmt.Println()
-	fmt.Println("    uhppote-cli get-door 12345678 3")
+	fmt.Println("    uhppote-cli get-door-delay 12345678 3")
 	fmt.Println()
 }
 
