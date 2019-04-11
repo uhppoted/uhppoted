@@ -26,6 +26,7 @@ Supported commands:
 - GetCardByIndex
 - GetCardById
 - GetDoorDelay
+- SetDoorDelay
 
 ## uhppote-cli
 
@@ -43,6 +44,7 @@ Supported commands:
 - get-swipes
 - set-time
 - set-ip-address
+- set-door-delay
 - grant
 - revoke
 - revoke-all
