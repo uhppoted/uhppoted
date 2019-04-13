@@ -2,9 +2,9 @@ package types
 
 import "fmt"
 
-type SwipeCount struct {
+type SwipeIndex struct {
 	SerialNumber uint32
-	Count        uint32
+	Index        uint32
 }
 
 type Swipe struct {
@@ -19,10 +19,10 @@ type Swipe struct {
 	RecordType   byte
 }
 
-func (s *SwipeCount) String() string {
-	return fmt.Sprintf("%-12d %d", s.SerialNumber, s.Count)
+func (s *SwipeIndex) String() string {
+	return fmt.Sprintf("%-12d %d", s.SerialNumber, s.Index)
 }
 
 func (s *Swipe) String() string {
-	return fmt.Sprintf("%-12d %-4d %s  %-8d %1d %-5v %d", s.SerialNumber, s.Index, s.Timestamp.String(), s.CardNumber, s.Door, s.Granted, s.RecordType)
+	return fmt.Sprintf("%-12d %-4d %s %-12d %1d %-5v %-4d", s.SerialNumber, s.Index, s.Timestamp.String(), s.CardNumber, s.Door, s.Granted, s.RecordType)
 }

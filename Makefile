@@ -82,7 +82,7 @@ get-card: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-card $(SERIALNO) $(CARD)
 
 get-swipes: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug get-swipes $(SERIALNO)
+	./bin/uhppote-cli --bind $(LOCAL) get-swipes $(SERIALNO)
 
 set-time: build
 	# ./bin/uhppote-cli -debug set-time 423187757 '2019-01-08 12:34:56'

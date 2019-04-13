@@ -25,7 +25,9 @@ Supported commands:
 - GetCards
 - GetCardByIndex
 - GetCardById
+- GetSwipeIndex
 - GetDoorDelay
+- SetSwipeIndex
 - SetDoorDelay
 
 ## uhppote-cli
