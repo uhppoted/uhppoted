@@ -7,6 +7,12 @@ type SwipeIndex struct {
 	Index        uint32
 }
 
+type SwipeIndexResult struct {
+	SerialNumber uint32
+	Index        uint32
+	Succeeded    bool
+}
+
 type Swipe struct {
 	SerialNumber uint32
 	Index        uint32
@@ -21,6 +27,10 @@ type Swipe struct {
 
 func (s *SwipeIndex) String() string {
 	return fmt.Sprintf("%-12d %d", s.SerialNumber, s.Index)
+}
+
+func (s *SwipeIndexResult) String() string {
+	return fmt.Sprintf("%-12d %-8d %v", s.SerialNumber, s.Index, s.Succeeded)
 }
 
 func (s *Swipe) String() string {

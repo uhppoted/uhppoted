@@ -32,6 +32,10 @@ func (c *GetSwipesCommand) Execute(u *uhppote.UHPPOTE) error {
 		}
 	}
 
+	//u.GetSwipeIndex(serialNumber)
+	//u.SetSwipeIndex(serialNumber, 11)
+	//u.GetSwipeIndex(serialNumber)
+
 	return nil
 }
 

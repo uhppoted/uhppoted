@@ -6,14 +6,6 @@ import (
 	"uhppote/types"
 )
 
-/*
-Doesn't seem to be supported by the latest UHPPOTE firmware - returns 0.
-
-Use either GetSwipe(<serialnumber>, 0xffffffff) to get the latest swipe
-or GetStatus(<serialnumber>) to get the controller status which includes
-the swipe index.
-*/
-
 type GetSwipeIndexRequest struct {
 	MsgType      byte   `uhppote:"offset:1"`
 	SerialNumber uint32 `uhppote:"offset:4"`
