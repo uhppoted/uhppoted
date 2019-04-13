@@ -25,6 +25,7 @@ Supported commands:
 - GetCards
 - GetCardByIndex
 - GetCardById
+- GetSwipe
 - GetSwipeIndex
 - SetSwipeIndex
 - GetDoorDelay
@@ -45,9 +46,9 @@ Supported commands:
 - get-card
 - get-swipes
 - get-swipe-index
-- set-swipe-index
-- set-time
 - set-ip-address
+- set-time
+- set-swipe-index
 - set-door-delay
 - grant
 - revoke
