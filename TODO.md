@@ -8,8 +8,6 @@
 6. Commands:
    * find-devices 
      * Handle multiple replies 
-   * get_recordIndex
-   * set_recordIndex
    * set_ripp
    * get_ripp
    * userid' 

@@ -14,23 +14,22 @@ func (c *GetSwipesCommand) Execute(u *uhppote.UHPPOTE) error {
 		return err
 	}
 
-	count, err := u.GetSwipeCount(serialNumber)
+	last, err := u.GetSwipe(serialNumber, 0xffffffff)
 	if err != nil {
 		return err
 	}
 
-	if count != nil {
-		fmt.Printf("%s\n", count.String())
+	if last != nil {
+		for index := last.Index; index > 0; index-- {
+			swipe, err := u.GetSwipe(serialNumber, index)
+			if err != nil {
+				return err
+			}
 
-		swipe, err := u.GetSwipe(serialNumber, 1)
-		if err != nil {
-			return err
+			if swipe != nil {
+				fmt.Printf("%s\n", swipe.String())
+			}
 		}
-
-		if swipe != nil {
-			fmt.Printf("%s\n", swipe.String())
-		}
-
 	}
 
 	return nil
