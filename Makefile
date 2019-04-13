@@ -55,7 +55,7 @@ usage: build
 	./bin/uhppote-cli
 
 debug: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug help get-swipes
+	./bin/uhppote-cli --bind $(LOCAL) --debug get-swipes $(SERIALNO)
 
 help: build
 	./bin/uhppote-cli --bind $(LOCAL) help
@@ -81,6 +81,9 @@ get-door-delay: build
 get-card: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-card $(SERIALNO) $(CARD)
 
+get-swipe-index: build
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-swipe-index $(SERIALNO)
+
 get-swipes: build
 	./bin/uhppote-cli --bind $(LOCAL) get-swipes $(SERIALNO)
 
@@ -93,6 +96,9 @@ set-address: build
 
 set-door-delay: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-door-delay $(SERIALNO) $(DOOR) 5
+
+set-swipe-index: build
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-swipe-index $(SERIALNO) 23
 
 grant: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug grant $(SERIALNO) 12345 2019-01-01 2019-12-31 1,4

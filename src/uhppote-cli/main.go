@@ -18,8 +18,10 @@ var cli = []commands.Command{
 	&commands.VersionCommand{VERSION},
 	&commands.GetDevicesCommand{},
 	&commands.GetDoorDelayCommand{},
-	&commands.GetSwipesCommand{},
 	&commands.SetDoorDelayCommand{},
+	&commands.GetSwipesCommand{},
+	&commands.GetSwipeIndexCommand{},
+	&commands.SetSwipeIndexCommand{},
 }
 
 var VERSION = "v0.00.0"
