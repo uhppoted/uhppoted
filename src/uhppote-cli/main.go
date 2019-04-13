@@ -18,6 +18,7 @@ var cli = []commands.Command{
 	&commands.VersionCommand{VERSION},
 	&commands.GetDevicesCommand{},
 	&commands.GetDoorDelayCommand{},
+	&commands.GetSwipesCommand{},
 	&commands.SetDoorDelayCommand{},
 }
 
@@ -71,9 +72,6 @@ func parse() (commands.Command, error) {
 
 		case "get-card":
 			cmd, err = commands.NewGetCardCommand()
-
-		case "get-swipes":
-			cmd, err = commands.NewGetSwipesCommand()
 
 		case "grant":
 			cmd, err = commands.NewGrantCommand()

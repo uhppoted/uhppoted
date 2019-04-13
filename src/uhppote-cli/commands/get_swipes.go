@@ -6,34 +6,34 @@ import (
 )
 
 type GetSwipesCommand struct {
-	SerialNumber uint32
-	Index        uint32
-}
-
-func NewGetSwipesCommand() (*GetSwipesCommand, error) {
-	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
-	if err != nil {
-		return nil, err
-	}
-
-	index, err := getUint32(2, "Missing swipe index", "Invalid swipe index: %v")
-	if err != nil {
-		return nil, err
-	}
-
-	return &GetSwipesCommand{serialNumber, index}, nil
 }
 
 func (c *GetSwipesCommand) Execute(u *uhppote.UHPPOTE) error {
-	swipe, err := u.GetSwipe(c.SerialNumber, c.Index)
-
-	if err == nil {
-		if swipe != nil {
-			fmt.Printf("%12d %s\n", c.SerialNumber, swipe.String())
-		}
+	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
+	if err != nil {
+		return err
 	}
 
-	return err
+	count, err := u.GetSwipeCount(serialNumber)
+	if err != nil {
+		return err
+	}
+
+	if count != nil {
+		fmt.Printf("%s\n", count.String())
+
+		swipe, err := u.GetSwipe(serialNumber, 1)
+		if err != nil {
+			return err
+		}
+
+		if swipe != nil {
+			fmt.Printf("%s\n", swipe.String())
+		}
+
+	}
+
+	return nil
 }
 
 func (c *GetSwipesCommand) CLI() string {
