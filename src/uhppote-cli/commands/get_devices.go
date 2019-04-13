@@ -8,10 +8,6 @@ import (
 type GetDevicesCommand struct {
 }
 
-func NewGetDevicesCommand() (*GetDevicesCommand, error) {
-	return &GetDevicesCommand{}, nil
-}
-
 func (c *GetDevicesCommand) Execute(u *uhppote.UHPPOTE) error {
 	devices, err := u.FindDevices()
 
