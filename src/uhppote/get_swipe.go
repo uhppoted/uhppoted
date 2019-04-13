@@ -1,33 +1,57 @@
 package uhppote
 
 import (
-	"encoding/binary"
-	"uhppote/messages"
+	"errors"
+	"fmt"
 	"uhppote/types"
 )
 
+type GetSwipeRequest struct {
+	MsgType      byte   `uhppote:"offset:1"`
+	SerialNumber uint32 `uhppote:"offset:4"`
+	Index        uint32 `uhppote:"offset:8"`
+}
+
+type GetSwipeResponse struct {
+	MsgType      byte           `uhppote:"offset:1"`
+	SerialNumber uint32         `uhppote:"offset:4"`
+	Index        uint32         `uhppote:"offset:8"`
+	Type         uint8          `uhppote:"offset:12"`
+	Granted      bool           `uhppote:"offset:13"`
+	Door         uint8          `uhppote:"offset:14"`
+	DoorState    uint8          `uhppote:"offset:15"`
+	CardNumber   uint32         `uhppote:"offset:16"`
+	Timestamp    types.DateTime `uhppote:"offset:20"`
+	RecordType   uint8          `uhppote:"offset:27"`
+}
+
 func (u *UHPPOTE) GetSwipe(serialNumber, index uint32) (*types.Swipe, error) {
-	cmd := make([]byte, 64)
+	request := GetSwipeRequest{
+		MsgType:      0xb0,
+		SerialNumber: serialNumber,
+		Index:        index,
+	}
 
-	cmd[0] = 0x17
-	cmd[1] = 0xb0
-	cmd[2] = 0x00
-	cmd[3] = 0x00
+	reply := GetSwipeResponse{}
 
-	binary.LittleEndian.PutUint32(cmd[4:8], serialNumber)
-	binary.LittleEndian.PutUint32(cmd[8:12], index)
-
-	reply, err := u.Execute(cmd)
-
+	err := u.Exec(request, &reply)
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := messages.NewGetSwipe(reply)
-
-	if err != nil {
-		return nil, err
+	if reply.MsgType != 0xb0 {
+		return nil, errors.New(fmt.Sprintf("GetSwipe returned incorrect message type: %02X\n", reply.MsgType))
 	}
 
-	return result.Swipe, nil
+	return &types.Swipe{
+		SerialNumber: reply.SerialNumber,
+		Index:        reply.Index,
+		Type:         reply.Type,
+		Granted:      reply.Granted,
+		Door:         reply.Door,
+		DoorState:    reply.DoorState,
+		CardNumber:   reply.CardNumber,
+		Timestamp:    reply.Timestamp,
+		RecordType:   reply.RecordType,
+	}, nil
 }
