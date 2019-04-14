@@ -7,23 +7,23 @@ import (
 )
 
 type GetDoorDelayRequest struct {
-	MsgType      byte   `uhppote:"offset:1"`
-	SerialNumber uint32 `uhppote:"offset:4"`
-	Door         uint8  `uhppote:"offset:8"`
+	MsgType      byte               `uhppote:"offset:1"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
+	Door         uint8              `uhppote:"offset:8"`
 }
 
 type GetDoorDelayResponse struct {
-	MsgType      byte   `uhppote:"offset:1"`
-	SerialNumber uint32 `uhppote:"offset:4"`
-	Door         uint8  `uhppote:"offset:8"`
-	Unit         uint8  `uhppote:"offset:9"`
-	Delay        uint8  `uhppote:"offset:10"`
+	MsgType      byte               `uhppote:"offset:1"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
+	Door         uint8              `uhppote:"offset:8"`
+	Unit         uint8              `uhppote:"offset:9"`
+	Delay        uint8              `uhppote:"offset:10"`
 }
 
 func (u *UHPPOTE) GetDoorDelay(serialNumber uint32, door byte) (*types.DoorDelay, error) {
 	request := GetDoorDelayRequest{
 		MsgType:      0x82,
-		SerialNumber: serialNumber,
+		SerialNumber: types.SerialNumber(serialNumber),
 		Door:         door,
 	}
 

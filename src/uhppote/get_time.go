@@ -7,20 +7,20 @@ import (
 )
 
 type GetTimeRequest struct {
-	MsgType      byte   `uhppote:"offset:1"`
-	SerialNumber uint32 `uhppote:"offset:4"`
+	MsgType      byte               `uhppote:"offset:1"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 }
 
 type GetTimeResponse struct {
-	MsgType      byte           `uhppote:"offset:1"`
-	SerialNumber uint32         `uhppote:"offset:4"`
-	DateTime     types.DateTime `uhppote:"offset:8"`
+	MsgType      byte               `uhppote:"offset:1"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
+	DateTime     types.DateTime     `uhppote:"offset:8"`
 }
 
 func (u *UHPPOTE) GetTime(serialNumber uint32) (*types.Time, error) {
 	request := GetTimeRequest{
 		MsgType:      0x32,
-		SerialNumber: serialNumber,
+		SerialNumber: types.SerialNumber(serialNumber),
 	}
 
 	reply := GetTimeResponse{}

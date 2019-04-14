@@ -5,10 +5,10 @@ import (
 )
 
 type Time struct {
-	SerialNumber uint32
+	SerialNumber SerialNumber
 	DateTime     DateTime
 }
 
 func (t Time) String() string {
-	return fmt.Sprintf("%v %s", t.SerialNumber, t.DateTime.String())
+	return fmt.Sprintf("%s %s", t.SerialNumber, t.DateTime.String())
 }

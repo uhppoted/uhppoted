@@ -5,7 +5,7 @@ import (
 )
 
 type Card struct {
-	SerialNumber uint32
+	SerialNumber SerialNumber
 	CardNumber   uint32
 	From         Date
 	To           Date
@@ -28,7 +28,7 @@ func (c Card) String() string {
 		return "N"
 	}
 
-	return fmt.Sprintf("%v %-8v %v %v %s %s %s %s", c.SerialNumber, c.CardNumber, c.From, c.To, f(c.Door1), f(c.Door2), f(c.Door3), f(c.Door4))
+	return fmt.Sprintf("%s %-8v %v %v %s %s %s %s", c.SerialNumber, c.CardNumber, c.From, c.To, f(c.Door1), f(c.Door2), f(c.Door3), f(c.Door4))
 }
 
 func (r *Authorised) String() string {
