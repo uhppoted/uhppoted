@@ -8,7 +8,7 @@ import (
 type Version uint16
 
 type Device struct {
-	SerialNumber uint32
+	SerialNumber SerialNumber
 	IpAddress    net.IP
 	SubnetMask   net.IP
 	Gateway      net.IP
@@ -18,7 +18,7 @@ type Device struct {
 }
 
 func (device *Device) String() string {
-	return fmt.Sprintf("%v %v %v %v %v %04X %s",
+	return fmt.Sprintf("%s %v %v %v %v %04X %s",
 		device.SerialNumber,
 		device.IpAddress,
 		device.SubnetMask,
