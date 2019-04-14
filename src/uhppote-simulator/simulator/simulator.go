@@ -15,7 +15,7 @@ import (
 type Simulator struct {
 	Interrupt    chan int
 	Debug        bool
-	SerialNumber uint32
+	SerialNumber types.SerialNumber
 	IpAddress    net.IP
 	SubnetMask   net.IP
 	Gateway      net.IP

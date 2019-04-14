@@ -7,20 +7,20 @@ import (
 )
 
 type GetCardsRequest struct {
-	MsgType      byte   `uhppote:"offset:1"`
-	SerialNumber uint32 `uhppote:"offset:4"`
+	MsgType      byte               `uhppote:"offset:1"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 }
 
 type GetCardsResponse struct {
-	MsgType      byte   `uhppote:"offset:1"`
-	SerialNumber uint32 `uhppote:"offset:4"`
-	Records      uint32 `uhppote:"offset:8"`
+	MsgType      byte               `uhppote:"offset:1"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
+	Records      uint32             `uhppote:"offset:8"`
 }
 
 func (u *UHPPOTE) GetCards(serialNumber uint32) (*types.RecordCount, error) {
 	request := GetCardsRequest{
 		MsgType:      0x58,
-		SerialNumber: serialNumber,
+		SerialNumber: types.SerialNumber(serialNumber),
 	}
 
 	reply := GetCardsResponse{}
@@ -35,7 +35,7 @@ func (u *UHPPOTE) GetCards(serialNumber uint32) (*types.RecordCount, error) {
 	}
 
 	return &types.RecordCount{
-		SerialNumber: serialNumber,
+		SerialNumber: reply.SerialNumber,
 		Records:      reply.Records,
 	}, nil
 }

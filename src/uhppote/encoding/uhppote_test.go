@@ -14,7 +14,7 @@ import (
 func TestMarshal(t *testing.T) {
 	expected := []byte{
 		0x17, 0x58, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0xc0, 0xa8, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x66, 0x19, 0x39, 0x55, 0x2d, 0x08, 0x92, 0x20, 0x18, 0x08, 0x16, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x66, 0x19, 0x39, 0x55, 0x2d, 0x2d, 0x55, 0x39, 0x19, 0x08, 0x92, 0x20, 0x18, 0x08, 0x16,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	}
@@ -23,19 +23,21 @@ func TestMarshal(t *testing.T) {
 	date, _ := time.ParseInLocation("20060102", "20180816", time.Local)
 
 	request := struct {
-		MsgType    byte             `uhppote:"offset:1"`
-		Uint32     uint32           `uhppote:"offset:4"`
-		Address    net.IP           `uhppote:"offset:8"`
-		MacAddress net.HardwareAddr `uhppote:"offset:16"`
-		Version    types.Version    `uhppote:"offset:22"`
-		Date       types.Date       `uhppote:"offset:24"`
+		MsgType      byte               `uhppote:"offset:1"`
+		Uint32       uint32             `uhppote:"offset:4"`
+		Address      net.IP             `uhppote:"offset:8"`
+		MacAddress   net.HardwareAddr   `uhppote:"offset:16"`
+		SerialNumber types.SerialNumber `uhppote:"offset:22"`
+		Version      types.Version      `uhppote:"offset:26"`
+		Date         types.Date         `uhppote:"offset:28"`
 	}{
-		MsgType:    0x58,
-		Uint32:     423187757,
-		Address:    net.IPv4(192, 168, 1, 2),
-		MacAddress: mac,
-		Version:    0x0892,
-		Date:       types.Date{date},
+		MsgType:      0x58,
+		Uint32:       423187757,
+		Address:      net.IPv4(192, 168, 1, 2),
+		MacAddress:   mac,
+		SerialNumber: 423187757,
+		Version:      0x0892,
+		Date:         types.Date{date},
 	}
 
 	m, err := Marshal(request)
@@ -54,23 +56,24 @@ func TestMarshal(t *testing.T) {
 func TestUnmarshal(t *testing.T) {
 	message := []byte{
 		0x17, 0x94, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0xc0, 0xa8, 0x00, 0x00, 0xff, 0xff, 0xff, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x66, 0x19, 0x39, 0x55, 0x2d, 0x08, 0x92, 0x20, 0x18, 0x08, 0x16,
-		0x20, 0x18, 0x12, 0x31, 0x12, 0x23, 0x34, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x66, 0x19, 0x39, 0x55, 0x2d, 0x2d, 0x55, 0x39, 0x19, 0x08, 0x92,
+		0x20, 0x18, 0x08, 0x16, 0x20, 0x18, 0x12, 0x31, 0x12, 0x23, 0x34, 0x01, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	}
 
 	reply := struct {
-		MsgType    byte             `uhppote:"offset:1"`
-		Uint32     uint32           `uhppote:"offset:4"`
-		Address    net.IP           `uhppote:"offset:8"`
-		SubnetMask net.IP           `uhppote:"offset:12"`
-		Gateway    net.IP           `uhppote:"offset:16"`
-		MacAddress net.HardwareAddr `uhppote:"offset:20"`
-		Version    types.Version    `uhppote:"offset:26"`
-		Date       types.Date       `uhppote:"offset:28"`
-		DateTime   types.DateTime   `uhppote:"offset:32"`
-		True       bool             `uhppote:"offset:39"`
-		False      bool             `uhppote:"offset:40"`
+		MsgType      byte               `uhppote:"offset:1"`
+		Uint32       uint32             `uhppote:"offset:4"`
+		Address      net.IP             `uhppote:"offset:8"`
+		SubnetMask   net.IP             `uhppote:"offset:12"`
+		Gateway      net.IP             `uhppote:"offset:16"`
+		MacAddress   net.HardwareAddr   `uhppote:"offset:20"`
+		SerialNumber types.SerialNumber `uhppote:"offset:26"`
+		Version      types.Version      `uhppote:"offset:30"`
+		Date         types.Date         `uhppote:"offset:32"`
+		DateTime     types.DateTime     `uhppote:"offset:36"`
+		True         bool               `uhppote:"offset:43"`
+		False        bool               `uhppote:"offset:44"`
 	}{}
 
 	err := Unmarshal(message, &reply)
