@@ -7,7 +7,7 @@ import (
 )
 
 type Status struct {
-	SerialNumber   uint32
+	SerialNumber   SerialNumber
 	LastIndex      uint32
 	SwipeRecord    byte
 	Granted        bool
@@ -30,7 +30,7 @@ type Status struct {
 func (s *Status) String() string {
 	var b strings.Builder
 
-	b.WriteString(fmt.Sprintf("%d", s.SerialNumber))
+	b.WriteString(fmt.Sprintf("%s", s.SerialNumber))
 	b.WriteString(fmt.Sprintf(" %d", s.LastIndex))
 	b.WriteString(fmt.Sprintf(" %d", s.SwipeRecord))
 	b.WriteString(fmt.Sprintf(" %v", s.Granted))
@@ -91,7 +91,7 @@ func DecodeStatus(bytes []byte) (*Status, error) {
 	fireAlarm := bytes[50] == 0x01
 
 	return &Status{
-		SerialNumber:   serialNumber,
+		SerialNumber:   SerialNumber(serialNumber),
 		LastIndex:      lastIndex,
 		SwipeRecord:    swipeRecord,
 		Granted:        granted,

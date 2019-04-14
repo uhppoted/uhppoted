@@ -30,7 +30,7 @@ func (u *UHPPOTE) OpenDoor(serialNumber uint32, door byte) (*types.Opened, error
 	}
 
 	opened := types.Opened{
-		SerialNumber: serialNumber,
+		SerialNumber: types.SerialNumber(serialNumber),
 		Door:         uint32(door),
 		Opened:       result.Opened,
 	}

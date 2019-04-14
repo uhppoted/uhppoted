@@ -7,20 +7,20 @@ import (
 )
 
 type GetSwipeIndexRequest struct {
-	MsgType      byte   `uhppote:"offset:1"`
-	SerialNumber uint32 `uhppote:"offset:4"`
+	MsgType      byte               `uhppote:"offset:1"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 }
 
 type GetSwipeIndexResponse struct {
-	MsgType      byte   `uhppote:"offset:1"`
-	SerialNumber uint32 `uhppote:"offset:4"`
-	Index        uint32 `uhppote:"offset:8"`
+	MsgType      byte               `uhppote:"offset:1"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
+	Index        uint32             `uhppote:"offset:8"`
 }
 
 func (u *UHPPOTE) GetSwipeIndex(serialNumber uint32) (*types.SwipeIndex, error) {
 	request := GetSwipeIndexRequest{
 		MsgType:      0xb4,
-		SerialNumber: serialNumber,
+		SerialNumber: types.SerialNumber(serialNumber),
 	}
 
 	reply := GetSwipeIndexResponse{}

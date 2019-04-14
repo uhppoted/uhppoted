@@ -7,28 +7,28 @@ import (
 )
 
 type GetSwipeRequest struct {
-	MsgType      byte   `uhppote:"offset:1"`
-	SerialNumber uint32 `uhppote:"offset:4"`
-	Index        uint32 `uhppote:"offset:8"`
+	MsgType      byte               `uhppote:"offset:1"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
+	Index        uint32             `uhppote:"offset:8"`
 }
 
 type GetSwipeResponse struct {
-	MsgType      byte           `uhppote:"offset:1"`
-	SerialNumber uint32         `uhppote:"offset:4"`
-	Index        uint32         `uhppote:"offset:8"`
-	Type         uint8          `uhppote:"offset:12"`
-	Granted      bool           `uhppote:"offset:13"`
-	Door         uint8          `uhppote:"offset:14"`
-	DoorState    uint8          `uhppote:"offset:15"`
-	CardNumber   uint32         `uhppote:"offset:16"`
-	Timestamp    types.DateTime `uhppote:"offset:20"`
-	RecordType   uint8          `uhppote:"offset:27"`
+	MsgType      byte               `uhppote:"offset:1"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
+	Index        uint32             `uhppote:"offset:8"`
+	Type         uint8              `uhppote:"offset:12"`
+	Granted      bool               `uhppote:"offset:13"`
+	Door         uint8              `uhppote:"offset:14"`
+	DoorState    uint8              `uhppote:"offset:15"`
+	CardNumber   uint32             `uhppote:"offset:16"`
+	Timestamp    types.DateTime     `uhppote:"offset:20"`
+	RecordType   uint8              `uhppote:"offset:27"`
 }
 
 func (u *UHPPOTE) GetSwipe(serialNumber, index uint32) (*types.Swipe, error) {
 	request := GetSwipeRequest{
 		MsgType:      0xb0,
-		SerialNumber: serialNumber,
+		SerialNumber: types.SerialNumber(serialNumber),
 		Index:        index,
 	}
 
