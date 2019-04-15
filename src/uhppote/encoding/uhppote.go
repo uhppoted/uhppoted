@@ -27,6 +27,7 @@ var (
 )
 
 var re = regexp.MustCompile(`offset:\s*([0-9]+)`)
+var vre = regexp.MustCompile(`value:\s*0x([0-9]+)`)
 
 func Marshal(m interface{}) ([]byte, error) {
 	v := reflect.ValueOf(m)
@@ -57,7 +58,16 @@ func marshal(s reflect.Value) ([]byte, error) {
 
 				switch t.Type {
 				case tByte:
-					bytes[offset] = byte(f.Uint())
+					value := vre.FindStringSubmatch(tag)
+					if value != nil {
+						v, err := strconv.ParseUint(value[1], 16, 8)
+						if err != nil {
+							return bytes, err
+						}
+						bytes[offset] = byte(v)
+					} else {
+						bytes[offset] = byte(f.Uint())
+					}
 
 				case tUint32:
 					binary.LittleEndian.PutUint32(bytes[offset:offset+4], uint32(f.Uint()))
@@ -96,7 +106,7 @@ func Unmarshal(bytes []byte, m interface{}) error {
 	}
 
 	if bytes[0] != 0x17 {
-		return errors.New(fmt.Sprintf("Invalid start of message - expected 0x17, received 0x%02X", bytes[0]))
+		return errors.New(fmt.Sprintf("Invalid start of message - expected 0x17, received 0x%02x", bytes[0]))
 	}
 
 	// Unmarshall fields tagged with `uhppote:"offset:<offset>"`
@@ -123,10 +133,21 @@ func Unmarshal(bytes []byte, m interface{}) error {
 					} else if bytes[offset] == 0x00 {
 						f.SetBool(false)
 					} else {
-						return errors.New(fmt.Sprintf("Invalid boolean value in message: %02X:", bytes[offset]))
+						return errors.New(fmt.Sprintf("Invalid boolean value in message: %02x:", bytes[offset]))
 					}
 
 				case tByte:
+					value := vre.FindStringSubmatch(tag)
+					if value != nil {
+						v, err := strconv.ParseUint(value[1], 16, 8)
+						if err != nil {
+							return err
+						}
+						if bytes[offset] != byte(v) {
+							return errors.New(fmt.Sprintf("Invalid value in message - expected %02x, received 0x%02x", v, bytes[offset]))
+						}
+					}
+
 					f.SetUint(uint64(bytes[offset]))
 
 				case tUint16:
