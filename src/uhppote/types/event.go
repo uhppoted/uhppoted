@@ -2,18 +2,18 @@ package types
 
 import "fmt"
 
-type SwipeIndex struct {
+type EventIndex struct {
 	SerialNumber SerialNumber
 	Index        uint32
 }
 
-type SwipeIndexResult struct {
+type EventIndexResult struct {
 	SerialNumber SerialNumber
 	Index        uint32
 	Succeeded    bool
 }
 
-type Swipe struct {
+type Event struct {
 	SerialNumber SerialNumber
 	Index        uint32
 	Type         byte
@@ -25,14 +25,14 @@ type Swipe struct {
 	RecordType   byte
 }
 
-func (s *SwipeIndex) String() string {
+func (s *EventIndex) String() string {
 	return fmt.Sprintf("%s %d", s.SerialNumber, s.Index)
 }
 
-func (s *SwipeIndexResult) String() string {
+func (s *EventIndexResult) String() string {
 	return fmt.Sprintf("%s %-8d %v", s.SerialNumber, s.Index, s.Succeeded)
 }
 
-func (s *Swipe) String() string {
+func (s *Event) String() string {
 	return fmt.Sprintf("%s %-4d %s %-12d %1d %-5v %-4d", s.SerialNumber, s.Index, s.Timestamp.String(), s.CardNumber, s.Door, s.Granted, s.RecordType)
 }

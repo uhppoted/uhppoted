@@ -55,7 +55,7 @@ usage: build
 	./bin/uhppote-cli
 
 debug: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug get-swipes $(SERIALNO)
+	./bin/uhppote-cli --bind $(LOCAL) --debug get-events $(SERIALNO)
 
 help: build
 	./bin/uhppote-cli --bind $(LOCAL) help
@@ -81,11 +81,11 @@ get-door-delay: build
 get-card: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-card $(SERIALNO) $(CARD)
 
-get-swipe-index: build
-	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-swipe-index $(SERIALNO)
+get-event-index: build
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-event-index $(SERIALNO)
 
-get-swipes: build
-	./bin/uhppote-cli --bind $(LOCAL) get-swipes $(SERIALNO)
+get-events: build
+	./bin/uhppote-cli --bind $(LOCAL) get-events $(SERIALNO)
 
 set-time: build
 	# ./bin/uhppote-cli -debug set-time 423187757 '2019-01-08 12:34:56'
@@ -97,11 +97,12 @@ set-address: build
 set-door-delay: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-door-delay $(SERIALNO) $(DOOR) 5
 
-set-swipe-index: build
-	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-swipe-index $(SERIALNO) 23
+set-events-index: build
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-events-index $(SERIALNO) 23
 
 grant: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug grant $(SERIALNO) 12345 2019-01-01 2019-12-31 1,4
+	#./bin/uhppote-cli --bind $(LOCAL) --debug grant $(SERIALNO) 12345 2019-01-01 2019-12-31 1,4
+	./bin/uhppote-cli --bind $(LOCAL) --debug grant $(SERIALNO) 6154404 2019-01-01 2019-12-31 1
 
 revoke: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug revoke $(SERIALNO) 615441
@@ -110,7 +111,7 @@ revoke-all: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug revoke-all $(SERIALNO)
 
 open: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug open $(SERIALNO) 4
+	./bin/uhppote-cli --bind $(LOCAL) --debug open $(SERIALNO) 1
 
 simulator: build
 	./bin/uhppote-simulator --debug 

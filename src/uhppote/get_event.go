@@ -6,13 +6,13 @@ import (
 	"uhppote/types"
 )
 
-type GetSwipeRequest struct {
+type GetEventRequest struct {
 	MsgType      byte               `uhppote:"offset:1"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 	Index        uint32             `uhppote:"offset:8"`
 }
 
-type GetSwipeResponse struct {
+type GetEventResponse struct {
 	MsgType      byte               `uhppote:"offset:1"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 	Index        uint32             `uhppote:"offset:8"`
@@ -25,14 +25,14 @@ type GetSwipeResponse struct {
 	RecordType   uint8              `uhppote:"offset:27"`
 }
 
-func (u *UHPPOTE) GetSwipe(serialNumber, index uint32) (*types.Swipe, error) {
-	request := GetSwipeRequest{
+func (u *UHPPOTE) GetEvent(serialNumber, index uint32) (*types.Event, error) {
+	request := GetEventRequest{
 		MsgType:      0xb0,
 		SerialNumber: types.SerialNumber(serialNumber),
 		Index:        index,
 	}
 
-	reply := GetSwipeResponse{}
+	reply := GetEventResponse{}
 
 	err := u.Exec(request, &reply)
 	if err != nil {
@@ -40,10 +40,10 @@ func (u *UHPPOTE) GetSwipe(serialNumber, index uint32) (*types.Swipe, error) {
 	}
 
 	if reply.MsgType != 0xb0 {
-		return nil, errors.New(fmt.Sprintf("GetSwipe returned incorrect message type: %02X\n", reply.MsgType))
+		return nil, errors.New(fmt.Sprintf("GetEvent returned incorrect message type: %02X\n", reply.MsgType))
 	}
 
-	return &types.Swipe{
+	return &types.Event{
 		SerialNumber: reply.SerialNumber,
 		Index:        reply.Index,
 		Type:         reply.Type,
