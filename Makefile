@@ -55,7 +55,7 @@ usage: build
 	./bin/uhppote-cli
 
 debug: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug get-events $(SERIALNO)
+	./bin/uhppote-cli --bind $(LOCAL) --debug help commands
 
 help: build
 	./bin/uhppote-cli --bind $(LOCAL) help

@@ -37,6 +37,14 @@ func (c *GetDoorDelayCommand) CLI() string {
 	return "get-door-delay"
 }
 
+func (c *GetDoorDelayCommand) Description() string {
+	return "Gets the time a door lock is kept open"
+}
+
+func (c *GetDoorDelayCommand) Usage() string {
+	return "<serial number> <door>"
+}
+
 func (c *GetDoorDelayCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] get-door-delay <serial number> <door>")
 	fmt.Println()

@@ -40,6 +40,14 @@ func (c *GetCardsCommand) CLI() string {
 	return "get-cards"
 }
 
+func (c *GetCardsCommand) Description() string {
+	return "Returns the list of cards stored on the controller"
+}
+
+func (c *GetCardsCommand) Usage() string {
+	return "<serial number>"
+}
+
 func (c *GetCardsCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] get-cards <serial number>")
 	fmt.Println()

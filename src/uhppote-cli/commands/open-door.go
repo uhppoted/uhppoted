@@ -43,6 +43,14 @@ func (c *OpenDoorCommand) CLI() string {
 	return "open"
 }
 
+func (c *OpenDoorCommand) Description() string {
+	return "Opens a door"
+}
+
+func (c *OpenDoorCommand) Usage() string {
+	return "<serial number> <door>"
+}
+
 func (c *OpenDoorCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] open <serial number> <door>")
 	fmt.Println()

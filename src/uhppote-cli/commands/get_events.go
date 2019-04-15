@@ -39,8 +39,16 @@ func (c *GetEventsCommand) CLI() string {
 	return "get-events"
 }
 
+func (c *GetEventsCommand) Description() string {
+	return "Returns the list of access events stored on the controller"
+}
+
+func (c *GetEventsCommand) Usage() string {
+	return "<serial number>"
+}
+
 func (c *GetEventsCommand) Help() {
-	fmt.Println("Usage: uhppote-cli [options] get-events<serial number>")
+	fmt.Println("Usage: uhppote-cli [options] get-eventsi <serial number>")
 	fmt.Println()
 	fmt.Println(" Retrieves the list of recorded access events")
 	fmt.Println()

@@ -38,6 +38,14 @@ func (c *GetCardCommand) CLI() string {
 	return "get-card"
 }
 
+func (c *GetCardCommand) Description() string {
+	return "Returns the access granted to a card number"
+}
+
+func (c *GetCardCommand) Usage() string {
+	return "<serial number> <card number>"
+}
+
 func (c *GetCardCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] get-card <serial number> <card number>")
 	fmt.Println()

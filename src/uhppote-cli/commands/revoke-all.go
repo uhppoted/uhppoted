@@ -32,6 +32,14 @@ func (c *RevokeAllCommand) CLI() string {
 	return "revoke-all"
 }
 
+func (c *RevokeAllCommand) Description() string {
+	return "Clears all cards stored on the controller"
+}
+
+func (c *RevokeAllCommand) Usage() string {
+	return "<serial number>"
+}
+
 func (c *RevokeAllCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] revoke-all <serial number>")
 	fmt.Println()

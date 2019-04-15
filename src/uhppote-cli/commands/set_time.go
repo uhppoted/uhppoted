@@ -49,6 +49,14 @@ func (c *SetTimeCommand) CLI() string {
 	return "set-time"
 }
 
+func (c *SetTimeCommand) Description() string {
+	return "Sets the controller internal clock"
+}
+
+func (c *SetTimeCommand) Usage() string {
+	return "<serial number> [now|<yyyy-mm-dd HH:mm:ss>]"
+}
+
 func (c *SetTimeCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] set-time <serial number> [command options]")
 	fmt.Println()
