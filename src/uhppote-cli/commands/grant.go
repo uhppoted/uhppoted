@@ -58,7 +58,15 @@ func (c *GrantCommand) Execute(u *uhppote.UHPPOTE) error {
 }
 
 func (c *GrantCommand) CLI() string {
-	return "authorise"
+	return "grant"
+}
+
+func (c *GrantCommand) Description() string {
+	return "Grants access to a card"
+}
+
+func (c *GrantCommand) Usage() string {
+	return "<serial number> <card number> <start date> <end date> <doors>"
 }
 
 func (c *GrantCommand) Help() {

@@ -32,6 +32,14 @@ func (c *GetStatusCommand) CLI() string {
 	return "get-status"
 }
 
+func (c *GetStatusCommand) Description() string {
+	return "Returns the current status for the selected controller"
+}
+
+func (c *GetStatusCommand) Usage() string {
+	return "<serial number>"
+}
+
 func (c *GetStatusCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] get-status <serial number>")
 	fmt.Println()

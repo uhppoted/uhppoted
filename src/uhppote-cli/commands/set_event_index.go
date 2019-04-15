@@ -33,6 +33,14 @@ func (c *SetEventIndexCommand) CLI() string {
 	return "set-event-index"
 }
 
+func (c *SetEventIndexCommand) Description() string {
+	return "Sets the current event index"
+}
+
+func (c *SetEventIndexCommand) Usage() string {
+	return "<serial number> <index>"
+}
+
 func (c *SetEventIndexCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] set-event-index <serial number> <index>")
 	fmt.Println()

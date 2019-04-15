@@ -32,6 +32,14 @@ func (c *GetTimeCommand) CLI() string {
 	return "get-time"
 }
 
+func (c *GetTimeCommand) Description() string {
+	return "Returns the current time on the selected controller"
+}
+
+func (c *GetTimeCommand) Usage() string {
+	return "<serial number>"
+}
+
 func (c *GetTimeCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] get-time <serial number> [command options]")
 	fmt.Println()

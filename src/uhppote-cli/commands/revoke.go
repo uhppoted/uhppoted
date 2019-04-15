@@ -38,6 +38,14 @@ func (c *RevokeCommand) CLI() string {
 	return "revoke"
 }
 
+func (c *RevokeCommand) Description() string {
+	return "Revokes access for a card"
+}
+
+func (c *RevokeCommand) Usage() string {
+	return "<serial number> <card number>"
+}
+
 func (c *RevokeCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] revoke <serial number> <card number>")
 	fmt.Println()

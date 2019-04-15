@@ -24,6 +24,14 @@ func (c *GetDevicesCommand) CLI() string {
 	return "get-devices"
 }
 
+func (c *GetDevicesCommand) Description() string {
+	return "Returns a list of found UHPPOTE controllers on the network"
+}
+
+func (c *GetDevicesCommand) Usage() string {
+	return ""
+}
+
 func (c *GetDevicesCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] get-devices [command options]")
 	fmt.Println()

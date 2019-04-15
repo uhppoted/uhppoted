@@ -62,6 +62,14 @@ func (c *SetAddressCommand) CLI() string {
 	return "set-address"
 }
 
+func (c *SetAddressCommand) Description() string {
+	return "Sets the controller IP address"
+}
+
+func (c *SetAddressCommand) Usage() string {
+	return "<serial number> <address> [mask] [gateway]"
+}
+
 func (c *SetAddressCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] set-address <serial number> <address> [mask] [gateway]")
 	fmt.Println()

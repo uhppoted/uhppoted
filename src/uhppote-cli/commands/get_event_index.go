@@ -28,6 +28,14 @@ func (c *GetEventIndexCommand) CLI() string {
 	return "get-swipe-index"
 }
 
+func (c *GetEventIndexCommand) Description() string {
+	return "Retrieves the current event index"
+}
+
+func (c *GetEventIndexCommand) Usage() string {
+	return "<serial number>"
+}
+
 func (c *GetEventIndexCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] get-event-index <serial number>")
 	fmt.Println()

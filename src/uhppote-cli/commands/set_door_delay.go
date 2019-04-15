@@ -38,6 +38,14 @@ func (c *SetDoorDelayCommand) CLI() string {
 	return "set-door-delay"
 }
 
+func (c *SetDoorDelayCommand) Description() string {
+	return "Sets the duration for which a door lock is kept open"
+}
+
+func (c *SetDoorDelayCommand) Usage() string {
+	return "<serial number> <door> <delay>"
+}
+
 func (c *SetDoorDelayCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] set-door-delay <serial number> <door> <delay>")
 	fmt.Println()
