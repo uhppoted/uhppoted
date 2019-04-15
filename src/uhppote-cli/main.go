@@ -19,9 +19,9 @@ var cli = []commands.Command{
 	&commands.GetDevicesCommand{},
 	&commands.GetDoorDelayCommand{},
 	&commands.SetDoorDelayCommand{},
-	&commands.GetSwipesCommand{},
-	&commands.GetSwipeIndexCommand{},
-	&commands.SetSwipeIndexCommand{},
+	&commands.GetEventsCommand{},
+	&commands.GetEventIndexCommand{},
+	&commands.SetEventIndexCommand{},
 }
 
 var VERSION = "v0.00.0"

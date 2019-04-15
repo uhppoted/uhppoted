@@ -17,7 +17,7 @@ var commands = []Command{
 	&GetTimeCommand{},
 	&GetCardsCommand{},
 	&GetCardCommand{},
-	&GetSwipesCommand{},
+	&GetEventsCommand{},
 	&GrantCommand{},
 	&RevokeCommand{},
 	&RevokeAllCommand{},
