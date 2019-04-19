@@ -17,6 +17,8 @@ var cli = []commands.Command{
 	&commands.VersionCommand{VERSION},
 	&commands.GetDevicesCommand{},
 	&commands.GetStatusCommand{},
+	&commands.GetTimeCommand{},
+	&commands.SetTimeCommand{},
 	&commands.GetDoorDelayCommand{},
 	&commands.SetDoorDelayCommand{},
 	&commands.GetEventsCommand{},
@@ -62,12 +64,6 @@ func parse() (commands.Command, error) {
 
 	if len(os.Args) > 1 {
 		switch flag.Arg(0) {
-		case "get-time":
-			cmd, err = commands.NewGetTimeCommand()
-
-		case "set-time":
-			cmd, err = commands.NewSetTimeCommand()
-
 		case "set-ip-address":
 			cmd, err = commands.NewSetAddressCommand()
 

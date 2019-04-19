@@ -89,7 +89,7 @@ get-events: build
 
 set-time: build
 	# ./bin/uhppote-cli -debug set-time 423187757 '2019-01-08 12:34:56'
-	./bin/uhppote-cli -debug set-time 423187757
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-time 423187757
 
 set-address: build
 	./bin/uhppote-cli -debug set-ip-address 423187757 '192.168.1.125' '255.255.255.0' '0.0.0.0'
