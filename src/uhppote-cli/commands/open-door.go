@@ -7,30 +7,24 @@ import (
 )
 
 type OpenDoorCommand struct {
-	SerialNumber uint32
-	Door         byte
 }
 
-func NewOpenDoorCommand() (*OpenDoorCommand, error) {
+func (c *OpenDoorCommand) Execute(u *uhppote.UHPPOTE) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	door, err := getUint32(2, "Missing door ID", "Invalid door ID: %v")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if door != 1 && door != 2 && door != 3 && door != 4 {
-		return nil, errors.New(fmt.Sprintf("Invalid door ID: %v", door))
+		return errors.New(fmt.Sprintf("Invalid door ID: %v", door))
 	}
 
-	return &OpenDoorCommand{serialNumber, byte(door)}, nil
-}
-
-func (c *OpenDoorCommand) Execute(u *uhppote.UHPPOTE) error {
-	opened, err := u.OpenDoor(c.SerialNumber, c.Door)
+	opened, err := u.OpenDoor(serialNumber, byte(door))
 
 	if err == nil {
 		fmt.Printf("%v\n", opened)

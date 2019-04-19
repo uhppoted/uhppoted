@@ -12,7 +12,7 @@ type RevokedAll struct {
 }
 
 func (r *RevokedAll) String() string {
-	return fmt.Sprintf("REVOKED ALL %vi %v", r.SerialNumber, r.Revoked)
+	return fmt.Sprintf("%v %v", r.SerialNumber, r.Revoked)
 }
 
 func (u *UHPPOTE) DeleteAll(serialNumber uint32) (*RevokedAll, error) {

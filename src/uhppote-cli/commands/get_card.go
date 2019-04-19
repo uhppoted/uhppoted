@@ -6,26 +6,20 @@ import (
 )
 
 type GetCardCommand struct {
-	SerialNumber uint32
-	CardNumber   uint32
 }
 
-func NewGetCardCommand() (*GetCardCommand, error) {
+func (c *GetCardCommand) Execute(u *uhppote.UHPPOTE) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	cardNumber, err := getUint32(2, "Missing card number", "Invalid card number: %v")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &GetCardCommand{serialNumber, cardNumber}, nil
-}
-
-func (c *GetCardCommand) Execute(u *uhppote.UHPPOTE) error {
-	record, err := u.GetCardById(c.SerialNumber, c.CardNumber)
+	record, err := u.GetCardById(serialNumber, cardNumber)
 	if err != nil {
 		return err
 	}

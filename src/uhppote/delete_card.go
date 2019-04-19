@@ -13,7 +13,7 @@ type Revoked struct {
 }
 
 func (r *Revoked) String() string {
-	return fmt.Sprintf("REVOKED %v %v %v", r.SerialNumber, r.CardNumber, r.Revoked)
+	return fmt.Sprintf("%v %v %v", r.SerialNumber, r.CardNumber, r.Revoked)
 }
 
 func (u *UHPPOTE) Revoke(serialNumber, cardNumber uint32) (*Revoked, error) {
