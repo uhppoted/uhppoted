@@ -22,9 +22,15 @@ var cli = []commands.Command{
 	&commands.SetTimeCommand{},
 	&commands.GetDoorDelayCommand{},
 	&commands.SetDoorDelayCommand{},
+	&commands.GetCardsCommand{},
+	&commands.GetCardCommand{},
+	&commands.GrantCommand{},
+	&commands.RevokeCommand{},
+	&commands.RevokeAllCommand{},
 	&commands.GetEventsCommand{},
 	&commands.GetEventIndexCommand{},
 	&commands.SetEventIndexCommand{},
+	&commands.OpenDoorCommand{},
 }
 
 var VERSION = "v0.00.0"
@@ -65,24 +71,6 @@ func parse() (commands.Command, error) {
 
 	if len(os.Args) > 1 {
 		switch flag.Arg(0) {
-		case "get-cards":
-			cmd, err = commands.NewGetCardsCommand()
-
-		case "get-card":
-			cmd, err = commands.NewGetCardCommand()
-
-		case "grant":
-			cmd, err = commands.NewGrantCommand()
-
-		case "revoke":
-			cmd, err = commands.NewRevokeCommand()
-
-		case "revoke-all":
-			cmd, err = commands.NewRevokeAllCommand()
-
-		case "open":
-			cmd, err = commands.NewOpenDoorCommand()
-
 		default:
 			for _, c := range cli {
 				if c.CLI() == flag.Arg(0) {

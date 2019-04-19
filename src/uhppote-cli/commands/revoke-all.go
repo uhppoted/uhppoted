@@ -6,20 +6,15 @@ import (
 )
 
 type RevokeAllCommand struct {
-	SerialNumber uint32
-}
-
-func NewRevokeAllCommand() (*RevokeAllCommand, error) {
-	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
-	if err != nil {
-		return nil, err
-	}
-
-	return &RevokeAllCommand{serialNumber}, nil
 }
 
 func (c *RevokeAllCommand) Execute(u *uhppote.UHPPOTE) error {
-	deleted, err := u.DeleteAll(c.SerialNumber)
+	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
+	if err != nil {
+		return err
+	}
+
+	deleted, err := u.DeleteAll(serialNumber)
 
 	if err == nil {
 		fmt.Printf("%v\n", deleted)

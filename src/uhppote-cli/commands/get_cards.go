@@ -6,27 +6,22 @@ import (
 )
 
 type GetCardsCommand struct {
-	SerialNumber uint32
-}
-
-func NewGetCardsCommand() (*GetCardsCommand, error) {
-	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
-	if err != nil {
-		return nil, err
-	}
-
-	return &GetCardsCommand{serialNumber}, nil
 }
 
 func (c *GetCardsCommand) Execute(u *uhppote.UHPPOTE) error {
-	N, err := u.GetCards(c.SerialNumber)
+	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
+	if err != nil {
+		return err
+	}
+
+	N, err := u.GetCards(serialNumber)
 
 	if err != nil {
 		return err
 	}
 
 	for index := uint32(0); index < N.Records; index++ {
-		record, err := u.GetCardByIndex(c.SerialNumber, index+1)
+		record, err := u.GetCardByIndex(serialNumber, index+1)
 		if err != nil {
 			return err
 		}

@@ -66,49 +66,48 @@ version: build
 get-devices: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug get-devices
 
+set-address: build
+	./bin/uhppote-cli -bind $(LOCAL) $(DEBUG) set-address $(SERIALNO) '192.168.1.125' '255.255.255.0' '0.0.0.0'
+
 get-status: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug get-status $(SERIALNO)
 
 get-time: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug get-time $(SERIALNO)
 
-get-cards: build
-	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-cards $(SERIALNO)
-
-get-door-delay: build
-	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-door-delay $(SERIALNO) $(DOOR)
-
-get-card: build
-	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-card $(SERIALNO) $(CARD)
-
-get-event-index: build
-	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-event-index $(SERIALNO)
-
-get-events: build
-	./bin/uhppote-cli --bind $(LOCAL) get-events $(SERIALNO)
-
 set-time: build
 	# ./bin/uhppote-cli -debug set-time 423187757 '2019-01-08 12:34:56'
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-time $(SERIALNO)
 
-set-address: build
-	./bin/uhppote-cli -bind $(LOCAL) $(DEBUG) set-address $(SERIALNO) '192.168.1.125' '255.255.255.0' '0.0.0.0'
+get-door-delay: build
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-door-delay $(SERIALNO) $(DOOR)
 
 set-door-delay: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-door-delay $(SERIALNO) $(DOOR) 5
 
-set-events-index: build
-	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-events-index $(SERIALNO) 23
+get-cards: build
+	./bin/uhppote-cli --bind $(LOCAL) get-cards $(SERIALNO)
+
+get-card: build
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-card $(SERIALNO) $(CARD)
 
 grant: build
-	#./bin/uhppote-cli --bind $(LOCAL) --debug grant $(SERIALNO) 12345 2019-01-01 2019-12-31 1,4
-	./bin/uhppote-cli --bind $(LOCAL) --debug grant $(SERIALNO) 6154404 2019-01-01 2019-12-31 1
+	./bin/uhppote-cli --bind $(LOCAL) --debug grant $(SERIALNO) $(CARD) 2019-01-01 2019-12-31 1
 
 revoke: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug revoke $(SERIALNO) 615441
+	./bin/uhppote-cli --bind $(LOCAL) --debug revoke $(SERIALNO) $(CARD)
 
 revoke-all: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug revoke-all $(SERIALNO)
+
+get-events: build
+	./bin/uhppote-cli --bind $(LOCAL) get-events $(SERIALNO)
+
+get-event-index: build
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-event-index $(SERIALNO)
+
+set-events-index: build
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-events-index $(SERIALNO) 23
 
 open: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug open $(SERIALNO) 1

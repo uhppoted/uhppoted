@@ -6,26 +6,20 @@ import (
 )
 
 type RevokeCommand struct {
-	SerialNumber uint32
-	CardNumber   uint32
 }
 
-func NewRevokeCommand() (*RevokeCommand, error) {
+func (c *RevokeCommand) Execute(u *uhppote.UHPPOTE) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	cardNumber, err := getUint32(2, "Missing card number", "Invalid card number: %v")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &RevokeCommand{serialNumber, cardNumber}, nil
-}
-
-func (c *RevokeCommand) Execute(u *uhppote.UHPPOTE) error {
-	revoked, err := u.Revoke(c.SerialNumber, c.CardNumber)
+	revoked, err := u.Revoke(serialNumber, cardNumber)
 
 	if err == nil {
 		fmt.Printf("%v\n", revoked)
