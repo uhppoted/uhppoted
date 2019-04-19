@@ -49,7 +49,7 @@ func TestUnmarshalGetListenerResponse(t *testing.T) {
 	}
 
 	if reply.MsgType != 0x92 {
-		t.Errorf("Incorrect 'message type' - expected:%02X, got:%02x\n", 0x32, reply.MsgType)
+		t.Errorf("Incorrect 'message type' - expected:%02X, got:%02x\n", 0x92, reply.MsgType)
 	}
 
 	if reply.SerialNumber != 423187757 {

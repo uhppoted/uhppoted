@@ -30,6 +30,26 @@ func getUint8(index int, missing, invalid string) (uint8, error) {
 	return uint8(N), err
 }
 
+func getUint16(index int, missing, invalid string) (uint16, error) {
+	if len(flag.Args()) < index+1 {
+		return 0, errors.New(missing)
+	}
+
+	valid, _ := regexp.MatchString("[0-9]+", flag.Arg(index))
+
+	if !valid {
+		return 0, errors.New(fmt.Sprintf(invalid, flag.Arg(index)))
+	}
+
+	N, err := strconv.ParseUint(flag.Arg(index), 10, 16)
+
+	if err != nil {
+		return 0, errors.New(fmt.Sprintf(invalid, flag.Arg(index)))
+	}
+
+	return uint16(N), err
+}
+
 func getUint32(index int, missing, invalid string) (uint32, error) {
 	if len(flag.Args()) < index+1 {
 		return 0, errors.New(missing)
