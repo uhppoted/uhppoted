@@ -69,6 +69,9 @@ func marshal(s reflect.Value) ([]byte, error) {
 						bytes[offset] = byte(f.Uint())
 					}
 
+				case tUint16:
+					binary.LittleEndian.PutUint16(bytes[offset:offset+4], uint16(f.Uint()))
+
 				case tUint32:
 					binary.LittleEndian.PutUint32(bytes[offset:offset+4], uint32(f.Uint()))
 

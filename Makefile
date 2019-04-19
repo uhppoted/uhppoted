@@ -88,6 +88,9 @@ set-door-delay: build
 get-listener: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-listener $(SERIALNO)
 
+set-listener: build
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-listener $(SERIALNO) 192.168.1.100:40000
+
 get-cards: build
 	./bin/uhppote-cli --bind $(LOCAL) get-cards $(SERIALNO)
 

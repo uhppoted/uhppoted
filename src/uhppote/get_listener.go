@@ -31,7 +31,6 @@ func (u *UHPPOTE) GetListener(serialNumber uint32) (*types.Listener, error) {
 
 	return &types.Listener{
 		SerialNumber: reply.SerialNumber,
-		Address:      reply.Address,
-		Port:         reply.Port,
+		Address:      net.UDPAddr{IP: reply.Address, Port: int(reply.Port)},
 	}, nil
 }
