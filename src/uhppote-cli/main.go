@@ -16,6 +16,7 @@ type bind struct {
 var cli = []commands.Command{
 	&commands.VersionCommand{VERSION},
 	&commands.GetDevicesCommand{},
+	&commands.SetAddressCommand{},
 	&commands.GetStatusCommand{},
 	&commands.GetTimeCommand{},
 	&commands.SetTimeCommand{},
@@ -64,9 +65,6 @@ func parse() (commands.Command, error) {
 
 	if len(os.Args) > 1 {
 		switch flag.Arg(0) {
-		case "set-ip-address":
-			cmd, err = commands.NewSetAddressCommand()
-
 		case "get-cards":
 			cmd, err = commands.NewGetCardsCommand()
 
