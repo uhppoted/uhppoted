@@ -8,8 +8,8 @@
 6. Commands:
    * find-devices 
      * Handle multiple replies 
-   * set_ripp
-   * get_ripp
-   * userid' 
+   * set\_ripp
+   * get\_ripp
+   * userid 
 7. fuse
 8. Centralise and rationalise scattered CLI command syntax and help
