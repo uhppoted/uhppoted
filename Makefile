@@ -85,6 +85,9 @@ get-door-delay: build
 set-door-delay: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-door-delay $(SERIALNO) $(DOOR) 5
 
+get-listener: build
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-listener $(SERIALNO)
+
 get-cards: build
 	./bin/uhppote-cli --bind $(LOCAL) get-cards $(SERIALNO)
 

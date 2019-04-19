@@ -38,10 +38,9 @@ func (c *GetTimeCommand) Usage() string {
 func (c *GetTimeCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] get-time <serial number> [command options]")
 	fmt.Println()
-	fmt.Println(" Retrieves the current date/time referenced to the local timezone for the access control board")
-	fmt.Println(" with the corresponding serial number in the format:")
+	fmt.Println(" Retrieves the current date/time referenced to the local timezone for the controller")
 	fmt.Println()
-	fmt.Println(" <serial number> <yyyy-mm-dd HH:mm:ss>")
+	fmt.Println("  serial-number  (required) controller serial number")
 	fmt.Println()
 	fmt.Println("  Options:")
 	fmt.Println()
