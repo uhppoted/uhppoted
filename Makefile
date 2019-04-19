@@ -55,7 +55,7 @@ usage: build
 	./bin/uhppote-cli
 
 debug: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug help commands
+	./bin/uhppote-cli --bind $(LOCAL) --debug help get-status
 
 help: build
 	./bin/uhppote-cli --bind $(LOCAL) help

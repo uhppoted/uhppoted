@@ -14,9 +14,9 @@ type bind struct {
 }
 
 var cli = []commands.Command{
-	&commands.HelpCommand{},
 	&commands.VersionCommand{VERSION},
 	&commands.GetDevicesCommand{},
+	&commands.GetStatusCommand{},
 	&commands.GetDoorDelayCommand{},
 	&commands.SetDoorDelayCommand{},
 	&commands.GetEventsCommand{},
@@ -38,13 +38,18 @@ func main() {
 		Debug:       debug,
 	}
 
-	command, err := parse()
+	cmd, err := parse()
 	if err != nil {
 		fmt.Printf("\n   ERROR: %v\n\n", err)
 		os.Exit(1)
 	}
 
-	err = command.Execute(&u)
+	if cmd == nil {
+		help()
+		return
+	}
+
+	err = cmd.Execute(&u)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 		os.Exit(1)
@@ -52,14 +57,11 @@ func main() {
 }
 
 func parse() (commands.Command, error) {
-	var cmd commands.Command = commands.NewHelpCommand()
+	var cmd commands.Command = nil // commands.NewHelpCommand()
 	var err error = nil
 
 	if len(os.Args) > 1 {
 		switch flag.Arg(0) {
-		case "get-status":
-			cmd, err = commands.NewGetStatusCommand()
-
 		case "get-time":
 			cmd, err = commands.NewGetTimeCommand()
 
@@ -112,4 +114,60 @@ func (b *bind) Set(s string) error {
 	b.address = *address
 
 	return nil
+}
+
+func help() {
+	if len(flag.Args()) > 0 && flag.Arg(0) == "help" {
+		if len(flag.Args()) > 1 {
+
+			if flag.Arg(1) == "commands" {
+				helpCommands()
+				return
+			}
+
+			for _, c := range cli {
+				if c.CLI() == flag.Arg(1) {
+					c.Help()
+					return
+				}
+			}
+
+			fmt.Printf("Invalid command: %v. Type 'help commands' to get a list of supported commands\n", flag.Arg(1))
+			return
+		}
+	}
+
+	usage()
+}
+
+func usage() {
+	fmt.Println()
+	fmt.Println("  Usage: uhppote-cli [options] <command>")
+	fmt.Println()
+	fmt.Println("  Commands:")
+	fmt.Println()
+	fmt.Println("    help             Displays this message")
+	fmt.Println("                     For help on a specific command use 'uhppote-cli help <command>'")
+
+	for _, c := range cli {
+		fmt.Printf("    %-16s %s\n", c.CLI(), c.Description())
+	}
+
+	fmt.Println()
+	fmt.Println("  Options:")
+	fmt.Println()
+	fmt.Println("    -bind   Sets the local IP address+port to use")
+	fmt.Println("    -debug  Displays vaguely useful internal information")
+	fmt.Println()
+}
+
+func helpCommands() {
+	fmt.Println("Supported commands:")
+	fmt.Println()
+
+	for _, c := range cli {
+		fmt.Printf(" %-16s %s\n", c.CLI(), c.Usage())
+	}
+
+	fmt.Println()
 }
