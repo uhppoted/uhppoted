@@ -22,6 +22,7 @@ var cli = []commands.Command{
 	&commands.SetTimeCommand{},
 	&commands.GetDoorDelayCommand{},
 	&commands.SetDoorDelayCommand{},
+	&commands.GetListenerCommand{},
 	&commands.GetCardsCommand{},
 	&commands.GetCardCommand{},
 	&commands.GrantCommand{},
