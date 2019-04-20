@@ -22,17 +22,22 @@ The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Acc
 Supported functions:
 - FindDevices
 - SetAddress
-- GetStatus
 - GetTime
 - SetTime
 - GetDoorDelay
 - SetDoorDelay
+- GetListener
+- SetListener
+- GetStatus
 - GetCards
 - GetCardByIndex
 - GetCardById
+- PutCard
+- DeleteCard
 - GetEvent
 - GetEventIndex
 - SetEventIndex
+- Open
 
 ## uhppote-cli
 
@@ -44,11 +49,13 @@ Supported commands:
 - version
 - get-devices
 - set-address
-- get-status
 - get-time
 - set-time
 - get-door-delay
 - set-door-delay
+- get-listener
+- set-listener
+- get-status
 - get-cards
 - get-card
 - grant
