@@ -2,7 +2,13 @@ package types
 
 import "fmt"
 
+type MsgType uint8
 type SerialNumber uint32
+
+type Result struct {
+	SerialNumber SerialNumber
+	Success      bool
+}
 
 type RecordCount struct {
 	SerialNumber SerialNumber
@@ -11,6 +17,10 @@ type RecordCount struct {
 
 func (s SerialNumber) String() string {
 	return fmt.Sprintf("%-10d", s)
+}
+
+func (r *Result) String() string {
+	return fmt.Sprintf("%v %v", r.SerialNumber, r.Success)
 }
 
 func (r *RecordCount) String() string {

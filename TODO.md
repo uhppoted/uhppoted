@@ -11,4 +11,3 @@
    * userid 
    * listen
 7. fuse
-8. Centralise and rationalise scattered CLI command syntax and help
