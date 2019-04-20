@@ -14,6 +14,14 @@ type DateTime struct {
 	DateTime time.Time
 }
 
+type SystemDate struct {
+	Date time.Time
+}
+
+type SystemTime struct {
+	Time time.Time
+}
+
 func (d Date) String() string {
 	return d.Date.Format("2006-01-02")
 }
