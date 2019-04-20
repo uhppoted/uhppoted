@@ -8,6 +8,5 @@
 6. Commands:
    * find-devices 
      * Handle multiple replies 
-   * userid 
    * listen
 7. fuse

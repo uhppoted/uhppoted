@@ -12,6 +12,7 @@ The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Acc
 
 ## Modules
 
+- uhppote:           UDP interface to UHPPOTE UTO0311-L0x controllers
 - uhppote-cli:       CLI for use with bash scripts
 - uhppote-simulator: UHPPOTE simulator for development use
 
