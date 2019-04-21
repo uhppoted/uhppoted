@@ -3,7 +3,7 @@ package uhppote
 import (
 	"reflect"
 	"testing"
-	"uhppote/encoding"
+	codec "uhppote/encoding/UTO311-L0x"
 )
 
 func TestMarshalSetEventIndexRequest(t *testing.T) {
@@ -21,7 +21,7 @@ func TestMarshalSetEventIndexRequest(t *testing.T) {
 		MagicWord:    0x55aaaa55,
 	}
 
-	m, err := uhppote.Marshal(request)
+	m, err := codec.Marshal(request)
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
@@ -44,7 +44,7 @@ func TestUnmarshalSetEventIndexResponse(t *testing.T) {
 
 	reply := SetEventIndexResponse{}
 
-	err := uhppote.Unmarshal(message, &reply)
+	err := codec.Unmarshal(message, &reply)
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v\n", err)

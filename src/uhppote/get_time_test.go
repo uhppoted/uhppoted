@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 	"time"
-	"uhppote/encoding"
+	codec "uhppote/encoding/UTO311-L0x"
 )
 
 func TestMarshalGetTimeRequest(t *testing.T) {
@@ -20,7 +20,7 @@ func TestMarshalGetTimeRequest(t *testing.T) {
 		SerialNumber: 423187757,
 	}
 
-	m, err := uhppote.Marshal(request)
+	m, err := codec.Marshal(request)
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
@@ -43,7 +43,7 @@ func TestUnmarshalGetTimeResponse(t *testing.T) {
 
 	reply := GetTimeResponse{}
 
-	err := uhppote.Unmarshal(message, &reply)
+	err := codec.Unmarshal(message, &reply)
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v\n", err)

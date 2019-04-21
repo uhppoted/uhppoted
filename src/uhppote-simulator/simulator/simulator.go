@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"time"
 	"uhppote"
-	codec "uhppote/encoding"
+	codec "uhppote/encoding/UTO311-L0x"
 	"uhppote/types"
 )
 

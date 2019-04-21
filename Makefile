@@ -12,7 +12,7 @@ format:
 	gofmt -w=true src/uhppote/*.go
 	gofmt -w=true src/uhppote/types/*.go
 	gofmt -w=true src/uhppote/messages/*.go
-	gofmt -w=true src/uhppote/encoding/*.go
+	gofmt -w=true src/uhppote/encoding/UTO311-L0x/*.go
 	gofmt -w=true src/uhppote-cli/*.go
 	gofmt -w=true src/uhppote-cli/commands/*.go
 	gofmt -w=true src/uhppote-simulator/*.go
@@ -38,7 +38,7 @@ test: build
 	go clean -testcache
 	go test -count=1 src/uhppote/*.go
 	go test -count=1 src/uhppote/messages/*.go
-	go test -count=1 src/uhppote/encoding/*.go
+	go test -count=1 src/uhppote/encoding/UTO311-L0x/*.go
 	go test -count=1 src/encoding/bcd/*.go
 
 benchmark: build

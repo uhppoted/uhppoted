@@ -4,7 +4,7 @@ import (
 	"net"
 	"reflect"
 	"testing"
-	"uhppote/encoding"
+	codec "uhppote/encoding/UTO311-L0x"
 )
 
 func TestMarshalSetListenerRequest(t *testing.T) {
@@ -21,7 +21,7 @@ func TestMarshalSetListenerRequest(t *testing.T) {
 		Port:         40000,
 	}
 
-	m, err := uhppote.Marshal(request)
+	m, err := codec.Marshal(request)
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
@@ -44,7 +44,7 @@ func TestUnmarshalSetListenerResponse(t *testing.T) {
 
 	reply := SetListenerResponse{}
 
-	err := uhppote.Unmarshal(message, &reply)
+	err := codec.Unmarshal(message, &reply)
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v\n", err)
@@ -73,7 +73,7 @@ func TestUnmarshalSetListenerResponseWithInvalidMsgType(t *testing.T) {
 
 	reply := SetListenerResponse{}
 
-	err := uhppote.Unmarshal(message, &reply)
+	err := codec.Unmarshal(message, &reply)
 
 	if err == nil {
 		t.Errorf("Expected error: '%v'", "Invalid value in message - expected 0x90, received 0x94")

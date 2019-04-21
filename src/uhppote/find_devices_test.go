@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 	"time"
-	"uhppote/encoding"
+	codec "uhppote/encoding/UTO311-L0x"
 )
 
 func TestMarshalFindDevicesRequest(t *testing.T) {
@@ -20,7 +20,7 @@ func TestMarshalFindDevicesRequest(t *testing.T) {
 		MsgType: 0x94,
 	}
 
-	m, err := uhppote.Marshal(request)
+	m, err := codec.Marshal(request)
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
@@ -43,7 +43,7 @@ func TestUnmarshalFindDevicesResponse(t *testing.T) {
 
 	reply := FindDevicesResponse{}
 
-	err := uhppote.Unmarshal(message, &reply)
+	err := codec.Unmarshal(message, &reply)
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v\n", err)

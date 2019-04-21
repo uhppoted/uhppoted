@@ -3,7 +3,7 @@ package uhppote
 import (
 	"reflect"
 	"testing"
-	"uhppote/encoding"
+	codec "uhppote/encoding/UTO311-L0x"
 )
 
 func TestMarshalSetDoorDelayRequest(t *testing.T) {
@@ -22,7 +22,7 @@ func TestMarshalSetDoorDelayRequest(t *testing.T) {
 		Delay:        5,
 	}
 
-	m, err := uhppote.Marshal(request)
+	m, err := codec.Marshal(request)
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
@@ -45,7 +45,7 @@ func TestUnmarshalSetDoorDelayResponse(t *testing.T) {
 
 	reply := SetDoorDelayResponse{}
 
-	err := uhppote.Unmarshal(message, &reply)
+	err := codec.Unmarshal(message, &reply)
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v\n", err)
