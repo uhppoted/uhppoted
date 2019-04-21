@@ -1,33 +1,37 @@
 package uhppote
 
 import (
-	"encoding/binary"
-	"uhppote/messages"
+	"time"
 	"uhppote/types"
 )
 
-func (u *UHPPOTE) SetTime(serialNumber uint32, datetime types.DateTime) (*types.DateTime, error) {
-	cmd := make([]byte, 64)
+type SetTimeRequest struct {
+	MsgType      types.MsgType      `uhppote:"value:0x30"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
+	DateTime     types.DateTime     `uhppote:"offset:8"`
+}
 
-	cmd[0] = 0x17
-	cmd[1] = 0x30
-	cmd[2] = 0x00
-	cmd[3] = 0x00
+type SetTimeResponse struct {
+	MsgType      types.MsgType      `uhppote:"value:0x30"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
+	DateTime     types.DateTime     `uhppote:"offset:8"`
+}
 
-	binary.LittleEndian.PutUint32(cmd[4:8], serialNumber)
-	datetime.Encode(cmd[8:15])
+func (u *UHPPOTE) SetTime(serialNumber uint32, datetime time.Time) (*types.Time, error) {
+	request := SetTimeRequest{
+		SerialNumber: types.SerialNumber(serialNumber),
+		DateTime:     types.DateTime{datetime},
+	}
 
-	reply, err := u.Execute(cmd)
+	reply := SetTimeResponse{}
 
+	err := u.Exec(request, &reply)
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := messages.NewGetTime(reply)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &result.DateTime, nil
+	return &types.Time{
+		SerialNumber: reply.SerialNumber,
+		DateTime:     reply.DateTime,
+	}, nil
 }

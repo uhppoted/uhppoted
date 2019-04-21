@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 	"uhppote"
-	"uhppote/types"
 )
 
 type SetTimeCommand struct {
@@ -30,7 +29,7 @@ func (c *SetTimeCommand) Execute(u *uhppote.UHPPOTE) error {
 		}
 	}
 
-	devicetime, err := u.SetTime(serialNumber, types.DateTime{datetime})
+	devicetime, err := u.SetTime(serialNumber, datetime)
 
 	if err == nil {
 		fmt.Printf("%s\n", devicetime)
