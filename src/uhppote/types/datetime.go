@@ -44,7 +44,7 @@ func DecodeDateTime(bytes []byte) (*DateTime, error) {
 	return &DateTime{datetime}, nil
 }
 
-func (d *DateTime) Encode(bytes []byte) {
+func (d DateTime) Encode(bytes []byte) {
 	encoded, err := bcd.Encode(d.DateTime.Format("20060102150405"))
 
 	if err != nil {

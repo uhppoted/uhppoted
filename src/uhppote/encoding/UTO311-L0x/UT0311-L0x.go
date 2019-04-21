@@ -109,7 +109,11 @@ func marshal(s reflect.Value) ([]byte, error) {
 					binary.BigEndian.PutUint16(bytes[offset:offset+2], uint16(f.Uint()))
 
 				case tDate:
-					slice := reflect.ValueOf(bytes[offset : offset+6])
+					slice := reflect.ValueOf(bytes[offset : offset+4])
+					f.MethodByName("Encode").Call([]reflect.Value{slice})
+
+				case tDateTime:
+					slice := reflect.ValueOf(bytes[offset : offset+7])
 					f.MethodByName("Encode").Call([]reflect.Value{slice})
 
 				default:
