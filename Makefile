@@ -37,7 +37,6 @@ build: format
 test: build
 	go clean -testcache
 	go test -count=1 src/uhppote/*.go
-	go test -count=1 src/uhppote/messages/*.go
 	go test -count=1 src/uhppote/encoding/UTO311-L0x/*.go
 	go test -count=1 src/encoding/bcd/*.go
 
