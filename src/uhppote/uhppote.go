@@ -6,7 +6,7 @@ import (
 	"net"
 	"regexp"
 	"time"
-	"uhppote/encoding"
+	"uhppote/encoding/UTO311-L0x"
 )
 
 type UHPPOTE struct {
@@ -15,14 +15,14 @@ type UHPPOTE struct {
 }
 
 func (u *UHPPOTE) Exec(request, reply interface{}) error {
-	p, err := uhppote.Marshal(request)
+	p, err := UTO311_L0x.Marshal(request)
 	if err != nil {
 		return err
 	}
 
 	q, err := u.Execute(p)
 
-	err = uhppote.Unmarshal(q, reply)
+	err = UTO311_L0x.Unmarshal(q, reply)
 	if err != nil {
 		return err
 	}

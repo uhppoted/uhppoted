@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 	"time"
-	"uhppote/encoding"
+	codec "uhppote/encoding/UTO311-L0x"
 )
 
 func TestMarshalGetCardByIndexRequest(t *testing.T) {
@@ -20,7 +20,7 @@ func TestMarshalGetCardByIndexRequest(t *testing.T) {
 		Index:        4,
 	}
 
-	m, err := uhppote.Marshal(request)
+	m, err := codec.Marshal(request)
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
@@ -46,7 +46,7 @@ func TestMarshalGetCardByIdRequest(t *testing.T) {
 		CardNumber:   6154412,
 	}
 
-	m, err := uhppote.Marshal(request)
+	m, err := codec.Marshal(request)
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
@@ -69,7 +69,7 @@ func TestUnmarshalGetCardByIndexResponse(t *testing.T) {
 
 	reply := GetCardByIndexResponse{}
 
-	err := uhppote.Unmarshal(message, &reply)
+	err := codec.Unmarshal(message, &reply)
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v\n", err)
@@ -124,7 +124,7 @@ func TestUnmarshalGetCardByIdResponse(t *testing.T) {
 
 	reply := GetCardByIdResponse{}
 
-	err := uhppote.Unmarshal(message, &reply)
+	err := codec.Unmarshal(message, &reply)
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v\n", err)
@@ -179,7 +179,7 @@ func TestUnmarshalGetCardByIndexResponseWithInvalidMsgType(t *testing.T) {
 
 	reply := GetCardByIndexResponse{}
 
-	err := uhppote.Unmarshal(message, &reply)
+	err := codec.Unmarshal(message, &reply)
 
 	if err == nil {
 		t.Errorf("Expected error: '%v'", "Invalid value in message - expected 0x5c, received 0x94")
@@ -197,7 +197,7 @@ func TestUnmarshalGetCardByIdResponseWithInvalidMsgType(t *testing.T) {
 
 	reply := GetCardByIdResponse{}
 
-	err := uhppote.Unmarshal(message, &reply)
+	err := codec.Unmarshal(message, &reply)
 
 	if err == nil {
 		t.Errorf("Expected error: '%v'", "Invalid value in message - expected 0x5a, received 0x94")
