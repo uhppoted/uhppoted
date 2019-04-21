@@ -6,7 +6,6 @@
 4. Consistently include device serial number in output e.g. of get-time
 5. Document protocol
 6. Commands:
-   * find-devices 
-     * Handle multiple replies 
    * listen
+8. Fix unit tests for unmarshalling incorrect message types
 7. fuse

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net"
 	"regexp"
-	"time"
 	"uhppote"
 	codec "uhppote/encoding/UTO311-L0x"
 	"uhppote/types"
@@ -124,8 +123,6 @@ func (s *Simulator) handle(bytes []byte) ([]byte, error) {
 }
 
 func (s *Simulator) find(bytes []byte) ([]byte, error) {
-	time.Sleep(100 * time.Millisecond)
-
 	response := uhppote.FindDevicesResponse{
 		MsgType:      0x94,
 		SerialNumber: s.SerialNumber,

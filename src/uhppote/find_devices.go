@@ -1,18 +1,17 @@
 package uhppote
 
 import (
-	"errors"
-	"fmt"
 	"net"
+	codec "uhppote/encoding/UTO311-L0x"
 	"uhppote/types"
 )
 
 type FindDevicesRequest struct {
-	MsgType byte `uhppote:"offset:1"`
+	MsgType types.MsgType `uhppote:"value:0x94"`
 }
 
 type FindDevicesResponse struct {
-	MsgType      byte               `uhppote:"offset:1"`
+	MsgType      types.MsgType      `uhppote:"value:0x94"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 	IpAddress    net.IP             `uhppote:"offset:8"`
 	SubnetMask   net.IP             `uhppote:"offset:12"`
@@ -23,32 +22,31 @@ type FindDevicesResponse struct {
 }
 
 func (u *UHPPOTE) FindDevices() ([]types.Device, error) {
-	request := FindDevicesRequest{
-		MsgType: 0x94,
-	}
+	request := FindDevicesRequest{}
 
-	reply := FindDevicesResponse{}
-
-	err := u.Exec(request, &reply)
+	replies, err := u.Broadcast(request)
 	if err != nil {
 		return nil, err
 	}
 
-	if reply.MsgType != 0x94 {
-		return nil, errors.New(fmt.Sprintf("FindDevices returned incorrect message type: %02x\n", reply.MsgType))
-	}
-
 	devices := []types.Device{}
-
-	devices = append(devices, types.Device{
-		SerialNumber: reply.SerialNumber,
-		IpAddress:    reply.IpAddress,
-		SubnetMask:   reply.SubnetMask,
-		Gateway:      reply.Gateway,
-		MacAddress:   reply.MacAddress,
-		Version:      reply.Version,
-		Date:         reply.Date,
-	})
+	for _, r := range replies {
+		reply := FindDevicesResponse{}
+		err = codec.Unmarshal(r, &reply)
+		if err != nil {
+			return devices, err
+		} else {
+			devices = append(devices, types.Device{
+				SerialNumber: reply.SerialNumber,
+				IpAddress:    reply.IpAddress,
+				SubnetMask:   reply.SubnetMask,
+				Gateway:      reply.Gateway,
+				MacAddress:   reply.MacAddress,
+				Version:      reply.Version,
+				Date:         reply.Date,
+			})
+		}
+	}
 
 	return devices, nil
 }
