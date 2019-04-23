@@ -1,11 +1,7 @@
 package commands
 
 import (
-	"errors"
-	"flag"
 	"fmt"
-	"strconv"
-	"strings"
 	"uhppote"
 )
 
@@ -38,7 +34,7 @@ func (c *GrantCommand) Execute(u *uhppote.UHPPOTE) error {
 		return err
 	}
 
-	authorised, err := u.Authorise(serialNumber, cardNumber, *from, *to, *permissions)
+	authorised, err := u.PutCard(serialNumber, cardNumber, *from, *to, permissions[0], permissions[1], permissions[2], permissions[3])
 
 	if err == nil {
 		fmt.Printf("%v\n", authorised)
@@ -74,23 +70,4 @@ func (c *GrantCommand) Help() {
 	fmt.Println()
 	fmt.Println("    uhppote-cli authorise 12345678 918273645 2019-01-01 2019-12-31 1,2,4")
 	fmt.Println()
-}
-
-func getPermissions(index int) (*[]int, error) {
-	permissions := []int{}
-
-	if len(flag.Args()) > index {
-		matches := strings.Split(flag.Arg(index), ",")
-
-		for _, match := range matches {
-			door, err := strconv.Atoi(match)
-			if err != nil {
-				return nil, errors.New(fmt.Sprintf("Invalid door '%v'", match))
-			}
-
-			permissions = append(permissions, door)
-		}
-	}
-
-	return &permissions, nil
 }

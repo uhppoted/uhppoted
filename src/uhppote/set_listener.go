@@ -8,19 +8,19 @@ import (
 )
 
 type SetListenerRequest struct {
-	MsgType      byte               `uhppote:"offset:1, value:0x90"`
+	MsgType      types.MsgType      `uhppote:"value:0x90"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 	Address      net.IP             `uhppote:"offset:8"`
 	Port         uint16             `uhppote:"offset:12"`
 }
 
 type SetListenerResponse struct {
-	MsgType      byte               `uhppote:"offset:1, value:0x90"`
+	MsgType      types.MsgType      `uhppote:"value:0x90"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 	Success      bool               `uhppote:"offset:8"`
 }
 
-func (u *UHPPOTE) SetListener(serialNumber uint32, address net.UDPAddr) (*types.ListenerResult, error) {
+func (u *UHPPOTE) SetListener(serialNumber uint32, address net.UDPAddr) (*types.Result, error) {
 	if address.IP.To4() == nil {
 		return nil, errors.New(fmt.Sprintf("Invalid IP address: %v", address))
 	}
@@ -38,9 +38,8 @@ func (u *UHPPOTE) SetListener(serialNumber uint32, address net.UDPAddr) (*types.
 		return nil, err
 	}
 
-	return &types.ListenerResult{
+	return &types.Result{
 		SerialNumber: reply.SerialNumber,
-		Address:      address,
-		Succeeded:    reply.Success,
+		Success:      reply.Success,
 	}, nil
 }
