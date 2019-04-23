@@ -96,6 +96,13 @@ func marshal(s reflect.Value) ([]byte, error) {
 				case tUint32:
 					binary.LittleEndian.PutUint32(bytes[offset:offset+4], uint32(f.Uint()))
 
+				case tBool:
+					if f.Bool() {
+						bytes[offset] = 0x01
+					} else {
+						bytes[offset] = 0x00
+					}
+
 				case tIPv4:
 					copy(bytes[offset:offset+4], f.MethodByName("To4").Call([]reflect.Value{})[0].Bytes())
 

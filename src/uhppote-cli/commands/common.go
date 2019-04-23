@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
-	"uhppote/types"
 )
 
 func getUint8(index int, missing, invalid string) (uint8, error) {
@@ -70,7 +70,7 @@ func getUint32(index int, missing, invalid string) (uint32, error) {
 	return uint32(N), err
 }
 
-func getDate(index int, missing, invalid string) (*types.Date, error) {
+func getDate(index int, missing, invalid string) (*time.Time, error) {
 	if len(flag.Args()) < index+1 {
 		return nil, errors.New(missing)
 	}
@@ -87,5 +87,27 @@ func getDate(index int, missing, invalid string) (*types.Date, error) {
 		return nil, errors.New(fmt.Sprintf(invalid, flag.Arg(index)))
 	}
 
-	return &types.Date{date}, err
+	return &date, err
+}
+
+func getPermissions(index int) ([]bool, error) {
+	doors := []bool{false, false, false, false}
+
+	if len(flag.Args()) > index {
+		matches := strings.Split(flag.Arg(index), ",")
+
+		for _, match := range matches {
+			door, err := strconv.Atoi(match)
+			if err != nil {
+				return nil, errors.New(fmt.Sprintf("Invalid door '%v'", match))
+			}
+
+			if door > 0 && door < 5 {
+				doors[door-1] = true
+			}
+
+		}
+	}
+
+	return doors, nil
 }
