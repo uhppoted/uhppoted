@@ -1,39 +1,36 @@
 package uhppote
 
 import (
-	"encoding/binary"
-	"uhppote/messages"
 	"uhppote/types"
 )
 
-func (u *UHPPOTE) OpenDoor(serialNumber uint32, door byte) (*types.Opened, error) {
-	cmd := make([]byte, 64)
+type OpenDoorRequest struct {
+	MsgType      types.MsgType      `uhppote:"value:0x40"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
+	Door         uint8              `uhppote:"offset:8"`
+}
 
-	cmd[0] = 0x17
-	cmd[1] = 0x40
-	cmd[2] = 0x00
-	cmd[3] = 0x00
+type OpenDoorResponse struct {
+	MsgType      types.MsgType      `uhppote:"value:0x40"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
+	Success      bool               `uhppote:"offset:8"`
+}
 
-	binary.LittleEndian.PutUint32(cmd[4:8], serialNumber)
-	cmd[8] = door
-
-	reply, err := u.Execute(cmd)
-
-	if err != nil {
-		return nil, err
-	}
-
-	result, err := messages.NewOpenDoorReply(reply)
-
-	if err != nil {
-		return nil, err
-	}
-
-	opened := types.Opened{
+func (u *UHPPOTE) OpenDoor(serialNumber uint32, door uint8) (*types.Result, error) {
+	request := OpenDoorRequest{
 		SerialNumber: types.SerialNumber(serialNumber),
-		Door:         uint32(door),
-		Opened:       result.Opened,
+		Door:         door,
 	}
 
-	return &opened, nil
+	reply := OpenDoorResponse{}
+
+	err := u.Exec(request, &reply)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.Result{
+		SerialNumber: reply.SerialNumber,
+		Success:      reply.Success,
+	}, nil
 }
