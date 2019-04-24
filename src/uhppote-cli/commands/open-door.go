@@ -24,7 +24,7 @@ func (c *OpenDoorCommand) Execute(u *uhppote.UHPPOTE) error {
 		return errors.New(fmt.Sprintf("Invalid door ID: %v", door))
 	}
 
-	opened, err := u.OpenDoor(serialNumber, byte(door))
+	opened, err := u.OpenDoor(serialNumber, uint8(door))
 
 	if err == nil {
 		fmt.Printf("%v\n", opened)

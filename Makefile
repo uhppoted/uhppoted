@@ -11,7 +11,6 @@ all: test      \
 format: 
 	gofmt -w=true src/uhppote/*.go
 	gofmt -w=true src/uhppote/types/*.go
-	gofmt -w=true src/uhppote/messages/*.go
 	gofmt -w=true src/uhppote/encoding/UTO311-L0x/*.go
 	gofmt -w=true src/uhppote-cli/*.go
 	gofmt -w=true src/uhppote-cli/commands/*.go

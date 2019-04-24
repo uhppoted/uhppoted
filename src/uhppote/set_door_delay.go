@@ -7,7 +7,7 @@ import (
 )
 
 type SetDoorDelayRequest struct {
-	MsgType      byte               `uhppote:"offset:1"`
+	MsgType      types.MsgType      `uhppote:"value:0x80"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 	Door         uint8              `uhppote:"offset:8"`
 	Unit         uint8              `uhppote:"offset:9"`
@@ -15,7 +15,7 @@ type SetDoorDelayRequest struct {
 }
 
 type SetDoorDelayResponse struct {
-	MsgType      byte               `uhppote:"offset:1"`
+	MsgType      types.MsgType      `uhppote:"value:0x80"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 	Door         uint8              `uhppote:"offset:8"`
 	Unit         uint8              `uhppote:"offset:9"`
@@ -24,7 +24,6 @@ type SetDoorDelayResponse struct {
 
 func (u *UHPPOTE) SetDoorDelay(serialNumber uint32, door uint8, delay uint8) (*types.DoorDelay, error) {
 	request := SetDoorDelayRequest{
-		MsgType:      0x80,
 		SerialNumber: types.SerialNumber(serialNumber),
 		Door:         door,
 		Unit:         0x03,
@@ -36,10 +35,6 @@ func (u *UHPPOTE) SetDoorDelay(serialNumber uint32, door uint8, delay uint8) (*t
 	err := u.Exec(request, &reply)
 	if err != nil {
 		return nil, err
-	}
-
-	if reply.MsgType != 0x80 {
-		return nil, errors.New(fmt.Sprintf("SetDoorDelay returned incorrect message type: %02X\n", reply.MsgType))
 	}
 
 	if reply.Unit != 0x03 {
