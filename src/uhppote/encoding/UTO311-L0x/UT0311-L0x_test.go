@@ -63,6 +63,24 @@ func TestMarshal(t *testing.T) {
 	}
 }
 
+func TestMarshalWithoutMsgType(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("Expected Marshal(...) to fail with a panic('Missing MsgType')")
+		}
+	}()
+
+	request := struct {
+		MsgType byte   `uhppote:"offset:1"`
+		Uint32  uint32 `uhppote:"offset:4"`
+	}{
+		MsgType: 0x5f,
+		Uint32:  423187757,
+	}
+
+	Marshal(request)
+}
+
 func TestUnmarshal(t *testing.T) {
 	message := []byte{
 		0x17, 0x94, 0x6e, 0x00, 0x2d, 0x55, 0x39, 0x19, 0xd2, 0x04, 0x00, 0x00, 0xc0, 0xa8, 0x00, 0x00,
@@ -72,7 +90,7 @@ func TestUnmarshal(t *testing.T) {
 	}
 
 	reply := struct {
-		MsgType      types.MsgType      `uhppote:"offset:1, value:0x94"`
+		MsgType      types.MsgType      `uhppote:"value:0x94"`
 		Byte         byte               `uhppote:"offset:2"`
 		Uint32       uint32             `uhppote:"offset:4"`
 		Uint16       uint16             `uhppote:"offset:8"`
@@ -149,6 +167,28 @@ func TestUnmarshal(t *testing.T) {
 	if reply.False != false {
 		t.Errorf("Expected door 2 '%v', got: '%v\n", false, reply.False)
 	}
+}
+
+func TestUnmarshalWithoutMsgType(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("Expected Unmarshal(...) to fail with a panic('Missing MsgType')")
+		}
+	}()
+
+	message := []byte{
+		0x17, 0x94, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0xc0, 0xa8, 0x00, 0x00, 0xff, 0xff, 0xff, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x66, 0x19, 0x39, 0x55, 0x2d, 0x2d, 0x55, 0x39, 0x19, 0x08, 0x92,
+		0x20, 0x18, 0x08, 0x16, 0x20, 0x18, 0x12, 0x31, 0x12, 0x23, 0x34, 0x01, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	}
+
+	reply := struct {
+		MsgType byte   `uhppote:"offset:1"`
+		Uint32  uint32 `uhppote:"offset:4"`
+	}{}
+
+	Unmarshal(message, &reply)
 }
 
 func TestUnmarshalWithInvalidMsgType(t *testing.T) {

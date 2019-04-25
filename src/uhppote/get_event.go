@@ -1,19 +1,17 @@
 package uhppote
 
 import (
-	"errors"
-	"fmt"
 	"uhppote/types"
 )
 
 type GetEventRequest struct {
-	MsgType      byte               `uhppote:"offset:1"`
+	MsgType      types.MsgType      `uhppote:"value:0xb0"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 	Index        uint32             `uhppote:"offset:8"`
 }
 
 type GetEventResponse struct {
-	MsgType      byte               `uhppote:"offset:1"`
+	MsgType      types.MsgType      `uhppote:"value:0xb0"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 	Index        uint32             `uhppote:"offset:8"`
 	Type         uint8              `uhppote:"offset:12"`
@@ -27,7 +25,6 @@ type GetEventResponse struct {
 
 func (u *UHPPOTE) GetEvent(serialNumber, index uint32) (*types.Event, error) {
 	request := GetEventRequest{
-		MsgType:      0xb0,
 		SerialNumber: types.SerialNumber(serialNumber),
 		Index:        index,
 	}
@@ -37,10 +34,6 @@ func (u *UHPPOTE) GetEvent(serialNumber, index uint32) (*types.Event, error) {
 	err := u.Exec(request, &reply)
 	if err != nil {
 		return nil, err
-	}
-
-	if reply.MsgType != 0xb0 {
-		return nil, errors.New(fmt.Sprintf("GetEvent returned incorrect message type: %02X\n", reply.MsgType))
 	}
 
 	return &types.Event{

@@ -6,12 +6,12 @@ import (
 )
 
 type GetListenerRequest struct {
-	MsgType      byte               `uhppote:"offset:1, value:0x92"`
+	MsgType      types.MsgType      `uhppote:"value:0x92"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 }
 
 type GetListenerResponse struct {
-	MsgType      byte               `uhppote:"offset:1, value:0x92"`
+	MsgType      types.MsgType      `uhppote:"value:0x92"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 	Address      net.IP             `uhppote:"offset:8"`
 	Port         uint16             `uhppote:"offset:12"`

@@ -61,6 +61,9 @@ help: build
 version: build
 	./bin/uhppote-cli version
 
+run: build
+	./bin/uhppote-cli --bind $(LOCAL) --debug get-devices
+
 get-devices: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug get-devices
 

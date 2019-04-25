@@ -43,9 +43,14 @@ func Marshal(m interface{}) ([]byte, error) {
 }
 
 func marshal(s reflect.Value) ([]byte, error) {
-	bytes := make([]byte, 64)
+	msgType, err := getMsgType(s)
+	if err != nil {
+		panic(errors.New(fmt.Sprintf("Cannot marshal message: %v", err)))
+	}
 
+	bytes := make([]byte, 64)
 	bytes[0] = 0x17
+	bytes[1] = msgType
 
 	if s.Kind() == reflect.Struct {
 		N := s.NumField()
@@ -55,29 +60,13 @@ func marshal(s reflect.Value) ([]byte, error) {
 			t := s.Type().Field(i)
 			tag := t.Tag.Get("uhppote")
 
-			// Marshall MsgType field tagged with `uhppote:"value:<value>"`
-
-			if t.Type == tMsgType {
-				value := vre.FindStringSubmatch(tag)
-				if value == nil {
-					panic(errors.New("Cannot marshal message with missing MsgType value"))
-				} else {
-					v, err := strconv.ParseUint(value[1], 16, 8)
-					if err != nil {
-						return bytes, err
-					}
-					bytes[1] = byte(v)
-				}
-
-				continue
-			}
-
 			matched := re.FindStringSubmatch(tag)
 
 			if matched != nil {
 				offset, _ := strconv.Atoi(matched[1])
 
 				switch t.Type {
+				case tMsgType:
 				case tByte:
 					value := vre.FindStringSubmatch(tag)
 					if value != nil {
@@ -133,6 +122,33 @@ func marshal(s reflect.Value) ([]byte, error) {
 	return bytes, nil
 }
 
+func getMsgType(s reflect.Value) (byte, error) {
+	if s.Kind() == reflect.Struct {
+		N := s.NumField()
+
+		for i := 0; i < N; i++ {
+			t := s.Type().Field(i)
+			tag := t.Tag.Get("uhppote")
+
+			if t.Type == tMsgType {
+				value := vre.FindStringSubmatch(tag)
+				if value == nil {
+					return 0x00, errors.New("MsgType field without an assigned value")
+				}
+
+				v, err := strconv.ParseUint(value[1], 16, 8)
+				if err != nil {
+					return 0x00, errors.New(fmt.Sprintf("Invalid MsgType valua: %v", err))
+				}
+
+				return byte(v), nil
+			}
+		}
+	}
+
+	return 0x00, errors.New("Missing MsgType field")
+}
+
 func Unmarshal(bytes []byte, m interface{}) error {
 	// Validate message format
 
@@ -149,6 +165,15 @@ func Unmarshal(bytes []byte, m interface{}) error {
 	v := reflect.ValueOf(m)
 	s := v.Elem()
 
+	msgType, err := getMsgType(s)
+	if err != nil {
+		panic(errors.New(fmt.Sprintf("Cannot marshal message: %v", err)))
+	}
+
+	if bytes[1] != msgType {
+		return errors.New(fmt.Sprintf("Invalid MsgType in message - expected %02x, received 0x%02x", msgType, bytes[1]))
+	}
+
 	if s.Kind() == reflect.Struct {
 		N := s.NumField()
 
@@ -161,23 +186,10 @@ func Unmarshal(bytes []byte, m interface{}) error {
 				continue
 			}
 
-			// Unmarshall MsgType field tagged with `uhppote:"value:<value>"`
+			// Unmarshall MsgType field
 
 			if t.Type == tMsgType {
-				value := vre.FindStringSubmatch(tag)
-				if value == nil {
-					panic(errors.New("Cannot unmarshal message with missing MsgType value"))
-				} else {
-					v, err := strconv.ParseUint(value[1], 16, 8)
-					if err != nil {
-						return err
-					}
-					if bytes[1] != byte(v) {
-						return errors.New(fmt.Sprintf("Invalid MsgType in message - expected %02x, received 0x%02x", v, bytes[1]))
-					}
-				}
-
-				f.SetUint(uint64(bytes[1]))
+				f.SetUint(uint64(msgType))
 				continue
 			}
 
