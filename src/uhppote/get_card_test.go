@@ -76,41 +76,41 @@ func TestUnmarshalGetCardByIndexResponse(t *testing.T) {
 	}
 
 	if reply.MsgType != 0x5C {
-		t.Errorf("Incorrect 'message type' - expected:%02X, got:%02x\n", 0x5C, reply.MsgType)
+		t.Errorf("Incorrect 'message type' - expected:%02X, got:%02x", 0x5C, reply.MsgType)
 	}
 
 	if reply.SerialNumber != 423187757 {
-		t.Errorf("Incorrect 'serial number' from valid message: %v\n", reply.SerialNumber)
+		t.Errorf("Incorrect 'serial number' - expected:%v, got:%v", 423187757, reply.SerialNumber)
 	}
 
 	if reply.CardNumber != 6154412 {
-		t.Errorf("Incorrect 'card number' from valid message: %v\n", reply.CardNumber)
+		t.Errorf("Incorrect 'card number' - expected:%v, got:%v", 6154412, reply.CardNumber)
 	}
 
 	from, _ := time.ParseInLocation("2006-01-02", "2019-02-03", time.Local)
 	if reply.From.Date != from {
-		t.Errorf("Incorrect 'from date' - expected:%s, got:%s\n", from.Format("2006-01-02"), reply.From)
+		t.Errorf("Incorrect 'from date' - expected:%s, got:%s", from.Format("2006-01-02"), reply.From)
 	}
 
 	to, _ := time.ParseInLocation("2006-01-02", "2019-12-29", time.Local)
 	if reply.To.Date != to {
-		t.Errorf("Incorrect 'to date' - expected:%s, got:%s\n", to.Format("2006-01-02"), reply.To)
+		t.Errorf("Incorrect 'to date' - expected:%s, got:%s", to.Format("2006-01-02"), reply.To)
 	}
 
 	if reply.Door1 != false {
-		t.Errorf("Incorrect 'door 1' - expected:%v, got:%v\n", false, reply.Door1)
+		t.Errorf("Incorrect 'door 1' - expected:%v, got:%v", false, reply.Door1)
 	}
 
 	if reply.Door2 != false {
-		t.Errorf("Incorrect 'door 2' - expected:%v, got:%v\n", false, reply.Door2)
+		t.Errorf("Incorrect 'door 2' - expected:%v, got:%v", false, reply.Door2)
 	}
 
 	if reply.Door3 != true {
-		t.Errorf("Incorrect 'door 3' - expected:%v, got:%v\n", true, reply.Door3)
+		t.Errorf("Incorrect 'door 3' - expected:%v, got:%v", true, reply.Door3)
 	}
 
 	if reply.Door4 != true {
-		t.Errorf("Incorrect 'door 4' - expected:%v, got:%v\n", true, reply.Door4)
+		t.Errorf("Incorrect 'door 4' - expected:%v, got:%v", true, reply.Door4)
 	}
 }
 
@@ -131,41 +131,41 @@ func TestUnmarshalGetCardByIdResponse(t *testing.T) {
 	}
 
 	if reply.MsgType != 0x5a {
-		t.Errorf("Incorrect 'message type' - expected:%02X, got:%02x\n", 0x5a, reply.MsgType)
+		t.Errorf("Incorrect 'message type' - expected:%02X, got:%02x", 0x5a, reply.MsgType)
 	}
 
 	if reply.SerialNumber != 423187757 {
-		t.Errorf("Incorrect 'serial number' from valid message: %v\n", reply.SerialNumber)
+		t.Errorf("Incorrect 'serial number' - expected:%v, got:%v", 423187757, reply.SerialNumber)
 	}
 
 	if reply.CardNumber != 6154412 {
-		t.Errorf("Incorrect 'card number' from valid message: %v\n", reply.CardNumber)
+		t.Errorf("Incorrect 'card number' - expected:%v, got:%v", 6154412, reply.CardNumber)
 	}
 
 	from, _ := time.ParseInLocation("2006-01-02", "2019-02-03", time.Local)
 	if reply.From.Date != from {
-		t.Errorf("Incorrect 'from date' - expected:%s, got:%s\n", from.Format("2006-01-02"), reply.From)
+		t.Errorf("Incorrect 'from date' - expected:%s, got:%s", from.Format("2006-01-02"), reply.From)
 	}
 
 	to, _ := time.ParseInLocation("2006-01-02", "2019-12-29", time.Local)
 	if reply.To.Date != to {
-		t.Errorf("Incorrect 'to date' - expected:%s, got:%s\n", to.Format("2006-01-02"), reply.To)
+		t.Errorf("Incorrect 'to date' - expected:%s, got:%s", to.Format("2006-01-02"), reply.To)
 	}
 
 	if reply.Door1 != false {
-		t.Errorf("Incorrect 'door 1' - expected:%v, got:%v\n", false, reply.Door1)
+		t.Errorf("Incorrect 'door 1' - expected:%v, got:%v", false, reply.Door1)
 	}
 
 	if reply.Door2 != false {
-		t.Errorf("Incorrect 'door 2' - expected:%v, got:%v\n", false, reply.Door2)
+		t.Errorf("Incorrect 'door 2' - expected:%v, got:%v", false, reply.Door2)
 	}
 
 	if reply.Door3 != true {
-		t.Errorf("Incorrect 'door 3' - expected:%v, got:%v\n", true, reply.Door3)
+		t.Errorf("Incorrect 'door 3' - expected:%v, got:%v", true, reply.Door3)
 	}
 
 	if reply.Door4 != true {
-		t.Errorf("Incorrect 'door 4' - expected:%v, got:%v\n", true, reply.Door4)
+		t.Errorf("Incorrect 'door 4' - expected:%v, got:%v", true, reply.Door4)
 	}
 }
 

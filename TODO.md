@@ -7,5 +7,6 @@
 5. Document protocol
 6. Commands:
    * listen
-8. Fix unit tests for unmarshalling incorrect message types
-7. fuse
+7. Fix unit tests for unmarshalling incorrect message types
+8. fuse
+9. Handle no reply for set-address
