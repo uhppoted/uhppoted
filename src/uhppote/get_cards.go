@@ -1,25 +1,22 @@
 package uhppote
 
 import (
-	"errors"
-	"fmt"
 	"uhppote/types"
 )
 
 type GetCardsRequest struct {
-	MsgType      byte               `uhppote:"offset:1"`
+	MsgType      types.MsgType      `uhppote:"value:0x58"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 }
 
 type GetCardsResponse struct {
-	MsgType      byte               `uhppote:"offset:1"`
+	MsgType      types.MsgType      `uhppote:"value:0x58"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 	Records      uint32             `uhppote:"offset:8"`
 }
 
 func (u *UHPPOTE) GetCards(serialNumber uint32) (*types.RecordCount, error) {
 	request := GetCardsRequest{
-		MsgType:      0x58,
 		SerialNumber: types.SerialNumber(serialNumber),
 	}
 
@@ -28,10 +25,6 @@ func (u *UHPPOTE) GetCards(serialNumber uint32) (*types.RecordCount, error) {
 	err := u.Exec(request, &reply)
 	if err != nil {
 		return nil, err
-	}
-
-	if reply.MsgType != 0x58 {
-		return nil, errors.New(fmt.Sprintf("GetCards returned incorrect message type: %02X\n", reply.MsgType))
 	}
 
 	return &types.RecordCount{

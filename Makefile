@@ -62,10 +62,12 @@ version: build
 	./bin/uhppote-cli version
 
 run: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug get-devices
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-devices
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-address $(SERIALNO) '192.168.1.125' '255.255.255.0' '0.0.0.0'
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-cards   $(SERIALNO)
 
 get-devices: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug get-devices
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-devices
 
 set-address: build
 	./bin/uhppote-cli -bind $(LOCAL) $(DEBUG) set-address $(SERIALNO) '192.168.1.125' '255.255.255.0' '0.0.0.0'
@@ -93,7 +95,7 @@ set-listener: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-listener $(SERIALNO) 192.168.1.100:40000
 
 get-cards: build
-	./bin/uhppote-cli --bind $(LOCAL) get-cards $(SERIALNO)
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-cards $(SERIALNO)
 
 get-card: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-card $(SERIALNO) $(CARD)
