@@ -20,7 +20,7 @@ type PutCardRequest struct {
 type PutCardResponse struct {
 	MsgType      types.MsgType      `uhppote:"value:0x50"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-	Success      bool               `uhppote:"offset:8"`
+	Succeeded    bool               `uhppote:"offset:8"`
 }
 
 func (u *UHPPOTE) PutCard(serialNumber, cardNumber uint32, from, to time.Time, door1, door2, door3, door4 bool) (*types.Result, error) {
@@ -44,6 +44,6 @@ func (u *UHPPOTE) PutCard(serialNumber, cardNumber uint32, from, to time.Time, d
 
 	return &types.Result{
 		SerialNumber: reply.SerialNumber,
-		Success:      reply.Success,
+		Succeeded:    reply.Succeeded,
 	}, nil
 }

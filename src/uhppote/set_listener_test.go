@@ -58,8 +58,8 @@ func TestUnmarshalSetListenerResponse(t *testing.T) {
 		t.Errorf("Incorrect 'serial number' - expected:%v, got:%v\n", 423187757, reply.SerialNumber)
 	}
 
-	if !reply.Success {
-		t.Errorf("Incorrect 'result' - expected:%v, got:%v\n", true, reply.Success)
+	if !reply.Succeeded {
+		t.Errorf("Incorrect 'result' - expected:%v, got:%v\n", true, reply.Succeeded)
 	}
 }
 
