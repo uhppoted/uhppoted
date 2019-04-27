@@ -30,7 +30,7 @@ var (
 )
 
 var re = regexp.MustCompile(`offset:\s*([0-9]+)`)
-var vre = regexp.MustCompile(`value:\s*0x([0-9a-fA-F]+)`)
+var vre = regexp.MustCompile(`value:\s*(0[xX])?([0-9a-fA-F]+)`)
 
 func Marshal(m interface{}) ([]byte, error) {
 	v := reflect.ValueOf(m)
@@ -132,13 +132,23 @@ func getMsgType(s reflect.Value) (byte, error) {
 
 			if t.Type == tMsgType {
 				value := vre.FindStringSubmatch(tag)
+
 				if value == nil {
-					return 0x00, errors.New("MsgType field without an assigned value")
+					return 0x00, errors.New(fmt.Sprintf("MsgType field has invalid tag:<%v> - expected 'value:<value>'", tag))
 				}
 
-				v, err := strconv.ParseUint(value[1], 16, 8)
+				if value[1] == "0x" || value[1] == "0X" {
+					v, err := strconv.ParseUint(value[2], 16, 8)
+					if err != nil {
+						return 0x00, errors.New(fmt.Sprintf("Invalid MsgType value: %v", err))
+					}
+
+					return byte(v), nil
+				}
+
+				v, err := strconv.ParseUint(value[2], 10, 8)
 				if err != nil {
-					return 0x00, errors.New(fmt.Sprintf("Invalid MsgType valua: %v", err))
+					return 0x00, errors.New(fmt.Sprintf("Invalid MsgType value: %v", err))
 				}
 
 				return byte(v), nil
@@ -160,14 +170,14 @@ func Unmarshal(bytes []byte, m interface{}) error {
 		return errors.New(fmt.Sprintf("Invalid start of message - expected 0x17, received 0x%02x", bytes[0]))
 	}
 
-	// Unmarshall fields tagged with `uhppote:"offset:<offset>"`
+	// Unmarshall fields tagged with `uhppote:"..."`
 
 	v := reflect.ValueOf(m)
 	s := v.Elem()
 
 	msgType, err := getMsgType(s)
 	if err != nil {
-		panic(errors.New(fmt.Sprintf("Cannot marshal message: %v", err)))
+		panic(errors.New(fmt.Sprintf("Cannot unmarshal message: %v", err)))
 	}
 
 	if bytes[1] != msgType {
