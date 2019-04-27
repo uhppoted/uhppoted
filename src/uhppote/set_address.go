@@ -1,44 +1,57 @@
 package uhppote
 
 import (
-	"encoding/binary"
 	"errors"
 	"fmt"
 	"net"
+	"uhppote/types"
 )
 
-func (u *UHPPOTE) SetAddress(serialNumber uint32, address, mask, gateway net.IP) error {
+type SetAddressRequest struct {
+	MsgType      types.MsgType      `uhppote:"value:0x96"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
+	Address      net.IP             `uhppote:"offset:8"`
+	Mask         net.IP             `uhppote:"offset:12"`
+	Gateway      net.IP             `uhppote:"offset:16"`
+	MagicNumber  uint32             `uhppote:"offset:20"`
+}
+
+type SetAddressResponse struct {
+	MsgType      types.MsgType      `uhppote:"value:0x96"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
+	Success      bool               `uhppote:"offset:8"`
+}
+
+func (u *UHPPOTE) SetAddress(serialNumber uint32, address, mask, gateway net.IP) (*types.Result, error) {
 	if address.To4() == nil {
-		return errors.New(fmt.Sprintf("Invalid IP address: %v", address))
+		return nil, errors.New(fmt.Sprintf("Invalid IP address: %v", address))
 	}
 
 	if mask.To4() == nil {
-		return errors.New(fmt.Sprintf("Invalid subnet mask: %v", mask))
+		return nil, errors.New(fmt.Sprintf("Invalid subnet mask: %v", mask))
 	}
 
 	if gateway.To4() == nil {
-		return errors.New(fmt.Sprintf("Invalid gateway address: %v", gateway))
+		return nil, errors.New(fmt.Sprintf("Invalid gateway address: %v", gateway))
 	}
 
-	cmd := make([]byte, 64)
+	request := SetAddressRequest{
+		SerialNumber: types.SerialNumber(serialNumber),
+		Address:      address,
+		Mask:         mask,
+		Gateway:      gateway,
+		MagicNumber:  0x55aaaa55,
+	}
 
-	cmd[0] = 0x17
-	cmd[1] = 0x96
-	cmd[2] = 0x00
-	cmd[3] = 0x00
+	reply := SetAddressResponse{}
 
-	binary.LittleEndian.PutUint32(cmd[4:8], serialNumber)
+	err := u.Exec(request, &reply)
+	if err != nil {
+		return nil, err
+	}
 
-	copy(cmd[8:12], address.To4())
-	copy(cmd[12:16], mask.To4())
-	copy(cmd[16:20], gateway.To4())
-
-	cmd[20] = 0x55
-	cmd[21] = 0xaa
-	cmd[22] = 0xaa
-	cmd[23] = 0x55
-
-	_, err := u.Execute(cmd)
-
-	return err
+	return &types.Result{
+		SerialNumber: reply.SerialNumber,
+		Success:      reply.Success,
+	}, nil
 }

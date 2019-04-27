@@ -45,7 +45,13 @@ func (c *SetAddressCommand) Execute(u *uhppote.UHPPOTE) error {
 		}
 	}
 
-	return u.SetAddress(serialNumber, address, mask, gateway)
+	result, err := u.SetAddress(serialNumber, address, mask, gateway)
+
+	if err != nil {
+		fmt.Printf("%s\n", result)
+	}
+
+	return err
 }
 
 func (c *SetAddressCommand) CLI() string {
