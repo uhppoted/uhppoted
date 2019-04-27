@@ -22,7 +22,7 @@ func (u *UHPPOTE) GetTime(serialNumber uint32) (*types.Time, error) {
 
 	reply := GetTimeResponse{}
 
-	err := u.Exec(request, &reply)
+	err := u.Execute(request, &reply)
 	if err != nil {
 		return nil, err
 	}

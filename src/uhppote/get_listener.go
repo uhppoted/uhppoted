@@ -24,7 +24,7 @@ func (u *UHPPOTE) GetListener(serialNumber uint32) (*types.Listener, error) {
 
 	reply := GetListenerResponse{}
 
-	err := u.Exec(request, &reply)
+	err := u.Execute(request, &reply)
 	if err != nil {
 		return nil, err
 	}

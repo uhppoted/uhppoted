@@ -14,13 +14,13 @@ type UHPPOTE struct {
 	Debug       bool
 }
 
-func (u *UHPPOTE) Exec(request, reply interface{}) error {
+func (u *UHPPOTE) Execute(request, reply interface{}) error {
 	p, err := codec.Marshal(request)
 	if err != nil {
 		return err
 	}
 
-	q, err := u.Execute(p)
+	q, err := u.execute(p)
 
 	err = codec.Unmarshal(q, reply)
 	if err != nil {
@@ -39,7 +39,7 @@ func (u *UHPPOTE) Broadcast(request interface{}) ([][]byte, error) {
 	return u.broadcast(p)
 }
 
-func (u *UHPPOTE) Execute(cmd []byte) ([]byte, error) {
+func (u *UHPPOTE) execute(cmd []byte) ([]byte, error) {
 	reply := make([]byte, 2048)
 
 	if u.Debug {

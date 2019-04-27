@@ -45,7 +45,7 @@ func (u *UHPPOTE) SetAddress(serialNumber uint32, address, mask, gateway net.IP)
 
 	reply := SetAddressResponse{}
 
-	err := u.Exec(request, &reply)
+	err := u.Execute(request, &reply)
 	if err != nil {
 		return nil, err
 	}

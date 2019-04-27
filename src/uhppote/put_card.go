@@ -37,7 +37,7 @@ func (u *UHPPOTE) PutCard(serialNumber, cardNumber uint32, from, to time.Time, d
 
 	reply := PutCardResponse{}
 
-	err := u.Exec(request, &reply)
+	err := u.Execute(request, &reply)
 	if err != nil {
 		return nil, err
 	}
