@@ -53,7 +53,7 @@ usage: build
 	./bin/uhppote-cli
 
 debug: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug help get-status
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-address    $(SERIALNO) '0.0.0.0' '0.0.0.0' '0.0.0.0'
 
 help: build
 	./bin/uhppote-cli --bind $(LOCAL) help
