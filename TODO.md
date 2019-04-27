@@ -1,12 +1,11 @@
 # TODO
 
-1. Human readable output for e.g. get-status
-2. JSON formatted output for e.g. get-status
-3. Load cards from TSV file
-4. Consistently include device serial number in output e.g. of get-time
-5. Document protocol
-6. Commands:
+0. Handle no reply for set-address
+1. Commands:
    * listen
-7. Fix unit tests for unmarshalling incorrect message types
-8. fuse
-9. Handle no reply for set-address
+2. Load cards from TSV file
+3. Human readable output for e.g. get-status
+4. JSON formatted output for e.g. get-status
+5. Consistently include device serial number in output e.g. of get-time
+6. Document protocol
+7. fuse

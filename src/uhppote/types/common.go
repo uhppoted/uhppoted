@@ -7,7 +7,7 @@ type SerialNumber uint32
 
 type Result struct {
 	SerialNumber SerialNumber
-	Success      bool
+	Succeeded    bool
 }
 
 type RecordCount struct {
@@ -20,7 +20,7 @@ func (s SerialNumber) String() string {
 }
 
 func (r *Result) String() string {
-	return fmt.Sprintf("%v %v", r.SerialNumber, r.Success)
+	return fmt.Sprintf("%v %v", r.SerialNumber, r.Succeeded)
 }
 
 func (r *RecordCount) String() string {

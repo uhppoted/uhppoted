@@ -19,10 +19,10 @@ func (c *RevokeCommand) Execute(u *uhppote.UHPPOTE) error {
 		return err
 	}
 
-	revoked, err := u.Revoke(serialNumber, cardNumber)
+	result, err := u.DeleteCard(serialNumber, cardNumber)
 
 	if err == nil {
-		fmt.Printf("%v\n", revoked)
+		fmt.Printf("%v\n", result)
 	}
 
 	return err

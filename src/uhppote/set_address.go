@@ -19,7 +19,7 @@ type SetAddressRequest struct {
 type SetAddressResponse struct {
 	MsgType      types.MsgType      `uhppote:"value:0x96"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-	Success      bool               `uhppote:"offset:8"`
+	Succeeded    bool               `uhppote:"offset:8"`
 }
 
 func (u *UHPPOTE) SetAddress(serialNumber uint32, address, mask, gateway net.IP) (*types.Result, error) {
@@ -52,6 +52,6 @@ func (u *UHPPOTE) SetAddress(serialNumber uint32, address, mask, gateway net.IP)
 
 	return &types.Result{
 		SerialNumber: reply.SerialNumber,
-		Success:      reply.Success,
+		Succeeded:    reply.Succeeded,
 	}, nil
 }
