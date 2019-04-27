@@ -66,6 +66,7 @@ run: build
 #	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-address    $(SERIALNO) '192.168.1.125' '255.255.255.0' '0.0.0.0'
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-cards      $(SERIALNO)
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-door-delay $(SERIALNO) $(DOOR)
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) revoke         $(SERIALNO) $(CARD)
 
 get-devices: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-devices
@@ -105,7 +106,7 @@ grant: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug grant $(SERIALNO) $(CARD) 2019-01-01 2019-12-31 1
 
 revoke: build
-	./bin/uhppote-cli --bind $(LOCAL) --debug revoke $(SERIALNO) $(CARD)
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) revoke $(SERIALNO) $(CARD)
 
 revoke-all: build
 	./bin/uhppote-cli --bind $(LOCAL) --debug revoke-all $(SERIALNO)
