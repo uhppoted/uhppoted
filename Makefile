@@ -63,8 +63,9 @@ version: build
 
 run: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-devices
-	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-address $(SERIALNO) '192.168.1.125' '255.255.255.0' '0.0.0.0'
-	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-cards   $(SERIALNO)
+#	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) set-address    $(SERIALNO) '192.168.1.125' '255.255.255.0' '0.0.0.0'
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-cards      $(SERIALNO)
+	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-door-delay $(SERIALNO) $(DOOR)
 
 get-devices: build
 	./bin/uhppote-cli --bind $(LOCAL) $(DEBUG) get-devices
