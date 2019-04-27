@@ -14,7 +14,7 @@ func (c *RevokeAllCommand) Execute(u *uhppote.UHPPOTE) error {
 		return err
 	}
 
-	deleted, err := u.DeleteAll(serialNumber)
+	deleted, err := u.DeleteCards(serialNumber)
 
 	if err == nil {
 		fmt.Printf("%v\n", deleted)

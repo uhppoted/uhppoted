@@ -5,9 +5,9 @@ import (
 )
 
 type DeleteCardRequest struct {
-	MsgType      types.MsgType `uhppote:"value:0x52"`
-	SerialNumber uint32        `uhppote:"offset:4"`
-	CardNumber   uint32        `uhppote:"offset:8"`
+	MsgType      types.MsgType      `uhppote:"value:0x52"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
+	CardNumber   uint32             `uhppote:"offset:8"`
 }
 
 type DeleteCardResponse struct {
@@ -18,7 +18,7 @@ type DeleteCardResponse struct {
 
 func (u *UHPPOTE) DeleteCard(serialNumber, cardNumber uint32) (*types.Result, error) {
 	request := DeleteCardRequest{
-		SerialNumber: serialNumber,
+		SerialNumber: types.SerialNumber(serialNumber),
 		CardNumber:   cardNumber,
 	}
 
