@@ -33,7 +33,7 @@ func (u *UHPPOTE) SetListener(serialNumber uint32, address net.UDPAddr) (*types.
 
 	reply := SetListenerResponse{}
 
-	err := u.Exec(request, &reply)
+	err := u.Execute(request, &reply)
 	if err != nil {
 		return nil, err
 	}

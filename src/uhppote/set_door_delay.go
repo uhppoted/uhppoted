@@ -32,7 +32,7 @@ func (u *UHPPOTE) SetDoorDelay(serialNumber uint32, door uint8, delay uint8) (*t
 
 	reply := SetDoorDelayResponse{}
 
-	err := u.Exec(request, &reply)
+	err := u.Execute(request, &reply)
 	if err != nil {
 		return nil, err
 	}

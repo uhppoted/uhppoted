@@ -31,7 +31,7 @@ func (u *UHPPOTE) GetEvent(serialNumber, index uint32) (*types.Event, error) {
 
 	reply := GetEventResponse{}
 
-	err := u.Exec(request, &reply)
+	err := u.Execute(request, &reply)
 	if err != nil {
 		return nil, err
 	}

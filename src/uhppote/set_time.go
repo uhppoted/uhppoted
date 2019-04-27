@@ -25,7 +25,7 @@ func (u *UHPPOTE) SetTime(serialNumber uint32, datetime time.Time) (*types.Time,
 
 	reply := SetTimeResponse{}
 
-	err := u.Exec(request, &reply)
+/bin/bash: :wq: command not found
 	if err != nil {
 		return nil, err
 	}

@@ -46,7 +46,7 @@ func (u *UHPPOTE) GetStatus(serialNumber uint32) (*types.Status, error) {
 
 	reply := GetStatusResponse{}
 
-	err := u.Exec(request, &reply)
+	err := u.Execute(request, &reply)
 	if err != nil {
 		return nil, err
 	}
