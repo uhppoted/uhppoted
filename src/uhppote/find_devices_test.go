@@ -26,7 +26,7 @@ func TestMarshalFindDevicesRequest(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(m, expected) {
-		t.Errorf("Invalid byte array for uhppote.Marshal(%s):\nExpected:\n%s\nReturned:\n%s", "FindDevicesRequest", print(expected), print(m))
+		t.Errorf("Invalid byte array for uhppote.Marshal(%s):\nExpected:\n%s\nReturned:\n%s", "FindDevicesRequest", dump(expected, ""), dump(m, ""))
 		return
 	}
 }

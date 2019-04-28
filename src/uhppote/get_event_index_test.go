@@ -26,7 +26,7 @@ func TestMarshalGetEventIndexRequest(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(m, expected) {
-		t.Errorf("Invalid byte array:\nExpected:\n%s\nReturned:\n%s", print(expected), print(m))
+		t.Errorf("Invalid byte array:\nExpected:\n%s\nReturned:\n%s", dump(expected, ""), dump(m, ""))
 		return
 	}
 }
