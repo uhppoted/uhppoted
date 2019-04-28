@@ -1,6 +1,5 @@
 # TODO
 
-0. Handle no reply for set-address
 1. Commands:
    * listen
 2. Load cards from TSV file
@@ -10,4 +9,4 @@
 6. Document protocol
 7. Simulator
 8. fuse
-
+9. Look into ARP for set-address

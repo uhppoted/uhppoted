@@ -2,6 +2,7 @@ package uhppote
 
 import (
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"net"
 	"regexp"
@@ -15,19 +16,22 @@ type UHPPOTE struct {
 }
 
 func (u *UHPPOTE) Execute(request, reply interface{}) error {
-	p, err := codec.Marshal(request)
+	c, err := u.open()
 	if err != nil {
 		return err
 	}
 
-	q, err := u.execute(p)
+	defer func() {
+		c.Close()
+	}()
 
-	err = codec.Unmarshal(q, reply)
-	if err != nil {
-		return err
+	if err = u.send(c, request); err == nil {
+		if reply != nil {
+			return u.receive(c, reply)
+		}
 	}
 
-	return nil
+	return err
 }
 
 func (u *UHPPOTE) Broadcast(request interface{}) ([][]byte, error) {
@@ -39,60 +43,63 @@ func (u *UHPPOTE) Broadcast(request interface{}) ([][]byte, error) {
 	return u.broadcast(p)
 }
 
-func (u *UHPPOTE) execute(cmd []byte) ([]byte, error) {
-	reply := make([]byte, 2048)
+func (u *UHPPOTE) open() (*net.UDPConn, error) {
+	connection, err := net.ListenUDP("udp", &u.BindAddress)
+
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Failed to open UDP socket [%v]", err))
+	}
+
+	return connection, nil
+}
+
+func (u *UHPPOTE) send(connection *net.UDPConn, request interface{}) error {
+	m, err := codec.Marshal(request)
+	if err != nil {
+		return err
+	}
 
 	if u.Debug {
-		regex := regexp.MustCompile("(?m)^(.*)")
-
-		fmt.Printf(" ... command %v bytes\n", len(cmd))
-		fmt.Printf("%s\n", regex.ReplaceAllString(hex.Dump(cmd), " ...         $1"))
+		fmt.Printf(" ... request\n%s\n", dump(m, " ...          "))
 	}
 
 	broadcast, err := net.ResolveUDPAddr("udp", "255.255.255.255:60000")
 
 	if err != nil {
-		return nil, makeErr("Failed to resolve UDP broadcast address", err)
+		return errors.New(fmt.Sprintf("Failed to resolve UDP broadcast address [%v]", err))
 	}
 
-	connection, err := net.ListenUDP("udp", &u.BindAddress)
+	N, err := connection.WriteTo(m, broadcast)
 
 	if err != nil {
-		return nil, makeErr("Failed to open UDP socket", err)
-	}
-
-	defer close(connection)
-
-	N, err := connection.WriteTo(cmd, broadcast)
-
-	if err != nil {
-		return nil, makeErr("Failed to write to UDP socket", err)
+		return errors.New(fmt.Sprintf("Failed to write to UDP socket [%v]", err))
 	}
 
 	if u.Debug {
 		fmt.Printf(" ... sent %v bytes\n", N)
 	}
 
-	err = connection.SetDeadline(time.Now().Add(5000 * time.Millisecond))
+	return nil
+}
 
+func (u *UHPPOTE) receive(c *net.UDPConn, reply interface{}) error {
+	m := make([]byte, 2048)
+
+	err := c.SetDeadline(time.Now().Add(5000 * time.Millisecond))
 	if err != nil {
-		return nil, makeErr("Failed to set UDP timeout", err)
+		return errors.New(fmt.Sprintf("Failed to set UDP timeout [%v]", err))
 	}
 
-	N, remote, err := connection.ReadFromUDP(reply)
-
+	N, remote, err := c.ReadFromUDP(m)
 	if err != nil {
-		return nil, makeErr("Failed to read from UDP socket", err)
+		return errors.New(fmt.Sprintf("Failed to read from UDP socket [%v]", err))
 	}
 
 	if u.Debug {
-		regex := regexp.MustCompile("(?m)^(.*)")
-
-		fmt.Printf(" ... received %v bytes from %v\n", N, remote)
-		fmt.Printf("%s\n", regex.ReplaceAllString(hex.Dump(reply[:N]), " ...          $1"))
+		fmt.Printf(" ... received %v bytes from %v\n ... response\n%s\n", N, remote, dump(m[:N], " ...          "))
 	}
 
-	return reply[:N], nil
+	return codec.Unmarshal(m[:N], reply)
 }
 
 func (u *UHPPOTE) broadcast(cmd []byte) ([][]byte, error) {
@@ -108,21 +115,23 @@ func (u *UHPPOTE) broadcast(cmd []byte) ([][]byte, error) {
 	broadcast, err := net.ResolveUDPAddr("udp", "255.255.255.255:60000")
 
 	if err != nil {
-		return nil, makeErr("Failed to resolve UDP broadcast address", err)
+		return nil, errors.New(fmt.Sprintf("Failed to resolve UDP broadcast address [%v]", err))
 	}
 
 	connection, err := net.ListenUDP("udp", &u.BindAddress)
 
 	if err != nil {
-		return nil, makeErr("Failed to open UDP socket", err)
+		return nil, errors.New(fmt.Sprintf("Failed to open UDP socket [%v]", err))
 	}
 
-	defer close(connection)
+	defer func() {
+		connection.Close()
+	}()
 
 	N, err := connection.WriteTo(cmd, broadcast)
 
 	if err != nil {
-		return nil, makeErr("Failed to write to UDP socket", err)
+		return nil, errors.New(fmt.Sprintf("Failed to write to UDP socket [%v]", err))
 	}
 
 	if u.Debug {
@@ -152,8 +161,4 @@ func (u *UHPPOTE) broadcast(cmd []byte) ([][]byte, error) {
 	time.Sleep(2500 * time.Millisecond)
 
 	return replies, err
-}
-
-func close(connection net.Conn) {
-	connection.Close()
 }
