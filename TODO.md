@@ -2,6 +2,7 @@
 
 1. Commands:
    * listen
+2. Get broadcast address from network interface (or config)
 2. Load cards from TSV file
 3. Human readable output for e.g. get-status
 4. JSON formatted output for e.g. get-status

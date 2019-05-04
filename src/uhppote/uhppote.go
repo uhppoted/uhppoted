@@ -43,9 +43,31 @@ func (u *UHPPOTE) Broadcast(request interface{}) ([][]byte, error) {
 	return u.broadcast(p)
 }
 
+func (u *UHPPOTE) listen(event interface{}) error {
+	c, err := u.open()
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		c.Close()
+	}()
+
+	m := make([]byte, 2048)
+	N, remote, err := c.ReadFromUDP(m)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Failed to read from UDP socket [%v]", err))
+	}
+
+	if u.Debug {
+		fmt.Printf(" ... received %v bytes from %v\n ... response\n%s\n", N, remote, dump(m[:N], " ...          "))
+	}
+
+	return codec.Unmarshal(m[:N], event)
+}
+
 func (u *UHPPOTE) open() (*net.UDPConn, error) {
 	connection, err := net.ListenUDP("udp", &u.BindAddress)
-
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Failed to open UDP socket [%v]", err))
 	}
@@ -64,6 +86,7 @@ func (u *UHPPOTE) send(connection *net.UDPConn, request interface{}) error {
 	}
 
 	broadcast, err := net.ResolveUDPAddr("udp", "255.255.255.255:60000")
+	//broadcast, err := net.ResolveUDPAddr("udp", "192.168.1.255:60000")
 
 	if err != nil {
 		return errors.New(fmt.Sprintf("Failed to resolve UDP broadcast address [%v]", err))
