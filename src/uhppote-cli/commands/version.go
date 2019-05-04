@@ -5,8 +5,6 @@ import (
 	"uhppote"
 )
 
-var VERSION = "v0.00.0"
-
 type VersionCommand struct {
 	Version string
 }

@@ -33,6 +33,7 @@ var cli = []commands.Command{
 	&commands.GetEventIndexCommand{},
 	&commands.SetEventIndexCommand{},
 	&commands.OpenDoorCommand{},
+	&commands.ListenCommand{},
 }
 
 var VERSION = "v0.00.0"

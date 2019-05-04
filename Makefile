@@ -1,6 +1,6 @@
 CLI = ./bin/uhppote-cli
-DEBUG = "--debug"
-LOCAL = "192.168.1.100:51234"
+DEBUG = --debug
+LOCAL = 192.168.1.100:51234
 CARD = 6154412
 SERIALNO = 423187757
 DOOR = 3
@@ -93,7 +93,7 @@ set-door-delay: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) set-door-delay $(SERIALNO) $(DOOR) 5
 
 get-listener: build
-	$(CLI) --bind $(LOCAL) $(DEBUG) get-listener $(SERIALNO)
+	$(CLI) --bind  $(DEBUG) get-listener $(SERIALNO)
 
 set-listener: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) set-listener $(SERIALNO) 192.168.1.100:40000
@@ -114,7 +114,7 @@ revoke-all: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) revoke-all $(SERIALNO)
 
 get-events: build
-	$(CLI) --bind $(LOCAL) get-events $(SERIALNO)
+	$(CLI) --bind $(LOCAL) $(DEBUG) get-events $(SERIALNO)
 
 get-event-index: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) get-event-index $(SERIALNO)
@@ -124,6 +124,9 @@ set-events-index: build
 
 open: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) open $(SERIALNO) 1
+
+listen: build
+	$(CLI) --bind 192.168.1.100:40000 $(DEBUG) listen 
 
 simulator: build
 	./bin/uhppote-simulator --debug 
