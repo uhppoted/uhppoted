@@ -2,7 +2,10 @@ package commands
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
 	"uhppote"
+	"uhppote/types"
 )
 
 type ListenCommand struct {
@@ -11,11 +14,19 @@ type ListenCommand struct {
 func (c *ListenCommand) Execute(u *uhppote.UHPPOTE) error {
 	fmt.Printf("Listening...\n")
 
-	err := u.Listen()
-	if err == nil {
-	}
+	p := make(chan *types.Status)
+	q := make(chan os.Signal)
 
-	return err
+	go func() {
+		for {
+			event := <-p
+			fmt.Printf("%v\n", event)
+		}
+	}()
+
+	signal.Notify(q, os.Interrupt)
+
+	return u.Listen(p, q)
 }
 
 func (c *ListenCommand) CLI() string {
