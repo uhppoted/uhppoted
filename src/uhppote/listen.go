@@ -1,43 +1,76 @@
 package uhppote
 
 import (
-	"fmt"
+	"os"
 	"time"
 	"uhppote/types"
 )
 
-func (u *UHPPOTE) Listen() error {
-	msg := GetStatusResponse{}
+type Event struct {
+	MsgType        types.MsgType      `uhppote:"value:0x20"`
+	SerialNumber   types.SerialNumber `uhppote:"offset:4"`
+	LastIndex      uint32             `uhppote:"offset:8"`
+	SwipeRecord    byte               `uhppote:"offset:12"`
+	Granted        bool               `uhppote:"offset:13"`
+	Door           byte               `uhppote:"offset:14"`
+	DoorOpen       bool               `uhppote:"offset:15"`
+	CardNumber     uint32             `uhppote:"offset:16"`
+	SwipeDateTime  types.DateTime     `uhppote:"offset:20"`
+	SwipeReason    byte               `uhppote:"offset:27"`
+	Door1State     bool               `uhppote:"offset:28"`
+	Door2State     bool               `uhppote:"offset:29"`
+	Door3State     bool               `uhppote:"offset:30"`
+	Door4State     bool               `uhppote:"offset:31"`
+	Door1Button    bool               `uhppote:"offset:32"`
+	Door2Button    bool               `uhppote:"offset:33"`
+	Door3Button    bool               `uhppote:"offset:34"`
+	Door4Button    bool               `uhppote:"offset:35"`
+	SystemState    byte               `uhppote:"offset:36"`
+	SystemDate     types.SystemDate   `uhppote:"offset:51"`
+	SystemTime     types.SystemTime   `uhppote:"offset:37"`
+	PacketNumber   uint32             `uhppote:"offset:40"`
+	Backup         uint32             `uhppote:"offset:44"`
+	SpecialMessage byte               `uhppote:"offset:48"`
+	LowBattery     bool               `uhppote:"offset:49"`
+	FireAlarm      bool               `uhppote:"offset:50"`
+}
 
-	err := u.listen(&msg)
-	if err == nil {
-		d := msg.SystemDate.Date.Format("2006-01-02")
-		t := msg.SystemTime.Time.Format("15:04:05")
-		datetime, _ := time.ParseInLocation("2006-01-02 15:04:05", d+" "+t, time.Local)
+func (u *UHPPOTE) Listen(p chan *types.Status, q chan os.Signal) error {
+	pipe := make(chan Event)
 
-		event := types.Status{
-			SerialNumber:   msg.SerialNumber,
-			LastIndex:      msg.LastIndex,
-			SwipeRecord:    msg.SwipeRecord,
-			Granted:        msg.Granted,
-			Door:           msg.Door,
-			DoorOpen:       msg.DoorOpen,
-			CardNumber:     msg.CardNumber,
-			SwipeDateTime:  msg.SwipeDateTime,
-			SwipeReason:    msg.SwipeReason,
-			DoorState:      []bool{msg.Door1State, msg.Door2State, msg.Door3State, msg.Door4State},
-			DoorButton:     []bool{msg.Door1Button, msg.Door2Button, msg.Door3Button, msg.Door4Button},
-			SystemState:    msg.SystemState,
-			SystemDateTime: types.DateTime{DateTime: datetime},
-			PacketNumber:   msg.PacketNumber,
-			Backup:         msg.Backup,
-			SpecialMessage: msg.SpecialMessage,
-			LowBattery:     msg.LowBattery,
-			FireAlarm:      msg.FireAlarm,
+	go func() {
+		for {
+			event := <-pipe
+			p <- event.transform()
 		}
+	}()
 
-		fmt.Printf("%s\n", event.String())
+	return u.listen(pipe, q)
+}
+
+func (event Event) transform() *types.Status {
+	d := event.SystemDate.Date.Format("2006-01-02")
+	t := event.SystemTime.Time.Format("15:04:05")
+	datetime, _ := time.ParseInLocation("2006-01-02 15:04:05", d+" "+t, time.Local)
+
+	return &types.Status{
+		SerialNumber:   event.SerialNumber,
+		LastIndex:      event.LastIndex,
+		SwipeRecord:    event.SwipeRecord,
+		Granted:        event.Granted,
+		Door:           event.Door,
+		DoorOpen:       event.DoorOpen,
+		CardNumber:     event.CardNumber,
+		SwipeDateTime:  event.SwipeDateTime,
+		SwipeReason:    event.SwipeReason,
+		DoorState:      []bool{event.Door1State, event.Door2State, event.Door3State, event.Door4State},
+		DoorButton:     []bool{event.Door1Button, event.Door2Button, event.Door3Button, event.Door4Button},
+		SystemState:    event.SystemState,
+		SystemDateTime: types.DateTime{DateTime: datetime},
+		PacketNumber:   event.PacketNumber,
+		Backup:         event.Backup,
+		SpecialMessage: event.SpecialMessage,
+		LowBattery:     event.LowBattery,
+		FireAlarm:      event.FireAlarm,
 	}
-
-	return err
 }

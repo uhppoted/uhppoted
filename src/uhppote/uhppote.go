@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"os"
 	"regexp"
 	"time"
 	codec "uhppote/encoding/UTO311-L0x"
@@ -43,7 +44,7 @@ func (u *UHPPOTE) Broadcast(request interface{}) ([][]byte, error) {
 	return u.broadcast(p)
 }
 
-func (u *UHPPOTE) listen(event interface{}) error {
+func (u *UHPPOTE) listen(p chan Event, q chan os.Signal) error {
 	c, err := u.open()
 	if err != nil {
 		return err
@@ -53,17 +54,46 @@ func (u *UHPPOTE) listen(event interface{}) error {
 		c.Close()
 	}()
 
+	closed := false
+	go func() {
+		for {
+			if s := <-q; s == os.Interrupt {
+				closed = true
+				c.Close()
+			}
+		}
+	}()
+
 	m := make([]byte, 2048)
-	N, remote, err := c.ReadFromUDP(m)
-	if err != nil {
-		return errors.New(fmt.Sprintf("Failed to read from UDP socket [%v]", err))
+
+	for {
+		if u.Debug {
+			fmt.Printf(" ... listening\n")
+		}
+
+		N, remote, err := c.ReadFromUDP(m)
+		if err != nil {
+			if closed {
+				return nil
+			}
+
+			return errors.New(fmt.Sprintf("Failed to read from UDP socket [%v]", err))
+		}
+
+		if u.Debug {
+			fmt.Printf(" ... received %v bytes from %v\n ... response\n%s\n", N, remote, dump(m[:N], " ...          "))
+		}
+
+		event := Event{}
+		err = codec.Unmarshal(m[:N], &event)
+		if err != nil {
+			return errors.New(fmt.Sprintf("Error unmarshalling event [%v]", err))
+		}
+
+		p <- event
 	}
 
-	if u.Debug {
-		fmt.Printf(" ... received %v bytes from %v\n ... response\n%s\n", N, remote, dump(m[:N], " ...          "))
-	}
-
-	return codec.Unmarshal(m[:N], event)
+	return nil
 }
 
 func (u *UHPPOTE) open() (*net.UDPConn, error) {
@@ -86,7 +116,6 @@ func (u *UHPPOTE) send(connection *net.UDPConn, request interface{}) error {
 	}
 
 	broadcast, err := net.ResolveUDPAddr("udp", "255.255.255.255:60000")
-	//broadcast, err := net.ResolveUDPAddr("udp", "192.168.1.255:60000")
 
 	if err != nil {
 		return errors.New(fmt.Sprintf("Failed to resolve UDP broadcast address [%v]", err))
