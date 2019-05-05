@@ -54,7 +54,7 @@ usage: build
 	$(CLI)
 
 debug: build
-	$(CLI) --bind $(LOCAL) $(DEBUG) get-devices
+	$(CLI) $(DEBUG) get-devices
 
 help: build
 	$(CLI) --bind $(LOCAL) help
@@ -71,6 +71,7 @@ run: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) revoke         $(SERIALNO) $(CARD)
 
 get-devices: build
+#	$(CLI) --bind 0.0.0.0:0 $(DEBUG) get-devices
 	$(CLI) --bind $(LOCAL) $(DEBUG) get-devices
 
 set-address: build
