@@ -1,6 +1,7 @@
 package uhppote
 
 import (
+	"encoding/binary"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -12,12 +13,18 @@ import (
 )
 
 type UHPPOTE struct {
-	BindAddress net.UDPAddr
-	Debug       bool
+	BindAddress      *net.UDPAddr
+	BroadcastAddress *net.UDPAddr
+	Debug            bool
 }
 
 func (u *UHPPOTE) Execute(request, reply interface{}) error {
-	c, err := u.open()
+	addr, err := u.bindAddr()
+	if err != nil {
+		return errors.New(fmt.Sprintf("Unable to resolve bind address [%v]", err))
+	}
+
+	c, err := u.open(addr)
 	if err != nil {
 		return err
 	}
@@ -41,11 +48,20 @@ func (u *UHPPOTE) Broadcast(request interface{}) ([][]byte, error) {
 		return [][]byte{}, err
 	}
 
-	return u.broadcast(p)
+	addr, err := u.broadcastAddr()
+	if err != nil {
+		return [][]byte{}, errors.New(fmt.Sprintf("Unable to resolve UDP broadcast address [%v]", err))
+	}
+
+	return u.broadcast(p, addr)
 }
 
 func (u *UHPPOTE) listen(p chan Event, q chan os.Signal) error {
-	c, err := u.open()
+	if u.BindAddress == nil {
+		return errors.New("Listen requires a fixed bind address")
+	}
+
+	c, err := u.open(u.BindAddress)
 	if err != nil {
 		return err
 	}
@@ -96,8 +112,8 @@ func (u *UHPPOTE) listen(p chan Event, q chan os.Signal) error {
 	return nil
 }
 
-func (u *UHPPOTE) open() (*net.UDPConn, error) {
-	connection, err := net.ListenUDP("udp", &u.BindAddress)
+func (u *UHPPOTE) open(addr *net.UDPAddr) (*net.UDPConn, error) {
+	connection, err := net.ListenUDP("udp", addr)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Failed to open UDP socket [%v]", err))
 	}
@@ -128,7 +144,7 @@ func (u *UHPPOTE) send(connection *net.UDPConn, request interface{}) error {
 	}
 
 	if u.Debug {
-		fmt.Printf(" ... sent %v bytes\n", N)
+		fmt.Printf(" ... sent %v bytes to %v\n", N, broadcast)
 	}
 
 	return nil
@@ -154,7 +170,7 @@ func (u *UHPPOTE) receive(c *net.UDPConn, reply interface{}) error {
 	return codec.Unmarshal(m[:N], reply)
 }
 
-func (u *UHPPOTE) broadcast(cmd []byte) ([][]byte, error) {
+func (u *UHPPOTE) broadcast(cmd []byte, addr *net.UDPAddr) ([][]byte, error) {
 	replies := make([][]byte, 0)
 
 	if u.Debug {
@@ -164,14 +180,12 @@ func (u *UHPPOTE) broadcast(cmd []byte) ([][]byte, error) {
 		fmt.Printf("%s\n", regex.ReplaceAllString(hex.Dump(cmd), " ...         $1"))
 	}
 
-	broadcast, err := net.ResolveUDPAddr("udp", "255.255.255.255:60000")
-
+	bindTo, err := u.bindAddr()
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Failed to resolve UDP broadcast address [%v]", err))
+		return nil, errors.New(fmt.Sprintf("Unable to resolve bind address [%v]", err))
 	}
 
-	connection, err := net.ListenUDP("udp", &u.BindAddress)
-
+	connection, err := net.ListenUDP("udp", bindTo)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Failed to open UDP socket [%v]", err))
 	}
@@ -180,14 +194,14 @@ func (u *UHPPOTE) broadcast(cmd []byte) ([][]byte, error) {
 		connection.Close()
 	}()
 
-	N, err := connection.WriteTo(cmd, broadcast)
+	N, err := connection.WriteTo(cmd, addr)
 
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Failed to write to UDP socket [%v]", err))
 	}
 
 	if u.Debug {
-		fmt.Printf(" ... sent %v bytes\n", N)
+		fmt.Printf(" ... sent %v bytes to %v\n", N, addr)
 	}
 
 	go func() {
@@ -213,4 +227,65 @@ func (u *UHPPOTE) broadcast(cmd []byte) ([][]byte, error) {
 	time.Sleep(2500 * time.Millisecond)
 
 	return replies, err
+}
+
+func localAddr() (*net.UDPAddr, error) {
+	list, err := net.Interfaces()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, iface := range list {
+		addrs, err := iface.Addrs()
+		if err == nil {
+			for _, addr := range addrs {
+				ip, _, err := net.ParseCIDR(addr.String())
+				if err == nil && !ip.IsLoopback() && ip.To4() != nil {
+					return &net.UDPAddr{ip.To4(), 0, ""}, nil
+				}
+			}
+		}
+	}
+
+	return nil, errors.New("Unable to identify local interface to bind to")
+}
+
+func (u *UHPPOTE) bindAddr() (*net.UDPAddr, error) {
+	if u.BindAddress != nil {
+		return u.BindAddress, nil
+	}
+
+	addr, err := localAddr()
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Unable to resolve bind address [%v]", err))
+	}
+
+	return addr, nil
+}
+
+// Ref. https://stackoverflow.com/questions/36166791/how-to-get-broadcast-address-of-ipv4-net-ipnet
+func (u *UHPPOTE) broadcastAddr() (*net.UDPAddr, error) {
+	if u.BroadcastAddress != nil {
+		return u.BroadcastAddress, nil
+	}
+
+	if u.BindAddress != nil && u.BindAddress.IP.IsUnspecified() {
+		return net.ResolveUDPAddr("udp", "255.255.255.255:60000")
+	}
+
+	local, err := u.bindAddr()
+	if err != nil {
+		return nil, err
+	}
+
+	if local.IP.To4() == nil {
+		return nil, errors.New("IPv6 does not support broadcast addresses")
+	}
+
+	broadcast := make(net.IP, len(local.IP.To4()))
+	addr := binary.BigEndian.Uint32(local.IP.To4()) | ^binary.BigEndian.Uint32(net.IP(local.IP.DefaultMask()).To4())
+
+	binary.BigEndian.PutUint32(broadcast, addr)
+
+	return &net.UDPAddr{broadcast.To4(), 60000, ""}, nil
 }

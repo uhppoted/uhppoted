@@ -10,7 +10,7 @@ import (
 )
 
 type bind struct {
-	address net.UDPAddr
+	address *net.UDPAddr
 }
 
 var cli = []commands.Command{
@@ -38,7 +38,7 @@ var cli = []commands.Command{
 
 var VERSION = "v0.00.0"
 var debug = false
-var local = bind{net.UDPAddr{net.IPv4(0, 0, 0, 0), 60001, ""}}
+var local = bind{nil}
 
 func main() {
 	flag.Var(&local, "bind", "Sets the local IP address and port to which to bind (e.g. 192.168.0.100:60001)")
@@ -96,7 +96,7 @@ func (b *bind) Set(s string) error {
 		return err
 	}
 
-	b.address = *address
+	b.address = address
 
 	return nil
 }
@@ -141,8 +141,8 @@ func usage() {
 	fmt.Println()
 	fmt.Println("  Options:")
 	fmt.Println()
-	fmt.Println("    -bind   Sets the local IP address+port to use")
-	fmt.Println("    -debug  Displays vaguely useful internal information")
+	fmt.Println("    --bind   Sets the local IP address+port to use")
+	fmt.Println("    --debug  Displays vaguely useful internal information")
 	fmt.Println()
 }
 
