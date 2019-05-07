@@ -9,7 +9,7 @@ import (
 	"uhppote-cli/commands"
 )
 
-type bind struct {
+type addr struct {
 	address *net.UDPAddr
 }
 
@@ -38,16 +38,19 @@ var cli = []commands.Command{
 
 var VERSION = "v0.00.0"
 var debug = false
-var local = bind{nil}
+var local = addr{nil}
+var broadcast = addr{nil}
 
 func main() {
 	flag.Var(&local, "bind", "Sets the local IP address and port to which to bind (e.g. 192.168.0.100:60001)")
+	flag.Var(&broadcast, "broadcast", "Sets the IP address and port for UDP broadcast (e.g. 192.168.0.255:60000)")
 	flag.BoolVar(&debug, "debug", false, "Displays vaguely useful information while processing a command")
 	flag.Parse()
 
 	u := uhppote.UHPPOTE{
-		BindAddress: local.address,
-		Debug:       debug,
+		BindAddress:      local.address,
+		BroadcastAddress: broadcast.address,
+		Debug:            debug,
 	}
 
 	cmd, err := parse()
@@ -69,7 +72,7 @@ func main() {
 }
 
 func parse() (commands.Command, error) {
-	var cmd commands.Command = nil // commands.NewHelpCommand()
+	var cmd commands.Command = nil
 	var err error = nil
 
 	if len(os.Args) > 1 {
@@ -86,11 +89,11 @@ func parse() (commands.Command, error) {
 	return cmd, err
 }
 
-func (b *bind) String() string {
+func (b *addr) String() string {
 	return b.address.String()
 }
 
-func (b *bind) Set(s string) error {
+func (b *addr) Set(s string) error {
 	address, err := net.ResolveUDPAddr("udp", s)
 	if err != nil {
 		return err
@@ -141,8 +144,9 @@ func usage() {
 	fmt.Println()
 	fmt.Println("  Options:")
 	fmt.Println()
-	fmt.Println("    --bind   Sets the local IP address+port to use")
-	fmt.Println("    --debug  Displays vaguely useful internal information")
+	fmt.Println("    --bind      Sets the local IP address and port to use")
+	fmt.Println("    --broadcast Sets the IP address and port to use for UDP broadcast")
+	fmt.Println("    --debug     Displays vaguely useful internal information")
 	fmt.Println()
 }
 
