@@ -36,7 +36,7 @@ var cli = []commands.Command{
 	&commands.ListenCommand{},
 }
 
-var VERSION = "v0.00.0"
+var VERSION = "v0.01.0"
 var debug = false
 var local = addr{nil}
 var broadcast = addr{nil}
