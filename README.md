@@ -6,9 +6,9 @@ Go CLI implementation for the UHPPOTE UT0311-L04 TCP/IP Wiegand Access Control B
 
 The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Access Control Board is 'Windows only' and is also not suitable for server use or integration with other applications.
 
-## Status
+## Releases
 
-*Under development*
+- v0.01: bare-bones but functional CLI
 
 ## Modules
 
@@ -39,6 +39,7 @@ Supported functions:
 - GetEventIndex
 - SetEventIndex
 - Open
+- Listen
 
 ## uhppote-cli
 
@@ -66,6 +67,7 @@ Supported commands:
 - get-swipe-index
 - set-event-index
 - open             
+- listen             
 
 ## uhppote-simulator
 
