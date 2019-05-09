@@ -15,18 +15,26 @@ import (
 type UHPPOTE struct {
 	BindAddress      *net.UDPAddr
 	BroadcastAddress *net.UDPAddr
+	Devices          map[uint32]*net.UDPAddr
 	Debug            bool
 }
 
-func (u *UHPPOTE) Execute(request, reply interface{}) error {
+func (u *UHPPOTE) Execute(serialNumber uint32, request, reply interface{}) error {
 	bind, err := u.bindAddr()
 	if err != nil {
 		return errors.New(fmt.Sprintf("Unable to resolve bind address [%v]", err))
 	}
 
-	dest, err := u.broadcastAddr()
-	if err != nil {
-		return err
+	dest := u.Devices[serialNumber]
+
+	fmt.Printf("---- DEBUG: %v\n", u.Devices)
+	fmt.Printf("---- DEBUG: %v\n", dest)
+
+	if dest == nil {
+		dest, err = u.broadcastAddr()
+		if err != nil {
+			return err
+		}
 	}
 
 	c, err := u.open(bind)

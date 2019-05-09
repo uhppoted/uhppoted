@@ -7,6 +7,7 @@ import (
 	"os"
 	"uhppote"
 	"uhppote-cli/commands"
+	"uhppote-cli/config"
 )
 
 type addr struct {
@@ -36,7 +37,7 @@ var cli = []commands.Command{
 	&commands.ListenCommand{},
 }
 
-var VERSION = "v0.01.0"
+var VERSION = "v0.01.1"
 var debug = false
 var local = addr{nil}
 var broadcast = addr{nil}
@@ -51,6 +52,11 @@ func main() {
 		BindAddress:      local.address,
 		BroadcastAddress: broadcast.address,
 		Debug:            debug,
+	}
+
+	config, err := config.NewConfig()
+	if err == nil {
+		u.Devices = config.Devices
 	}
 
 	cmd, err := parse()

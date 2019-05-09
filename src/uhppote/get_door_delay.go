@@ -28,7 +28,7 @@ func (u *UHPPOTE) GetDoorDelay(serialNumber uint32, door byte) (*types.DoorDelay
 
 	reply := GetDoorDelayResponse{}
 
-	err := u.Execute(request, &reply)
+	err := u.Execute(serialNumber, request, &reply)
 	if err != nil {
 		return nil, err
 	}

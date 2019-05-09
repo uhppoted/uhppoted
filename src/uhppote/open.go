@@ -24,7 +24,7 @@ func (u *UHPPOTE) OpenDoor(serialNumber uint32, door uint8) (*types.Result, erro
 
 	reply := OpenDoorResponse{}
 
-	err := u.Execute(request, &reply)
+	err := u.Execute(serialNumber, request, &reply)
 	if err != nil {
 		return nil, err
 	}

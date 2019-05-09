@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"regexp"
+	"time"
 	"uhppote"
 	codec "uhppote/encoding/UTO311-L0x"
 	"uhppote/types"
@@ -115,6 +116,10 @@ func (s *Simulator) handle(bytes []byte) ([]byte, error) {
 	switch bytes[1] {
 	case 0x94:
 		return s.find(bytes)
+
+	case 0x5a:
+		return s.cardById(bytes)
+
 	default:
 		return []byte{}, errors.New(fmt.Sprintf("Invalid command %02X", bytes[1]))
 	}
@@ -124,7 +129,6 @@ func (s *Simulator) handle(bytes []byte) ([]byte, error) {
 
 func (s *Simulator) find(bytes []byte) ([]byte, error) {
 	response := uhppote.FindDevicesResponse{
-		MsgType:      0x94,
 		SerialNumber: s.SerialNumber,
 		IpAddress:    s.IpAddress,
 		SubnetMask:   s.SubnetMask,
@@ -132,6 +136,29 @@ func (s *Simulator) find(bytes []byte) ([]byte, error) {
 		MacAddress:   s.MacAddress,
 		Version:      s.Version,
 		Date:         s.Date,
+	}
+
+	reply, err := codec.Marshal(response)
+	if err != nil {
+		return nil, err
+	}
+
+	return reply, nil
+}
+
+func (s *Simulator) cardById(bytes []byte) ([]byte, error) {
+	from, _ := time.ParseInLocation("2006-01-02", "2019-02-03", time.Local)
+	to, _ := time.ParseInLocation("2006-01-02", "2019-12-29", time.Local)
+
+	response := uhppote.GetCardByIdResponse{
+		SerialNumber: s.SerialNumber,
+		CardNumber:   123456,
+		From:         types.Date{from},
+		To:           types.Date{to},
+		Door1:        true,
+		Door2:        false,
+		Door3:        false,
+		Door4:        true,
 	}
 
 	reply, err := codec.Marshal(response)
