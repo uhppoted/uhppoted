@@ -26,7 +26,7 @@ func (u *UHPPOTE) SetEventIndex(serialNumber, index uint32) (*types.EventIndexRe
 
 	reply := SetEventIndexResponse{}
 
-	err := u.Execute(request, &reply)
+	err := u.Execute(serialNumber, request, &reply)
 	if err != nil {
 		return nil, err
 	}

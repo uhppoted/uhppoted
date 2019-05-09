@@ -24,7 +24,7 @@ func (u *UHPPOTE) DeleteCards(serialNumber uint32) (*types.Result, error) {
 
 	reply := DeleteCardsResponse{}
 
-	err := u.Execute(request, &reply)
+	err := u.Execute(serialNumber, request, &reply)
 	if err != nil {
 		return nil, err
 	}

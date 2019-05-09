@@ -15,11 +15,12 @@ format:
 	gofmt -w=true src/uhppote/encoding/UTO311-L0x/*.go
 	gofmt -w=true src/uhppote-cli/*.go
 	gofmt -w=true src/uhppote-cli/commands/*.go
+	gofmt -w=true src/uhppote-cli/config/*.go
 	gofmt -w=true src/uhppote-simulator/*.go
 	gofmt -w=true src/uhppote-simulator/simulator/*.go
 	gofmt -w=true src/encoding/bcd/*.go
 
-dist: format
+release: format
 	mkdir -p dist/windows
 	mkdir -p dist/macosx
 	mkdir -p dist/linux
@@ -54,8 +55,9 @@ usage: build
 	$(CLI)
 
 debug: build
-	$(CLI) $(DEBUG) --bind 192.168.0.14:12345 --broadcast 192.168.0.255:60000 get-devices
-	$(CLI) $(DEBUG) --bind 0.0.0.0:12345                                      get-devices
+#	$(CLI) $(DEBUG) --bind 192.168.0.14:12345 --broadcast 192.168.0.255:60000 get-devices
+#	$(CLI) $(DEBUG) --bind 0.0.0.0:12345                                      get-devices
+	$(CLI) $(DEBUG) --bind 0.0.0.0:12345 get-card $(SERIALNO) $(CARD)
 
 help: build
 	$(CLI) --bind $(LOCAL) help

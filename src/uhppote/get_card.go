@@ -48,7 +48,7 @@ func (u *UHPPOTE) GetCardByIndex(serialNumber, index uint32) (*types.Card, error
 
 	reply := GetCardByIndexResponse{}
 
-	err := u.Execute(request, &reply)
+	err := u.Execute(serialNumber, request, &reply)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (u *UHPPOTE) GetCardById(serialNumber, cardNumber uint32) (*types.Card, err
 
 	reply := GetCardByIdResponse{}
 
-	err := u.Execute(request, &reply)
+	err := u.Execute(serialNumber, request, &reply)
 	if err != nil {
 		return nil, err
 	}

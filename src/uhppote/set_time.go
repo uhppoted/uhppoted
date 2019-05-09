@@ -25,7 +25,7 @@ func (u *UHPPOTE) SetTime(serialNumber uint32, datetime time.Time) (*types.Time,
 
 	reply := SetTimeResponse{}
 
-	err := u.Execute(request, &reply)
+	err := u.Execute(serialNumber, request, &reply)
 	if err != nil {
 		return nil, err
 	}

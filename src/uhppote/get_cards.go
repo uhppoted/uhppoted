@@ -22,7 +22,7 @@ func (u *UHPPOTE) GetCards(serialNumber uint32) (*types.RecordCount, error) {
 
 	reply := GetCardsResponse{}
 
-	err := u.Execute(request, &reply)
+	err := u.Execute(serialNumber, request, &reply)
 	if err != nil {
 		return nil, err
 	}
