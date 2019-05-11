@@ -62,12 +62,18 @@ func main() {
 	u := uhppote.UHPPOTE{
 		BindAddress:      options.local.address,
 		BroadcastAddress: options.broadcast.address,
+		Devices:          make(map[uint32]*net.UDPAddr),
 		Debug:            options.debug,
 	}
 
 	config, err := config.NewConfig(options.config)
+
 	if err == nil {
-		u.Devices = config.Devices
+		for s, d := range config.Devices {
+			if d.Address != nil {
+				u.Devices[s] = d.Address
+			}
+		}
 	}
 
 	cmd, err := parse()
