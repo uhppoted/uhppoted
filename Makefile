@@ -57,7 +57,8 @@ usage: build
 debug: build
 #	$(CLI) $(DEBUG) --bind 192.168.0.14:12345 --broadcast 192.168.0.255:60000 get-devices
 #	$(CLI) $(DEBUG) --bind 0.0.0.0:12345                                      get-devices
-	$(CLI) $(DEBUG) --bind 0.0.0.0:12345 get-card $(SERIALNO) $(CARD)
+#	$(CLI) $(DEBUG) --bind 0.0.0.0:12345 get-card $(SERIALNO) $(CARD)
+	$(CLI) $(DEBUG) get-card $(SERIALNO) $(CARD)
 
 help: build
 	$(CLI) --bind $(LOCAL) help

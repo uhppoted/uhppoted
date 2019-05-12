@@ -27,9 +27,6 @@ func (u *UHPPOTE) Execute(serialNumber uint32, request, reply interface{}) error
 
 	dest := u.Devices[serialNumber]
 
-	fmt.Printf("---- DEBUG: %v\n", u.Devices)
-	fmt.Printf("---- DEBUG: %v\n", dest)
-
 	if dest == nil {
 		dest, err = u.broadcastAddr()
 		if err != nil {
