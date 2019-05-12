@@ -41,39 +41,46 @@ var VERSION = "v0.01.1"
 
 var options = struct {
 	config    string
-	local     addr
+	bind      addr
 	broadcast addr
 	debug     bool
 }{
 	config:    ".config",
-	local:     addr{nil},
+	bind:      addr{nil},
 	broadcast: addr{nil},
 	debug:     false,
 }
 
 func main() {
-
 	flag.String(options.config, "config", "Specifies the path for the config file")
-	flag.Var(&options.local, "bind", "Sets the local IP address and port to which to bind (e.g. 192.168.0.100:60001)")
+	flag.Var(&options.bind, "bind", "Sets the local IP address and port to which to bind (e.g. 192.168.0.100:60001)")
 	flag.Var(&options.broadcast, "broadcast", "Sets the IP address and port for UDP broadcast (e.g. 192.168.0.255:60000)")
 	flag.BoolVar(&options.debug, "debug", false, "Displays vaguely useful information while processing a command")
 	flag.Parse()
 
 	u := uhppote.UHPPOTE{
-		BindAddress:      options.local.address,
-		BroadcastAddress: options.broadcast.address,
-		Devices:          make(map[uint32]*net.UDPAddr),
-		Debug:            options.debug,
+		Devices: make(map[uint32]*net.UDPAddr),
+		Debug:   options.debug,
 	}
 
-	config, err := config.NewConfig(options.config)
-
+	config, err := config.LoadConfig(options.config)
 	if err == nil {
+		u.BindAddress = config.BindAddress
+		u.BroadcastAddress = config.BroadcastAddress
+
 		for s, d := range config.Devices {
 			if d.Address != nil {
 				u.Devices[s] = d.Address
 			}
 		}
+	}
+
+	if options.bind.address != nil {
+		u.BindAddress = options.bind.address
+	}
+
+	if options.broadcast.address != nil {
+		u.BroadcastAddress = options.broadcast.address
 	}
 
 	cmd, err := parse()
