@@ -1,13 +1,16 @@
 # TODO
 
-1. Config file for addresses, etc.
-2. Load cards from TSV file
-3. Human readable output for e.g. get-status
-4. JSON formatted output for e.g. get-status
-5. Consistently include device serial number in output e.g. of get-time
-6. Document protocol
-7. Simulator
-8. fuse
-9. Look into ARP for set-address
-10. Rework error handling to use Wrap/Frame
-11. godoc
+-- Dig into simulator not receiving broadcast unless listening on 0.0.0.0:60000
+   Ref. https://groups.google.com/forum/#!topic/golang-nuts/nbmYWwHCgPc
+
+0. Load simulator devices from file
+1. Load cards from TSV file
+2. Human readable output for e.g. get-status
+3. JSON formatted output for e.g. get-status
+4. Consistently include device serial number in output e.g. of get-time
+5. Document protocol
+6. Simulator
+7. fuse
+8. Look into ARP for set-address
+9. Rework error handling to use Wrap/Frame
+10. godoc
