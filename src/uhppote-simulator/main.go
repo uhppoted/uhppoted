@@ -1,47 +1,175 @@
 package main
 
 import (
+	"encoding/hex"
+	"errors"
 	"flag"
 	"fmt"
 	"net"
 	"os"
 	"os/signal"
-	"time"
+	"regexp"
 	"uhppote-simulator/simulator"
-	"uhppote/types"
 )
 
-var debug = false
+type addr struct {
+	address *net.UDPAddr
+}
+
 var VERSION = "v0.00.0"
 
+var options = struct {
+	bind  addr
+	debug bool
+}{
+	bind:  addr{nil},
+	debug: false,
+}
+
+var simulators = []*simulator.Simulator{}
+
+var handlers = map[byte]func(*net.UDPConn, *net.UDPAddr, []byte){
+	0x94: find,
+	0x5a: getCardById,
+}
+
 func main() {
-	flag.BoolVar(&debug, "debug", false, "Displays simulator activity")
+	flag.Var(&options.bind, "bind", "Sets the local IP address and port to which to bind (e.g. 192.168.0.100:60001)")
+	flag.BoolVar(&options.debug, "debug", false, "Displays simulator activity")
 	flag.Parse()
 
-	mac, _ := net.ParseMAC("00:66:19:39:55:2d")
-	date, _ := time.ParseInLocation("20060102", "20180816", time.Local)
-
-	s := simulator.Simulator{
-		Interrupt:    make(chan int, 1),
-		Debug:        debug,
-		SerialNumber: 1234567890,
-		IpAddress:    net.IPv4(192, 168, 0, 25),
-		SubnetMask:   net.IPv4(255, 255, 255, 0),
-		Gateway:      net.IPv4(0, 0, 0, 0),
-		MacAddress:   mac,
-		Version:      0x0892,
-		Date:         types.Date{date},
+	interrupt := make(chan int, 1)
+	bind, err := net.ResolveUDPAddr("udp", ":60000")
+	if err != nil {
+		fmt.Printf("%v\n", errors.New(fmt.Sprintf("Failed to resolve UDP bind address [%v]", err)))
+		return
 	}
 
-	go s.Run()
+	simulators = append(simulators, simulator.NewSimulator(1234567890))
+	simulators = append(simulators, simulator.NewSimulator(987654321))
+
+	go run(bind, interrupt)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	<-c
 
-	s.Stop()
+	stop(interrupt)
 
 	os.Exit(1)
+}
+
+func stop(interrupt chan int) {
+	interrupt <- 42
+	<-interrupt
+}
+
+func run(bind *net.UDPAddr, interrupt chan int) {
+	connection, err := net.ListenUDP("udp", bind)
+	if err != nil {
+		fmt.Printf("%v\n", errors.New(fmt.Sprintf("Failed to bind to UDP socket [%v]", err)))
+		return
+	}
+
+	defer connection.Close()
+
+	wait := make(chan int, 1)
+	go func() {
+		err := listenAndServe(connection)
+		if err != nil {
+			fmt.Printf("%v\n", err)
+		}
+		wait <- 0
+	}()
+
+	<-interrupt
+	connection.Close()
+	<-wait
+	interrupt <- 0
+}
+
+func listenAndServe(c *net.UDPConn) error {
+	for {
+		request, remote, err := receive(c)
+		if err != nil {
+			return err
+		}
+
+		handle(c, remote, request)
+	}
+
+	return nil
+}
+
+func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
+	if len(bytes) != 64 {
+		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Invalid message length %d", len(bytes))))
+		return
+	}
+
+	if bytes[0] != 0x17 {
+		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Invalid message type %02X", bytes[0])))
+		return
+	}
+
+	h := handlers[bytes[1]]
+	if h == nil {
+		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Invalid command %02X", bytes[1])))
+		return
+	}
+
+	h(c, src, bytes)
+}
+
+func receive(c *net.UDPConn) ([]byte, *net.UDPAddr, error) {
+	request := make([]byte, 2048)
+
+	N, remote, err := c.ReadFromUDP(request)
+	if err != nil {
+		return []byte{}, nil, errors.New(fmt.Sprintf("Failed to read from UDP socket [%v]", err))
+	}
+
+	if options.debug {
+		fmt.Printf(" ... received %v bytes from %v\n%s\n", N, remote, dump(request[0:N], " ...          "))
+	}
+
+	return request[:N], remote, nil
+}
+
+func send(c *net.UDPConn, dest *net.UDPAddr, message []byte) error {
+	N, err := c.WriteTo(message, dest)
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("Failed to write to UDP socket [%v]", err))
+	}
+
+	if options.debug {
+		fmt.Printf(" ... sent %v bytes to %v\n%s\n", N, dest, dump(message[0:N], " ...          "))
+	}
+
+	return nil
+}
+
+func find(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
+	for _, s := range simulators {
+		reply, err := s.Find(bytes)
+		if err != nil {
+			fmt.Printf("ERROR: %v\n", err)
+		} else if err = send(c, src, reply); err != nil {
+			fmt.Printf("ERROR: %v\n", err)
+		}
+	}
+}
+
+func getCardById(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
+	for _, s := range simulators {
+		reply, err := s.GetCardById(bytes)
+		if err != nil {
+			fmt.Printf("ERROR: %v\n", err)
+		} else if err = send(c, src, reply); err != nil {
+			fmt.Printf("ERROR: %v\n", err)
+		}
+	}
 }
 
 func usage() error {
@@ -60,6 +188,27 @@ func usage() error {
 
 func version() error {
 	fmt.Printf("%v\n", VERSION)
+
+	return nil
+}
+
+func dump(m []byte, prefix string) string {
+	regex := regexp.MustCompile("(?m)^(.*)")
+
+	return fmt.Sprintf("%s", regex.ReplaceAllString(hex.Dump(m), prefix+"$1"))
+}
+
+func (b *addr) String() string {
+	return b.address.String()
+}
+
+func (b *addr) Set(s string) error {
+	address, err := net.ResolveUDPAddr("udp", s)
+	if err != nil {
+		return err
+	}
+
+	b.address = address
 
 	return nil
 }
