@@ -1,6 +1,10 @@
 package simulator
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io/ioutil"
 	"net"
 	"time"
 	"uhppote"
@@ -8,14 +12,94 @@ import (
 	"uhppote/types"
 )
 
+type MacAddress net.HardwareAddr
+type Version types.Version
+
 type Simulator struct {
-	SerialNumber types.SerialNumber
-	IpAddress    net.IP
-	SubnetMask   net.IP
-	Gateway      net.IP
-	MacAddress   net.HardwareAddr
-	Version      types.Version
-	Date         types.Date
+	SerialNumber types.SerialNumber `json:"serial-number"`
+	IpAddress    net.IP             `json:"address"`
+	SubnetMask   net.IP             `json:"subnet"`
+	Gateway      net.IP             `json:"gateway"`
+	MacAddress   MacAddress         `json:"MAC"`
+	Version      Version            `json:"version"`
+	Date         types.Date         `json:"-"`
+}
+
+func (m MacAddress) MarshalJSON() ([]byte, error) {
+	return json.Marshal(net.HardwareAddr(m).String())
+}
+
+func (m *MacAddress) UnmarshalJSON(bytes []byte) error {
+	var s string
+
+	err := json.Unmarshal(bytes, &s)
+	if err != nil {
+		return err
+	}
+
+	mac, err := net.ParseMAC(s)
+	if err != nil {
+		return err
+	}
+
+	*m = MacAddress(mac)
+
+	return nil
+}
+
+func (v Version) MarshalJSON() ([]byte, error) {
+	return json.Marshal(fmt.Sprintf("%04x", v))
+}
+
+func (v *Version) UnmarshalJSON(bytes []byte) error {
+	var s string
+
+	err := json.Unmarshal(bytes, &s)
+	if err != nil {
+		return err
+	}
+
+	N, err := fmt.Sscanf(s, "%04x", v)
+	if err != nil {
+		return err
+	}
+
+	if N != 1 {
+		return errors.New("Unable to extract 'version' from JSON file")
+	}
+
+	return nil
+}
+
+func Load(filepath string) (*Simulator, error) {
+	bytes, err := ioutil.ReadFile(filepath)
+	if err != nil {
+		return nil, err
+	}
+
+	simulator := new(Simulator)
+	err = json.Unmarshal(bytes, simulator)
+	if err != nil {
+		return nil, err
+	}
+
+	date, err := time.ParseInLocation("20060102", "20180816", time.Local)
+	if err != nil {
+		return nil, err
+	}
+
+	simulator.Date = types.Date{date}
+
+	return simulator, nil
+}
+
+func Save(filepath string, s *Simulator) error {
+	bytes, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(filepath, bytes, 0644)
 }
 
 func NewSimulator(serialNo uint32) *Simulator {
@@ -27,7 +111,7 @@ func NewSimulator(serialNo uint32) *Simulator {
 		IpAddress:    net.IPv4(192, 168, 0, 25),
 		SubnetMask:   net.IPv4(255, 255, 255, 0),
 		Gateway:      net.IPv4(0, 0, 0, 0),
-		MacAddress:   mac,
+		MacAddress:   MacAddress(mac),
 		Version:      0x0892,
 		Date:         types.Date{date},
 	}
@@ -39,8 +123,8 @@ func (s *Simulator) Find(bytes []byte) ([]byte, error) {
 		IpAddress:    s.IpAddress,
 		SubnetMask:   s.SubnetMask,
 		Gateway:      s.Gateway,
-		MacAddress:   s.MacAddress,
-		Version:      s.Version,
+		MacAddress:   net.HardwareAddr(s.MacAddress),
+		Version:      types.Version(s.Version),
 		Date:         s.Date,
 	}
 
