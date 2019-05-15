@@ -8,6 +8,8 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"path"
+	"path/filepath"
 	"regexp"
 	"uhppote-simulator/simulator"
 )
@@ -19,10 +21,10 @@ type addr struct {
 var VERSION = "v0.00.0"
 
 var options = struct {
-	bind  addr
+	dir   string
 	debug bool
 }{
-	bind:  addr{nil},
+	dir:   "./devices",
 	debug: false,
 }
 
@@ -34,7 +36,7 @@ var handlers = map[byte]func(*net.UDPConn, *net.UDPAddr, []byte){
 }
 
 func main() {
-	flag.Var(&options.bind, "bind", "Sets the local IP address and port to which to bind (e.g. 192.168.0.100:60001)")
+	flag.StringVar(&options.dir, "devices", "./devices", "Specifies the simulation device directory")
 	flag.BoolVar(&options.debug, "debug", false, "Displays simulator activity")
 	flag.Parse()
 
@@ -45,8 +47,7 @@ func main() {
 		return
 	}
 
-	simulators = append(simulators, simulator.NewSimulator(1234567890))
-	simulators = append(simulators, simulator.NewSimulator(987654321))
+	simulators = load(options.dir)
 
 	go run(bind, interrupt)
 
@@ -57,6 +58,31 @@ func main() {
 	stop(interrupt)
 
 	os.Exit(1)
+}
+
+func load(dir string) []*simulator.Simulator {
+	if options.debug {
+		fmt.Printf("   ... loading devices from '%s'\n", dir)
+	}
+
+	simulators := []*simulator.Simulator{}
+	files, err := filepath.Glob(path.Join(dir, "*.gz"))
+	if err == nil {
+		for _, f := range files {
+			if options.debug {
+				fmt.Printf("   ... loading device from '%s'\n", f)
+			}
+
+			s, err := simulator.LoadGZ(f)
+			if err != nil {
+				fmt.Printf("WARN: could not load device from file '%s': %v\n", f, err)
+			} else {
+				simulators = append(simulators, s)
+			}
+		}
+	}
+
+	return simulators
 }
 
 func stop(interrupt chan int) {
@@ -181,6 +207,7 @@ func usage() error {
 	fmt.Println("               For help on a specific command use 'uhppote-cli help <command>'")
 	fmt.Println("    --version  Displays the current version of uhppote-simulator")
 	fmt.Println("    --debug    Displays a trace of simulator activity")
+	fmt.Println("    --devices  The directory containing the simulator device files")
 	fmt.Println()
 
 	return nil

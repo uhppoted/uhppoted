@@ -135,4 +135,4 @@ listen: build
 	$(CLI) --bind 192.168.1.100:40000 $(DEBUG) listen 
 
 simulator: build
-	./bin/uhppote-simulator --debug 
+	./bin/uhppote-simulator --debug --devices "./runtime/simulation/devices"

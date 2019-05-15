@@ -3,7 +3,7 @@
 -- Dig into simulator not receiving broadcast unless listening on 0.0.0.0:60000
    Ref. https://groups.google.com/forum/#!topic/golang-nuts/nbmYWwHCgPc
 
-0. Load simulator devices from file
+0. simulator --new-device <serial-number>
 1. Load cards from TSV file
 2. Human readable output for e.g. get-status
 3. JSON formatted output for e.g. get-status
@@ -14,3 +14,4 @@
 8. Look into ARP for set-address
 9. Rework error handling to use Wrap/Frame
 10. godoc
+11. Integration tests
