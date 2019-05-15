@@ -1,6 +1,8 @@
 package simulator
 
 import (
+	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -69,6 +71,38 @@ func (v *Version) UnmarshalJSON(bytes []byte) error {
 	}
 
 	return nil
+}
+
+func LoadGZ(filepath string) (*Simulator, error) {
+	b, err := ioutil.ReadFile(filepath)
+	if err != nil {
+		return nil, err
+	}
+
+	zr, err := gzip.NewReader(bytes.NewBuffer(b))
+	if err != nil {
+		return nil, err
+	}
+
+	buffer, err := ioutil.ReadAll(zr)
+	if err != nil {
+		return nil, err
+	}
+
+	simulator := new(Simulator)
+	err = json.Unmarshal(buffer, simulator)
+	if err != nil {
+		return nil, err
+	}
+
+	date, err := time.ParseInLocation("20060102", "20180816", time.Local)
+	if err != nil {
+		return nil, err
+	}
+
+	simulator.Date = types.Date{date}
+
+	return simulator, nil
 }
 
 func Load(filepath string) (*Simulator, error) {
