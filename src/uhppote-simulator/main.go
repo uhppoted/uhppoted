@@ -11,11 +11,13 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"uhppote-simulator/commands"
 	"uhppote-simulator/simulator"
 )
 
-type addr struct {
-	address *net.UDPAddr
+var cli = []commands.Command{
+	&commands.VersionCommand{VERSION},
+	&commands.NewDeviceCommand{},
 }
 
 var VERSION = "v0.00.0"
@@ -40,24 +42,36 @@ func main() {
 	flag.BoolVar(&options.debug, "debug", false, "Displays simulator activity")
 	flag.Parse()
 
-	interrupt := make(chan int, 1)
-	bind, err := net.ResolveUDPAddr("udp", ":60000")
+	cmd, err := parse()
 	if err != nil {
-		fmt.Printf("%v\n", errors.New(fmt.Sprintf("Failed to resolve UDP bind address [%v]", err)))
+		fmt.Printf("\n   ERROR: %v\n\n", err)
+		os.Exit(1)
+	}
+
+	if cmd != nil {
+		cmd.Execute()
 		return
 	}
 
-	simulators = load(options.dir)
+	simulate()
+}
 
-	go run(bind, interrupt)
+func parse() (commands.Command, error) {
+	var cmd commands.Command = nil
+	var err error = nil
 
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	<-c
+	if len(os.Args) > 1 {
+		switch flag.Arg(0) {
+		default:
+			for _, c := range cli {
+				if c.CLI() == flag.Arg(0) {
+					cmd = c
+				}
+			}
+		}
+	}
 
-	stop(interrupt)
-
-	os.Exit(1)
+	return cmd, err
 }
 
 func load(dir string) []*simulator.Simulator {
@@ -83,6 +97,27 @@ func load(dir string) []*simulator.Simulator {
 	}
 
 	return simulators
+}
+
+func simulate() {
+	interrupt := make(chan int, 1)
+	bind, err := net.ResolveUDPAddr("udp", ":60000")
+	if err != nil {
+		fmt.Printf("%v\n", errors.New(fmt.Sprintf("Failed to resolve UDP bind address [%v]", err)))
+		return
+	}
+
+	simulators = load(options.dir)
+
+	go run(bind, interrupt)
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	<-c
+
+	stop(interrupt)
+
+	os.Exit(1)
 }
 
 func stop(interrupt chan int) {
@@ -223,19 +258,4 @@ func dump(m []byte, prefix string) string {
 	regex := regexp.MustCompile("(?m)^(.*)")
 
 	return fmt.Sprintf("%s", regex.ReplaceAllString(hex.Dump(m), prefix+"$1"))
-}
-
-func (b *addr) String() string {
-	return b.address.String()
-}
-
-func (b *addr) Set(s string) error {
-	address, err := net.ResolveUDPAddr("udp", s)
-	if err != nil {
-		return err
-	}
-
-	b.address = address
-
-	return nil
 }

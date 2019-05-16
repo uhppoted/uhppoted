@@ -1,4 +1,5 @@
 CLI = ./bin/uhppote-cli
+SIMULATOR = ./bin/uhppote-simulator
 DEBUG = --debug
 LOCAL = 192.168.1.100:51234
 CARD = 6154412
@@ -17,6 +18,7 @@ format:
 	gofmt -w=true src/uhppote-cli/commands/*.go
 	gofmt -w=true src/uhppote-cli/config/*.go
 	gofmt -w=true src/uhppote-simulator/*.go
+	gofmt -w=true src/uhppote-simulator/commands/*.go
 	gofmt -w=true src/uhppote-simulator/simulator/*.go
 	gofmt -w=true src/encoding/bcd/*.go
 
@@ -65,7 +67,8 @@ help: build
 	$(CLI) --bind $(LOCAL) help
 
 version: build
-	$(CLI) version
+	$(CLI)       version
+	$(SIMULATOR) version
 
 run: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) get-devices
@@ -136,3 +139,9 @@ listen: build
 
 simulator: build
 	./bin/uhppote-simulator --debug --devices "./runtime/simulation/devices"
+
+simulator-device: build
+	./bin/uhppote-simulator --debug new-device 192837465 "./runtime/simulation/devices"
+
+
+

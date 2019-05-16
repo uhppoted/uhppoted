@@ -105,6 +105,26 @@ func LoadGZ(filepath string) (*Simulator, error) {
 	return simulator, nil
 }
 
+func SaveGZ(filepath string, s *Simulator) error {
+	b, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	var buffer bytes.Buffer
+	zw := gzip.NewWriter(&buffer)
+	_, err = zw.Write(b)
+	if err != nil {
+		return err
+	}
+
+	if err = zw.Close(); err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(filepath, buffer.Bytes(), 0644)
+}
+
 func Load(filepath string) (*Simulator, error) {
 	bytes, err := ioutil.ReadFile(filepath)
 	if err != nil {
@@ -134,21 +154,6 @@ func Save(filepath string, s *Simulator) error {
 	}
 
 	return ioutil.WriteFile(filepath, bytes, 0644)
-}
-
-func NewSimulator(serialNo uint32) *Simulator {
-	mac, _ := net.ParseMAC("00:66:19:39:55:2d")
-	date, _ := time.ParseInLocation("20060102", "20180816", time.Local)
-
-	return &Simulator{
-		SerialNumber: types.SerialNumber(serialNo),
-		IpAddress:    net.IPv4(192, 168, 0, 25),
-		SubnetMask:   net.IPv4(255, 255, 255, 0),
-		Gateway:      net.IPv4(0, 0, 0, 0),
-		MacAddress:   MacAddress(mac),
-		Version:      0x0892,
-		Date:         types.Date{date},
-	}
 }
 
 func (s *Simulator) Find(bytes []byte) ([]byte, error) {
