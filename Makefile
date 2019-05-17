@@ -141,7 +141,7 @@ simulator: build
 	./bin/uhppote-simulator --debug --devices "./runtime/simulation/devices"
 
 simulator-device: build
-	./bin/uhppote-simulator --debug new-device 192837465 "./runtime/simulation/devices"
+	./bin/uhppote-simulator --debug new-device 666 "./runtime/simulation/devices"
 
 
 

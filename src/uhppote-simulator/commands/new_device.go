@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"flag"
 	"fmt"
 	"net"
 	"path"
@@ -22,6 +23,15 @@ func (c *NewDeviceCommand) Execute() error {
 		return err
 	}
 
+	gzip := false
+	filename := fmt.Sprintf("%d.json", serialNumber)
+	if len(flag.Args()) > 3 {
+		if flag.Arg(3) == "--gzip" {
+			gzip = true
+			filename = fmt.Sprintf("%d.json.gz", serialNumber)
+		}
+	}
+
 	mac, _ := net.ParseMAC("00:66:19:39:55:2d")
 
 	device := simulator.Simulator{
@@ -33,9 +43,11 @@ func (c *NewDeviceCommand) Execute() error {
 		Version:      0x0892,
 	}
 
-	filename := fmt.Sprintf("%d.json.gz", serialNumber)
+	if gzip {
+		return simulator.SaveGZ(path.Join(dir, filename), &device)
+	}
 
-	return simulator.SaveGZ(path.Join(dir, filename), &device)
+	return simulator.Save(path.Join(dir, filename), &device)
 }
 
 func (c *NewDeviceCommand) CLI() string {
