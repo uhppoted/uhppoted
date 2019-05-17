@@ -3,7 +3,7 @@
 -- Dig into simulator not receiving broadcast unless listening on 0.0.0.0:60000
    Ref. https://groups.google.com/forum/#!topic/golang-nuts/nbmYWwHCgPc
 
-0. simulator help
+0. simulator: help
 1. Load cards from TSV file
 2. Human readable output for e.g. get-status
 3. JSON formatted output for e.g. get-status

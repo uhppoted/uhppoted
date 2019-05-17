@@ -18,6 +18,7 @@ type MacAddress net.HardwareAddr
 type Version types.Version
 
 type Simulator struct {
+	File         string             `json:"-"`
 	SerialNumber types.SerialNumber `json:"serial-number"`
 	IpAddress    net.IP             `json:"address"`
 	SubnetMask   net.IP             `json:"subnet"`
@@ -100,6 +101,7 @@ func LoadGZ(filepath string) (*Simulator, error) {
 		return nil, err
 	}
 
+	simulator.File = filepath
 	simulator.Date = types.Date{date}
 
 	return simulator, nil
@@ -142,6 +144,7 @@ func Load(filepath string) (*Simulator, error) {
 		return nil, err
 	}
 
+	simulator.File = filepath
 	simulator.Date = types.Date{date}
 
 	return simulator, nil
