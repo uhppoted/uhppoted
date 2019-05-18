@@ -1,4 +1,4 @@
-package simulator
+package entities
 
 import (
 	"encoding/json"

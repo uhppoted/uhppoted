@@ -20,6 +20,7 @@ format:
 	gofmt -w=true src/uhppote-simulator/*.go
 	gofmt -w=true src/uhppote-simulator/commands/*.go
 	gofmt -w=true src/uhppote-simulator/simulator/*.go
+	gofmt -w=true src/uhppote-simulator/simulator/entities/*.go
 	gofmt -w=true src/encoding/bcd/*.go
 
 release: format

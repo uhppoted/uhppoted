@@ -6,6 +6,7 @@ import (
 	"net"
 	"path"
 	"uhppote-simulator/simulator"
+	"uhppote-simulator/simulator/entities"
 	"uhppote/types"
 )
 
@@ -30,19 +31,17 @@ func (c *NewDeviceCommand) Execute(dir string) error {
 	mac, _ := net.ParseMAC("00:66:19:39:55:2d")
 
 	device := simulator.Simulator{
+		File:         path.Join(dir, filename),
+		Compressed:   gzip,
 		SerialNumber: types.SerialNumber(serialNumber),
 		IpAddress:    net.IPv4(192, 168, 0, 25),
 		SubnetMask:   net.IPv4(255, 255, 255, 0),
 		Gateway:      net.IPv4(0, 0, 0, 0),
-		MacAddress:   simulator.MacAddress(mac),
+		MacAddress:   entities.MacAddress(mac),
 		Version:      0x0892,
 	}
 
-	if gzip {
-		return simulator.SaveGZ(path.Join(dir, filename), &device)
-	}
-
-	return simulator.Save(path.Join(dir, filename), &device)
+	return (&device).Save()
 }
 
 func (c *NewDeviceCommand) CLI() string {
