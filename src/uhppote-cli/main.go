@@ -106,12 +106,9 @@ func parse() (commands.Command, error) {
 	var err error = nil
 
 	if len(os.Args) > 1 {
-		switch flag.Arg(0) {
-		default:
-			for _, c := range cli {
-				if c.CLI() == flag.Arg(0) {
-					cmd = c
-				}
+		for _, c := range cli {
+			if c.CLI() == flag.Arg(0) {
+				cmd = c
 			}
 		}
 	}

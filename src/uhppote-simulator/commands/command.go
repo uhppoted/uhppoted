@@ -1,7 +1,7 @@
 package commands
 
 type Command interface {
-	Execute() error
+	Execute(dir string) error
 	CLI() string
 	Description() string
 	Usage() string
