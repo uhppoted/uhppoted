@@ -8,24 +8,33 @@ import (
 	"net"
 	"time"
 	"uhppote"
+	"uhppote-simulator/simulator/entities"
 	codec "uhppote/encoding/UTO311-L0x"
 	"uhppote/types"
 )
 
 type Simulator struct {
-	File         string             `json:"-"`
-	Compressed   bool               `json:"-"`
-	SerialNumber types.SerialNumber `json:"serial-number"`
-	IpAddress    net.IP             `json:"address"`
-	SubnetMask   net.IP             `json:"subnet"`
-	Gateway      net.IP             `json:"gateway"`
-	MacAddress   MacAddress         `json:"MAC"`
-	Version      Version            `json:"version"`
-	Date         types.Date         `json:"-"`
-	Cards        CardList           `json:"cards"`
+	File         string              `json:"-"`
+	Compressed   bool                `json:"-"`
+	SerialNumber types.SerialNumber  `json:"serial-number"`
+	IpAddress    net.IP              `json:"address"`
+	SubnetMask   net.IP              `json:"subnet"`
+	Gateway      net.IP              `json:"gateway"`
+	MacAddress   entities.MacAddress `json:"MAC"`
+	Version      entities.Version    `json:"version"`
+	Date         types.Date          `json:"-"`
+	Cards        entities.CardList   `json:"cards"`
 }
 
-func LoadGZ(filepath string) (*Simulator, error) {
+func Load(filepath string, compressed bool) (*Simulator, error) {
+	if compressed {
+		return loadGZ(filepath)
+	}
+
+	return load(filepath)
+}
+
+func loadGZ(filepath string) (*Simulator, error) {
 	b, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		return nil, err
@@ -59,35 +68,7 @@ func LoadGZ(filepath string) (*Simulator, error) {
 	return simulator, nil
 }
 
-func (s *Simulator) save() error {
-	if s.Compressed {
-		return SaveGZ(s.File, s)
-	}
-
-	return Save(s.File, s)
-}
-
-func SaveGZ(filepath string, s *Simulator) error {
-	b, err := json.MarshalIndent(s, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	var buffer bytes.Buffer
-	zw := gzip.NewWriter(&buffer)
-	_, err = zw.Write(b)
-	if err != nil {
-		return err
-	}
-
-	if err = zw.Close(); err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(filepath, buffer.Bytes(), 0644)
-}
-
-func Load(filepath string) (*Simulator, error) {
+func load(filepath string) (*Simulator, error) {
 	bytes, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		return nil, err
@@ -111,7 +92,35 @@ func Load(filepath string) (*Simulator, error) {
 	return simulator, nil
 }
 
-func Save(filepath string, s *Simulator) error {
+func (s *Simulator) Save() error {
+	if s.Compressed {
+		return saveGZ(s.File, s)
+	}
+
+	return save(s.File, s)
+}
+
+func saveGZ(filepath string, s *Simulator) error {
+	b, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	var buffer bytes.Buffer
+	zw := gzip.NewWriter(&buffer)
+	_, err = zw.Write(b)
+	if err != nil {
+		return err
+	}
+
+	if err = zw.Close(); err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(filepath, buffer.Bytes(), 0644)
+}
+
+func save(filepath string, s *Simulator) error {
 	bytes, err := json.MarshalIndent(s, "", "  ")
 	if err != nil {
 		return err
@@ -140,10 +149,10 @@ func (s *Simulator) Find(bytes []byte) ([]byte, error) {
 }
 
 func (s *Simulator) PutCard(request uhppote.PutCardRequest) (*uhppote.PutCardResponse, error) {
-	card := Card{
+	card := entities.Card{
 		CardNumber: request.CardNumber,
-		From:       Date(request.From.Date),
-		To:         Date(request.To.Date),
+		From:       entities.Date(request.From.Date),
+		To:         entities.Date(request.To.Date),
 		Door1:      request.Door1,
 		Door2:      request.Door2,
 		Door3:      request.Door3,
@@ -153,7 +162,7 @@ func (s *Simulator) PutCard(request uhppote.PutCardRequest) (*uhppote.PutCardRes
 	s.Cards.Put(&card)
 
 	saved := false
-	err := s.save()
+	err := s.Save()
 	if err == nil {
 		saved = true
 	}

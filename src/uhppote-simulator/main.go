@@ -74,18 +74,18 @@ func load(dir string) []*simulator.Simulator {
 	devices := map[types.SerialNumber]*simulator.Simulator{}
 
 	list := []struct {
-		glob string
-		f    func(string) (*simulator.Simulator, error)
+		glob       string
+		compressed bool
 	}{
-		{"*.json", simulator.Load},
-		{"*.json.gz", simulator.LoadGZ},
+		{"*.json", false},
+		{"*.json.gz", true},
 	}
 
 	for _, g := range list {
 		files, err := filepath.Glob(path.Join(dir, g.glob))
 		if err == nil {
 			for _, f := range files {
-				s, err := g.f(f)
+				s, err := simulator.Load(f, g.compressed)
 				if err != nil {
 					fmt.Printf("   ... error loading device from file '%s': %v\n", f, err)
 				} else {
