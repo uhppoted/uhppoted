@@ -8,7 +8,7 @@ type VersionCommand struct {
 	Version string
 }
 
-func (c *VersionCommand) Execute() error {
+func (c *VersionCommand) Execute(dir string) error {
 	fmt.Printf("%v\n", c.Version)
 
 	return nil

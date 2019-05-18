@@ -23,8 +23,6 @@ func simulate() {
 		return
 	}
 
-	simulators = load(options.dir)
-
 	go run(bind, interrupt)
 
 	c := make(chan os.Signal, 1)

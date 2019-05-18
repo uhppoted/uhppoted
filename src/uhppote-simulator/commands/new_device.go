@@ -12,21 +12,16 @@ import (
 type NewDeviceCommand struct {
 }
 
-func (c *NewDeviceCommand) Execute() error {
+func (c *NewDeviceCommand) Execute(dir string) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
-	if err != nil {
-		return err
-	}
-
-	dir, err := getDir(2, "Missing devices directory", "Invalid devices directory: %v")
 	if err != nil {
 		return err
 	}
 
 	gzip := false
 	filename := fmt.Sprintf("%d.json", serialNumber)
-	if len(flag.Args()) > 3 {
-		if flag.Arg(3) == "--gzip" {
+	if len(flag.Args()) > 2 {
+		if flag.Arg(2) == "--gzip" {
 			gzip = true
 			filename = fmt.Sprintf("%d.json.gz", serialNumber)
 		}
@@ -59,19 +54,19 @@ func (c *NewDeviceCommand) Description() string {
 }
 
 func (c *NewDeviceCommand) Usage() string {
-	return "<serial number> <directory>"
+	return "<serial number> <--gzip>"
 }
 
 func (c *NewDeviceCommand) Help() {
-	fmt.Println("Usage: uhppote-simulator [options] new-device <serial number> <directory>")
+	fmt.Println("Usage: uhppote-simulator [options] new-device <serial number> <--gzip>")
 	fmt.Println()
-	fmt.Println(" Creates a new simulator device file in the specified directory")
+	fmt.Println(" Creates a new simulator device file in the directory specified by the --devices option")
 	fmt.Println()
 	fmt.Println("  serial-number  (required) controller serial number")
-	fmt.Println("  directory      (required) directory for simulator device files")
+	fmt.Println("  --gzip         (optional) compresses the device file using gzip")
 	fmt.Println()
 	fmt.Println("  Examples:")
 	fmt.Println()
-	fmt.Println("    uhppote-simulator new-device 12345678 /etc/uhppote/simulator/devices")
+	fmt.Println("    uhppote-simulator --devices '.devices' new-device 12345678 --gzip")
 	fmt.Println()
 }

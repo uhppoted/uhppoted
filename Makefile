@@ -64,7 +64,10 @@ debug: build
 	$(CLI) $(DEBUG) get-devices
 
 help: build
-	$(CLI) --bind $(LOCAL) help
+	$(CLI)       help
+	$(CLI)       help get-devices
+	$(SIMULATOR) help
+	$(SIMULATOR) help new-device
 
 version: build
 	$(CLI)       version
@@ -141,7 +144,7 @@ simulator: build
 	./bin/uhppote-simulator --debug --devices "./runtime/simulation/devices"
 
 simulator-device: build
-	./bin/uhppote-simulator --debug new-device 666 "./runtime/simulation/devices"
+	./bin/uhppote-simulator --debug --devices "runtime/simulation/devices" new-device 666 --gzip
 
 
 
