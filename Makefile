@@ -61,7 +61,8 @@ debug: build
 #	$(CLI) $(DEBUG) --bind 0.0.0.0:12345                                      get-devices
 #	$(CLI) $(DEBUG) --bind 0.0.0.0:12345 get-card $(SERIALNO) $(CARD)
 #	$(CLI) $(DEBUG) get-card $(SERIALNO) $(CARD)
-	$(CLI) $(DEBUG) get-devices
+#	$(CLI) $(DEBUG) get-devices
+	$(CLI) $(DEBUG) grant 1234567890 $(CARD) 2019-01-01 2019-12-31 1
 
 help: build
 	$(CLI)       help

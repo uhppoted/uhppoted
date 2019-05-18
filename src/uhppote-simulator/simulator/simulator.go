@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"io/ioutil"
 	"net"
 	"time"
@@ -14,11 +12,9 @@ import (
 	"uhppote/types"
 )
 
-type MacAddress net.HardwareAddr
-type Version types.Version
-
 type Simulator struct {
 	File         string             `json:"-"`
+	Compressed   bool               `json:"-"`
 	SerialNumber types.SerialNumber `json:"serial-number"`
 	IpAddress    net.IP             `json:"address"`
 	SubnetMask   net.IP             `json:"subnet"`
@@ -26,52 +22,7 @@ type Simulator struct {
 	MacAddress   MacAddress         `json:"MAC"`
 	Version      Version            `json:"version"`
 	Date         types.Date         `json:"-"`
-}
-
-func (m MacAddress) MarshalJSON() ([]byte, error) {
-	return json.Marshal(net.HardwareAddr(m).String())
-}
-
-func (m *MacAddress) UnmarshalJSON(bytes []byte) error {
-	var s string
-
-	err := json.Unmarshal(bytes, &s)
-	if err != nil {
-		return err
-	}
-
-	mac, err := net.ParseMAC(s)
-	if err != nil {
-		return err
-	}
-
-	*m = MacAddress(mac)
-
-	return nil
-}
-
-func (v Version) MarshalJSON() ([]byte, error) {
-	return json.Marshal(fmt.Sprintf("%04x", v))
-}
-
-func (v *Version) UnmarshalJSON(bytes []byte) error {
-	var s string
-
-	err := json.Unmarshal(bytes, &s)
-	if err != nil {
-		return err
-	}
-
-	N, err := fmt.Sscanf(s, "%04x", v)
-	if err != nil {
-		return err
-	}
-
-	if N != 1 {
-		return errors.New("Unable to extract 'version' from JSON file")
-	}
-
-	return nil
+	Cards        CardList           `json:"cards"`
 }
 
 func LoadGZ(filepath string) (*Simulator, error) {
@@ -102,9 +53,18 @@ func LoadGZ(filepath string) (*Simulator, error) {
 	}
 
 	simulator.File = filepath
+	simulator.Compressed = true
 	simulator.Date = types.Date{date}
 
 	return simulator, nil
+}
+
+func (s *Simulator) save() error {
+	if s.Compressed {
+		return SaveGZ(s.File, s)
+	}
+
+	return Save(s.File, s)
 }
 
 func SaveGZ(filepath string, s *Simulator) error {
@@ -145,6 +105,7 @@ func Load(filepath string) (*Simulator, error) {
 	}
 
 	simulator.File = filepath
+	simulator.Compressed = false
 	simulator.Date = types.Date{date}
 
 	return simulator, nil
@@ -176,6 +137,33 @@ func (s *Simulator) Find(bytes []byte) ([]byte, error) {
 	}
 
 	return reply, nil
+}
+
+func (s *Simulator) PutCard(request uhppote.PutCardRequest) (*uhppote.PutCardResponse, error) {
+	card := Card{
+		CardNumber: request.CardNumber,
+		From:       Date(request.From.Date),
+		To:         Date(request.To.Date),
+		Door1:      request.Door1,
+		Door2:      request.Door2,
+		Door3:      request.Door3,
+		Door4:      request.Door4,
+	}
+
+	s.Cards.Put(&card)
+
+	saved := false
+	err := s.save()
+	if err == nil {
+		saved = true
+	}
+
+	response := uhppote.PutCardResponse{
+		SerialNumber: s.SerialNumber,
+		Succeeded:    saved,
+	}
+
+	return &response, nil
 }
 
 func (s *Simulator) GetCardById(bytes []byte) ([]byte, error) {
