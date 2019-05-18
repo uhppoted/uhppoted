@@ -77,8 +77,8 @@ func load(dir string) []*simulator.Simulator {
 		glob string
 		f    func(string) (*simulator.Simulator, error)
 	}{
-		{"*.json.gz", simulator.LoadGZ},
 		{"*.json", simulator.Load},
+		{"*.json.gz", simulator.LoadGZ},
 	}
 
 	for _, g := range list {

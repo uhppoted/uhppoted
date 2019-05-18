@@ -8,10 +8,13 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"uhppote"
+	codec "uhppote/encoding/UTO311-L0x"
 )
 
 var handlers = map[byte]func(*net.UDPConn, *net.UDPAddr, []byte){
 	0x94: find,
+	0x50: putCard,
 	0x5a: getCardById,
 }
 
@@ -132,6 +135,40 @@ func find(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
 			fmt.Printf("ERROR: %v\n", err)
 		} else if err = send(c, src, reply); err != nil {
 			fmt.Printf("ERROR: %v\n", err)
+		}
+	}
+}
+
+func putCard(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
+	request := uhppote.PutCardRequest{}
+
+	err := codec.Unmarshal(bytes, &request)
+	if err != nil {
+		fmt.Printf("ERROR: %v\n", err)
+		return
+	}
+
+	for _, s := range simulators {
+		if s.SerialNumber == request.SerialNumber {
+			response, err := s.PutCard(request)
+			if err != nil {
+				fmt.Printf("ERROR: %v\n", err)
+				return
+			}
+
+			if response == nil {
+				return
+			}
+
+			reply, err := codec.Marshal(response)
+			if err != nil {
+				fmt.Printf("ERROR: %v\n", err)
+				return
+			}
+
+			if err = send(c, src, reply); err != nil {
+				fmt.Printf("ERROR: %v\n", err)
+			}
 		}
 	}
 }
