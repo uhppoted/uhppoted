@@ -21,8 +21,8 @@ func TestMarshalPutCardRequest(t *testing.T) {
 	request := PutCardRequest{
 		SerialNumber: 423187757,
 		CardNumber:   6154412,
-		From:         types.Date{from},
-		To:           types.Date{to},
+		From:         types.Date(from),
+		To:           types.Date(to),
 		Door1:        true,
 		Door2:        false,
 		Door3:        false,

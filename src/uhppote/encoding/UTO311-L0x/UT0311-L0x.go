@@ -265,7 +265,8 @@ func Unmarshal(bytes []byte, m interface{}) error {
 					return err
 				}
 
-				f.Field(0).Set(reflect.ValueOf(date))
+				//f.Field(0).Set(reflect.ValueOf(date))
+				f.Set(reflect.ValueOf(types.Date(date)))
 
 			case tDateTime:
 				decoded, err := bcd.Decode(bytes[offset : offset+7])

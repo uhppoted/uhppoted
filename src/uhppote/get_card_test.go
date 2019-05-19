@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 	codec "uhppote/encoding/UTO311-L0x"
+	"uhppote/types"
 )
 
 func TestMarshalGetCardByIndexRequest(t *testing.T) {
@@ -88,12 +89,12 @@ func TestUnmarshalGetCardByIndexResponse(t *testing.T) {
 	}
 
 	from, _ := time.ParseInLocation("2006-01-02", "2019-02-03", time.Local)
-	if reply.From.Date != from {
+	if reply.From != types.Date(from) {
 		t.Errorf("Incorrect 'from date' - expected:%s, got:%s", from.Format("2006-01-02"), reply.From)
 	}
 
 	to, _ := time.ParseInLocation("2006-01-02", "2019-12-29", time.Local)
-	if reply.To.Date != to {
+	if reply.To != types.Date(to) {
 		t.Errorf("Incorrect 'to date' - expected:%s, got:%s", to.Format("2006-01-02"), reply.To)
 	}
 
@@ -143,12 +144,12 @@ func TestUnmarshalGetCardByIdResponse(t *testing.T) {
 	}
 
 	from, _ := time.ParseInLocation("2006-01-02", "2019-02-03", time.Local)
-	if reply.From.Date != from {
+	if reply.From != types.Date(from) {
 		t.Errorf("Incorrect 'from date' - expected:%s, got:%s", from.Format("2006-01-02"), reply.From)
 	}
 
 	to, _ := time.ParseInLocation("2006-01-02", "2019-12-29", time.Local)
-	if reply.To.Date != to {
+	if reply.To != types.Date(to) {
 		t.Errorf("Incorrect 'to date' - expected:%s, got:%s", to.Format("2006-01-02"), reply.To)
 	}
 

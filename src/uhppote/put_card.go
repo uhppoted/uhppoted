@@ -27,8 +27,8 @@ func (u *UHPPOTE) PutCard(serialNumber, cardNumber uint32, from, to time.Time, d
 	request := PutCardRequest{
 		SerialNumber: types.SerialNumber(serialNumber),
 		CardNumber:   cardNumber,
-		From:         types.Date{from},
-		To:           types.Date{to},
+		From:         types.Date(from),
+		To:           types.Date(to),
 		Door1:        door1,
 		Door2:        door2,
 		Door3:        door3,

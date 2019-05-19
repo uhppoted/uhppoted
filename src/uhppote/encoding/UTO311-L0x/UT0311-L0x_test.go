@@ -46,7 +46,7 @@ func TestMarshal(t *testing.T) {
 		MacAddress:   mac,
 		SerialNumber: 423187757,
 		Version:      0x0892,
-		Date:         types.Date{date},
+		Date:         types.Date(date),
 		DateTime:     types.DateTime{datetime},
 	}
 
@@ -207,7 +207,7 @@ func TestUnmarshal(t *testing.T) {
 	}
 
 	date, _ := time.ParseInLocation("2006-01-02", "2018-08-16", time.Local)
-	if reply.Date.Date != date {
+	if reply.Date != types.Date(date) {
 		t.Errorf("Expected date '%v', got: '%v'\n", date, reply.Date)
 	}
 
