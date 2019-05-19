@@ -63,7 +63,7 @@ func loadGZ(filepath string) (*Simulator, error) {
 
 	simulator.File = filepath
 	simulator.Compressed = true
-	simulator.Date = types.Date{date}
+	simulator.Date = types.Date(date)
 
 	return simulator, nil
 }
@@ -87,7 +87,7 @@ func load(filepath string) (*Simulator, error) {
 
 	simulator.File = filepath
 	simulator.Compressed = false
-	simulator.Date = types.Date{date}
+	simulator.Date = types.Date(date)
 
 	return simulator, nil
 }
@@ -151,8 +151,8 @@ func (s *Simulator) Find(bytes []byte) ([]byte, error) {
 func (s *Simulator) PutCard(request uhppote.PutCardRequest) (*uhppote.PutCardResponse, error) {
 	card := entities.Card{
 		CardNumber: request.CardNumber,
-		From:       entities.Date(request.From.Date),
-		To:         entities.Date(request.To.Date),
+		From:       entities.Date(request.From),
+		To:         entities.Date(request.To),
 		Door1:      request.Door1,
 		Door2:      request.Door2,
 		Door3:      request.Door3,
@@ -182,8 +182,8 @@ func (s *Simulator) GetCardById(bytes []byte) ([]byte, error) {
 	response := uhppote.GetCardByIdResponse{
 		SerialNumber: s.SerialNumber,
 		CardNumber:   123456,
-		From:         types.Date{from},
-		To:           types.Date{to},
+		From:         types.Date(from),
+		To:           types.Date(to),
 		Door1:        true,
 		Door2:        false,
 		Door3:        false,

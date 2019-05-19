@@ -6,9 +6,7 @@ import (
 	"time"
 )
 
-type Date struct {
-	Date time.Time
-}
+type Date time.Time
 
 type DateTime struct {
 	DateTime time.Time
@@ -23,7 +21,7 @@ type SystemTime struct {
 }
 
 func (d Date) String() string {
-	return d.Date.Format("2006-01-02")
+	return time.Time(d).Format("2006-01-02")
 }
 
 func (d *DateTime) String() string {
@@ -55,7 +53,7 @@ func (d DateTime) Encode(bytes []byte) {
 }
 
 func (d Date) Encode(bytes []byte) {
-	encoded, err := bcd.Encode(d.Date.Format("20060102"))
+	encoded, err := bcd.Encode(time.Time(d).Format("20060102"))
 
 	if err != nil {
 		panic(fmt.Sprintf("Unexpected error encoding date %v to BCD: [%v]", d, err))

@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 	codec "uhppote/encoding/UTO311-L0x"
+	"uhppote/types"
 )
 
 func TestMarshalFindDevicesRequest(t *testing.T) {
@@ -77,7 +78,7 @@ func TestUnmarshalFindDevicesResponse(t *testing.T) {
 	}
 
 	date, _ := time.ParseInLocation("20060102", "20180816", time.Local)
-	if reply.Date.Date != date {
+	if reply.Date != types.Date(date) {
 		t.Errorf("Incorrect 'date' from valid message: %v\n", reply.Date)
 	}
 }
