@@ -17,6 +17,10 @@ type Marshaler interface {
 	MarshalUT0311L0x() ([]byte, error)
 }
 
+type Unmarshaler interface {
+	UnmarshalUT0311L0x([]byte) error
+}
+
 var (
 	tBool         = reflect.TypeOf(bool(false))
 	tByte         = reflect.TypeOf(byte(0))
@@ -27,11 +31,9 @@ var (
 	tMsgType      = reflect.TypeOf(types.MsgType(0))
 	tSerialNumber = reflect.TypeOf(types.SerialNumber(0))
 	tVersion      = reflect.TypeOf(types.Version(0))
-	tDate         = reflect.TypeOf(types.Date{})
 	tDateTime     = reflect.TypeOf(types.DateTime{})
 	tSystemDate   = reflect.TypeOf(types.SystemDate{})
 	tSystemTime   = reflect.TypeOf(types.SystemTime{})
-	tMarshaler    = reflect.TypeOf((*Marshaler)(nil)).Elem()
 )
 
 var re = regexp.MustCompile(`offset:\s*([0-9]+)`)
@@ -71,10 +73,8 @@ func marshal(s reflect.Value) ([]byte, error) {
 				offset, _ := strconv.Atoi(matched[1])
 
 				// Use MarshalUT0311L0x() if implemented
-				m, ok := f.Interface().(Marshaler)
-				if ok {
-					b, err := m.MarshalUT0311L0x()
-					if err == nil {
+				if m, ok := f.Interface().(Marshaler); ok {
+					if b, err := m.MarshalUT0311L0x(); err == nil {
 						copy(bytes[offset:offset+len(b)], b)
 						continue
 					}
@@ -224,6 +224,14 @@ func Unmarshal(bytes []byte, m interface{}) error {
 
 			offset, _ := strconv.Atoi(matched[1])
 
+			// Use UnmarshalUT0311L0x() if implemented
+			if u, ok := f.Addr().Interface().(Unmarshaler); ok {
+				if err := u.UnmarshalUT0311L0x(bytes[offset:]); err == nil {
+					continue
+				}
+			}
+
+			// Unmarshal built-in types
 			switch t.Type {
 			case tBool:
 				if bytes[offset] == 0x01 {
@@ -265,20 +273,6 @@ func Unmarshal(bytes []byte, m interface{}) error {
 
 			case tVersion:
 				f.SetUint(uint64(binary.BigEndian.Uint16(bytes[offset : offset+2])))
-
-			case tDate:
-				decoded, err := bcd.Decode(bytes[offset : offset+4])
-				if err != nil {
-					return err
-				}
-
-				date, err := time.ParseInLocation("20060102", decoded, time.Local)
-				if err != nil {
-					return err
-				}
-
-				//f.Field(0).Set(reflect.ValueOf(date))
-				f.Set(reflect.ValueOf(types.Date(date)))
 
 			case tDateTime:
 				decoded, err := bcd.Decode(bytes[offset : offset+7])

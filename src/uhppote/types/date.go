@@ -38,6 +38,22 @@ func (d Date) MarshalUT0311L0x() ([]byte, error) {
 	return *encoded, nil
 }
 
+func (d *Date) UnmarshalUT0311L0x(bytes []byte) error {
+	decoded, err := bcd.Decode(bytes[0:4])
+	if err != nil {
+		return err
+	}
+
+	date, err := time.ParseInLocation("20060102", decoded, time.Local)
+	if err != nil {
+		return err
+	}
+
+	*d = Date(date)
+
+	return nil
+}
+
 func (d Date) MarshalJSON() ([]byte, error) {
 	return json.Marshal(time.Time(d).Format("2006-01-02"))
 }
