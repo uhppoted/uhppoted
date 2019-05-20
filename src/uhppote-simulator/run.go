@@ -15,6 +15,7 @@ import (
 var handlers = map[byte]func(*net.UDPConn, *net.UDPAddr, []byte){
 	0x94: find,
 	0x50: putCard,
+	0x58: getCards,
 	0x5a: getCardById,
 }
 
@@ -173,12 +174,67 @@ func putCard(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
 	}
 }
 
-func getCardById(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
+func getCards(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
+	request := uhppote.GetCardsRequest{}
+
+	err := codec.Unmarshal(bytes, &request)
+	if err != nil {
+		fmt.Printf("ERROR: %v\n", err)
+		return
+	}
+
 	for _, s := range simulators {
-		reply, err := s.GetCardById(bytes)
+		if s.SerialNumber == request.SerialNumber {
+			response, err := s.GetCards(request)
+			if err != nil {
+				fmt.Printf("ERROR: %v\n", err)
+				return
+			}
+
+			if response == nil {
+				return
+			}
+
+			reply, err := codec.Marshal(response)
+			if err != nil {
+				fmt.Printf("ERROR: %v\n", err)
+				return
+			}
+
+			if err = send(c, src, reply); err != nil {
+				fmt.Printf("ERROR: %v\n", err)
+			}
+		}
+	}
+}
+
+func getCardById(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
+	request := uhppote.GetCardByIdRequest{}
+
+	err := codec.Unmarshal(bytes, &request)
+	if err != nil {
+		fmt.Printf("ERROR: %v\n", err)
+		return
+	}
+
+	for _, s := range simulators {
+		response, err := s.GetCardById(request)
 		if err != nil {
 			fmt.Printf("ERROR: %v\n", err)
-		} else if err = send(c, src, reply); err != nil {
+			return
+		}
+
+		if response == nil {
+			return
+		}
+
+		reply, err := codec.Marshal(response)
+		if err != nil {
+			fmt.Printf("ERROR: %v\n", err)
+			return
+		}
+
+		if err = send(c, src, reply); err != nil {
 			fmt.Printf("ERROR: %v\n", err)
 		}
 	}

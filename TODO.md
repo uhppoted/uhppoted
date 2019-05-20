@@ -3,6 +3,8 @@
 -- Dig into simulator not receiving broadcast unless listening on 0.0.0.0:60000
    Ref. https://groups.google.com/forum/#!topic/golang-nuts/nbmYWwHCgPc
 
+**Clean up 'card not found' handling in uhppote**
+
 0. simulator: cards
 1. Load cards from TSV file
 2. Human readable output for e.g. get-status

@@ -61,9 +61,13 @@ debug: build
 #	$(CLI) $(DEBUG) --bind 192.168.0.14:12345 --broadcast 192.168.0.255:60000 get-devices
 #	$(CLI) $(DEBUG) --bind 0.0.0.0:12345                                      get-devices
 #	$(CLI) $(DEBUG) --bind 0.0.0.0:12345 get-card $(SERIALNO) $(CARD)
-#	$(CLI) $(DEBUG) get-card $(SERIALNO) $(CARD)
 #	$(CLI) $(DEBUG) get-devices
-	$(CLI) $(DEBUG) grant 1234567890 $(CARD) 2019-01-01 2019-12-31 1
+#	$(CLI) $(DEBUG) grant 1234567890 $(CARD) 2019-01-01 2019-12-31 1
+#	$(CLI) $(DEBUG) get-cards 1234567890 
+#	$(CLI) $(DEBUG) get-card  1234567890 $(CARD)
+#	$(CLI) $(DEBUG) get-card  1234567890 $(CARD)
+	$(CLI) $(DEBUG) get-card  1234567890 9154419
+#	$(CLI) --bind $(LOCAL) --broadcast "192.168.1.255:60000" $(DEBUG) get-card  $(SERIALNO) 9154419
 
 help: build
 	$(CLI)       help
@@ -85,7 +89,7 @@ run: build
 
 get-devices: build
 #	$(CLI) --bind 0.0.0.0:0 $(DEBUG) get-devices
-	$(CLI) --bind $(LOCAL) $(DEBUG) get-devices
+	$(CLI) --bind $(LOCAL) --broadcast "192.168.1.255:60000" $(DEBUG) get-devices
 
 set-address: build
 	$(CLI) -bind $(LOCAL) $(DEBUG) set-address $(SERIALNO) '192.168.1.125' '255.255.255.0' '0.0.0.0'

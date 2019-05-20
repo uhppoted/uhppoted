@@ -23,7 +23,12 @@ func (c *GetCardCommand) Execute(u *uhppote.UHPPOTE) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%v\n", record)
+
+	if record == nil {
+		fmt.Printf("%v %v NO RECORD\n", serialNumber, cardNumber)
+	} else {
+		fmt.Printf("%v\n", record)
+	}
 
 	return nil
 }

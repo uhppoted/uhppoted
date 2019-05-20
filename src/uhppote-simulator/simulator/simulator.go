@@ -26,6 +26,12 @@ type Simulator struct {
 	Cards        entities.CardList   `json:"cards"`
 }
 
+type CardNotFoundResponse struct {
+	MsgType      types.MsgType      `uhppote:"value:0x5a"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
+	CardNumber   uint32             `uhppote:"offset:8"`
+}
+
 func Load(filepath string, compressed bool) (*Simulator, error) {
 	if compressed {
 		return loadGZ(filepath)
@@ -175,25 +181,35 @@ func (s *Simulator) PutCard(request uhppote.PutCardRequest) (*uhppote.PutCardRes
 	return &response, nil
 }
 
-func (s *Simulator) GetCardById(bytes []byte) ([]byte, error) {
-	from, _ := time.ParseInLocation("2006-01-02", "2019-02-03", time.Local)
-	to, _ := time.ParseInLocation("2006-01-02", "2019-12-29", time.Local)
-
-	response := uhppote.GetCardByIdResponse{
+func (s *Simulator) GetCards(request uhppote.GetCardsRequest) (*uhppote.GetCardsResponse, error) {
+	response := uhppote.GetCardsResponse{
 		SerialNumber: s.SerialNumber,
-		CardNumber:   123456,
-		From:         types.Date(from),
-		To:           types.Date(to),
-		Door1:        true,
-		Door2:        false,
-		Door3:        false,
-		Door4:        true,
+		Records:      uint32(len(s.Cards)),
 	}
 
-	reply, err := codec.Marshal(response)
-	if err != nil {
-		return nil, err
+	return &response, nil
+}
+
+func (s *Simulator) GetCardById(request uhppote.GetCardByIdRequest) (interface{}, error) {
+	for _, card := range s.Cards {
+		if request.CardNumber == card.CardNumber {
+			response := uhppote.GetCardByIdResponse{
+				SerialNumber: s.SerialNumber,
+				CardNumber:   card.CardNumber,
+				From:         card.From,
+				To:           card.To,
+				Door1:        card.Door1,
+				Door2:        card.Door2,
+				Door3:        card.Door3,
+				Door4:        card.Door4,
+			}
+
+			return &response, nil
+		}
 	}
 
-	return reply, nil
+	return &CardNotFoundResponse{
+		SerialNumber: s.SerialNumber,
+		CardNumber:   0,
+	}, nil
 }
