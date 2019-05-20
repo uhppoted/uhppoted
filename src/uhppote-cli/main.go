@@ -52,7 +52,7 @@ var options = struct {
 }
 
 func main() {
-	flag.String(options.config, "config", "Specifies the path for the config file")
+	flag.StringVar(&options.config, "config", ".config", "Specifies the path for the config file")
 	flag.Var(&options.bind, "bind", "Sets the local IP address and port to which to bind (e.g. 192.168.0.100:60001)")
 	flag.Var(&options.broadcast, "broadcast", "Sets the IP address and port for UDP broadcast (e.g. 192.168.0.255:60000)")
 	flag.BoolVar(&options.debug, "debug", false, "Displays vaguely useful information while processing a command")
@@ -171,6 +171,7 @@ func usage() {
 	fmt.Println()
 	fmt.Println("  Options:")
 	fmt.Println()
+	fmt.Println("    --config    Sets the configuration file")
 	fmt.Println("    --bind      Sets the local IP address and port to use")
 	fmt.Println("    --broadcast Sets the IP address and port to use for UDP broadcast")
 	fmt.Println("    --debug     Displays vaguely useful internal information")

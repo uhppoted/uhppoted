@@ -9,6 +9,9 @@ runtime
 *.so
 *.dylib
 
+# Working files
+.local
+
 # Test binary, build with `go test -c`
 *.test
 

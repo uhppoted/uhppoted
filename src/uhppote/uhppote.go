@@ -19,6 +19,53 @@ type UHPPOTE struct {
 	Debug            bool
 }
 
+func (u *UHPPOTE) Send(serialNumber uint32, request interface{}) ([]byte, error) {
+	bind, err := u.bindAddr()
+	if err != nil {
+		return []byte{}, errors.New(fmt.Sprintf("Unable to resolve bind address [%v]", err))
+	}
+
+	dest := u.Devices[serialNumber]
+
+	if dest == nil {
+		dest, err = u.broadcastAddr()
+		if err != nil {
+			return []byte{}, err
+		}
+	}
+
+	c, err := u.open(bind)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	defer func() {
+		c.Close()
+	}()
+
+	if err = u.send(c, dest, request); err == nil {
+		m := make([]byte, 2048)
+
+		err := c.SetDeadline(time.Now().Add(5000 * time.Millisecond))
+		if err != nil {
+			return []byte{}, errors.New(fmt.Sprintf("Failed to set UDP timeout [%v]", err))
+		}
+
+		N, remote, err := c.ReadFromUDP(m)
+		if err != nil {
+			return []byte{}, errors.New(fmt.Sprintf("Failed to read from UDP socket [%v]", err))
+		}
+
+		if u.Debug {
+			fmt.Printf(" ... received %v bytes from %v\n ... response\n%s\n", N, remote, dump(m[:N], " ...          "))
+		}
+
+		return m[:N], nil
+	}
+
+	return []byte{}, err
+}
+
 func (u *UHPPOTE) Execute(serialNumber uint32, request, reply interface{}) error {
 	bind, err := u.bindAddr()
 	if err != nil {
