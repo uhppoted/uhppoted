@@ -68,7 +68,7 @@ debug: build
 #	$(CLI) $(DEBUG) get-card  1234567890 $(CARD)
 #	$(CLI) $(DEBUG) get-card  1234567890 9154419
 #	$(CLI) --bind $(LOCAL) --broadcast "192.168.1.255:60000" $(DEBUG) get-card  $(SERIALNO) 9154419
-	go test -count=1 src/uhppote/encoding/UTO311-L0x/*.go -run TestMarshalInterface
+	go test -count=1 src/uhppote/encoding/UTO311-L0x/*.go -run TestUnmarshalInterface
 
 help: build
 	$(CLI)       help
