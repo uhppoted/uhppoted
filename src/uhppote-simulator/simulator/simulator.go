@@ -151,8 +151,8 @@ func (s *Simulator) Find(bytes []byte) ([]byte, error) {
 func (s *Simulator) PutCard(request uhppote.PutCardRequest) (*uhppote.PutCardResponse, error) {
 	card := entities.Card{
 		CardNumber: request.CardNumber,
-		From:       entities.Date(request.From),
-		To:         entities.Date(request.To),
+		From:       request.From,
+		To:         request.To,
 		Door1:      request.Door1,
 		Door2:      request.Door2,
 		Door3:      request.Door3,
