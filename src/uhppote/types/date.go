@@ -3,6 +3,7 @@ package types
 import (
 	"encoding/bcd"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 )
@@ -21,6 +22,20 @@ func (d Date) Encode(bytes []byte) {
 	} else {
 		copy(bytes, *encoded)
 	}
+}
+
+func (d Date) MarshalUT0311L0x() ([]byte, error) {
+	encoded, err := bcd.Encode(time.Time(d).Format("20060102"))
+
+	if err != nil {
+		return []byte{}, errors.New(fmt.Sprintf("Error encoding date %v to BCD: [%v]", d, err))
+	}
+
+	if encoded == nil {
+		return []byte{}, errors.New(fmt.Sprintf("Unknown error encoding date %v to BCD", d))
+	}
+
+	return *encoded, nil
 }
 
 func (d Date) MarshalJSON() ([]byte, error) {

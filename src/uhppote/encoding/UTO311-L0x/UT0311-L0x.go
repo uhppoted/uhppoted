@@ -13,6 +13,10 @@ import (
 	"uhppote/types"
 )
 
+type Marshaler interface {
+	MarshalUT0311L0x() ([]byte, error)
+}
+
 var (
 	tBool         = reflect.TypeOf(bool(false))
 	tByte         = reflect.TypeOf(byte(0))
@@ -27,6 +31,7 @@ var (
 	tDateTime     = reflect.TypeOf(types.DateTime{})
 	tSystemDate   = reflect.TypeOf(types.SystemDate{})
 	tSystemTime   = reflect.TypeOf(types.SystemTime{})
+	tMarshaler    = reflect.TypeOf((*Marshaler)(nil)).Elem()
 )
 
 var re = regexp.MustCompile(`offset:\s*([0-9]+)`)
@@ -65,6 +70,17 @@ func marshal(s reflect.Value) ([]byte, error) {
 			if matched != nil {
 				offset, _ := strconv.Atoi(matched[1])
 
+				// Use MarshalUT0311L0x() if implemented
+				m, ok := f.Interface().(Marshaler)
+				if ok {
+					b, err := m.MarshalUT0311L0x()
+					if err == nil {
+						copy(bytes[offset:offset+len(b)], b)
+						continue
+					}
+				}
+
+				// Marshal built-in types
 				switch t.Type {
 				case tMsgType:
 				case tByte:
@@ -103,10 +119,6 @@ func marshal(s reflect.Value) ([]byte, error) {
 
 				case tVersion:
 					binary.BigEndian.PutUint16(bytes[offset:offset+2], uint16(f.Uint()))
-
-				case tDate:
-					slice := reflect.ValueOf(bytes[offset : offset+4])
-					f.MethodByName("Encode").Call([]reflect.Value{slice})
 
 				case tDateTime:
 					slice := reflect.ValueOf(bytes[offset : offset+7])
