@@ -21,7 +21,7 @@ type Simulator struct {
 	SubnetMask   net.IP              `json:"subnet"`
 	Gateway      net.IP              `json:"gateway"`
 	MacAddress   entities.MacAddress `json:"MAC"`
-	Version      entities.Version    `json:"version"`
+	Version      types.Version       `json:"version"`
 	Date         types.Date          `json:"-"`
 	Cards        entities.CardList   `json:"cards"`
 }

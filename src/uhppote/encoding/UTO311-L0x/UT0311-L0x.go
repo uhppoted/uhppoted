@@ -30,7 +30,6 @@ var (
 	tMAC          = reflect.TypeOf(net.HardwareAddr{})
 	tMsgType      = reflect.TypeOf(types.MsgType(0))
 	tSerialNumber = reflect.TypeOf(types.SerialNumber(0))
-	tVersion      = reflect.TypeOf(types.Version(0))
 	tDateTime     = reflect.TypeOf(types.DateTime{})
 	tSystemDate   = reflect.TypeOf(types.SystemDate{})
 	tSystemTime   = reflect.TypeOf(types.SystemTime{})
@@ -116,9 +115,6 @@ func marshal(s reflect.Value) ([]byte, error) {
 
 				case tSerialNumber:
 					binary.LittleEndian.PutUint32(bytes[offset:offset+4], uint32(f.Uint()))
-
-				case tVersion:
-					binary.BigEndian.PutUint16(bytes[offset:offset+2], uint16(f.Uint()))
 
 				case tDateTime:
 					slice := reflect.ValueOf(bytes[offset : offset+7])
@@ -270,9 +266,6 @@ func Unmarshal(bytes []byte, m interface{}) error {
 
 			case tSerialNumber:
 				f.SetUint(uint64(binary.LittleEndian.Uint32(bytes[offset : offset+4])))
-
-			case tVersion:
-				f.SetUint(uint64(binary.BigEndian.Uint16(bytes[offset : offset+2])))
 
 			case tDateTime:
 				decoded, err := bcd.Decode(bytes[offset : offset+7])
