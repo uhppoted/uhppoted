@@ -213,3 +213,28 @@ func (s *Simulator) GetCardById(request uhppote.GetCardByIdRequest) (interface{}
 		CardNumber:   0,
 	}, nil
 }
+
+func (s *Simulator) GetCardByIndex(request uhppote.GetCardByIndexRequest) (interface{}, error) {
+	if request.Index > 0 && request.Index <= uint32(len(s.Cards)) {
+		card := s.Cards[request.Index-1]
+		response := uhppote.GetCardByIndexResponse{
+			SerialNumber: s.SerialNumber,
+			CardNumber:   card.CardNumber,
+			From:         card.From,
+			To:           card.To,
+			Door1:        card.Door1,
+			Door2:        card.Door2,
+			Door3:        card.Door3,
+			Door4:        card.Door4,
+		}
+
+		return &response, nil
+	}
+
+	//	return &CardNotFoundResponse{
+	//		SerialNumber: s.SerialNumber,
+	//		CardNumber:   0,
+	//	}, nil
+
+	return nil, nil
+}
