@@ -61,7 +61,7 @@ debug: build
 #	$(CLI) $(DEBUG) --bind 192.168.0.14:12345 --broadcast 192.168.0.255:60000 get-devices
 #	$(CLI) $(DEBUG) --bind 0.0.0.0:12345                                      get-devices
 #	$(CLI) $(DEBUG) --bind 0.0.0.0:12345 get-card $(SERIALNO) $(CARD)
-#	$(CLI) $(DEBUG) get-devices
+	$(CLI) $(DEBUG) get-devices
 #	$(CLI) $(DEBUG) grant 1234567890 $(CARD) 2019-01-01 2019-12-31 1
 #	$(CLI) $(DEBUG) get-cards 1234567890 
 #	$(CLI) $(DEBUG) get-card  1234567890 $(CARD)

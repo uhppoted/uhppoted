@@ -2,14 +2,11 @@ package entities
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"net"
 	"uhppote/types"
 )
 
 type MacAddress net.HardwareAddr
-type Version types.Version
 
 type Card struct {
 	CardNumber uint32     `json:"number"`
@@ -41,30 +38,6 @@ func (m *MacAddress) UnmarshalJSON(bytes []byte) error {
 	}
 
 	*m = MacAddress(mac)
-
-	return nil
-}
-
-func (v Version) MarshalJSON() ([]byte, error) {
-	return json.Marshal(fmt.Sprintf("%04x", v))
-}
-
-func (v *Version) UnmarshalJSON(bytes []byte) error {
-	var s string
-
-	err := json.Unmarshal(bytes, &s)
-	if err != nil {
-		return err
-	}
-
-	N, err := fmt.Sscanf(s, "%04x", v)
-	if err != nil {
-		return err
-	}
-
-	if N != 1 {
-		return errors.New("Unable to extract 'version' from JSON file")
-	}
 
 	return nil
 }

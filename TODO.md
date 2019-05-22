@@ -4,6 +4,8 @@
    Ref. https://groups.google.com/forum/#!topic/golang-nuts/nbmYWwHCgPc
 
 **Clean up 'card not found' handling in uhppote**
+**Autodetect gzipped files**
+(https://stackoverflow.com/questions/28309988/how-to-read-from-either-gzip-or-plain-text-reader-in-golang)
 
 0. simulator: cards
 1. Load cards from TSV file
