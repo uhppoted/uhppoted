@@ -14,16 +14,6 @@ func (d Date) String() string {
 	return time.Time(d).Format("2006-01-02")
 }
 
-func (d Date) Encode(bytes []byte) {
-	encoded, err := bcd.Encode(time.Time(d).Format("20060102"))
-
-	if err != nil {
-		panic(fmt.Sprintf("Unexpected error encoding date %v to BCD: [%v]", d, err))
-	} else {
-		copy(bytes, *encoded)
-	}
-}
-
 func (d Date) MarshalUT0311L0x() ([]byte, error) {
 	encoded, err := bcd.Encode(time.Time(d).Format("20060102"))
 
