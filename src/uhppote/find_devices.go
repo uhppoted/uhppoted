@@ -16,7 +16,7 @@ type FindDevicesResponse struct {
 	IpAddress    net.IP             `uhppote:"offset:8"`
 	SubnetMask   net.IP             `uhppote:"offset:12"`
 	Gateway      net.IP             `uhppote:"offset:16"`
-	MacAddress   net.HardwareAddr   `uhppote:"offset:20"`
+	MacAddress   types.MacAddress   `uhppote:"offset:20"`
 	Version      types.Version      `uhppote:"offset:26"`
 	Date         types.Date         `uhppote:"offset:28"`
 }

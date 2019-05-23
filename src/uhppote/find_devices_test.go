@@ -69,8 +69,8 @@ func TestUnmarshalFindDevicesResponse(t *testing.T) {
 	}
 
 	MAC, _ := net.ParseMAC("00:66:19:39:55:2d")
-	if !reflect.DeepEqual(reply.MacAddress, MAC) {
-		t.Errorf("Incorrect 'MAC address' from valid message: %v\n", reply.MacAddress)
+	if !reflect.DeepEqual(reply.MacAddress, types.MacAddress(MAC)) {
+		t.Errorf("Incorrect 'MAC address' - expected:'%v', got:'%v'\n", types.MacAddress(MAC), reply.MacAddress)
 	}
 
 	if reply.Version != 0x0892 {

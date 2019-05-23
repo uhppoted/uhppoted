@@ -1,12 +1,8 @@
 package entities
 
 import (
-	"encoding/json"
-	"net"
 	"uhppote/types"
 )
-
-type MacAddress net.HardwareAddr
 
 type Card struct {
 	CardNumber uint32     `json:"number"`
@@ -19,28 +15,6 @@ type Card struct {
 }
 
 type CardList []*Card
-
-func (m MacAddress) MarshalJSON() ([]byte, error) {
-	return json.Marshal(net.HardwareAddr(m).String())
-}
-
-func (m *MacAddress) UnmarshalJSON(bytes []byte) error {
-	var s string
-
-	err := json.Unmarshal(bytes, &s)
-	if err != nil {
-		return err
-	}
-
-	mac, err := net.ParseMAC(s)
-	if err != nil {
-		return err
-	}
-
-	*m = MacAddress(mac)
-
-	return nil
-}
 
 // TODO: implement Marshal/Unmarshal
 func (l *CardList) Put(card *Card) {

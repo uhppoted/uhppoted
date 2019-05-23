@@ -14,16 +14,16 @@ import (
 )
 
 type Simulator struct {
-	File         string              `json:"-"`
-	Compressed   bool                `json:"-"`
-	SerialNumber types.SerialNumber  `json:"serial-number"`
-	IpAddress    net.IP              `json:"address"`
-	SubnetMask   net.IP              `json:"subnet"`
-	Gateway      net.IP              `json:"gateway"`
-	MacAddress   entities.MacAddress `json:"MAC"`
-	Version      types.Version       `json:"version"`
-	Date         types.Date          `json:"-"`
-	Cards        entities.CardList   `json:"cards"`
+	File         string             `json:"-"`
+	Compressed   bool               `json:"-"`
+	SerialNumber types.SerialNumber `json:"serial-number"`
+	IpAddress    net.IP             `json:"address"`
+	SubnetMask   net.IP             `json:"subnet"`
+	Gateway      net.IP             `json:"gateway"`
+	MacAddress   types.MacAddress   `json:"MAC"`
+	Version      types.Version      `json:"version"`
+	Date         types.Date         `json:"-"`
+	Cards        entities.CardList  `json:"cards"`
 }
 
 type CardNotFoundResponse struct {
@@ -141,7 +141,7 @@ func (s *Simulator) Find(bytes []byte) ([]byte, error) {
 		IpAddress:    s.IpAddress,
 		SubnetMask:   s.SubnetMask,
 		Gateway:      s.Gateway,
-		MacAddress:   net.HardwareAddr(s.MacAddress),
+		MacAddress:   s.MacAddress,
 		Version:      types.Version(s.Version),
 		Date:         s.Date,
 	}

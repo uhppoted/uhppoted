@@ -6,7 +6,6 @@ import (
 	"net"
 	"path"
 	"uhppote-simulator/simulator"
-	"uhppote-simulator/simulator/entities"
 	"uhppote/types"
 )
 
@@ -37,7 +36,7 @@ func (c *NewDeviceCommand) Execute(dir string) error {
 		IpAddress:    net.IPv4(192, 168, 0, 25),
 		SubnetMask:   net.IPv4(255, 255, 255, 0),
 		Gateway:      net.IPv4(0, 0, 0, 0),
-		MacAddress:   entities.MacAddress(mac),
+		MacAddress:   types.MacAddress(mac),
 		Version:      0x0892,
 	}
 

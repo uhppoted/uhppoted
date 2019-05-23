@@ -10,7 +10,7 @@ type Device struct {
 	IpAddress    net.IP
 	SubnetMask   net.IP
 	Gateway      net.IP
-	MacAddress   net.HardwareAddr
+	MacAddress   MacAddress
 	Version      Version
 	Date         Date
 }
