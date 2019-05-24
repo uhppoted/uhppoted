@@ -19,3 +19,4 @@
 9. Rework error handling to use Wrap/Frame
 10. godoc
 11. Integration tests
+12. --config:none option

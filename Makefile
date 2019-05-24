@@ -90,7 +90,8 @@ run: build
 
 get-devices: build
 #	$(CLI) --bind 0.0.0.0:0 $(DEBUG) get-devices
-	$(CLI) --bind $(LOCAL) --broadcast "192.168.1.255:60000" $(DEBUG) get-devices
+#	$(CLI) --bind $(LOCAL) --broadcast "192.168.1.255:60000" $(DEBUG) get-devices
+	$(CLI) --bind $(LOCAL) --broadcast "255.255.255.255:60000" $(DEBUG) get-devices
 
 set-address: build
 	$(CLI) -bind $(LOCAL) $(DEBUG) set-address $(SERIALNO) '192.168.1.125' '255.255.255.0' '0.0.0.0'
@@ -118,13 +119,13 @@ set-listener: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) set-listener $(SERIALNO) 192.168.1.100:40000
 
 get-cards: build
-	$(CLI) --bind $(LOCAL) $(DEBUG) get-cards $(SERIALNO)
+	$(CLI) --config ".local" $(DEBUG) get-cards $(SERIALNO)
 
 get-card: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) get-card $(SERIALNO) $(CARD)
 
 grant: build
-	$(CLI) --bind $(LOCAL) $(DEBUG) grant $(SERIALNO) $(CARD) 2019-01-01 2019-12-31 1
+	$(CLI) --config ".local" $(DEBUG) grant $(SERIALNO) $(CARD) 2019-01-01 2019-12-31 1
 
 revoke: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) revoke $(SERIALNO) $(CARD)
