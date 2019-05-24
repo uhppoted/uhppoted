@@ -26,12 +26,6 @@ type Simulator struct {
 	Cards        entities.CardList  `json:"cards"`
 }
 
-type CardNotFoundResponse struct {
-	MsgType      types.MsgType      `uhppote:"value:0x5a"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-	CardNumber   uint32             `uhppote:"offset:8"`
-}
-
 func Load(filepath string, compressed bool) (*Simulator, error) {
 	if compressed {
 		return loadGZ(filepath)
@@ -208,7 +202,11 @@ func (s *Simulator) GetCardById(request uhppote.GetCardByIdRequest) (interface{}
 		}
 	}
 
-	return &CardNotFoundResponse{
+	return &struct {
+		MsgType      types.MsgType      `uhppote:"value:0x5a"`
+		SerialNumber types.SerialNumber `uhppote:"offset:4"`
+		CardNumber   uint32             `uhppote:"offset:8"`
+	}{
 		SerialNumber: s.SerialNumber,
 		CardNumber:   0,
 	}, nil
@@ -231,10 +229,12 @@ func (s *Simulator) GetCardByIndex(request uhppote.GetCardByIndexRequest) (inter
 		return &response, nil
 	}
 
-	//	return &CardNotFoundResponse{
-	//		SerialNumber: s.SerialNumber,
-	//		CardNumber:   0,
-	//	}, nil
-
-	return nil, nil
+	return &struct {
+		MsgType      types.MsgType      `uhppote:"value:0x5c"`
+		SerialNumber types.SerialNumber `uhppote:"offset:4"`
+		CardNumber   uint32             `uhppote:"offset:8"`
+	}{
+		SerialNumber: s.SerialNumber,
+		CardNumber:   0,
+	}, nil
 }
