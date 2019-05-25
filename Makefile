@@ -22,6 +22,7 @@ format:
 	gofmt -w=true src/uhppote-simulator/simulator/*.go
 	gofmt -w=true src/uhppote-simulator/simulator/entities/*.go
 	gofmt -w=true src/encoding/bcd/*.go
+	gofmt -w=true src/integration-tests/*.go
 
 release: format
 	mkdir -p dist/windows
@@ -43,6 +44,10 @@ test: build
 	go test -count=1 src/uhppote/*.go
 	go test -count=1 src/uhppote/encoding/UTO311-L0x/*.go
 	go test -count=1 src/encoding/bcd/*.go
+
+integration-tests: build
+	go clean -testcache
+	go test -count=1 src/integration-tests/*.go
 
 benchmark: build
 	go test src/encoding/bcd/*.go -bench .
