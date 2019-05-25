@@ -1,7 +1,6 @@
 package UTO311_L0x
 
 import (
-	"encoding/bcd"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -10,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+	"uhppote/encoding/bcd"
 	"uhppote/types"
 )
 
