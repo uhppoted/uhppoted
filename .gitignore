@@ -11,6 +11,7 @@ runtime
 
 # Working files
 .local
+example.tsv
 
 # Test binary, build with `go test -c`
 *.test

@@ -138,6 +138,9 @@ revoke: build
 revoke-all: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) revoke-all $(SERIALNO)
 
+load: build
+	$(CLI) $(DEBUG) load example.tsv
+
 get-events: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) get-events $(SERIALNO)
 
