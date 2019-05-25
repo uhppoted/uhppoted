@@ -1,10 +1,10 @@
 package types
 
 import (
-	"encoding/bcd"
 	"errors"
 	"fmt"
 	"time"
+	"uhppote/encoding/bcd"
 )
 
 type DateTime time.Time

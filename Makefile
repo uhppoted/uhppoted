@@ -13,6 +13,7 @@ all: test      \
 format: 
 	gofmt -w=true src/uhppote/*.go
 	gofmt -w=true src/uhppote/types/*.go
+	gofmt -w=true src/uhppote/encoding/bcd/*.go
 	gofmt -w=true src/uhppote/encoding/UTO311-L0x/*.go
 	gofmt -w=true src/uhppote-cli/*.go
 	gofmt -w=true src/uhppote-cli/commands/*.go
@@ -21,7 +22,6 @@ format:
 	gofmt -w=true src/uhppote-simulator/commands/*.go
 	gofmt -w=true src/uhppote-simulator/simulator/*.go
 	gofmt -w=true src/uhppote-simulator/simulator/entities/*.go
-	gofmt -w=true src/encoding/bcd/*.go
 	gofmt -w=true src/integration-tests/*.go
 
 release: format
@@ -42,8 +42,8 @@ build: format
 test: build
 	go clean -testcache
 	go test -count=1 src/uhppote/*.go
+	go test -count=1 src/uhppote/encoding/bcd/*.go
 	go test -count=1 src/uhppote/encoding/UTO311-L0x/*.go
-	go test -count=1 src/encoding/bcd/*.go
 
 integration-tests: build
 	go clean -testcache
