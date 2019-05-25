@@ -106,7 +106,7 @@ func TestMarshal(t *testing.T) {
 		True         bool               `uhppote:"offset:10"`
 		False        bool               `uhppote:"offset:11"`
 		Address      net.IP             `uhppote:"offset:12"`
-		MacAddress   net.HardwareAddr   `uhppote:"offset:20"`
+		MacAddress   types.MacAddress   `uhppote:"offset:20"`
 		SerialNumber types.SerialNumber `uhppote:"offset:26"`
 		Version      types.Version      `uhppote:"offset:30"`
 		Date         types.Date         `uhppote:"offset:32"`
@@ -118,7 +118,7 @@ func TestMarshal(t *testing.T) {
 		True:         true,
 		False:        false,
 		Address:      net.IPv4(192, 168, 1, 2),
-		MacAddress:   mac,
+		MacAddress:   types.MacAddress(mac),
 		SerialNumber: 423187757,
 		Version:      0x0892,
 		Date:         types.Date(date),
@@ -228,7 +228,7 @@ func TestUnmarshal(t *testing.T) {
 		Address      net.IP             `uhppote:"offset:12"`
 		SubnetMask   net.IP             `uhppote:"offset:16"`
 		Gateway      net.IP             `uhppote:"offset:20"`
-		MacAddress   net.HardwareAddr   `uhppote:"offset:24"`
+		MacAddress   types.MacAddress   `uhppote:"offset:24"`
 		SerialNumber types.SerialNumber `uhppote:"offset:30"`
 		Version      types.Version      `uhppote:"offset:34"`
 		Date         types.Date         `uhppote:"offset:36"`
@@ -273,7 +273,7 @@ func TestUnmarshal(t *testing.T) {
 	}
 
 	MAC, _ := net.ParseMAC("00:66:19:39:55:2d")
-	if !reflect.DeepEqual(reply.MacAddress, MAC) {
+	if !reflect.DeepEqual(reply.MacAddress, types.MacAddress(MAC)) {
 		t.Errorf("Expected MAC address '%v', got: '%v'\n", MAC, reply.MacAddress)
 	}
 
