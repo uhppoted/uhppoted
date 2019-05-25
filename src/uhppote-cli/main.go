@@ -30,6 +30,7 @@ var cli = []commands.Command{
 	&commands.GrantCommand{},
 	&commands.RevokeCommand{},
 	&commands.RevokeAllCommand{},
+	&commands.Load{},
 	&commands.GetEventsCommand{},
 	&commands.GetEventIndexCommand{},
 	&commands.SetEventIndexCommand{},
@@ -96,7 +97,7 @@ func main() {
 
 	err = cmd.Execute(&u)
 	if err != nil {
-		fmt.Printf("%v\n", err)
+		fmt.Printf("\n   ERROR: %v\n\n", err)
 		os.Exit(1)
 	}
 }
