@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"uhppote"
 )
@@ -8,7 +9,7 @@ import (
 type RevokeAllCommand struct {
 }
 
-func (c *RevokeAllCommand) Execute(u *uhppote.UHPPOTE) error {
+func (c *RevokeAllCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err

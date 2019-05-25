@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"uhppote"
 )
@@ -8,7 +9,7 @@ import (
 type GetCardsCommand struct {
 }
 
-func (c *GetCardsCommand) Execute(u *uhppote.UHPPOTE) error {
+func (c *GetCardsCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err

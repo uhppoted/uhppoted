@@ -1,9 +1,12 @@
 package commands
 
-import "uhppote"
+import (
+	"context"
+	"uhppote"
+)
 
 type Command interface {
-	Execute(u *uhppote.UHPPOTE) error
+	Execute(ctx context.Context, u *uhppote.UHPPOTE) error
 	CLI() string
 	Description() string
 	Usage() string

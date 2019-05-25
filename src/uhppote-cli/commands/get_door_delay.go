@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -12,7 +13,7 @@ import (
 type GetDoorDelayCommand struct {
 }
 
-func (c *GetDoorDelayCommand) Execute(u *uhppote.UHPPOTE) error {
+func (c *GetDoorDelayCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err
