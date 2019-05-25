@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/signal"
@@ -11,7 +12,7 @@ import (
 type ListenCommand struct {
 }
 
-func (c *ListenCommand) Execute(u *uhppote.UHPPOTE) error {
+func (c *ListenCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
 	fmt.Printf("Listening...\n")
 
 	p := make(chan *types.Status)

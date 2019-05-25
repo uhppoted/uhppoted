@@ -2,6 +2,7 @@ package commands
 
 import (
 	"bufio"
+	"context"
 	"encoding/csv"
 	"errors"
 	"flag"
@@ -14,7 +15,7 @@ import (
 type Load struct {
 }
 
-func (c *Load) Execute(u *uhppote.UHPPOTE) error {
+func (c *Load) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
 	file, err := getTSVFile()
 	if err != nil {
 		return err

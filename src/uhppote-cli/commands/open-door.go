@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"uhppote"
@@ -9,7 +10,7 @@ import (
 type OpenDoorCommand struct {
 }
 
-func (c *OpenDoorCommand) Execute(u *uhppote.UHPPOTE) error {
+func (c *OpenDoorCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err

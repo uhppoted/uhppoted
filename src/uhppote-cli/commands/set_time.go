@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -11,7 +12,7 @@ import (
 type SetTimeCommand struct {
 }
 
-func (c *SetTimeCommand) Execute(u *uhppote.UHPPOTE) error {
+func (c *SetTimeCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err
