@@ -27,7 +27,6 @@ var (
 	tUint16       = reflect.TypeOf(uint16(0))
 	tUint32       = reflect.TypeOf(uint32(0))
 	tIPv4         = reflect.TypeOf(net.IPv4(0, 0, 0, 0))
-	tMAC          = reflect.TypeOf(net.HardwareAddr{})
 	tMsgType      = reflect.TypeOf(types.MsgType(0))
 	tSerialNumber = reflect.TypeOf(types.SerialNumber(0))
 	tDateTime     = reflect.TypeOf(types.DateTime{})
@@ -109,9 +108,6 @@ func marshal(s reflect.Value) ([]byte, error) {
 
 				case tIPv4:
 					copy(bytes[offset:offset+4], f.MethodByName("To4").Call([]reflect.Value{})[0].Bytes())
-
-				case tMAC:
-					copy(bytes[offset:offset+6], f.Bytes())
 
 				case tSerialNumber:
 					binary.LittleEndian.PutUint32(bytes[offset:offset+4], uint32(f.Uint()))
@@ -260,9 +256,6 @@ func Unmarshal(bytes []byte, m interface{}) error {
 
 			case tIPv4:
 				f.SetBytes(net.IPv4(bytes[offset], bytes[offset+1], bytes[offset+2], bytes[offset+3]))
-
-			case tMAC:
-				f.SetBytes(bytes[offset : offset+6])
 
 			case tSerialNumber:
 				f.SetUint(uint64(binary.LittleEndian.Uint32(bytes[offset : offset+4])))
