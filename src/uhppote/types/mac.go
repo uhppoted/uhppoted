@@ -22,7 +22,7 @@ func (m MacAddress) MarshalUT0311L0x() ([]byte, error) {
 func (m *MacAddress) UnmarshalUT0311L0x(bytes []byte) error {
 	mac := make([]byte, 6)
 
-	copy(mac, bytes)
+	copy(mac, bytes[0:6])
 
 	*m = MacAddress(mac)
 

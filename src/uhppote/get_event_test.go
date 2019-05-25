@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 	codec "uhppote/encoding/UTO311-L0x"
+	"uhppote/types"
 )
 
 func TestMarshalGetEventRequest(t *testing.T) {
@@ -83,7 +84,7 @@ func TestUnmarshalGetEventResponse(t *testing.T) {
 	}
 
 	timestamp, _ := time.ParseInLocation("2006-01-02 15:04:05", "2019-02-10 07:12:01", time.Local)
-	if reply.Timestamp.DateTime != timestamp {
+	if reply.Timestamp != types.DateTime(timestamp) {
 		t.Errorf("Incorrect 'timestamp' - expected:%s, got:%s\n", timestamp.Format("2006-01-02 15:04:05"), reply.Timestamp)
 	}
 }

@@ -66,7 +66,7 @@ func (event Event) transform() *types.Status {
 		DoorState:      []bool{event.Door1State, event.Door2State, event.Door3State, event.Door4State},
 		DoorButton:     []bool{event.Door1Button, event.Door2Button, event.Door3Button, event.Door4Button},
 		SystemState:    event.SystemState,
-		SystemDateTime: types.DateTime{DateTime: datetime},
+		SystemDateTime: types.DateTime(datetime),
 		PacketNumber:   event.PacketNumber,
 		Backup:         event.Backup,
 		SpecialMessage: event.SpecialMessage,
