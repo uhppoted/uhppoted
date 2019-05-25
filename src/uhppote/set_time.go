@@ -20,7 +20,7 @@ type SetTimeResponse struct {
 func (u *UHPPOTE) SetTime(serialNumber uint32, datetime time.Time) (*types.Time, error) {
 	request := SetTimeRequest{
 		SerialNumber: types.SerialNumber(serialNumber),
-		DateTime:     types.DateTime{datetime},
+		DateTime:     types.DateTime(datetime),
 	}
 
 	reply := SetTimeResponse{}

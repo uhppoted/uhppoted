@@ -2,46 +2,43 @@ package types
 
 import (
 	"encoding/bcd"
+	"errors"
 	"fmt"
 	"time"
 )
 
-type DateTime struct {
-	DateTime time.Time
+type DateTime time.Time
+
+func (d DateTime) String() string {
+	return time.Time(d).Format("2006-01-02 15:04:05")
 }
 
-type SystemDate struct {
-	Date time.Time
-}
+func (d DateTime) MarshalUT0311L0x() ([]byte, error) {
+	encoded, err := bcd.Encode(time.Time(d).Format("20060102150405"))
 
-type SystemTime struct {
-	Time time.Time
-}
-
-func (d *DateTime) String() string {
-	return d.DateTime.Format("2006-01-02 15:04:05")
-}
-
-func DecodeDateTime(bytes []byte) (*DateTime, error) {
-	decoded, err := bcd.Decode(bytes)
 	if err != nil {
-		return nil, err
+		return []byte{}, errors.New(fmt.Sprintf("Error encoding datetime %v to BCD: [%v]", d, err))
+	}
+
+	if encoded == nil {
+		return []byte{}, errors.New(fmt.Sprintf("Unknown error encoding datetime %v to BCD", d))
+	}
+
+	return *encoded, nil
+}
+
+func (d *DateTime) UnmarshalUT0311L0x(bytes []byte) error {
+	decoded, err := bcd.Decode(bytes[0:7])
+	if err != nil {
+		return err
 	}
 
 	datetime, err := time.ParseInLocation("20060102150405", decoded, time.Local)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &DateTime{datetime}, nil
-}
+	*d = DateTime(datetime)
 
-func (d DateTime) Encode(bytes []byte) {
-	encoded, err := bcd.Encode(d.DateTime.Format("20060102150405"))
-
-	if err != nil {
-		panic(fmt.Sprintf("Unexpected error encoding date-time %v to BCD: [%v]", d, err))
-	} else {
-		copy(bytes, *encoded)
-	}
+	return nil
 }

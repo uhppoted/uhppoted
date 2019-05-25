@@ -68,7 +68,7 @@ func (u *UHPPOTE) GetStatus(serialNumber uint32) (*types.Status, error) {
 		DoorState:      []bool{reply.Door1State, reply.Door2State, reply.Door3State, reply.Door4State},
 		DoorButton:     []bool{reply.Door1Button, reply.Door2Button, reply.Door3Button, reply.Door4Button},
 		SystemState:    reply.SystemState,
-		SystemDateTime: types.DateTime{DateTime: datetime},
+		SystemDateTime: types.DateTime(datetime),
 		PacketNumber:   reply.PacketNumber,
 		Backup:         reply.Backup,
 		SpecialMessage: reply.SpecialMessage,

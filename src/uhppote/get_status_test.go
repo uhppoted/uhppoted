@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 	codec "uhppote/encoding/UTO311-L0x"
+	"uhppote/types"
 )
 
 func TestMarshalGetStatusRequest(t *testing.T) {
@@ -81,7 +82,7 @@ func TestUnmarshalGetStatusResponse(t *testing.T) {
 	}
 
 	swiped, _ := time.ParseInLocation("2006-01-02 15:04:05", "2019-04-19 17:00:09", time.Local)
-	if reply.SwipeDateTime.DateTime != swiped {
+	if reply.SwipeDateTime != types.DateTime(swiped) {
 		t.Errorf("Incorrect 'swipe date/time' - expected:%s, got:%s", swiped.Format("2006-01-02 15:04:05"), reply.SwipeDateTime)
 	}
 

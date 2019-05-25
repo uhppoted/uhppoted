@@ -122,7 +122,7 @@ func TestMarshal(t *testing.T) {
 		SerialNumber: 423187757,
 		Version:      0x0892,
 		Date:         types.Date(date),
-		DateTime:     types.DateTime{datetime},
+		DateTime:     types.DateTime(datetime),
 	}
 
 	m, err := Marshal(request)
@@ -287,7 +287,7 @@ func TestUnmarshal(t *testing.T) {
 	}
 
 	datetime, _ := time.ParseInLocation("2006-01-02 15:04:05", "2018-12-31 12:23:34", time.Local)
-	if reply.DateTime.DateTime != datetime {
+	if reply.DateTime != types.DateTime(datetime) {
 		t.Errorf("Expected date '%v', got: '%v'\n", datetime, reply.DateTime)
 	}
 
