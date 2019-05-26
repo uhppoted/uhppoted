@@ -1,16 +1,14 @@
 package commands
 
 import (
-	"context"
 	"errors"
 	"fmt"
-	"uhppote"
 )
 
 type OpenDoorCommand struct {
 }
 
-func (c *OpenDoorCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
+func (c *OpenDoorCommand) Execute(ctx Context) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err
@@ -25,7 +23,7 @@ func (c *OpenDoorCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error
 		return errors.New(fmt.Sprintf("Invalid door ID: %v", door))
 	}
 
-	opened, err := u.OpenDoor(serialNumber, uint8(door))
+	opened, err := ctx.uhppote.OpenDoor(serialNumber, uint8(door))
 
 	if err == nil {
 		fmt.Printf("%v\n", opened)

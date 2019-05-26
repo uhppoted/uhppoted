@@ -1,21 +1,19 @@
 package commands
 
 import (
-	"context"
 	"fmt"
-	"uhppote"
 )
 
 type GetTimeCommand struct {
 }
 
-func (c *GetTimeCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
+func (c *GetTimeCommand) Execute(ctx Context) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err
 	}
 
-	datetime, err := u.GetTime(serialNumber)
+	datetime, err := ctx.uhppote.GetTime(serialNumber)
 
 	if err == nil {
 		fmt.Printf("%v\n", datetime)

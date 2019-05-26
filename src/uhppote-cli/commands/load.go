@@ -2,26 +2,28 @@ package commands
 
 import (
 	"bufio"
-	"context"
 	"encoding/csv"
 	"errors"
 	"flag"
 	"fmt"
 	"os"
 	"strings"
-	"uhppote"
+	"uhppote-cli/config"
 )
 
 type Load struct {
 }
 
-func (c *Load) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
+func (c *Load) Execute(ctx Context) error {
+	fmt.Printf("--------------- DEBUG:%v\n", ctx.uhppote)
+	fmt.Printf("--------------- DEBUG:%v\n", ctx.config)
+
 	file, err := getTSVFile()
 	if err != nil {
 		return err
 	}
 
-	err = parse(*file, u)
+	err = parse(*file, ctx.config)
 	if err != nil {
 		return err
 	}
@@ -56,7 +58,7 @@ func getTSVFile() (*string, error) {
 	return &file, nil
 }
 
-func parse(path string, u *uhppote.UHPPOTE) error {
+func parse(path string, cfg *config.Config) error {
 	fmt.Printf("   ... loading access control list from '%s'\n", path)
 
 	f, err := os.Open(path)

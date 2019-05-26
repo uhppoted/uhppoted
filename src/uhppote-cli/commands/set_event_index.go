@@ -1,15 +1,13 @@
 package commands
 
 import (
-	"context"
 	"fmt"
-	"uhppote"
 )
 
 type SetEventIndexCommand struct {
 }
 
-func (c *SetEventIndexCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
+func (c *SetEventIndexCommand) Execute(ctx Context) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err
@@ -20,7 +18,7 @@ func (c *SetEventIndexCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) 
 		return err
 	}
 
-	result, err := u.SetEventIndex(serialNumber, index)
+	result, err := ctx.uhppote.SetEventIndex(serialNumber, index)
 	if err != nil {
 		return err
 	}

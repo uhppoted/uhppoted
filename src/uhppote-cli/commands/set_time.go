@@ -1,18 +1,16 @@
 package commands
 
 import (
-	"context"
 	"errors"
 	"flag"
 	"fmt"
 	"time"
-	"uhppote"
 )
 
 type SetTimeCommand struct {
 }
 
-func (c *SetTimeCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
+func (c *SetTimeCommand) Execute(ctx Context) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err
@@ -30,7 +28,7 @@ func (c *SetTimeCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error 
 		}
 	}
 
-	devicetime, err := u.SetTime(serialNumber, datetime)
+	devicetime, err := ctx.uhppote.SetTime(serialNumber, datetime)
 
 	if err == nil {
 		fmt.Printf("%s\n", devicetime)

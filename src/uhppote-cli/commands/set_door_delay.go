@@ -1,15 +1,13 @@
 package commands
 
 import (
-	"context"
 	"fmt"
-	"uhppote"
 )
 
 type SetDoorDelayCommand struct {
 }
 
-func (c *SetDoorDelayCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
+func (c *SetDoorDelayCommand) Execute(ctx Context) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err
@@ -25,7 +23,7 @@ func (c *SetDoorDelayCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) e
 		return err
 	}
 
-	record, err := u.SetDoorDelay(serialNumber, door, delay)
+	record, err := ctx.uhppote.SetDoorDelay(serialNumber, door, delay)
 	if err != nil {
 		return err
 	}

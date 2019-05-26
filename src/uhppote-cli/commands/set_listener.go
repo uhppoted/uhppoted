@@ -1,18 +1,16 @@
 package commands
 
 import (
-	"context"
 	"errors"
 	"flag"
 	"fmt"
 	"net"
-	"uhppote"
 )
 
 type SetListenerCommand struct {
 }
 
-func (c *SetListenerCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
+func (c *SetListenerCommand) Execute(ctx Context) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err
@@ -31,7 +29,7 @@ func (c *SetListenerCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) er
 		return errors.New(fmt.Sprintf("Invalid UDP address: %v", flag.Arg(2)))
 	}
 
-	listener, err := u.SetListener(serialNumber, *address)
+	listener, err := ctx.uhppote.SetListener(serialNumber, *address)
 
 	if err == nil {
 		fmt.Printf("%v\n", listener)

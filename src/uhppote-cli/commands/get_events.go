@@ -1,28 +1,26 @@
 package commands
 
 import (
-	"context"
 	"fmt"
-	"uhppote"
 )
 
 type GetEventsCommand struct {
 }
 
-func (c *GetEventsCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
+func (c *GetEventsCommand) Execute(ctx Context) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err
 	}
 
-	last, err := u.GetEvent(serialNumber, 0xffffffff)
+	last, err := ctx.uhppote.GetEvent(serialNumber, 0xffffffff)
 	if err != nil {
 		return err
 	}
 
 	if last != nil {
 		for index := last.Index; index > 0; index-- {
-			swipe, err := u.GetEvent(serialNumber, index)
+			swipe, err := ctx.uhppote.GetEvent(serialNumber, index)
 			if err != nil {
 				return err
 			}

@@ -1,18 +1,16 @@
 package commands
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"os/signal"
-	"uhppote"
 	"uhppote/types"
 )
 
 type ListenCommand struct {
 }
 
-func (c *ListenCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
+func (c *ListenCommand) Execute(ctx Context) error {
 	fmt.Printf("Listening...\n")
 
 	p := make(chan *types.Status)
@@ -27,7 +25,7 @@ func (c *ListenCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
 
 	signal.Notify(q, os.Interrupt)
 
-	return u.Listen(p, q)
+	return ctx.uhppote.Listen(p, q)
 }
 
 func (c *ListenCommand) CLI() string {

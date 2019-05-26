@@ -1,15 +1,13 @@
 package commands
 
 import (
-	"context"
 	"fmt"
-	"uhppote"
 )
 
 type RevokeCommand struct {
 }
 
-func (c *RevokeCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
+func (c *RevokeCommand) Execute(ctx Context) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err
@@ -20,7 +18,7 @@ func (c *RevokeCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
 		return err
 	}
 
-	result, err := u.DeleteCard(serialNumber, cardNumber)
+	result, err := ctx.uhppote.DeleteCard(serialNumber, cardNumber)
 
 	if err == nil {
 		fmt.Printf("%v\n", result)
