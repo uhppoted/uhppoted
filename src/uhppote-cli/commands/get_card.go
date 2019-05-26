@@ -1,15 +1,13 @@
 package commands
 
 import (
-	"context"
 	"fmt"
-	"uhppote"
 )
 
 type GetCardCommand struct {
 }
 
-func (c *GetCardCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
+func (c *GetCardCommand) Execute(ctx Context) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err
@@ -20,7 +18,7 @@ func (c *GetCardCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error 
 		return err
 	}
 
-	record, err := u.GetCardById(serialNumber, cardNumber)
+	record, err := ctx.uhppote.GetCardById(serialNumber, cardNumber)
 	if err != nil {
 		return err
 	}

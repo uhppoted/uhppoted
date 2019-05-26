@@ -1,15 +1,13 @@
 package commands
 
 import (
-	"context"
 	"fmt"
-	"uhppote"
 )
 
 type GrantCommand struct {
 }
 
-func (c *GrantCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
+func (c *GrantCommand) Execute(ctx Context) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err
@@ -35,7 +33,7 @@ func (c *GrantCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
 		return err
 	}
 
-	authorised, err := u.PutCard(serialNumber, cardNumber, *from, *to, permissions[0], permissions[1], permissions[2], permissions[3])
+	authorised, err := ctx.uhppote.PutCard(serialNumber, cardNumber, *from, *to, permissions[0], permissions[1], permissions[2], permissions[3])
 
 	if err == nil {
 		fmt.Printf("%v\n", authorised)

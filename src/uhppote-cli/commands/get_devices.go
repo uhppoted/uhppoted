@@ -1,16 +1,14 @@
 package commands
 
 import (
-	"context"
 	"fmt"
-	"uhppote"
 )
 
 type GetDevicesCommand struct {
 }
 
-func (c *GetDevicesCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
-	devices, err := u.FindDevices()
+func (c *GetDevicesCommand) Execute(ctx Context) error {
+	devices, err := ctx.uhppote.FindDevices()
 
 	if err == nil {
 		for _, device := range devices {

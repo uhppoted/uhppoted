@@ -1,21 +1,19 @@
 package commands
 
 import (
-	"context"
 	"fmt"
-	"uhppote"
 )
 
 type GetListenerCommand struct {
 }
 
-func (c *GetListenerCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
+func (c *GetListenerCommand) Execute(ctx Context) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err
 	}
 
-	address, err := u.GetListener(serialNumber)
+	address, err := ctx.uhppote.GetListener(serialNumber)
 
 	if err == nil {
 		fmt.Printf("%v\n", address)

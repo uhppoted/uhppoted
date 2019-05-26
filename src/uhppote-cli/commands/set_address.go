@@ -1,18 +1,16 @@
 package commands
 
 import (
-	"context"
 	"errors"
 	"flag"
 	"fmt"
 	"net"
-	"uhppote"
 )
 
 type SetAddressCommand struct {
 }
 
-func (c *SetAddressCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
+func (c *SetAddressCommand) Execute(ctx Context) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err
@@ -46,7 +44,7 @@ func (c *SetAddressCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) err
 		}
 	}
 
-	result, err := u.SetAddress(serialNumber, address, mask, gateway)
+	result, err := ctx.uhppote.SetAddress(serialNumber, address, mask, gateway)
 
 	if err != nil {
 		fmt.Printf("%s\n", result)

@@ -1,21 +1,19 @@
 package commands
 
 import (
-	"context"
 	"fmt"
-	"uhppote"
 )
 
 type GetStatusCommand struct {
 }
 
-func (c *GetStatusCommand) Execute(ctx context.Context, u *uhppote.UHPPOTE) error {
+func (c *GetStatusCommand) Execute(ctx Context) error {
 	serialNumber, err := getUint32(1, "Missing serial number", "Invalid serial number: %v")
 	if err != nil {
 		return err
 	}
 
-	status, err := u.GetStatus(serialNumber)
+	status, err := ctx.uhppote.GetStatus(serialNumber)
 
 	if err == nil {
 		fmt.Printf("%v\n", status)

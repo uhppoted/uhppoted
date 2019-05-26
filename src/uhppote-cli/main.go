@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"net"
@@ -96,8 +95,9 @@ func main() {
 		return
 	}
 
-	ctx := context.Background()
-	err = cmd.Execute(ctx, &u)
+	ctx := commands.NewContext(&u, config)
+
+	err = cmd.Execute(ctx)
 	if err != nil {
 		fmt.Printf("\n   ERROR: %v\n\n", err)
 		os.Exit(1)
