@@ -77,15 +77,11 @@ func parse(path string, cfg *config.Config) error {
 	}
 
 	columns := make(map[string]int)
-	doors := make(map[string]int)
 
 	for c, field := range header {
 		key := strings.ReplaceAll(strings.ToLower(field), " ", "")
 		index := c + 1
 		columns[key] = index
-		if key != "cardnumber" && key != "from" && key != "to" {
-			doors[key] = index
-		}
 	}
 
 	if columns["cardnumber"] == 0 {
@@ -101,6 +97,36 @@ func parse(path string, cfg *config.Config) error {
 	}
 
 	fmt.Println(columns)
+
+	doors := make(map[uint32][]int)
+	for id, d := range cfg.Devices {
+		doors[id] = make([]int, 4)
+
+		if col := columns[strings.ReplaceAll(strings.ToLower(d.Door1), " ", "")]; col == 0 {
+			return errors.New(fmt.Sprintf("File '%s' does not include a column for door '%s'", path, d.Door1))
+		} else {
+			doors[id][0] = col
+		}
+
+		if col := columns[strings.ReplaceAll(strings.ToLower(d.Door2), " ", "")]; col == 0 {
+			return errors.New(fmt.Sprintf("File '%s' does not include a column for door '%s'", path, d.Door2))
+		} else {
+			doors[id][1] = col
+		}
+
+		if col := columns[strings.ReplaceAll(strings.ToLower(d.Door3), " ", "")]; col == 0 {
+			return errors.New(fmt.Sprintf("File '%s' does not include a column for door '%s'", path, d.Door3))
+		} else {
+			doors[id][2] = col
+		}
+
+		if col := columns[strings.ReplaceAll(strings.ToLower(d.Door4), " ", "")]; col == 0 {
+			return errors.New(fmt.Sprintf("File '%s' does not include a column for door '%s'", path, d.Door4))
+		} else {
+			doors[id][3] = col
+		}
+	}
+
 	fmt.Println(doors)
 
 	return nil
