@@ -29,7 +29,6 @@ var (
 	tIPv4         = reflect.TypeOf(net.IPv4(0, 0, 0, 0))
 	tMsgType      = reflect.TypeOf(types.MsgType(0))
 	tSerialNumber = reflect.TypeOf(types.SerialNumber(0))
-	tSystemDate   = reflect.TypeOf(types.SystemDate{})
 	tSystemTime   = reflect.TypeOf(types.SystemTime{})
 )
 
@@ -110,10 +109,6 @@ func marshal(s reflect.Value) ([]byte, error) {
 
 				case tSerialNumber:
 					binary.LittleEndian.PutUint32(bytes[offset:offset+4], uint32(f.Uint()))
-
-					//				case tDateTime:
-					//					slice := reflect.ValueOf(bytes[offset : offset+7])
-					//					f.MethodByName("Encode").Call([]reflect.Value{slice})
 
 				default:
 					panic(errors.New(fmt.Sprintf("Cannot marshal field with type '%v'", t.Type)))
@@ -259,18 +254,18 @@ func Unmarshal(bytes []byte, m interface{}) error {
 			case tSerialNumber:
 				f.SetUint(uint64(binary.LittleEndian.Uint32(bytes[offset : offset+4])))
 
-			case tSystemDate:
-				decoded, err := bcd.Decode(bytes[offset : offset+3])
-				if err != nil {
-					return err
-				}
-
-				date, err := time.ParseInLocation("060102", decoded, time.Local)
-				if err != nil {
-					return err
-				}
-
-				f.Field(0).Set(reflect.ValueOf(date))
+				//			case tSystemDate:
+				//				decoded, err := bcd.Decode(bytes[offset : offset+3])
+				//				if err != nil {
+				//					return err
+				//				}
+				//
+				//				date, err := time.ParseInLocation("060102", decoded, time.Local)
+				//				if err != nil {
+				//					return err
+				//				}
+				//
+				//				f.Field(0).Set(reflect.ValueOf(date))
 
 			case tSystemTime:
 				decoded, err := bcd.Decode(bytes[offset : offset+3])
