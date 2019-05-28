@@ -132,8 +132,8 @@ func TestUnmarshalGetStatusResponse(t *testing.T) {
 	}
 
 	systime, _ := time.ParseInLocation("15:04:05", "14:37:02", time.Local)
-	if reply.SystemTime.Time != systime {
-		t.Errorf("Incorrect 'system time' - expected:%s, got:%s", systime.Format("15:04:05"), reply.SystemTime.Time)
+	if reply.SystemTime != types.SystemTime(systime) {
+		t.Errorf("Incorrect 'system time' - expected:%s, got:%s", systime.Format("15:04:05"), reply.SystemTime.String())
 	}
 
 	if reply.PacketNumber != 17 {

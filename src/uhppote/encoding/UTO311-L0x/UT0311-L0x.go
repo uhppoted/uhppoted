@@ -8,8 +8,6 @@ import (
 	"reflect"
 	"regexp"
 	"strconv"
-	"time"
-	"uhppote/encoding/bcd"
 	"uhppote/types"
 )
 
@@ -29,7 +27,8 @@ var (
 	tIPv4         = reflect.TypeOf(net.IPv4(0, 0, 0, 0))
 	tMsgType      = reflect.TypeOf(types.MsgType(0))
 	tSerialNumber = reflect.TypeOf(types.SerialNumber(0))
-	tSystemTime   = reflect.TypeOf(types.SystemTime{})
+
+//	tSystemTime   = reflect.TypeOf(types.SystemTime{})
 )
 
 var re = regexp.MustCompile(`offset:\s*([0-9]+)`)
@@ -254,31 +253,18 @@ func Unmarshal(bytes []byte, m interface{}) error {
 			case tSerialNumber:
 				f.SetUint(uint64(binary.LittleEndian.Uint32(bytes[offset : offset+4])))
 
-				//			case tSystemDate:
-				//				decoded, err := bcd.Decode(bytes[offset : offset+3])
-				//				if err != nil {
-				//					return err
-				//				}
-				//
-				//				date, err := time.ParseInLocation("060102", decoded, time.Local)
-				//				if err != nil {
-				//					return err
-				//				}
-				//
-				//				f.Field(0).Set(reflect.ValueOf(date))
+			//case tSystemTime:
+			//	decoded, err := bcd.Decode(bytes[offset : offset+3])
+			//	if err != nil {
+			//		return err
+			//	}
 
-			case tSystemTime:
-				decoded, err := bcd.Decode(bytes[offset : offset+3])
-				if err != nil {
-					return err
-				}
+			//	time, err := time.ParseInLocation("150405", decoded, time.Local)
+			//	if err != nil {
+			//		return err
+			//	}
 
-				time, err := time.ParseInLocation("150405", decoded, time.Local)
-				if err != nil {
-					return err
-				}
-
-				f.Field(0).Set(reflect.ValueOf(time))
+			//	f.Field(0).Set(reflect.ValueOf(time))
 
 			default:
 				panic(errors.New(fmt.Sprintf("Cannot unmarshal field with type '%v'", t.Type)))
