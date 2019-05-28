@@ -51,7 +51,7 @@ func (u *UHPPOTE) GetStatus(serialNumber uint32) (*types.Status, error) {
 		return nil, err
 	}
 
-	d := reply.SystemDate.Date.Format("2006-01-02")
+	d := time.Time(reply.SystemDate).Format("2006-01-02")
 	t := reply.SystemTime.Time.Format("15:04:05")
 	datetime, _ := time.ParseInLocation("2006-01-02 15:04:05", d+" "+t, time.Local)
 

@@ -49,7 +49,7 @@ func (u *UHPPOTE) Listen(p chan *types.Status, q chan os.Signal) error {
 }
 
 func (event Event) transform() *types.Status {
-	d := event.SystemDate.Date.Format("2006-01-02")
+	d := time.Time(event.SystemDate).Format("2006-01-02")
 	t := event.SystemTime.Time.Format("15:04:05")
 	datetime, _ := time.ParseInLocation("2006-01-02 15:04:05", d+" "+t, time.Local)
 

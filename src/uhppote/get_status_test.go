@@ -127,8 +127,8 @@ func TestUnmarshalGetStatusResponse(t *testing.T) {
 	}
 
 	sysdate, _ := time.ParseInLocation("2006-01-02", "2019-04-20", time.Local)
-	if reply.SystemDate.Date != sysdate {
-		t.Errorf("Incorrect 'system date' - expected:%s, got:%s", sysdate.Format("2006-01-02"), reply.SystemDate.Date)
+	if reply.SystemDate != types.SystemDate(sysdate) {
+		t.Errorf("Incorrect 'system date' - expected:%s, got:%s", sysdate.Format("2006-01-02"), reply.SystemDate.String())
 	}
 
 	systime, _ := time.ParseInLocation("15:04:05", "14:37:02", time.Local)
