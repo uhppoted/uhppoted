@@ -19,6 +19,7 @@ type Device struct {
 }
 
 type Config struct {
+	File             string
 	BindAddress      *net.UDPAddr
 	BroadcastAddress *net.UDPAddr
 	Devices          map[uint32]*Device
@@ -44,6 +45,7 @@ func LoadConfig(path string) (*Config, error) {
 
 	s := bufio.NewScanner(f)
 	c := &Config{
+		File:             path,
 		BindAddress:      nil,
 		BroadcastAddress: nil,
 		Devices:          make(map[uint32]*Device),

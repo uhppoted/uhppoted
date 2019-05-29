@@ -15,9 +15,6 @@ type Load struct {
 }
 
 func (c *Load) Execute(ctx Context) error {
-	fmt.Printf("--------------- DEBUG:%v\n", ctx.uhppote)
-	fmt.Printf("--------------- DEBUG:%v\n", ctx.config)
-
 	file, err := getTSVFile()
 	if err != nil {
 		return err
@@ -81,6 +78,11 @@ func parse(path string, cfg *config.Config) error {
 	for c, field := range header {
 		key := strings.ReplaceAll(strings.ToLower(field), " ", "")
 		index := c + 1
+
+		if columns[key] != 0 {
+			return errors.New(fmt.Sprintf("Duplicate column name '%s' in File '%s", field, path))
+		}
+
 		columns[key] = index
 	}
 
@@ -96,7 +98,37 @@ func parse(path string, cfg *config.Config) error {
 		return errors.New(fmt.Sprintf("File '%s' does not include a column 'to'", path))
 	}
 
-	fmt.Println(columns)
+	labels := make(map[string]bool)
+	for _, d := range cfg.Devices {
+		d1 := strings.ReplaceAll(strings.ToLower(d.Door1), " ", "")
+		d2 := strings.ReplaceAll(strings.ToLower(d.Door2), " ", "")
+		d3 := strings.ReplaceAll(strings.ToLower(d.Door3), " ", "")
+		d4 := strings.ReplaceAll(strings.ToLower(d.Door4), " ", "")
+
+		if labels[d1] {
+			return errors.New(fmt.Sprintf("Door '%s' is defined more than once in configuration file '%s'", d.Door1, cfg.File))
+		} else {
+			labels[d1] = true
+		}
+
+		if labels[d2] {
+			return errors.New(fmt.Sprintf("Door '%s' is defined more than once in configuration file '%s'", d.Door2, cfg.File))
+		} else {
+			labels[d2] = true
+		}
+
+		if labels[d3] {
+			return errors.New(fmt.Sprintf("Door '%s' is defined more than once in configuration file '%s'", d.Door3, cfg.File))
+		} else {
+			labels[d3] = true
+		}
+
+		if labels[d4] {
+			return errors.New(fmt.Sprintf("Door '%s' is defined more than once in configuration file '%s'", d.Door4, cfg.File))
+		} else {
+			labels[d4] = true
+		}
+	}
 
 	doors := make(map[uint32][]int)
 	for id, d := range cfg.Devices {
@@ -127,6 +159,7 @@ func parse(path string, cfg *config.Config) error {
 		}
 	}
 
+	fmt.Println(columns)
 	fmt.Println(doors)
 
 	return nil
