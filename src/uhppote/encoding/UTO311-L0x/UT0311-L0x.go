@@ -25,10 +25,9 @@ var (
 	tUint16       = reflect.TypeOf(uint16(0))
 	tUint32       = reflect.TypeOf(uint32(0))
 	tIPv4         = reflect.TypeOf(net.IPv4(0, 0, 0, 0))
+	tMAC          = reflect.TypeOf(net.HardwareAddr{})
 	tMsgType      = reflect.TypeOf(types.MsgType(0))
 	tSerialNumber = reflect.TypeOf(types.SerialNumber(0))
-
-//	tSystemTime   = reflect.TypeOf(types.SystemTime{})
 )
 
 var re = regexp.MustCompile(`offset:\s*([0-9]+)`)
@@ -105,6 +104,9 @@ func marshal(s reflect.Value) ([]byte, error) {
 
 				case tIPv4:
 					copy(bytes[offset:offset+4], f.MethodByName("To4").Call([]reflect.Value{})[0].Bytes())
+
+				case tMAC:
+					copy(bytes[offset:offset+6], f.Bytes())
 
 				case tSerialNumber:
 					binary.LittleEndian.PutUint32(bytes[offset:offset+4], uint32(f.Uint()))
@@ -250,21 +252,11 @@ func Unmarshal(bytes []byte, m interface{}) error {
 			case tIPv4:
 				f.SetBytes(net.IPv4(bytes[offset], bytes[offset+1], bytes[offset+2], bytes[offset+3]))
 
+			case tMAC:
+				f.SetBytes(bytes[offset : offset+6])
+
 			case tSerialNumber:
 				f.SetUint(uint64(binary.LittleEndian.Uint32(bytes[offset : offset+4])))
-
-			//case tSystemTime:
-			//	decoded, err := bcd.Decode(bytes[offset : offset+3])
-			//	if err != nil {
-			//		return err
-			//	}
-
-			//	time, err := time.ParseInLocation("150405", decoded, time.Local)
-			//	if err != nil {
-			//		return err
-			//	}
-
-			//	f.Field(0).Set(reflect.ValueOf(time))
 
 			default:
 				panic(errors.New(fmt.Sprintf("Cannot unmarshal field with type '%v'", t.Type)))
