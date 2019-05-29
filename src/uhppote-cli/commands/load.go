@@ -15,6 +15,11 @@ type Load struct {
 }
 
 func (c *Load) Execute(ctx Context) error {
+	err := ctx.config.Verify()
+	if err != nil {
+		return err
+	}
+
 	file, err := getTSVFile()
 	if err != nil {
 		return err
@@ -74,6 +79,7 @@ func parse(path string, cfg *config.Config) error {
 	}
 
 	columns := make(map[string]int)
+	doors := make(map[uint32][]int)
 
 	for c, field := range header {
 		key := strings.ReplaceAll(strings.ToLower(field), " ", "")
@@ -98,64 +104,17 @@ func parse(path string, cfg *config.Config) error {
 		return errors.New(fmt.Sprintf("File '%s' does not include a column 'to'", path))
 	}
 
-	labels := make(map[string]bool)
-	for _, d := range cfg.Devices {
-		d1 := strings.ReplaceAll(strings.ToLower(d.Door1), " ", "")
-		d2 := strings.ReplaceAll(strings.ToLower(d.Door2), " ", "")
-		d3 := strings.ReplaceAll(strings.ToLower(d.Door3), " ", "")
-		d4 := strings.ReplaceAll(strings.ToLower(d.Door4), " ", "")
-
-		if labels[d1] {
-			return errors.New(fmt.Sprintf("Door '%s' is defined more than once in configuration file '%s'", d.Door1, cfg.File))
-		} else {
-			labels[d1] = true
-		}
-
-		if labels[d2] {
-			return errors.New(fmt.Sprintf("Door '%s' is defined more than once in configuration file '%s'", d.Door2, cfg.File))
-		} else {
-			labels[d2] = true
-		}
-
-		if labels[d3] {
-			return errors.New(fmt.Sprintf("Door '%s' is defined more than once in configuration file '%s'", d.Door3, cfg.File))
-		} else {
-			labels[d3] = true
-		}
-
-		if labels[d4] {
-			return errors.New(fmt.Sprintf("Door '%s' is defined more than once in configuration file '%s'", d.Door4, cfg.File))
-		} else {
-			labels[d4] = true
-		}
-	}
-
-	doors := make(map[uint32][]int)
-	for id, d := range cfg.Devices {
+	for id, device := range cfg.Devices {
 		doors[id] = make([]int, 4)
 
-		if col := columns[strings.ReplaceAll(strings.ToLower(d.Door1), " ", "")]; col == 0 {
-			return errors.New(fmt.Sprintf("File '%s' does not include a column for door '%s'", path, d.Door1))
-		} else {
-			doors[id][0] = col
-		}
-
-		if col := columns[strings.ReplaceAll(strings.ToLower(d.Door2), " ", "")]; col == 0 {
-			return errors.New(fmt.Sprintf("File '%s' does not include a column for door '%s'", path, d.Door2))
-		} else {
-			doors[id][1] = col
-		}
-
-		if col := columns[strings.ReplaceAll(strings.ToLower(d.Door3), " ", "")]; col == 0 {
-			return errors.New(fmt.Sprintf("File '%s' does not include a column for door '%s'", path, d.Door3))
-		} else {
-			doors[id][2] = col
-		}
-
-		if col := columns[strings.ReplaceAll(strings.ToLower(d.Door4), " ", "")]; col == 0 {
-			return errors.New(fmt.Sprintf("File '%s' does not include a column for door '%s'", path, d.Door4))
-		} else {
-			doors[id][3] = col
+		for i, door := range device.Door {
+			if d := strings.ReplaceAll(strings.ToLower(door), " ", ""); d != "" {
+				if col := columns[d]; col == 0 {
+					return errors.New(fmt.Sprintf("File '%s' does not include a column for door '%s'", path, door))
+				} else {
+					doors[id][i] = col
+				}
+			}
 		}
 	}
 

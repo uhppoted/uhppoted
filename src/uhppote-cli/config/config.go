@@ -2,6 +2,7 @@ package config
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"net"
 	"os"
@@ -12,10 +13,7 @@ import (
 
 type Device struct {
 	Address *net.UDPAddr
-	Door1   string
-	Door2   string
-	Door3   string
-	Door4   string
+	Door    []string
 }
 
 type Config struct {
@@ -61,6 +59,23 @@ func LoadConfig(path string) (*Config, error) {
 	}
 
 	return c, nil
+}
+
+func (c *Config) Verify() error {
+	doors := make(map[string]bool)
+	for _, device := range c.Devices {
+		for _, door := range device.Door {
+			d := strings.ReplaceAll(strings.ToLower(door), " ", "")
+
+			if doors[d] {
+				return errors.New(fmt.Sprintf("Door '%s' is defined more than once in configuration file '%s'", door, c.File))
+			}
+
+			doors[d] = true
+		}
+	}
+
+	return nil
 }
 
 func bind(l string, c *Config) *Config {
@@ -115,7 +130,7 @@ func address(l string, c *Config) *Config {
 		k := uint32(serialNo)
 		d := c.Devices[k]
 		if d == nil {
-			d = &Device{}
+			d = &Device{Door: make([]string, 4)}
 		}
 
 		d.Address = address
@@ -145,21 +160,10 @@ func door(l string, c *Config) *Config {
 		k := uint32(serialNo)
 		d := c.Devices[k]
 		if d == nil {
-			d = &Device{}
+			d = &Device{Door: make([]string, 4)}
 		}
 
-		name := strings.TrimSpace(match[3])
-		switch door {
-		case 1:
-			d.Door1 = name
-		case 2:
-			d.Door2 = name
-		case 3:
-			d.Door3 = name
-		case 4:
-			d.Door4 = name
-		}
-
+		d.Door[door-1] = strings.TrimSpace(match[3])
 		c.Devices[k] = d
 	}
 
