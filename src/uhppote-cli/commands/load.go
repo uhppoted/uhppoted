@@ -6,12 +6,20 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"uhppote-cli/config"
 )
 
 type Load struct {
+}
+
+type index struct {
+	cardnumber int
+	from       int
+	to         int
+	doors      map[uint32][]int
 }
 
 func (c *Load) Execute(ctx Context) error {
@@ -78,49 +86,91 @@ func parse(path string, cfg *config.Config) error {
 		return err
 	}
 
+	index, err := parseHeader(header, path, cfg)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(index)
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		parseRecord(record, index, path)
+	}
+
+	return nil
+}
+
+func parseHeader(header []string, path string, cfg *config.Config) (*index, error) {
 	columns := make(map[string]int)
-	doors := make(map[uint32][]int)
+
+	index := index{
+		cardnumber: 0,
+		from:       0,
+		to:         0,
+		doors:      make(map[uint32][]int),
+	}
+
+	for id, _ := range cfg.Devices {
+		index.doors[id] = make([]int, 4)
+	}
 
 	for c, field := range header {
 		key := strings.ReplaceAll(strings.ToLower(field), " ", "")
-		index := c + 1
+		ix := c + 1
 
 		if columns[key] != 0 {
-			return errors.New(fmt.Sprintf("Duplicate column name '%s' in File '%s", field, path))
+			return nil, errors.New(fmt.Sprintf("Duplicate column name '%s' in File '%s", field, path))
 		}
 
-		columns[key] = index
+		columns[key] = ix
 	}
 
-	if columns["cardnumber"] == 0 {
-		return errors.New(fmt.Sprintf("File '%s' does not include a column 'Card Number'", path))
+	index.cardnumber = columns["cardnumber"]
+	index.from = columns["from"]
+	index.to = columns["to"]
+
+	for id, device := range cfg.Devices {
+		for i, door := range device.Door {
+			if d := strings.ReplaceAll(strings.ToLower(door), " ", ""); d != "" {
+				index.doors[id][i] = columns[d]
+			}
+		}
 	}
 
-	if columns["from"] == 0 {
-		return errors.New(fmt.Sprintf("File '%s' does not include a column 'From'", path))
+	if index.cardnumber == 0 {
+		return nil, errors.New(fmt.Sprintf("File '%s' does not include a column 'Card Number'", path))
 	}
 
-	if columns["to"] == 0 {
-		return errors.New(fmt.Sprintf("File '%s' does not include a column 'to'", path))
+	if index.from == 0 {
+		return nil, errors.New(fmt.Sprintf("File '%s' does not include a column 'From'", path))
+	}
+
+	if index.to == 0 {
+		return nil, errors.New(fmt.Sprintf("File '%s' does not include a column 'to'", path))
 	}
 
 	for id, device := range cfg.Devices {
-		doors[id] = make([]int, 4)
-
 		for i, door := range device.Door {
 			if d := strings.ReplaceAll(strings.ToLower(door), " ", ""); d != "" {
-				if col := columns[d]; col == 0 {
-					return errors.New(fmt.Sprintf("File '%s' does not include a column for door '%s'", path, door))
-				} else {
-					doors[id][i] = col
+				if index.doors[id][i] == 0 {
+					return nil, errors.New(fmt.Sprintf("File '%s' does not include a column for door '%s'", path, door))
 				}
 			}
 		}
 	}
 
-	fmt.Println(columns)
-	fmt.Println(doors)
+	return &index, nil
+}
 
+func parseRecord(record []string, index *index, path string) error {
+	fmt.Println(record)
 	return nil
 }
 
