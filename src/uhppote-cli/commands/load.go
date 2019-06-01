@@ -8,7 +8,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 	"uhppote-cli/config"
 )
 
@@ -20,6 +22,13 @@ type index struct {
 	from       int
 	to         int
 	doors      map[uint32][]int
+}
+
+type card struct {
+	cardnumber uint32
+	from       time.Time
+	to         time.Time
+	doors      []bool
 }
 
 func (c *Load) Execute(ctx Context) error {
@@ -91,17 +100,23 @@ func parse(path string, cfg *config.Config) error {
 		return err
 	}
 
-	fmt.Println(index)
+	line := 0
+
 	for {
 		record, err := r.Read()
 		if err == io.EOF {
 			break
-		}
-		if err != nil {
+		} else if err != nil {
 			return err
 		}
+		line += 1
 
-		parseRecord(record, index, path)
+		cards, err := parseRecord(record, index, path)
+		if err != nil {
+			return errors.New(fmt.Sprintf("Line %d: %v\n", line, err))
+		}
+
+		fmt.Println(cards)
 	}
 
 	return nil
@@ -169,9 +184,48 @@ func parseHeader(header []string, path string, cfg *config.Config) (*index, erro
 	return &index, nil
 }
 
-func parseRecord(record []string, index *index, path string) error {
-	fmt.Println(record)
-	return nil
+func parseRecord(record []string, index *index, path string) (*map[uint32]card, error) {
+	cards := make(map[uint32]card, 0)
+	for k, v := range index.doors {
+		card := card{doors: make([]bool, 4)}
+
+		if cardnumber, err := strconv.ParseUint(record[index.cardnumber-1], 10, 32); err != nil {
+			return nil, errors.New(fmt.Sprintf("Invalid card number: '%s'", record[index.cardnumber-1]))
+		} else {
+			card.cardnumber = uint32(cardnumber)
+		}
+
+		if date, err := time.ParseInLocation("2006-01-02", record[index.from-1], time.Local); err != nil {
+			return nil, errors.New(fmt.Sprintf("Invalid 'from' date: '%s'", record[index.from-1]))
+		} else {
+			card.from = date
+		}
+
+		if date, err := time.ParseInLocation("2006-01-02", record[index.to-1], time.Local); err != nil {
+			return nil, errors.New(fmt.Sprintf("Invalid 'to' date: '%s'", record[index.to-1]))
+		} else {
+			card.to = date
+		}
+
+		for i, d := range v {
+			if d == 0 {
+				card.doors[i] = false
+			} else {
+				switch record[d] {
+				case "Y":
+					card.doors[i] = true
+				case "N":
+					card.doors[i] = false
+				default:
+					return nil, errors.New(fmt.Sprintf("Expected 'Y/N' for door: '%s'", record[d]))
+				}
+			}
+		}
+
+		cards[k] = card
+	}
+
+	return &cards, nil
 }
 
 func (c *Load) CLI() string {
