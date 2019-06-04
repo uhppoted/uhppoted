@@ -42,9 +42,17 @@ func (c *Load) Execute(ctx Context) error {
 		return err
 	}
 
-	err = parse(*file, ctx.config)
+	acl, err := parse(*file, ctx.config)
 	if err != nil {
 		return err
+	}
+
+	for id, cards := range *acl {
+		fmt.Println(id, cards)
+		err = getCards(ctx, id)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -77,12 +85,17 @@ func getTSVFile() (*string, error) {
 	return &file, nil
 }
 
-func parse(path string, cfg *config.Config) error {
+func parse(path string, cfg *config.Config) (*map[uint32][]card, error) {
 	fmt.Printf("   ... loading access control list from '%s'\n", path)
+
+	acl := make(map[uint32][]card)
+	for id, _ := range cfg.Devices {
+		acl[id] = make([]card, 0)
+	}
 
 	f, err := os.Open(path)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer f.Close()
@@ -92,14 +105,13 @@ func parse(path string, cfg *config.Config) error {
 
 	header, err := r.Read()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	index, err := parseHeader(header, path, cfg)
 	if err != nil {
-		return err
+		return nil, err
 	}
-
 	line := 0
 
 	for {
@@ -107,19 +119,23 @@ func parse(path string, cfg *config.Config) error {
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			return err
+			return nil, err
 		}
 		line += 1
 
 		cards, err := parseRecord(record, index, path)
 		if err != nil {
-			return errors.New(fmt.Sprintf("Line %d: %v\n", line, err))
+			return nil, errors.New(fmt.Sprintf("Line %d: %v\n", line, err))
 		}
 
-		fmt.Println(cards)
+		for id, card := range *cards {
+			if acl[id] != nil {
+				acl[id] = append(acl[id], card)
+			}
+		}
 	}
 
-	return nil
+	return &acl, nil
 }
 
 func parseHeader(header []string, path string, cfg *config.Config) (*index, error) {
@@ -226,6 +242,23 @@ func parseRecord(record []string, index *index, path string) (*map[uint32]card, 
 	}
 
 	return &cards, nil
+}
+
+func getCards(ctx Context, serialNumber uint32) error {
+	N, err := ctx.uhppote.GetCards(serialNumber)
+	if err != nil {
+		return err
+	}
+
+	for index := uint32(0); index < N.Records; index++ {
+		record, err := ctx.uhppote.GetCardByIndex(serialNumber, index+1)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("%v\n", record)
+	}
+
+	return nil
 }
 
 func (c *Load) CLI() string {
