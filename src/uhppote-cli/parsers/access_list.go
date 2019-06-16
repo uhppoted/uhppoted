@@ -10,18 +10,12 @@ import (
 	"strings"
 	"time"
 	"uhppote-cli/config"
+	"uhppote/types"
 )
 
 type ACL struct {
 	Path   string
 	Config *config.Config
-}
-
-type Card struct {
-	cardnumber uint32
-	from       time.Time
-	to         time.Time
-	doors      []bool
 }
 
 type index struct {
@@ -31,10 +25,10 @@ type index struct {
 	doors      map[uint32][]int
 }
 
-func (a *ACL) Parse(f *bufio.Reader) (*map[uint32][]Card, error) {
-	acl := make(map[uint32][]Card)
+func (a *ACL) Parse(f *bufio.Reader) (*map[uint32][]types.Card, error) {
+	acl := make(map[uint32][]types.Card)
 	for id, _ := range a.Config.Devices {
-		acl[id] = make([]Card, 0)
+		acl[id] = make([]types.Card, 0)
 	}
 
 	r := csv.NewReader(f)
@@ -137,38 +131,38 @@ func parseHeader(header []string, path string, cfg *config.Config) (*index, erro
 	return &index, nil
 }
 
-func parseRecord(record []string, index *index, path string) (*map[uint32]Card, error) {
-	cards := make(map[uint32]Card, 0)
+func parseRecord(record []string, index *index, path string) (*map[uint32]types.Card, error) {
+	cards := make(map[uint32]types.Card, 0)
 	for k, v := range index.doors {
-		card := Card{doors: make([]bool, 4)}
+		card := types.Card{Doors: make([]bool, 4)}
 
 		if cardnumber, err := strconv.ParseUint(record[index.cardnumber-1], 10, 32); err != nil {
 			return nil, errors.New(fmt.Sprintf("Invalid card number: '%s'", record[index.cardnumber-1]))
 		} else {
-			card.cardnumber = uint32(cardnumber)
+			card.CardNumber = uint32(cardnumber)
 		}
 
 		if date, err := time.ParseInLocation("2006-01-02", record[index.from-1], time.Local); err != nil {
 			return nil, errors.New(fmt.Sprintf("Invalid 'from' date: '%s'", record[index.from-1]))
 		} else {
-			card.from = date
+			card.From = types.Date(date)
 		}
 
 		if date, err := time.ParseInLocation("2006-01-02", record[index.to-1], time.Local); err != nil {
 			return nil, errors.New(fmt.Sprintf("Invalid 'to' date: '%s'", record[index.to-1]))
 		} else {
-			card.to = date
+			card.To = types.Date(date)
 		}
 
 		for i, d := range v {
 			if d == 0 {
-				card.doors[i] = false
+				card.Doors[i] = false
 			} else {
 				switch record[d-1] {
 				case "Y":
-					card.doors[i] = true
+					card.Doors[i] = true
 				case "N":
-					card.doors[i] = false
+					card.Doors[i] = false
 				default:
 					return nil, errors.New(fmt.Sprintf("Expected 'Y/N' for door: '%s'", record[d]))
 				}
