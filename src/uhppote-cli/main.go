@@ -65,14 +65,21 @@ func main() {
 	}
 
 	config, err := config.LoadConfig(options.config)
-	if err == nil {
-		u.BindAddress = config.BindAddress
-		u.BroadcastAddress = config.BroadcastAddress
+	if err != nil {
+		fmt.Printf("\n   ERROR: %v\n\n", err)
+		os.Exit(1)
+	}
 
-		for s, d := range config.Devices {
-			if d.Address != nil {
-				u.Devices[s] = d.Address
-			}
+	if config == nil {
+		fmt.Printf("\n   ERROR: invalid configuration: %s\n\n", options.config)
+		os.Exit(1)
+	}
+	u.BindAddress = config.BindAddress
+	u.BroadcastAddress = config.BroadcastAddress
+
+	for s, d := range config.Devices {
+		if d.Address != nil {
+			u.Devices[s] = d.Address
 		}
 	}
 

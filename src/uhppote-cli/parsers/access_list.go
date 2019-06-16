@@ -164,7 +164,7 @@ func parseRecord(record []string, index *index, path string) (*map[uint32]Card, 
 			if d == 0 {
 				card.doors[i] = false
 			} else {
-				switch record[d] {
+				switch record[d-1] {
 				case "Y":
 					card.doors[i] = true
 				case "N":

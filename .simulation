@@ -1,0 +1,8 @@
+bind.address = 192.168.1.100:54321
+broadcast.address = 192.168.1.255:60000
+
+UT0311-L0x.305419896.address = 192.168.1.100:60000
+UT0311-L0x.305419896.door.1 = Front Door
+UT0311-L0x.305419896.door.2 = Side Door
+UT0311-L0x.305419896.door.3 = Garage
+UT0311-L0x.305419896.door.4 = Workshop

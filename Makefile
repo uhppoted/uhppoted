@@ -69,7 +69,7 @@ debug: build
 #	$(CLI) $(DEBUG) --bind 0.0.0.0:12345 get-card $(SERIALNO) $(CARD)
 #	$(CLI) $(DEBUG) get-devices
 #	$(CLI) $(DEBUG) grant 1234567890 $(CARD) 2019-01-01 2019-12-31 1
-	$(CLI) $(DEBUG) get-cards 1234567890 
+	$(CLI) $(DEBUG) get-cards 305419896 
 #	$(CLI) $(DEBUG) get-card  1234567890 $(CARD)
 #	$(CLI) $(DEBUG) get-card  1234567890 $(CARD)
 #	$(CLI) $(DEBUG) get-card  1234567890 9154419
@@ -140,7 +140,7 @@ revoke-all: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) revoke-all $(SERIALNO)
 
 load: build
-	$(CLI) $(DEBUG) load example.tsv
+	$(CLI) --config ".simulation" $(DEBUG) load example.tsv
 
 get-events: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) get-events $(SERIALNO)
