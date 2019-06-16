@@ -9,6 +9,7 @@ import (
 	"time"
 	"uhppote-cli/config"
 	"uhppote-cli/parsers"
+	"uhppote/types"
 )
 
 type Load struct {
@@ -34,7 +35,7 @@ func (c *Load) Execute(ctx Context) error {
 		return err
 	}
 
-	file, err := getTSVFile()
+	file, err := getACLFile()
 	if err != nil {
 		return err
 	}
@@ -55,7 +56,7 @@ func (c *Load) Execute(ctx Context) error {
 	return nil
 }
 
-func getTSVFile() (*string, error) {
+func getACLFile() (*string, error) {
 	if len(flag.Args()) < 2 {
 		return nil, errors.New("ERROR: Please specify the TSV file from which to load the access control list ")
 	}
@@ -82,7 +83,7 @@ func getTSVFile() (*string, error) {
 	return &file, nil
 }
 
-func parse(path string, cfg *config.Config) (*map[uint32][]parsers.Card, error) {
+func parse(path string, cfg *config.Config) (*map[uint32][]types.Card, error) {
 	fmt.Printf("   ... loading access control list from '%s'\n", path)
 
 	f, err := os.Open(path)

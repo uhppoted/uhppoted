@@ -5,14 +5,10 @@ import (
 )
 
 type Card struct {
-	SerialNumber SerialNumber
-	CardNumber   uint32
-	From         Date
-	To           Date
-	Door1        bool
-	Door2        bool
-	Door3        bool
-	Door4        bool
+	CardNumber uint32
+	From       Date
+	To         Date
+	Doors      []bool
 }
 
 type Authorised struct {
@@ -28,7 +24,7 @@ func (c Card) String() string {
 		return "N"
 	}
 
-	return fmt.Sprintf("%s %-8v %v %v %s %s %s %s", c.SerialNumber, c.CardNumber, c.From, c.To, f(c.Door1), f(c.Door2), f(c.Door3), f(c.Door4))
+	return fmt.Sprintf("%-8v %v %v %s %s %s %s", c.CardNumber, c.From, c.To, f(c.Doors[0]), f(c.Doors[1]), f(c.Doors[2]), f(c.Doors[3]))
 }
 
 func (r *Authorised) String() string {

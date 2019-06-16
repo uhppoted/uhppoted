@@ -26,7 +26,7 @@ func (c *GetCardCommand) Execute(ctx Context) error {
 	if record == nil {
 		fmt.Printf("%v %v NO RECORD\n", serialNumber, cardNumber)
 	} else {
-		fmt.Printf("%v\n", record)
+		fmt.Printf("%-10d %v\n", serialNumber, record)
 	}
 
 	return nil

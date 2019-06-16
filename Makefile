@@ -69,8 +69,8 @@ debug: build
 #	$(CLI) $(DEBUG) --bind 0.0.0.0:12345 get-card $(SERIALNO) $(CARD)
 #	$(CLI) $(DEBUG) get-devices
 #	$(CLI) $(DEBUG) grant 1234567890 $(CARD) 2019-01-01 2019-12-31 1
-	$(CLI) $(DEBUG) get-cards 305419896 
-#	$(CLI) $(DEBUG) get-card  1234567890 $(CARD)
+	$(CLI) $(DEBUG) --config '.simulation' get-cards 305419896 
+	$(CLI) $(DEBUG) --config '.simulation' get-card  305419896 65537
 #	$(CLI) $(DEBUG) get-card  1234567890 $(CARD)
 #	$(CLI) $(DEBUG) get-card  1234567890 9154419
 #	$(CLI) --bind $(LOCAL) --broadcast "192.168.1.255:60000" $(DEBUG) get-card  $(SERIALNO) 9154419
