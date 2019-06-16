@@ -18,6 +18,7 @@ format:
 	gofmt -w=true src/uhppote-cli/*.go
 	gofmt -w=true src/uhppote-cli/commands/*.go
 	gofmt -w=true src/uhppote-cli/config/*.go
+	gofmt -w=true src/uhppote-cli/parsers/*.go
 	gofmt -w=true src/uhppote-simulator/*.go
 	gofmt -w=true src/uhppote-simulator/commands/*.go
 	gofmt -w=true src/uhppote-simulator/simulator/*.go
