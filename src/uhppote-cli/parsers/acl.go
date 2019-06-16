@@ -13,10 +13,7 @@ import (
 	"uhppote/types"
 )
 
-type ACL struct {
-	Path   string
-	Config *config.Config
-}
+type ACL map[uint32][]types.Card
 
 type index struct {
 	cardnumber int
@@ -25,9 +22,9 @@ type index struct {
 	doors      map[uint32][]int
 }
 
-func (a *ACL) Parse(f *bufio.Reader) (*map[uint32][]types.Card, error) {
-	acl := make(map[uint32][]types.Card)
-	for id, _ := range a.Config.Devices {
+func (a *ACL) Load(f *bufio.Reader, path string, cfg *config.Config) (*ACL, error) {
+	acl := make(ACL)
+	for id, _ := range cfg.Devices {
 		acl[id] = make([]types.Card, 0)
 	}
 
@@ -39,7 +36,7 @@ func (a *ACL) Parse(f *bufio.Reader) (*map[uint32][]types.Card, error) {
 		return nil, err
 	}
 
-	index, err := parseHeader(header, a.Path, a.Config)
+	index, err := parseHeader(header, path, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +51,7 @@ func (a *ACL) Parse(f *bufio.Reader) (*map[uint32][]types.Card, error) {
 		}
 		line += 1
 
-		cards, err := parseRecord(record, index, a.Path)
+		cards, err := parseRecord(record, index, path)
 		if err != nil {
 			return nil, errors.New(fmt.Sprintf("Line %d: %v\n", line, err))
 		}
