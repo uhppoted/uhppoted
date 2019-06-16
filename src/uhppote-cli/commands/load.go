@@ -6,7 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"time"
+	"reflect"
 	"uhppote-cli/config"
 	"uhppote-cli/parsers"
 	"uhppote/types"
@@ -20,13 +20,6 @@ type index struct {
 	from       int
 	to         int
 	doors      map[uint32][]int
-}
-
-type card struct {
-	cardnumber uint32
-	from       time.Time
-	to         time.Time
-	doors      []bool
 }
 
 func (c *Load) Execute(ctx Context) error {
@@ -47,10 +40,13 @@ func (c *Load) Execute(ctx Context) error {
 
 	for id, cards := range *acl {
 		fmt.Println(id, cards)
-		err = getCards(ctx, id)
+		current, err := getCards(ctx, id)
 		if err != nil {
 			return err
 		}
+
+		merge(cards, *current)
+
 	}
 
 	return nil
@@ -83,7 +79,7 @@ func getACLFile() (*string, error) {
 	return &file, nil
 }
 
-func parse(path string, cfg *config.Config) (*map[uint32][]types.Card, error) {
+func parse(path string, cfg *config.Config) (*parsers.ACL, error) {
 	fmt.Printf("   ... loading access control list from '%s'\n", path)
 
 	f, err := os.Open(path)
@@ -93,29 +89,71 @@ func parse(path string, cfg *config.Config) (*map[uint32][]types.Card, error) {
 
 	defer f.Close()
 
-	acl := parsers.ACL{
-		Path:   path,
-		Config: cfg,
-	}
+	acl := parsers.ACL{}
 
-	return acl.Parse(bufio.NewReader(f))
+	return acl.Load(bufio.NewReader(f), path, cfg)
 }
 
-func getCards(ctx Context, serialNumber uint32) error {
+func getCards(ctx Context, serialNumber uint32) (*[]types.Card, error) {
 	N, err := ctx.uhppote.GetCards(serialNumber)
 	if err != nil {
-		return err
+		return nil, err
 	}
+
+	cards := make([]types.Card, 0)
 
 	for index := uint32(0); index < N.Records; index++ {
 		record, err := ctx.uhppote.GetCardByIndex(serialNumber, index+1)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		fmt.Printf("%v\n", record)
+		cards = append(cards, *record)
 	}
 
-	return nil
+	return &cards, nil
+}
+
+func merge(master, device []types.Card) {
+	fmt.Println("MASTER: ", master)
+	fmt.Println("DEVICE: ", device)
+	fmt.Println()
+
+	p := make(map[uint32]*types.Card)
+	q := make(map[uint32]*types.Card)
+
+	for n, c := range master {
+		p[c.CardNumber] = &master[n]
+	}
+
+	for n, c := range device {
+		q[c.CardNumber] = &device[n]
+	}
+
+	ignore := make([]types.Card, 0)
+	add := make([]types.Card, 0)
+	update := make([]types.Card, 0)
+	delete := make([]types.Card, 0)
+
+	for n, c := range p {
+		if q[n] == nil {
+			add = append(add, *c)
+		} else if reflect.DeepEqual(c, q[n]) {
+			ignore = append(ignore, *c)
+		} else {
+			update = append(update, *c)
+		}
+	}
+
+	for n, c := range q {
+		if p[n] == nil {
+			delete = append(delete, *c)
+		}
+	}
+
+	fmt.Println("IGNORE: ", ignore)
+	fmt.Println("ADD:    ", add)
+	fmt.Println("UPDATE: ", update)
+	fmt.Println("DELETE: ", delete)
 }
 
 func (c *Load) CLI() string {
