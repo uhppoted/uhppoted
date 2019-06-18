@@ -3,8 +3,11 @@
 
 **Clean up 'card not found' handling in uhppote**
 
-0. simulator: delete-card
-1. Load cards from TSV file
+0. Load cards from TSV file
+   - update controller
+   - check for duplicate cards in TSV file
+
+1. simulator: delete-card
 2. Human readable output for e.g. get-status
 3. JSON formatted output for e.g. get-status
 4. Consistently include device serial number in output e.g. of get-time
@@ -22,3 +25,4 @@
     (Ref. https://groups.google.com/forum/#!topic/golang-nuts/nbmYWwHCgPc)
 16. Autodetect gzipped files
     (Ref. ttps://stackoverflow.com/questions/28309988/how-to-read-from-either-gzip-or-plain-text-reader-in-golang)
+17. Reload simulator on device file change

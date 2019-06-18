@@ -57,6 +57,9 @@ func (a *ACL) Load(f *bufio.Reader, path string, cfg *config.Config) (*ACL, erro
 		}
 
 		for id, card := range *cards {
+
+			// TODO check for duplicate cards
+
 			if acl[id] != nil {
 				acl[id] = append(acl[id], card)
 			}

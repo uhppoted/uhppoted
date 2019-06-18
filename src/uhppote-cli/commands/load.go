@@ -22,6 +22,14 @@ type index struct {
 	doors      map[uint32][]int
 }
 
+type mergelist struct {
+	id     uint32
+	ignore []types.Card
+	add    []types.Card
+	update []types.Card
+	delete []types.Card
+}
+
 func (c *Load) Execute(ctx Context) error {
 	err := ctx.config.Verify()
 	if err != nil {
@@ -38,15 +46,23 @@ func (c *Load) Execute(ctx Context) error {
 		return err
 	}
 
+	list := make([]mergelist, 0)
+
 	for id, cards := range *acl {
-		fmt.Println(id, cards)
-		current, err := getCards(ctx, id)
+		device, err := getCards(ctx, id)
 		if err != nil {
 			return err
 		}
 
-		merge(cards, *current)
+		list = append(list, diff(id, cards, *device))
+	}
 
+	for _, rs := range list {
+		fmt.Println("  ID:     ", rs.id)
+		fmt.Println("  IGNORE: ", rs.ignore)
+		fmt.Println("  ADD:    ", rs.add)
+		fmt.Println("  UPDATE: ", rs.update)
+		fmt.Println("  DELETE: ", rs.delete)
 	}
 
 	return nil
@@ -113,11 +129,7 @@ func getCards(ctx Context, serialNumber uint32) (*[]types.Card, error) {
 	return &cards, nil
 }
 
-func merge(master, device []types.Card) {
-	fmt.Println("MASTER: ", master)
-	fmt.Println("DEVICE: ", device)
-	fmt.Println()
-
+func diff(id uint32, master, device []types.Card) mergelist {
 	p := make(map[uint32]*types.Card)
 	q := make(map[uint32]*types.Card)
 
@@ -129,31 +141,31 @@ func merge(master, device []types.Card) {
 		q[c.CardNumber] = &device[n]
 	}
 
-	ignore := make([]types.Card, 0)
-	add := make([]types.Card, 0)
-	update := make([]types.Card, 0)
-	delete := make([]types.Card, 0)
+	m := mergelist{
+		id:     id,
+		ignore: make([]types.Card, 0),
+		add:    make([]types.Card, 0),
+		update: make([]types.Card, 0),
+		delete: make([]types.Card, 0),
+	}
 
 	for n, c := range p {
 		if q[n] == nil {
-			add = append(add, *c)
+			m.add = append(m.add, *c)
 		} else if reflect.DeepEqual(c, q[n]) {
-			ignore = append(ignore, *c)
+			m.ignore = append(m.ignore, *c)
 		} else {
-			update = append(update, *c)
+			m.update = append(m.update, *c)
 		}
 	}
 
 	for n, c := range q {
 		if p[n] == nil {
-			delete = append(delete, *c)
+			m.delete = append(m.delete, *c)
 		}
 	}
 
-	fmt.Println("IGNORE: ", ignore)
-	fmt.Println("ADD:    ", add)
-	fmt.Println("UPDATE: ", update)
-	fmt.Println("DELETE: ", delete)
+	return m
 }
 
 func (c *Load) CLI() string {
