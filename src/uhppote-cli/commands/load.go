@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"time"
 	"uhppote-cli/config"
 	"uhppote-cli/parsers"
 	"uhppote/types"
@@ -22,12 +23,11 @@ type index struct {
 	doors      map[uint32][]int
 }
 
-type mergelist struct {
-	id     uint32
-	ignore []types.Card
-	add    []types.Card
-	update []types.Card
-	delete []types.Card
+type diff struct {
+	unchanged []types.Card
+	add       []types.Card
+	update    []types.Card
+	delete    []types.Card
 }
 
 func (c *Load) Execute(ctx Context) error {
@@ -46,7 +46,7 @@ func (c *Load) Execute(ctx Context) error {
 		return err
 	}
 
-	list := make([]mergelist, 0)
+	list := make(map[uint32]diff)
 
 	for id, cards := range *acl {
 		device, err := getCards(ctx, id)
@@ -54,15 +54,14 @@ func (c *Load) Execute(ctx Context) error {
 			return err
 		}
 
-		list = append(list, diff(id, cards, *device))
+		list[id] = compare(cards, *device)
 	}
 
-	for _, rs := range list {
-		fmt.Println("  ID:     ", rs.id)
-		fmt.Println("  IGNORE: ", rs.ignore)
-		fmt.Println("  ADD:    ", rs.add)
-		fmt.Println("  UPDATE: ", rs.update)
-		fmt.Println("  DELETE: ", rs.delete)
+	for id, d := range list {
+		err = merge(id, d, &ctx)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -129,7 +128,7 @@ func getCards(ctx Context, serialNumber uint32) (*[]types.Card, error) {
 	return &cards, nil
 }
 
-func diff(id uint32, master, device []types.Card) mergelist {
+func compare(master, device []types.Card) diff {
 	p := make(map[uint32]*types.Card)
 	q := make(map[uint32]*types.Card)
 
@@ -141,19 +140,18 @@ func diff(id uint32, master, device []types.Card) mergelist {
 		q[c.CardNumber] = &device[n]
 	}
 
-	m := mergelist{
-		id:     id,
-		ignore: make([]types.Card, 0),
-		add:    make([]types.Card, 0),
-		update: make([]types.Card, 0),
-		delete: make([]types.Card, 0),
+	m := diff{
+		unchanged: make([]types.Card, 0),
+		add:       make([]types.Card, 0),
+		update:    make([]types.Card, 0),
+		delete:    make([]types.Card, 0),
 	}
 
 	for n, c := range p {
 		if q[n] == nil {
 			m.add = append(m.add, *c)
 		} else if reflect.DeepEqual(c, q[n]) {
-			m.ignore = append(m.ignore, *c)
+			m.unchanged = append(m.unchanged, *c)
 		} else {
 			m.update = append(m.update, *c)
 		}
@@ -166,6 +164,37 @@ func diff(id uint32, master, device []types.Card) mergelist {
 	}
 
 	return m
+}
+
+func merge(serialNumber uint32, d diff, ctx *Context) error {
+	fmt.Println("  ID:        ", serialNumber)
+	fmt.Println("  UNCHANGED: ", d.unchanged)
+	fmt.Println("  ADD:       ", d.add)
+	fmt.Println("  UPDATE:    ", d.update)
+	fmt.Println("  DELETE:    ", d.delete)
+
+	for _, card := range d.add {
+		_, err := ctx.uhppote.PutCard(serialNumber, card.CardNumber, time.Time(card.From), time.Time(card.To), card.Doors[0], card.Doors[1], card.Doors[2], card.Doors[3])
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, card := range d.update {
+		_, err := ctx.uhppote.PutCard(serialNumber, card.CardNumber, time.Time(card.From), time.Time(card.To), card.Doors[0], card.Doors[1], card.Doors[2], card.Doors[3])
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, card := range d.delete {
+		_, err := ctx.uhppote.DeleteCard(serialNumber, card.CardNumber)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (c *Load) CLI() string {
