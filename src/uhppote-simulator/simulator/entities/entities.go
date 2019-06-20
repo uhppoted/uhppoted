@@ -34,3 +34,16 @@ func (l *CardList) Put(card *Card) {
 		}
 	}
 }
+
+func (l *CardList) Delete(cardNumber uint32) bool {
+	for ix, c := range *l {
+		if c.CardNumber == cardNumber {
+			copy((*l)[ix:], (*l)[ix+1:])
+			(*l)[len(*l)-1] = nil
+			*l = (*l)[:len(*l)-1]
+			return true
+		}
+	}
+
+	return false
+}

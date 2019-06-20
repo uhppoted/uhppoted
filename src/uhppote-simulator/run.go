@@ -15,6 +15,7 @@ import (
 var handlers = map[byte]func(*net.UDPConn, *net.UDPAddr, []byte){
 	0x94: find,
 	0x50: putCard,
+	0x52: deleteCard,
 	0x58: getCards,
 	0x5a: getCardById,
 	0x5c: getCardByIndex,
@@ -153,6 +154,40 @@ func putCard(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
 	for _, s := range simulators {
 		if s.SerialNumber == request.SerialNumber {
 			response, err := s.PutCard(request)
+			if err != nil {
+				fmt.Printf("ERROR: %v\n", err)
+				return
+			}
+
+			if response == nil {
+				return
+			}
+
+			reply, err := codec.Marshal(response)
+			if err != nil {
+				fmt.Printf("ERROR: %v\n", err)
+				return
+			}
+
+			if err = send(c, src, reply); err != nil {
+				fmt.Printf("ERROR: %v\n", err)
+			}
+		}
+	}
+}
+
+func deleteCard(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
+	request := uhppote.DeleteCardRequest{}
+
+	err := codec.Unmarshal(bytes, &request)
+	if err != nil {
+		fmt.Printf("ERROR: %v\n", err)
+		return
+	}
+
+	for _, s := range simulators {
+		if s.SerialNumber == request.SerialNumber {
+			response, err := s.DeleteCard(request)
 			if err != nil {
 				fmt.Printf("ERROR: %v\n", err)
 				return
