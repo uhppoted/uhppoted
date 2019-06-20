@@ -134,7 +134,7 @@ grant: build
 	$(CLI) --config ".local" $(DEBUG) grant $(SERIALNO) $(CARD) 2019-01-01 2019-12-31 1
 
 revoke: build
-	$(CLI) --bind $(LOCAL) $(DEBUG) revoke $(SERIALNO) $(CARD)
+	$(CLI) --config ".simulation" $(DEBUG) revoke 305419896 65537
 
 revoke-all: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) revoke-all $(SERIALNO)

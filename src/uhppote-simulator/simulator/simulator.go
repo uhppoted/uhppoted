@@ -175,6 +175,24 @@ func (s *Simulator) PutCard(request uhppote.PutCardRequest) (*uhppote.PutCardRes
 	return &response, nil
 }
 
+func (s *Simulator) DeleteCard(request uhppote.DeleteCardRequest) (interface{}, error) {
+	deleted := s.Cards.Delete(request.CardNumber)
+	saved := false
+
+	if deleted {
+		if err := s.Save(); err == nil {
+			saved = true
+		}
+	}
+
+	response := uhppote.DeleteCardResponse{
+		SerialNumber: s.SerialNumber,
+		Succeeded:    deleted && saved,
+	}
+
+	return &response, nil
+}
+
 func (s *Simulator) GetCards(request uhppote.GetCardsRequest) (*uhppote.GetCardsResponse, error) {
 	response := uhppote.GetCardsResponse{
 		SerialNumber: s.SerialNumber,
