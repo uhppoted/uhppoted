@@ -167,12 +167,6 @@ func compare(master, device []types.Card) diff {
 }
 
 func merge(serialNumber uint32, d diff, ctx *Context) error {
-	fmt.Println("  ID:        ", serialNumber)
-	fmt.Println("  UNCHANGED: ", d.unchanged)
-	fmt.Println("  ADD:       ", d.add)
-	fmt.Println("  UPDATE:    ", d.update)
-	fmt.Println("  DELETE:    ", d.delete)
-
 	for _, card := range d.add {
 		_, err := ctx.uhppote.PutCard(serialNumber, card.CardNumber, time.Time(card.From), time.Time(card.To), card.Doors[0], card.Doors[1], card.Doors[2], card.Doors[3])
 		if err != nil {

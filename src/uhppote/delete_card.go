@@ -1,6 +1,8 @@
 package uhppote
 
 import (
+	"errors"
+	"fmt"
 	"uhppote/types"
 )
 
@@ -27,6 +29,10 @@ func (u *UHPPOTE) DeleteCard(serialNumber, cardNumber uint32) (*types.Result, er
 	err := u.Execute(serialNumber, request, &reply)
 	if err != nil {
 		return nil, err
+	}
+
+	if uint32(reply.SerialNumber) != serialNumber {
+		return nil, errors.New(fmt.Sprintf("Incorrect serial number in response - expect '%v', received '%v'", serialNumber, reply.SerialNumber))
 	}
 
 	return &types.Result{
