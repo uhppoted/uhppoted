@@ -4,10 +4,7 @@
 **Clean up 'card not found' handling in uhppote**
 
 1.  Load cards from TSV file
-    - delete card in controller
     - check for duplicate cards in TSV file
-    - check serial number in reply to PutCard
-    - check serial number in reply to DeleteCard
 
 2.  Human readable output for e.g. get-status
 3.  JSON formatted output for e.g. get-status
