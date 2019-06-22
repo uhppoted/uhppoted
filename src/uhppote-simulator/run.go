@@ -117,27 +117,42 @@ func receive(c *net.UDPConn) ([]byte, *net.UDPAddr, error) {
 	return request[:N], remote, nil
 }
 
-func send(c *net.UDPConn, dest *net.UDPAddr, message []byte) error {
-	N, err := c.WriteTo(message, dest)
+func send(c *net.UDPConn, dest *net.UDPAddr, response interface{}) {
+	if response == nil {
+		return
+	}
 
+	message, err := codec.Marshal(response)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Failed to write to UDP socket [%v]", err))
+		fmt.Printf("ERROR: %v\n", err)
+		return
 	}
 
-	if options.debug {
-		fmt.Printf(" ... sent %v bytes to %v\n%s\n", N, dest, dump(message[0:N], " ...          "))
+	N, err := c.WriteTo(message, dest)
+	if err != nil {
+		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Failed to write to UDP socket [%v]", err)))
+	} else {
+		if options.debug {
+			fmt.Printf(" ... sent %v bytes to %v\n%s\n", N, dest, dump(message[0:N], " ...          "))
+		}
 	}
-
-	return nil
 }
 
 func find(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
+	request := uhppote.FindDevicesRequest{}
+
+	err := codec.Unmarshal(bytes, &request)
+	if err != nil {
+		fmt.Printf("ERROR: %v\n", err)
+		return
+	}
+
 	for _, s := range simulators {
-		reply, err := s.Find(bytes)
+		response, err := s.Find(bytes)
 		if err != nil {
 			fmt.Printf("ERROR: %v\n", err)
-		} else if err = send(c, src, reply); err != nil {
-			fmt.Printf("ERROR: %v\n", err)
+		} else {
+			send(c, src, response)
 		}
 	}
 }
@@ -156,21 +171,8 @@ func putCard(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
 			response, err := s.PutCard(request)
 			if err != nil {
 				fmt.Printf("ERROR: %v\n", err)
-				return
-			}
-
-			if response == nil {
-				return
-			}
-
-			reply, err := codec.Marshal(response)
-			if err != nil {
-				fmt.Printf("ERROR: %v\n", err)
-				return
-			}
-
-			if err = send(c, src, reply); err != nil {
-				fmt.Printf("ERROR: %v\n", err)
+			} else {
+				send(c, src, response)
 			}
 		}
 	}
@@ -190,21 +192,8 @@ func deleteCard(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
 			response, err := s.DeleteCard(request)
 			if err != nil {
 				fmt.Printf("ERROR: %v\n", err)
-				return
-			}
-
-			if response == nil {
-				return
-			}
-
-			reply, err := codec.Marshal(response)
-			if err != nil {
-				fmt.Printf("ERROR: %v\n", err)
-				return
-			}
-
-			if err = send(c, src, reply); err != nil {
-				fmt.Printf("ERROR: %v\n", err)
+			} else {
+				send(c, src, response)
 			}
 		}
 	}
@@ -224,21 +213,8 @@ func getCards(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
 			response, err := s.GetCards(request)
 			if err != nil {
 				fmt.Printf("ERROR: %v\n", err)
-				return
-			}
-
-			if response == nil {
-				return
-			}
-
-			reply, err := codec.Marshal(response)
-			if err != nil {
-				fmt.Printf("ERROR: %v\n", err)
-				return
-			}
-
-			if err = send(c, src, reply); err != nil {
-				fmt.Printf("ERROR: %v\n", err)
+			} else {
+				send(c, src, response)
 			}
 		}
 	}
@@ -257,21 +233,8 @@ func getCardById(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
 		response, err := s.GetCardById(request)
 		if err != nil {
 			fmt.Printf("ERROR: %v\n", err)
-			return
-		}
-
-		if response == nil {
-			return
-		}
-
-		reply, err := codec.Marshal(response)
-		if err != nil {
-			fmt.Printf("ERROR: %v\n", err)
-			return
-		}
-
-		if err = send(c, src, reply); err != nil {
-			fmt.Printf("ERROR: %v\n", err)
+		} else {
+			send(c, src, response)
 		}
 	}
 }
@@ -289,21 +252,8 @@ func getCardByIndex(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
 		response, err := s.GetCardByIndex(request)
 		if err != nil {
 			fmt.Printf("ERROR: %v\n", err)
-			return
-		}
-
-		if response == nil {
-			return
-		}
-
-		reply, err := codec.Marshal(response)
-		if err != nil {
-			fmt.Printf("ERROR: %v\n", err)
-			return
-		}
-
-		if err = send(c, src, reply); err != nil {
-			fmt.Printf("ERROR: %v\n", err)
+		} else {
+			send(c, src, response)
 		}
 	}
 }
