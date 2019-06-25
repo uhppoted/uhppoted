@@ -5,7 +5,7 @@ import (
 	"uhppote-simulator/simulator/entities"
 )
 
-func (s *Simulator) PutCard(request uhppote.PutCardRequest) (*uhppote.PutCardResponse, error) {
+func (s *Simulator) PutCard(request *uhppote.PutCardRequest) (*uhppote.PutCardResponse, error) {
 	card := entities.Card{
 		CardNumber: request.CardNumber,
 		From:       request.From,
