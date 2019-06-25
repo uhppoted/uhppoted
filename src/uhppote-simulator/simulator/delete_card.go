@@ -4,7 +4,7 @@ import (
 	"uhppote"
 )
 
-func (s *Simulator) DeleteCard(request uhppote.DeleteCardRequest) (interface{}, error) {
+func (s *Simulator) DeleteCard(request *uhppote.DeleteCardRequest) (interface{}, error) {
 	deleted := s.Cards.Delete(request.CardNumber)
 	saved := false
 
