@@ -5,10 +5,12 @@ import (
 )
 
 func (s *Simulator) GetCards(request *uhppote.GetCardsRequest) (*uhppote.GetCardsResponse, error) {
-	response := uhppote.GetCardsResponse{
-		SerialNumber: s.SerialNumber,
-		Records:      uint32(len(s.Cards)),
+	if s.SerialNumber != request.SerialNumber {
+		return nil, nil
 	}
 
-	return &response, nil
+	return &uhppote.GetCardsResponse{
+		SerialNumber: s.SerialNumber,
+		Records:      uint32(len(s.Cards)),
+	}, nil
 }

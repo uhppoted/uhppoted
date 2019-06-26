@@ -9,26 +9,64 @@ import (
 	"os/signal"
 	"regexp"
 	"uhppote"
+	"uhppote-simulator/simulator"
 	codec "uhppote/encoding/UTO311-L0x"
 )
 
 type handler struct {
 	msgType    byte
 	factory    func() interface{}
-	dispatcher func(*net.UDPConn, *net.UDPAddr, interface{})
-}
-
-var f = func() interface{} {
-	return new(uhppote.FindDevicesRequest)
+	dispatcher func(*simulator.Simulator, interface{}) (interface{}, error)
 }
 
 var handlers = map[byte]*handler{
-	0x94: &handler{0x94, func() interface{} { return new(uhppote.FindDevicesRequest) }, find},
-	0x50: &handler{0x50, func() interface{} { return new(uhppote.PutCardRequest) }, putCard},
-	0x52: &handler{0x52, func() interface{} { return new(uhppote.DeleteCardRequest) }, deleteCard},
-	0x58: &handler{0x58, func() interface{} { return new(uhppote.GetCardsRequest) }, getCards},
-	0x5a: &handler{0x5a, func() interface{} { return new(uhppote.GetCardByIdRequest) }, getCardById},
-	0x5c: &handler{0x5c, func() interface{} { return new(uhppote.GetCardByIndexRequest) }, getCardByIndex},
+	0x94: &handler{
+		0x94,
+		func() interface{} { return new(uhppote.FindDevicesRequest) },
+		func(s *simulator.Simulator, rq interface{}) (interface{}, error) {
+			return s.Find(rq.(*uhppote.FindDevicesRequest))
+		},
+	},
+
+	0x50: &handler{
+		0x50,
+		func() interface{} { return new(uhppote.PutCardRequest) },
+		func(s *simulator.Simulator, rq interface{}) (interface{}, error) {
+			return s.PutCard(rq.(*uhppote.PutCardRequest))
+		},
+	},
+
+	0x52: &handler{
+		0x52,
+		func() interface{} { return new(uhppote.DeleteCardRequest) },
+		func(s *simulator.Simulator, rq interface{}) (interface{}, error) {
+			return s.DeleteCard(rq.(*uhppote.DeleteCardRequest))
+		},
+	},
+
+	0x58: &handler{
+		0x58,
+		func() interface{} { return new(uhppote.GetCardsRequest) },
+		func(s *simulator.Simulator, rq interface{}) (interface{}, error) {
+			return s.GetCards(rq.(*uhppote.GetCardsRequest))
+		},
+	},
+
+	0x5a: &handler{
+		0x5a,
+		func() interface{} { return new(uhppote.GetCardByIdRequest) },
+		func(s *simulator.Simulator, rq interface{}) (interface{}, error) {
+			return s.GetCardById(rq.(*uhppote.GetCardByIdRequest))
+		},
+	},
+
+	0x5c: &handler{
+		0x5c,
+		func() interface{} { return new(uhppote.GetCardByIndexRequest) },
+		func(s *simulator.Simulator, rq interface{}) (interface{}, error) {
+			return s.GetCardByIndex(rq.(*uhppote.GetCardByIndexRequest))
+		},
+	},
 }
 
 func simulate() {
@@ -117,7 +155,15 @@ func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
 		return
 	}
 
-	h.dispatcher(c, src, request)
+	for _, s := range simulators {
+		response, err := h.dispatcher(s, request)
+		if err != nil {
+			fmt.Printf("ERROR: %v\n", err)
+		} else if response != nil {
+			send(c, src, response)
+		}
+	}
+
 }
 
 func receive(c *net.UDPConn) ([]byte, *net.UDPAddr, error) {
@@ -136,10 +182,6 @@ func receive(c *net.UDPConn) ([]byte, *net.UDPAddr, error) {
 }
 
 func send(c *net.UDPConn, dest *net.UDPAddr, response interface{}) {
-	if response == nil {
-		return
-	}
-
 	message, err := codec.Marshal(response)
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
@@ -152,83 +194,6 @@ func send(c *net.UDPConn, dest *net.UDPAddr, response interface{}) {
 	} else {
 		if options.debug {
 			fmt.Printf(" ... sent %v bytes to %v\n%s\n", N, dest, dump(message[0:N], " ...          "))
-		}
-	}
-}
-
-func find(c *net.UDPConn, src *net.UDPAddr, request interface{}) {
-	for _, s := range simulators {
-		response, err := s.Find(request)
-		if err != nil {
-			fmt.Printf("ERROR: %v\n", err)
-		} else {
-			send(c, src, response)
-		}
-	}
-}
-
-func putCard(c *net.UDPConn, src *net.UDPAddr, request interface{}) {
-	rq := request.(*uhppote.PutCardRequest)
-	for _, s := range simulators {
-		if s.SerialNumber == rq.SerialNumber {
-			response, err := s.PutCard(rq)
-			if err != nil {
-				fmt.Printf("ERROR: %v\n", err)
-			} else {
-				send(c, src, response)
-			}
-		}
-	}
-}
-
-func deleteCard(c *net.UDPConn, src *net.UDPAddr, request interface{}) {
-	rq := request.(*uhppote.DeleteCardRequest)
-	for _, s := range simulators {
-		if s.SerialNumber == rq.SerialNumber {
-			response, err := s.DeleteCard(rq)
-			if err != nil {
-				fmt.Printf("ERROR: %v\n", err)
-			} else {
-				send(c, src, response)
-			}
-		}
-	}
-}
-
-func getCards(c *net.UDPConn, src *net.UDPAddr, request interface{}) {
-	rq := request.(*uhppote.GetCardsRequest)
-	for _, s := range simulators {
-		if s.SerialNumber == rq.SerialNumber {
-			response, err := s.GetCards(rq)
-			if err != nil {
-				fmt.Printf("ERROR: %v\n", err)
-			} else {
-				send(c, src, response)
-			}
-		}
-	}
-}
-
-func getCardById(c *net.UDPConn, src *net.UDPAddr, request interface{}) {
-	rq := request.(*uhppote.GetCardByIdRequest)
-	for _, s := range simulators {
-		response, err := s.GetCardById(rq)
-		if err != nil {
-			fmt.Printf("ERROR: %v\n", err)
-		} else {
-			send(c, src, response)
-		}
-	}
-}
-
-func getCardByIndex(c *net.UDPConn, src *net.UDPAddr, request interface{}) {
-	rq := request.(*uhppote.GetCardByIndexRequest)
-	for _, s := range simulators {
-		response, err := s.GetCardByIndex(rq)
-		if err != nil {
-			fmt.Printf("ERROR: %v\n", err)
-		} else {
-			send(c, src, response)
 		}
 	}
 }

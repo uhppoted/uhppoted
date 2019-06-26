@@ -14,9 +14,9 @@ type GetCardByIndexRequest struct {
 }
 
 type GetCardByIdRequest struct {
-	MsgType      types.MsgType `uhppote:"value:0x5a"`
-	SerialNumber uint32        `uhppote:"offset:4"`
-	CardNumber   uint32        `uhppote:"offset:8"`
+	MsgType      types.MsgType      `uhppote:"value:0x5a"`
+	SerialNumber types.SerialNumber `uhppote:"offset:4"`
+	CardNumber   uint32             `uhppote:"offset:8"`
 }
 
 type GetCardByIndexResponse struct {
@@ -89,7 +89,7 @@ func (u *UHPPOTE) GetCardByIndex(serialNumber, index uint32) (*types.Card, error
 
 func (u *UHPPOTE) GetCardById(serialNumber, cardNumber uint32) (*types.Card, error) {
 	request := GetCardByIdRequest{
-		SerialNumber: serialNumber,
+		SerialNumber: types.SerialNumber(serialNumber),
 		CardNumber:   cardNumber,
 	}
 
