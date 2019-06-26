@@ -5,6 +5,10 @@ import (
 )
 
 func (s *Simulator) DeleteCard(request *uhppote.DeleteCardRequest) (interface{}, error) {
+	if s.SerialNumber != request.SerialNumber {
+		return nil, nil
+	}
+
 	deleted := s.Cards.Delete(request.CardNumber)
 	saved := false
 

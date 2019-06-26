@@ -5,7 +5,7 @@ import (
 	"uhppote/types"
 )
 
-func (s *Simulator) Find(request interface{}) (*uhppote.FindDevicesResponse, error) {
+func (s *Simulator) Find(request *uhppote.FindDevicesRequest) (*uhppote.FindDevicesResponse, error) {
 	response := uhppote.FindDevicesResponse{
 		SerialNumber: s.SerialNumber,
 		IpAddress:    s.IpAddress,

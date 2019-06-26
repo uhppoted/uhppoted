@@ -6,6 +6,10 @@ import (
 )
 
 func (s *Simulator) GetCardById(request *uhppote.GetCardByIdRequest) (interface{}, error) {
+	if s.SerialNumber != request.SerialNumber {
+		return nil, nil
+	}
+
 	for _, card := range s.Cards {
 		if request.CardNumber == card.CardNumber {
 			response := uhppote.GetCardByIdResponse{
@@ -34,6 +38,10 @@ func (s *Simulator) GetCardById(request *uhppote.GetCardByIdRequest) (interface{
 }
 
 func (s *Simulator) GetCardByIndex(request *uhppote.GetCardByIndexRequest) (interface{}, error) {
+	if s.SerialNumber != request.SerialNumber {
+		return nil, nil
+	}
+
 	if request.Index > 0 && request.Index <= uint32(len(s.Cards)) {
 		card := s.Cards[request.Index-1]
 		response := uhppote.GetCardByIndexResponse{
