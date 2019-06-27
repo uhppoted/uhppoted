@@ -3,7 +3,7 @@
 
 **Clean up 'card not found' handling in uhppote**
 
-12. Default to no config file
+19. Fix get-event-index and set-event-index
 
 2.  Human readable output for e.g. get-status
 3.  JSON formatted output for e.g. get-status
