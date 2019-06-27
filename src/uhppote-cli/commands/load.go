@@ -129,17 +129,6 @@ func getCards(ctx Context, serialNumber uint32) (*map[uint32]*types.Card, error)
 }
 
 func compare(master, device map[uint32]*types.Card) diff {
-	//p := make(map[uint32]*types.Card)
-	//q := make(map[uint32]*types.Card)
-
-	//for n, c := range master {
-	//	p[c.CardNumber] = &master[n]
-	//}
-
-	//for n, c := range device {
-	//	q[c.CardNumber] = &device[n]
-	//}
-
 	m := diff{
 		unchanged: make([]types.Card, 0),
 		add:       make([]types.Card, 0),
@@ -192,7 +181,7 @@ func merge(serialNumber uint32, d diff, ctx *Context) error {
 }
 
 func (c *Load) CLI() string {
-	return "load"
+	return "load-acl"
 }
 
 func (c *Load) Description() string {
@@ -204,7 +193,7 @@ func (c *Load) Usage() string {
 }
 
 func (c *Load) Help() {
-	fmt.Println("Usage: uhppote-cli [options] load <TSV file>")
+	fmt.Println("Usage: uhppote-cli [options] load-acl <TSV file>")
 	fmt.Println()
 	fmt.Println(" Downloads the access control list in the TSV file to the access controllers defined in the configuration file")
 	fmt.Println()
@@ -222,6 +211,6 @@ func (c *Load) Help() {
 	fmt.Println()
 	fmt.Println("  Examples:")
 	fmt.Println()
-	fmt.Println("    uhppote-cli --config .config load \"hell-2019-05-25.tsv\"")
+	fmt.Println("    uhppote-cli --config .config load-acl \"hell-2019-05-25.tsv\"")
 	fmt.Println()
 }
