@@ -13,7 +13,7 @@ import (
 	"uhppote/types"
 )
 
-type ACL map[uint32][]types.Card
+type ACL map[uint32]map[uint32]*types.Card
 
 type index struct {
 	cardnumber int
@@ -25,7 +25,7 @@ type index struct {
 func (a *ACL) Load(f *bufio.Reader, path string, cfg *config.Config) (*ACL, error) {
 	acl := make(ACL)
 	for id, _ := range cfg.Devices {
-		acl[id] = make([]types.Card, 0)
+		acl[id] = make(map[uint32]*types.Card)
 	}
 
 	r := csv.NewReader(f)
@@ -57,11 +57,12 @@ func (a *ACL) Load(f *bufio.Reader, path string, cfg *config.Config) (*ACL, erro
 		}
 
 		for id, card := range *cards {
-
-			// TODO check for duplicate cards
-
 			if acl[id] != nil {
-				acl[id] = append(acl[id], card)
+				if acl[id][card.CardNumber] != nil {
+					return nil, errors.New(fmt.Sprintf("Duplicate card number (%v)\n", card.CardNumber))
+				}
+
+				acl[id][card.CardNumber] = &card
 			}
 		}
 	}

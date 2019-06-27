@@ -3,8 +3,7 @@
 
 **Clean up 'card not found' handling in uhppote**
 
-1.  Load cards from TSV file
-    - check for duplicate cards in TSV file
+12. Default to no config file
 
 2.  Human readable output for e.g. get-status
 3.  JSON formatted output for e.g. get-status
@@ -17,8 +16,6 @@
 9.  Rework error handling to use Wrap/Frame
 10. godoc
 11. Integration tests
-12. Default to no config file
-13. Make doors an array
 14. Rework grant/revoke for individual doors (labelled)
 15. Dig into simulator not receiving broadcast unless listening on 0.0.0.0:60000
     (Ref. https://groups.google.com/forum/#!topic/golang-nuts/nbmYWwHCgPc)
