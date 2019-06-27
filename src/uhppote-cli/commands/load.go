@@ -109,36 +109,36 @@ func parse(path string, cfg *config.Config) (*parsers.ACL, error) {
 	return acl.Load(bufio.NewReader(f), path, cfg)
 }
 
-func getCards(ctx Context, serialNumber uint32) (*[]types.Card, error) {
+func getCards(ctx Context, serialNumber uint32) (*map[uint32]*types.Card, error) {
 	N, err := ctx.uhppote.GetCards(serialNumber)
 	if err != nil {
 		return nil, err
 	}
 
-	cards := make([]types.Card, 0)
+	cards := make(map[uint32]*types.Card)
 
 	for index := uint32(0); index < N.Records; index++ {
 		record, err := ctx.uhppote.GetCardByIndex(serialNumber, index+1)
 		if err != nil {
 			return nil, err
 		}
-		cards = append(cards, *record)
+		cards[record.CardNumber] = record
 	}
 
 	return &cards, nil
 }
 
-func compare(master, device []types.Card) diff {
-	p := make(map[uint32]*types.Card)
-	q := make(map[uint32]*types.Card)
+func compare(master, device map[uint32]*types.Card) diff {
+	//p := make(map[uint32]*types.Card)
+	//q := make(map[uint32]*types.Card)
 
-	for n, c := range master {
-		p[c.CardNumber] = &master[n]
-	}
+	//for n, c := range master {
+	//	p[c.CardNumber] = &master[n]
+	//}
 
-	for n, c := range device {
-		q[c.CardNumber] = &device[n]
-	}
+	//for n, c := range device {
+	//	q[c.CardNumber] = &device[n]
+	//}
 
 	m := diff{
 		unchanged: make([]types.Card, 0),
@@ -147,18 +147,18 @@ func compare(master, device []types.Card) diff {
 		delete:    make([]types.Card, 0),
 	}
 
-	for n, c := range p {
-		if q[n] == nil {
+	for n, c := range master {
+		if device[n] == nil {
 			m.add = append(m.add, *c)
-		} else if reflect.DeepEqual(c, q[n]) {
+		} else if reflect.DeepEqual(c, device[n]) {
 			m.unchanged = append(m.unchanged, *c)
 		} else {
 			m.update = append(m.update, *c)
 		}
 	}
 
-	for n, c := range q {
-		if p[n] == nil {
+	for n, c := range device {
+		if master[n] == nil {
 			m.delete = append(m.delete, *c)
 		}
 	}
