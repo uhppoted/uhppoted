@@ -53,7 +53,7 @@ var options = struct {
 }
 
 func main() {
-	flag.StringVar(&options.config, "config", ".config", "Specifies the path for the config file")
+	flag.StringVar(&options.config, "config", "", "Specifies the path for the config file")
 	flag.Var(&options.bind, "bind", "Sets the local IP address and port to which to bind (e.g. 192.168.0.100:60001)")
 	flag.Var(&options.broadcast, "broadcast", "Sets the IP address and port for UDP broadcast (e.g. 192.168.0.255:60000)")
 	flag.BoolVar(&options.debug, "debug", false, "Displays vaguely useful information while processing a command")
@@ -70,16 +70,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	if config == nil {
-		fmt.Printf("\n   ERROR: invalid configuration: %s\n\n", options.config)
-		os.Exit(1)
-	}
-	u.BindAddress = config.BindAddress
-	u.BroadcastAddress = config.BroadcastAddress
+	if config != nil {
+		u.BindAddress = config.BindAddress
+		u.BroadcastAddress = config.BroadcastAddress
 
-	for s, d := range config.Devices {
-		if d.Address != nil {
-			u.Devices[s] = d.Address
+		for s, d := range config.Devices {
+			if d.Address != nil {
+				u.Devices[s] = d.Address
+			}
 		}
 	}
 

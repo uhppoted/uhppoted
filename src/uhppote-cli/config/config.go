@@ -34,6 +34,10 @@ var parsers = []struct {
 }
 
 func LoadConfig(path string) (*Config, error) {
+	if path == "" {
+		return nil, nil
+	}
+
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
