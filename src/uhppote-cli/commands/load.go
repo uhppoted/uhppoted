@@ -31,6 +31,10 @@ type diff struct {
 }
 
 func (c *Load) Execute(ctx Context) error {
+	if ctx.config == nil {
+		return errors.New("load-acl requires a valid configuration file")
+	}
+
 	err := ctx.config.Verify()
 	if err != nil {
 		return err
