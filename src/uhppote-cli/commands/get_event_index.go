@@ -24,7 +24,7 @@ func (c *GetEventIndexCommand) Execute(ctx Context) error {
 }
 
 func (c *GetEventIndexCommand) CLI() string {
-	return "get-swipe-index"
+	return "get-event-index"
 }
 
 func (c *GetEventIndexCommand) Description() string {

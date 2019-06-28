@@ -3,8 +3,6 @@
 
 **Clean up 'card not found' handling in uhppote**
 
-19. Fix get-event-index and set-event-index
-
 2.  Human readable output for e.g. get-status
 3.  JSON formatted output for e.g. get-status
 4.  Consistently include device serial number in output e.g. of get-time
