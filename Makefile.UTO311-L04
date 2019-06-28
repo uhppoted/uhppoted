@@ -1,0 +1,87 @@
+CLI = ./bin/uhppote-cli --config '.UTO311-L04'
+DEBUG = --debug
+CARD = 6154412
+SERIALNO = 423187757
+DOOR = 3
+
+format:
+	gofmt -w=true src/uhppote/*.go
+	gofmt -w=true src/uhppote/types/*.go
+	gofmt -w=true src/uhppote/encoding/bcd/*.go
+	gofmt -w=true src/uhppote/encoding/UTO311-L0x/*.go
+	gofmt -w=true src/uhppote-cli/*.go
+	gofmt -w=true src/uhppote-cli/commands/*.go
+	gofmt -w=true src/uhppote-cli/config/*.go
+	gofmt -w=true src/uhppote-cli/parsers/*.go
+	gofmt -w=true src/uhppote-simulator/*.go
+	gofmt -w=true src/uhppote-simulator/commands/*.go
+	gofmt -w=true src/uhppote-simulator/simulator/*.go
+	gofmt -w=true src/uhppote-simulator/simulator/entities/*.go
+	gofmt -w=true src/integration-tests/*.go
+
+build: format
+	go install uhppote-cli
+	go install uhppote-simulator
+
+debug: build 
+	$(CLI) $(DEBUG) get-devices
+ 
+get-devices: build
+	$(CLI) $(DEBUG) get-devices
+ 
+set-address: build
+	$(CLI) $(DEBUG) set-address $(SERIALNO) '192.168.1.125' '255.255.255.0' '0.0.0.0'
+
+get-status: build 
+	$(CLI) $(DEBUG) get-status $(SERIALNO)
+ 
+get-time: build 
+	$(CLI) $(DEBUG) get-time $(SERIALNO)
+
+set-time: build 
+	$(CLI) $(DEBUG) set-time $(SERIALNO)
+
+get-door-delay: build 
+	$(CLI) $(DEBUG) get-door-delay $(SERIALNO) $(DOOR)
+
+set-door-delay: build 
+	$(CLI) $(DEBUG) set-door-delay $(SERIALNO) $(DOOR) 5
+
+get-listener: build 
+	$(CLI) $(DEBUG) get-listener $(SERIALNO)
+
+set-listener: build 
+	$(CLI) $(DEBUG) set-listener $(SERIALNO) 192.168.1.100: build40000
+ 
+get-cards: build 
+	$(CLI) $(DEBUG) get-cards $(SERIALNO)
+ 
+get-card: build 
+	$(CLI) $(DEBUG) get-card $(SERIALNO) $(CARD)
+ 
+grant: build 
+	$(CLI) $(DEBUG) grant $(SERIALNO) $(CARD) 2019-01-01 2019-12-31 1
+
+revoke: build 
+	$(CLI) $(DEBUG) revoke $(SERIALNO) $(CARD)
+
+revoke-all: build 
+	$(CLI) $(DEBUG) revoke-all $(SERIALNO)
+ 
+load-acl: build 
+	$(CLI) $(DEBUG) load-acl example.tsv
+ 
+get-events: build 
+	$(CLI) $(DEBUG) get-events $(SERIALNO)
+
+get-event-index: build 
+	$(CLI) $(DEBUG) get-event-index $(SERIALNO)
+
+set-event-index: build 
+	$(CLI) $(DEBUG) set-event-index $(SERIALNO) 23
+
+open: build 
+	$(CLI) $(DEBUG) open $(SERIALNO) 1
+
+listen: build 
+	$(CLI) --bind 192.168.1.100: build40000 $(DEBUG) listen 

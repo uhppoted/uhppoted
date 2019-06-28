@@ -28,6 +28,7 @@ var (
 	tMAC          = reflect.TypeOf(net.HardwareAddr{})
 	tMsgType      = reflect.TypeOf(types.MsgType(0))
 	tSerialNumber = reflect.TypeOf(types.SerialNumber(0))
+	tDatePtr      = reflect.TypeOf((*types.Date)(nil))
 )
 
 var re = regexp.MustCompile(`offset:\s*([0-9]+)`)
@@ -257,6 +258,16 @@ func Unmarshal(bytes []byte, m interface{}) error {
 
 			case tSerialNumber:
 				f.SetUint(uint64(binary.LittleEndian.Uint32(bytes[offset : offset+4])))
+
+			case tDatePtr:
+				d := reflect.New(reflect.TypeOf(types.Date{}))
+				if u, ok := d.Interface().(Unmarshaler); ok {
+					if err := u.UnmarshalUT0311L0x(bytes[offset:]); err == nil {
+						f.Set(d)
+					}
+				} else {
+					panic(errors.New(fmt.Sprintf("Cannot unmarshal field with type '%v'", t.Type)))
+				}
 
 			default:
 				panic(errors.New(fmt.Sprintf("Cannot unmarshal field with type '%v'", t.Type)))
