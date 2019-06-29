@@ -89,12 +89,12 @@ func TestUnmarshalGetCardByIndexResponse(t *testing.T) {
 	}
 
 	from, _ := time.ParseInLocation("2006-01-02", "2019-02-03", time.Local)
-	if reply.From != types.Date(from) {
+	if *reply.From != types.Date(from) {
 		t.Errorf("Incorrect 'from date' - expected:%s, got:%s", from.Format("2006-01-02"), reply.From)
 	}
 
 	to, _ := time.ParseInLocation("2006-01-02", "2019-12-29", time.Local)
-	if reply.To != types.Date(to) {
+	if *reply.To != types.Date(to) {
 		t.Errorf("Incorrect 'to date' - expected:%s, got:%s", to.Format("2006-01-02"), reply.To)
 	}
 
@@ -111,6 +111,59 @@ func TestUnmarshalGetCardByIndexResponse(t *testing.T) {
 	}
 
 	if reply.Door4 != true {
+		t.Errorf("Incorrect 'door 4' - expected:%v, got:%v", true, reply.Door4)
+	}
+}
+
+func TestUnmarshalGetCardByIndexNotFoundResponse(t *testing.T) {
+	message := []byte{
+		0x17, 0x5c, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	}
+
+	reply := GetCardByIndexResponse{}
+
+	err := codec.Unmarshal(message, &reply)
+
+	if err != nil {
+		t.Errorf("Unexpected error: %v\n", err)
+	}
+
+	if reply.MsgType != 0x5C {
+		t.Errorf("Incorrect 'message type' - expected:%02X, got:%02x", 0x5C, reply.MsgType)
+	}
+
+	if reply.SerialNumber != 423187757 {
+		t.Errorf("Incorrect 'serial number' - expected:%v, got:%v", 423187757, reply.SerialNumber)
+	}
+
+	if reply.CardNumber != 0 {
+		t.Errorf("Incorrect 'card number' - expected:%v, got:%v", 6154412, reply.CardNumber)
+	}
+
+	if reply.From != nil {
+		t.Errorf("Incorrect 'from date' - expected:%v, got:%v", nil, reply.From)
+	}
+
+	if reply.To != nil {
+		t.Errorf("Incorrect 'to date' - expected:%v, got:%v", nil, reply.To)
+	}
+
+	if reply.Door1 != false {
+		t.Errorf("Incorrect 'door 1' - expected:%v, got:%v", false, reply.Door1)
+	}
+
+	if reply.Door2 != false {
+		t.Errorf("Incorrect 'door 2' - expected:%v, got:%v", false, reply.Door2)
+	}
+
+	if reply.Door3 != false {
+		t.Errorf("Incorrect 'door 3' - expected:%v, got:%v", true, reply.Door3)
+	}
+
+	if reply.Door4 != false {
 		t.Errorf("Incorrect 'door 4' - expected:%v, got:%v", true, reply.Door4)
 	}
 }
@@ -144,12 +197,12 @@ func TestUnmarshalGetCardByIdResponse(t *testing.T) {
 	}
 
 	from, _ := time.ParseInLocation("2006-01-02", "2019-02-03", time.Local)
-	if reply.From != types.Date(from) {
+	if *reply.From != types.Date(from) {
 		t.Errorf("Incorrect 'from date' - expected:%s, got:%s", from.Format("2006-01-02"), reply.From)
 	}
 
 	to, _ := time.ParseInLocation("2006-01-02", "2019-12-29", time.Local)
-	if reply.To != types.Date(to) {
+	if *reply.To != types.Date(to) {
 		t.Errorf("Incorrect 'to date' - expected:%s, got:%s", to.Format("2006-01-02"), reply.To)
 	}
 
@@ -166,6 +219,59 @@ func TestUnmarshalGetCardByIdResponse(t *testing.T) {
 	}
 
 	if reply.Door4 != true {
+		t.Errorf("Incorrect 'door 4' - expected:%v, got:%v", true, reply.Door4)
+	}
+}
+
+func TestUnmarshalGetCardByIdNotFoundResponse(t *testing.T) {
+	message := []byte{
+		0x17, 0x5a, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	}
+
+	reply := GetCardByIdResponse{}
+
+	err := codec.Unmarshal(message, &reply)
+
+	if err != nil {
+		t.Errorf("Unexpected error: %v\n", err)
+	}
+
+	if reply.MsgType != 0x5a {
+		t.Errorf("Incorrect 'message type' - expected:%02X, got:%02x", 0x5a, reply.MsgType)
+	}
+
+	if reply.SerialNumber != 423187757 {
+		t.Errorf("Incorrect 'serial number' - expected:%v, got:%v", 423187757, reply.SerialNumber)
+	}
+
+	if reply.CardNumber != 0 {
+		t.Errorf("Incorrect 'card number' - expected:%v, got:%v", 0, reply.CardNumber)
+	}
+
+	if reply.From != nil {
+		t.Errorf("Incorrect 'from date' - expected:%v, got:%v", nil, reply.From)
+	}
+
+	if reply.To != nil {
+		t.Errorf("Incorrect 'to date' - expected:%v, got:%v", nil, reply.To)
+	}
+
+	if reply.Door1 != false {
+		t.Errorf("Incorrect 'door 1' - expected:%v, got:%v", false, reply.Door1)
+	}
+
+	if reply.Door2 != false {
+		t.Errorf("Incorrect 'door 2' - expected:%v, got:%v", false, reply.Door2)
+	}
+
+	if reply.Door3 != false {
+		t.Errorf("Incorrect 'door 3' - expected:%v, got:%v", true, reply.Door3)
+	}
+
+	if reply.Door4 != false {
 		t.Errorf("Incorrect 'door 4' - expected:%v, got:%v", true, reply.Door4)
 	}
 }

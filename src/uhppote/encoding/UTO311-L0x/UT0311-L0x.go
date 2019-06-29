@@ -70,11 +70,12 @@ func marshal(s reflect.Value) ([]byte, error) {
 				// Use MarshalUT0311L0x() if implemented.
 				if m, ok := f.Interface().(Marshaler); ok {
 					// If f is a pointer type and the value is nil skips this field (leaving the buffer 'as is')
-					if !f.IsNil() {
+					if f.Kind() != reflect.Ptr || !f.IsNil() {
 						if b, err := m.MarshalUT0311L0x(); err == nil {
 							copy(bytes[offset:offset+len(b)], b)
 						}
 					}
+
 					continue
 				}
 
