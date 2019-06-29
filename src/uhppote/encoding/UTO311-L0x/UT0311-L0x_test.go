@@ -225,8 +225,8 @@ func TestUnmarshal(t *testing.T) {
 	message := []byte{
 		0x17, 0x94, 0x6e, 0x00, 0x2d, 0x55, 0x39, 0x19, 0xd2, 0x04, 0x00, 0x00, 0xc0, 0xa8, 0x00, 0x00,
 		0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x66, 0x19, 0x39, 0x55, 0x2d, 0x00, 0x66,
-		0x19, 0x39, 0x55, 0x2d, 0x2d, 0x55, 0x39, 0x19, 0x08, 0x92, 0x20, 0x18, 0x08, 0x16, 0x20, 0x18,
-		0x12, 0x31, 0x12, 0x23, 0x34, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x19, 0x39, 0x55, 0x2d, 0x2d, 0x55, 0x39, 0x19, 0x08, 0x92, 0x20, 0x18, 0x08, 0x16, 0x20, 0x19,
+		0x09, 0x17, 0x00, 0x00, 0x00, 0x00, 0x20, 0x18, 0x12, 0x31, 0x12, 0x23, 0x34, 0x01, 0x00, 0x00,
 	}
 
 	reply := struct {
@@ -242,9 +242,11 @@ func TestUnmarshal(t *testing.T) {
 		SerialNumber types.SerialNumber `uhppote:"offset:36"`
 		Version      types.Version      `uhppote:"offset:40"`
 		Date         types.Date         `uhppote:"offset:42"`
-		DateTime     types.DateTime     `uhppote:"offset:46"`
-		True         bool               `uhppote:"offset:53"`
-		False        bool               `uhppote:"offset:54"`
+		DatePtr      *types.Date        `uhppote:"offset:46"`
+		NilDatePtr   *types.Date        `uhppote:"offset:50"`
+		DateTime     types.DateTime     `uhppote:"offset:54"`
+		True         bool               `uhppote:"offset:61"`
+		False        bool               `uhppote:"offset:62"`
 	}{}
 
 	err := Unmarshal(message, &reply)
@@ -295,9 +297,18 @@ func TestUnmarshal(t *testing.T) {
 		t.Errorf("Expected version '0x%04X', got: '0x%04X'\n", 0x0892, reply.Version)
 	}
 
-	date, _ := time.ParseInLocation("2006-01-02", "2018-08-16", time.Local)
-	if reply.Date != types.Date(date) {
-		t.Errorf("Expected date '%v', got: '%v'\n", date, reply.Date)
+	d20180816, _ := time.ParseInLocation("2006-01-02", "2018-08-16", time.Local)
+	if reply.Date != types.Date(d20180816) {
+		t.Errorf("Expected date '%v', got: '%v'\n", d20180816, reply.Date)
+	}
+
+	d20190917, _ := time.ParseInLocation("2006-01-02", "2019-09-17", time.Local)
+	if reply.DatePtr == nil || *reply.DatePtr != types.Date(d20190917) {
+		t.Errorf("Expected date '%v', got: '%v'\n", d20190917, reply.DatePtr)
+	}
+
+	if reply.NilDatePtr != nil {
+		t.Errorf("Expected nil date '%v', got: '%v'\n", nil, reply.NilDatePtr)
 	}
 
 	datetime, _ := time.ParseInLocation("2006-01-02 15:04:05", "2018-12-31 12:23:34", time.Local)
