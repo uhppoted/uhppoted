@@ -23,8 +23,8 @@ type GetCardByIndexResponse struct {
 	MsgType      types.MsgType      `uhppote:"value:0x5c"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 	CardNumber   uint32             `uhppote:"offset:8"`
-	From         types.Date         `uhppote:"offset:12"`
-	To           types.Date         `uhppote:"offset:16"`
+	From         *types.Date        `uhppote:"offset:12"`
+	To           *types.Date        `uhppote:"offset:16"`
 	Door1        bool               `uhppote:"offset:20"`
 	Door2        bool               `uhppote:"offset:21"`
 	Door3        bool               `uhppote:"offset:22"`
