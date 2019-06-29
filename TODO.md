@@ -2,6 +2,8 @@
 
 
 **Clean up 'card not found' handling in uhppote**
+- unit tests for pointer fields
+- genericize unmarshalling pointer fields
 
 2.  Human readable output for e.g. get-status
 3.  JSON formatted output for e.g. get-status

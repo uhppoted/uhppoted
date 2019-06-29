@@ -67,12 +67,15 @@ func marshal(s reflect.Value) ([]byte, error) {
 			if matched != nil {
 				offset, _ := strconv.Atoi(matched[1])
 
-				// Use MarshalUT0311L0x() if implemented
+				// Use MarshalUT0311L0x() if implemented.
 				if m, ok := f.Interface().(Marshaler); ok {
-					if b, err := m.MarshalUT0311L0x(); err == nil {
-						copy(bytes[offset:offset+len(b)], b)
-						continue
+					// If f is a pointer type and the value is nil skips this field (leaving the buffer 'as is')
+					if !f.IsNil() {
+						if b, err := m.MarshalUT0311L0x(); err == nil {
+							copy(bytes[offset:offset+len(b)], b)
+						}
 					}
+					continue
 				}
 
 				// Marshal built-in types
