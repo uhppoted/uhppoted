@@ -19,6 +19,10 @@ type Unmarshaler interface {
 	UnmarshalUT0311L0x([]byte) error
 }
 
+type PtrUnmarshaler interface {
+	UnmarshalPtr([]byte) (interface{}, error)
+}
+
 var (
 	tBool         = reflect.TypeOf(bool(false))
 	tByte         = reflect.TypeOf(byte(0))
@@ -28,7 +32,6 @@ var (
 	tMAC          = reflect.TypeOf(net.HardwareAddr{})
 	tMsgType      = reflect.TypeOf(types.MsgType(0))
 	tSerialNumber = reflect.TypeOf(types.SerialNumber(0))
-	tDatePtr      = reflect.TypeOf((*types.Date)(nil))
 )
 
 var re = regexp.MustCompile(`offset:\s*([0-9]+)`)
@@ -67,7 +70,7 @@ func marshal(s reflect.Value) ([]byte, error) {
 			if matched != nil {
 				offset, _ := strconv.Atoi(matched[1])
 
-				// Use MarshalUT0311L0x() if implemented.
+				// Marshall with MarshalUT0311L0x{} interface
 				if m, ok := f.Interface().(Marshaler); ok {
 					// If f is a pointer type and the value is nil skips this field, leaving the buffer 'as is'
 					if f.Kind() != reflect.Ptr || !f.IsNil() {
@@ -165,7 +168,6 @@ func getMsgType(s reflect.Value) (byte, error) {
 
 func Unmarshal(bytes []byte, m interface{}) error {
 	// Validate message format
-
 	if len(bytes) != 64 {
 		return errors.New(fmt.Sprintf("Invalid message length - expected 64 bytes, received %v", len(bytes)))
 	}
@@ -175,7 +177,6 @@ func Unmarshal(bytes []byte, m interface{}) error {
 	}
 
 	// Unmarshall fields tagged with `uhppote:"..."`
-
 	v := reflect.ValueOf(m)
 	s := v.Elem()
 
@@ -201,14 +202,12 @@ func Unmarshal(bytes []byte, m interface{}) error {
 			}
 
 			// Unmarshall MsgType field
-
 			if t.Type == tMsgType {
 				f.SetUint(uint64(msgType))
 				continue
 			}
 
 			// Unmarshall fields tagged with `uhppote:"offset:<offset>"`
-
 			matched := re.FindStringSubmatch(tag)
 			if matched == nil {
 				continue
@@ -216,11 +215,19 @@ func Unmarshal(bytes []byte, m interface{}) error {
 
 			offset, _ := strconv.Atoi(matched[1])
 
-			// Use UnmarshalUT0311L0x() if implemented
+			// Unmarshall with UnmarshalUT0311L0x{} interface
 			if u, ok := f.Addr().Interface().(Unmarshaler); ok {
 				if err := u.UnmarshalUT0311L0x(bytes[offset:]); err == nil {
 					continue
 				}
+			}
+
+			if u, ok := f.Interface().(PtrUnmarshaler); ok {
+				if p, err := u.UnmarshalPtr(bytes[offset:]); err == nil {
+					f.Set(reflect.ValueOf(p))
+				}
+
+				continue
 			}
 
 			// Unmarshal built-in types
@@ -262,16 +269,6 @@ func Unmarshal(bytes []byte, m interface{}) error {
 
 			case tSerialNumber:
 				f.SetUint(uint64(binary.LittleEndian.Uint32(bytes[offset : offset+4])))
-
-			case tDatePtr:
-				d := reflect.New(reflect.TypeOf(types.Date{}))
-				if u, ok := d.Interface().(Unmarshaler); ok {
-					if err := u.UnmarshalUT0311L0x(bytes[offset:]); err == nil {
-						f.Set(d)
-					}
-				} else {
-					panic(errors.New(fmt.Sprintf("Cannot unmarshal field with type '%v'", t.Type)))
-				}
 
 			default:
 				panic(errors.New(fmt.Sprintf("Cannot unmarshal field with type '%v'", t.Type)))
