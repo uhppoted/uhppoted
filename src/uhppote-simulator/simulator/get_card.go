@@ -10,31 +10,24 @@ func (s *Simulator) GetCardById(request *uhppote.GetCardByIdRequest) (interface{
 		return nil, nil
 	}
 
+	response := uhppote.GetCardByIdResponse{
+		SerialNumber: s.SerialNumber,
+	}
+
 	for _, card := range s.Cards {
 		if request.CardNumber == card.CardNumber {
-			response := uhppote.GetCardByIdResponse{
-				SerialNumber: s.SerialNumber,
-				CardNumber:   card.CardNumber,
-				From:         card.From,
-				To:           card.To,
-				Door1:        card.Door1,
-				Door2:        card.Door2,
-				Door3:        card.Door3,
-				Door4:        card.Door4,
-			}
-
-			return &response, nil
+			response.CardNumber = card.CardNumber
+			response.From = &card.From
+			response.To = &card.To
+			response.Door1 = card.Door1
+			response.Door2 = card.Door2
+			response.Door3 = card.Door3
+			response.Door4 = card.Door4
+			break
 		}
 	}
 
-	return &struct {
-		MsgType      types.MsgType      `uhppote:"value:0x5a"`
-		SerialNumber types.SerialNumber `uhppote:"offset:4"`
-		CardNumber   uint32             `uhppote:"offset:8"`
-	}{
-		SerialNumber: s.SerialNumber,
-		CardNumber:   0,
-	}, nil
+	return &response, nil
 }
 
 func (s *Simulator) GetCardByIndex(request *uhppote.GetCardByIndexRequest) (interface{}, error) {
