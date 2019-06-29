@@ -64,9 +64,8 @@ usage: build
 	$(CLI)
 
 debug: build
-#	$(CLI) $(DEBUG) get-card $(SERIALNO) 192837382
-	$(CLI) $(DEBUG) get-card 305419896 192837382
-	$(CLI) $(DEBUG) get-card 305419896 65537
+	go clean -testcache
+	go test -count=1 -run TestUnmarshal src/uhppote/encoding/UTO311-L0x/*.go
 
 help: build
 	$(CLI)       help
