@@ -90,13 +90,16 @@ func TestMarshal(t *testing.T) {
 	expected := []byte{
 		0x17, 0x5f, 0x7d, 0x00, 0x2d, 0x55, 0x39, 0x19, 0xd2, 0x04, 0x01, 0x00, 0xc0, 0xa8, 0x01, 0x02,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x66, 0x19, 0x39, 0x55, 0x2d, 0x00, 0x66, 0x19, 0x39, 0x55, 0x2d,
-		0x2d, 0x55, 0x39, 0x19, 0x08, 0x92, 0x20, 0x18, 0x08, 0x16, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x20, 0x19, 0x04, 0x16, 0x12, 0x34, 0x56, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x2d, 0x55, 0x39, 0x19, 0x08, 0x92, 0x20, 0x18, 0x08, 0x16, 0x20, 0x19, 0x09, 0x17, 0x00, 0x00,
+		0x00, 0x00, 0x20, 0x19, 0x04, 0x16, 0x12, 0x34, 0x56, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	}
 
 	mac, _ := net.ParseMAC("00:66:19:39:55:2d")
-	date, _ := time.ParseInLocation("2006-01-02", "2018-08-16", time.Local)
+	d20180816, _ := time.ParseInLocation("2006-01-02", "2018-08-16", time.Local)
+	d20190917, _ := time.ParseInLocation("2006-01-02", "2019-09-17", time.Local)
 	datetime, _ := time.ParseInLocation("2006-01-02 15:04:05", "2019-04-16 12:34:56", time.Local)
+
+	dx20190917 := types.Date(d20190917)
 
 	request := struct {
 		MsgType      types.MsgType      `uhppote:"value:0x5f"`
@@ -111,7 +114,9 @@ func TestMarshal(t *testing.T) {
 		SerialNumber types.SerialNumber `uhppote:"offset:32"`
 		Version      types.Version      `uhppote:"offset:36"`
 		Date         types.Date         `uhppote:"offset:38"`
-		DateTime     types.DateTime     `uhppote:"offset:48"`
+		DatePtr      *types.Date        `uhppote:"offset:42"`
+		NilDatePtr   *types.Date        `uhppote:"offset:46"`
+		DateTime     types.DateTime     `uhppote:"offset:50"`
 	}{
 		Byte:         0x7d,
 		Uint32:       423187757,
@@ -123,7 +128,9 @@ func TestMarshal(t *testing.T) {
 		MAC:          mac,
 		SerialNumber: 423187757,
 		Version:      0x0892,
-		Date:         types.Date(date),
+		Date:         types.Date(d20180816),
+		DatePtr:      &dx20190917,
+		NilDatePtr:   nil,
 		DateTime:     types.DateTime(datetime),
 	}
 
