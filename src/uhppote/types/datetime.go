@@ -27,18 +27,18 @@ func (d DateTime) MarshalUT0311L0x() ([]byte, error) {
 	return *encoded, nil
 }
 
-func (d *DateTime) UnmarshalUT0311L0x(bytes []byte) error {
+func (d *DateTime) UnmarshalUT0311L0x(bytes []byte) (interface{}, error) {
 	decoded, err := bcd.Decode(bytes[0:7])
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	datetime, err := time.ParseInLocation("20060102150405", decoded, time.Local)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	*d = DateTime(datetime)
+	v := DateTime(datetime)
 
-	return nil
+	return &v, nil
 }

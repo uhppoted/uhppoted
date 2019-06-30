@@ -25,18 +25,18 @@ func (d SystemDate) String() string {
 //	return *encoded, nil
 //}
 
-func (d *SystemDate) UnmarshalUT0311L0x(bytes []byte) error {
+func (d *SystemDate) UnmarshalUT0311L0x(bytes []byte) (interface{}, error) {
 	decoded, err := bcd.Decode(bytes[0:3])
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	date, err := time.ParseInLocation("060102", decoded, time.Local)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	*d = SystemDate(date)
+	v := SystemDate(date)
 
-	return nil
+	return &v, nil
 }

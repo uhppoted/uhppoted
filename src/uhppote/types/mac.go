@@ -19,14 +19,14 @@ func (m MacAddress) MarshalUT0311L0x() ([]byte, error) {
 	return bytes, nil
 }
 
-func (m *MacAddress) UnmarshalUT0311L0x(bytes []byte) error {
+func (m *MacAddress) UnmarshalUT0311L0x(bytes []byte) (interface{}, error) {
 	mac := make([]byte, 6)
 
 	copy(mac, bytes[0:6])
 
-	*m = MacAddress(mac)
+	v := MacAddress(mac)
 
-	return nil
+	return &v, nil
 }
 
 func (m MacAddress) MarshalJSON() ([]byte, error) {

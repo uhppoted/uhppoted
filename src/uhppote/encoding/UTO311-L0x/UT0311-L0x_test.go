@@ -19,14 +19,16 @@ func (t testType) MarshalUT0311L0x() ([]byte, error) {
 	return []byte{0x20, 0x18, 0x08, 0x16}, nil
 }
 
-func (t *testType) UnmarshalUT0311L0x(bytes []byte) error {
-	t.bytes = make([]byte, 4)
+func (t *testType) UnmarshalUT0311L0x(bytes []byte) (interface{}, error) {
+	b := make([]byte, 4)
 
 	for i := 0; i < 4; i++ {
-		t.bytes[i] = bytes[i] + byte(i)
+		b[i] = bytes[i] + byte(i)
 	}
 
-	return nil
+	v := testType{b}
+
+	return &v, nil
 }
 
 func TestMarshalInterface(t *testing.T) {
