@@ -16,10 +16,10 @@ func (v Version) MarshalUT0311L0x() ([]byte, error) {
 	return bytes, nil
 }
 
-func (v *Version) UnmarshalUT0311L0x(bytes []byte) error {
-	*v = Version(binary.BigEndian.Uint16(bytes))
+func (v *Version) UnmarshalUT0311L0x(bytes []byte) (interface{}, error) {
+	vv := Version(binary.BigEndian.Uint16(bytes))
 
-	return nil
+	return &vv, nil
 }
 
 func (v Version) MarshalJSON() ([]byte, error) {

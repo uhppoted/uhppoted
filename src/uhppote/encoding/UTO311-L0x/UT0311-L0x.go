@@ -16,22 +16,17 @@ type Marshaler interface {
 }
 
 type Unmarshaler interface {
-	UnmarshalUT0311L0x([]byte) error
-}
-
-type PtrUnmarshaler interface {
-	UnmarshalPtr([]byte) (interface{}, error)
+	UnmarshalUT0311L0x([]byte) (interface{}, error)
 }
 
 var (
-	tBool         = reflect.TypeOf(bool(false))
-	tByte         = reflect.TypeOf(byte(0))
-	tUint16       = reflect.TypeOf(uint16(0))
-	tUint32       = reflect.TypeOf(uint32(0))
-	tIPv4         = reflect.TypeOf(net.IPv4(0, 0, 0, 0))
-	tMAC          = reflect.TypeOf(net.HardwareAddr{})
-	tMsgType      = reflect.TypeOf(types.MsgType(0))
-	tSerialNumber = reflect.TypeOf(types.SerialNumber(0))
+	tBool    = reflect.TypeOf(bool(false))
+	tByte    = reflect.TypeOf(byte(0))
+	tUint16  = reflect.TypeOf(uint16(0))
+	tUint32  = reflect.TypeOf(uint32(0))
+	tIPv4    = reflect.TypeOf(net.IPv4(0, 0, 0, 0))
+	tMAC     = reflect.TypeOf(net.HardwareAddr{})
+	tMsgType = reflect.TypeOf(types.MsgType(0))
 )
 
 var re = regexp.MustCompile(`offset:\s*([0-9]+)`)
@@ -115,9 +110,6 @@ func marshal(s reflect.Value) ([]byte, error) {
 
 				case tMAC:
 					copy(bytes[offset:offset+6], f.Bytes())
-
-				case tSerialNumber:
-					binary.LittleEndian.PutUint32(bytes[offset:offset+4], uint32(f.Uint()))
 
 				default:
 					panic(errors.New(fmt.Sprintf("Cannot marshal field with type '%v'", t.Type)))
@@ -215,18 +207,19 @@ func Unmarshal(bytes []byte, m interface{}) error {
 
 			offset, _ := strconv.Atoi(matched[1])
 
-			// Unmarshall with UnmarshalUT0311L0x{} interface
+			// Unmarshall value fields with UnmarshalUT0311L0x{} interface
 			if u, ok := f.Addr().Interface().(Unmarshaler); ok {
-				if err := u.UnmarshalUT0311L0x(bytes[offset:]); err == nil {
+				if p, err := u.UnmarshalUT0311L0x(bytes[offset:]); err == nil {
+					f.Set(reflect.Indirect(reflect.ValueOf(p)))
 					continue
 				}
 			}
 
-			if u, ok := f.Interface().(PtrUnmarshaler); ok {
-				if p, err := u.UnmarshalPtr(bytes[offset:]); err == nil {
+			// Unmarshall pointer fields with UnmarshalUT0311L0x{} interface
+			if u, ok := f.Interface().(Unmarshaler); ok {
+				if p, err := u.UnmarshalUT0311L0x(bytes[offset:]); err == nil {
 					f.Set(reflect.ValueOf(p))
 				}
-
 				continue
 			}
 
@@ -266,9 +259,6 @@ func Unmarshal(bytes []byte, m interface{}) error {
 
 			case tMAC:
 				f.SetBytes(bytes[offset : offset+6])
-
-			case tSerialNumber:
-				f.SetUint(uint64(binary.LittleEndian.Uint32(bytes[offset : offset+4])))
 
 			default:
 				panic(errors.New(fmt.Sprintf("Cannot unmarshal field with type '%v'", t.Type)))
