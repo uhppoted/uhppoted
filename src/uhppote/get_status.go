@@ -32,11 +32,11 @@ type GetStatusResponse struct {
 	SystemState    byte               `uhppote:"offset:36"`
 	SystemDate     types.SystemDate   `uhppote:"offset:51"`
 	SystemTime     types.SystemTime   `uhppote:"offset:37"`
-	PacketNumber   uint32             `uhppote:"offset:40"`
-	Backup         uint32             `uhppote:"offset:44"`
-	SpecialMessage byte               `uhppote:"offset:48"`
-	LowBattery     bool               `uhppote:"offset:49"`
-	FireAlarm      bool               `uhppote:"offset:50"`
+	PacketNumber   uint32             `uhppote:"offset:40"` // TODO unverified - trust at own risk
+	Backup         uint32             `uhppote:"offset:44"` // TODO unverified - trust at own risk
+	SpecialMessage byte               `uhppote:"offset:48"` // TODO unverified - trust at own risk
+	Battery        byte               `uhppote:"offset:49"` // TODO unverified - trust at own risk
+	FireAlarm      byte               `uhppote:"offset:50"` // TODO unverified - trust at own risk
 }
 
 func (u *UHPPOTE) GetStatus(serialNumber uint32) (*types.Status, error) {
@@ -72,7 +72,7 @@ func (u *UHPPOTE) GetStatus(serialNumber uint32) (*types.Status, error) {
 		PacketNumber:   reply.PacketNumber,
 		Backup:         reply.Backup,
 		SpecialMessage: reply.SpecialMessage,
-		LowBattery:     reply.LowBattery,
+		Battery:        reply.Battery,
 		FireAlarm:      reply.FireAlarm,
 	}, nil
 }
