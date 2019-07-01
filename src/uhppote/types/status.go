@@ -22,8 +22,8 @@ type Status struct {
 	PacketNumber   uint32
 	Backup         uint32
 	SpecialMessage byte
-	LowBattery     bool
-	FireAlarm      bool
+	Battery        byte
+	FireAlarm      byte
 }
 
 func (s *Status) String() string {
@@ -45,7 +45,7 @@ func (s *Status) String() string {
 	b.WriteString(fmt.Sprintf(" %d", s.PacketNumber))
 	b.WriteString(fmt.Sprintf(" %d", s.Backup))
 	b.WriteString(fmt.Sprintf(" %d", s.SpecialMessage))
-	b.WriteString(fmt.Sprintf(" %v", s.LowBattery))
+	b.WriteString(fmt.Sprintf(" %v", s.Battery))
 	b.WriteString(fmt.Sprintf(" %v", s.FireAlarm))
 
 	return b.String()

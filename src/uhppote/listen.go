@@ -28,11 +28,11 @@ type Event struct {
 	SystemState    byte               `uhppote:"offset:36"`
 	SystemDate     types.SystemDate   `uhppote:"offset:51"`
 	SystemTime     types.SystemTime   `uhppote:"offset:37"`
-	PacketNumber   uint32             `uhppote:"offset:40"`
-	Backup         uint32             `uhppote:"offset:44"`
-	SpecialMessage byte               `uhppote:"offset:48"`
-	LowBattery     bool               `uhppote:"offset:49"`
-	FireAlarm      bool               `uhppote:"offset:50"`
+	PacketNumber   uint32             `uhppote:"offset:40"` // TODO verify
+	Backup         uint32             `uhppote:"offset:44"` // TODO verify
+	SpecialMessage byte               `uhppote:"offset:48"` // TODO verify
+	LowBattery     byte               `uhppote:"offset:49"` // TODO verify
+	FireAlarm      byte               `uhppote:"offset:50"` // TODO verify
 }
 
 func (u *UHPPOTE) Listen(p chan *types.Status, q chan os.Signal) error {
@@ -70,7 +70,7 @@ func (event Event) transform() *types.Status {
 		PacketNumber:   event.PacketNumber,
 		Backup:         event.Backup,
 		SpecialMessage: event.SpecialMessage,
-		LowBattery:     event.LowBattery,
-		FireAlarm:      event.FireAlarm,
+		//LowBattery:     event.LowBattery,
+		FireAlarm: event.FireAlarm,
 	}
 }

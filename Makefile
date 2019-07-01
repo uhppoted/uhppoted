@@ -2,7 +2,7 @@ CLI = ./bin/uhppote-cli
 SIMULATOR = ./bin/uhppote-simulator
 DEBUG = --debug
 LOCAL = 192.168.1.100:51234
-CARD = 6154412
+CARD = 6154410
 SERIALNO = 423187757
 DOOR = 3
 
@@ -122,10 +122,10 @@ get-card: build
 	$(CLI) $(DEBUG) get-card $(SERIALNO) $(CARD)
 
 grant: build
-	$(CLI) $(DEBUG) grant $(SERIALNO) $(CARD) 2019-01-01 2019-12-31 1
+	$(CLI) $(DEBUG) grant $(SERIALNO) $(CARD) 2019-01-01 2019-12-31 1,2,3,4
 
 revoke: build
-	$(CLI) --config ".simulation" $(DEBUG) revoke 305419896 65537
+	$(CLI) $(DEBUG) revoke $(SERIALNO) $(CARD)
 
 revoke-all: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) revoke-all $(SERIALNO)

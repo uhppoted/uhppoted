@@ -19,3 +19,5 @@
     (Ref. ttps://stackoverflow.com/questions/28309988/how-to-read-from-either-gzip-or-plain-text-reader-in-golang)
 17. Reload simulator on device file change
 18. get-acl
+19. Verify fields in listen events/status replies:
+    - battery status can be (at least) 0x00, 0x01 and 0x04
