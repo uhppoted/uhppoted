@@ -54,7 +54,7 @@ func (u *UHPPOTE) GetCardByIndex(serialNumber, index uint32) (*types.Card, error
 		return nil, err
 	}
 
-	response := GetCardByIdResponse{}
+	response := GetCardByIndexResponse{}
 	err = codec.Unmarshal(reply, &response)
 	if err != nil {
 		return nil, err

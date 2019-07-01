@@ -59,17 +59,17 @@ get-cards: build
 get-card: build 
 	$(CLI) $(DEBUG) get-card $(SERIALNO) $(CARD)
  
-# grant: build 
-# 	$(CLI) $(DEBUG) grant $(SERIALNO) $(CARD) 2019-01-01 2019-12-31 1
-# 
-# revoke: build 
-# 	$(CLI) $(DEBUG) revoke 305419896 65537
-# 
+grant: build 
+	$(CLI) $(DEBUG) grant $(SERIALNO) $(CARD) 2019-01-01 2019-12-31 1
+
+revoke: build 
+	$(CLI) $(DEBUG) revoke 305419896 $(CARD)
+
 # revoke-all: build 
 # 	$(CLI) $(DEBUG) revoke-all $(SERIALNO)
  
 load-acl: build 
-	$(CLI) $(DEBUG) load-acl example.tsv
+	$(CLI) $(DEBUG) load-acl simulator.tsv
  
 # get-events: build 
 # 	$(CLI) $(DEBUG) get-events $(SERIALNO)

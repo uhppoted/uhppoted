@@ -38,7 +38,7 @@ var cli = []commands.Command{
 	&commands.ListenCommand{},
 }
 
-var VERSION = "v0.01.1"
+var VERSION = "v0.02.0"
 
 var options = struct {
 	config    string
