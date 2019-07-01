@@ -16,7 +16,7 @@ var cli = []commands.Command{
 	&commands.NewDeviceCommand{},
 }
 
-var VERSION = "v0.02.0"
+var VERSION = "v0.03.0"
 
 var options = struct {
 	dir   string
