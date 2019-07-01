@@ -5,6 +5,8 @@ LOCAL = 192.168.1.100:51234
 CARD = 6154410
 SERIALNO = 423187757
 DOOR = 3
+VERSION = 0.02.0
+DIST = dist/$(VERSION)
 
 all: test      \
 	 benchmark \
@@ -26,15 +28,15 @@ format:
 	gofmt -w=true src/integration-tests/*.go
 
 release: format
-	mkdir -p dist/windows
-	mkdir -p dist/macosx
-	mkdir -p dist/linux
-	env GOOS=windows GOARCH=amd64  go build uhppote-cli;       mv uhppote-cli.exe dist/windows
-	env GOOS=darwin  GOARCH=amd64  go build uhppote-cli;       mv uhppote-cli dist/macosx
-	env GOOS=linux   GOARCH=amd64  go build uhppote-cli;       mv uhppote-cli dist/linux
-	env GOOS=windows GOARCH=amd64  go build uhppote-simulator; mv uhppote-simulator.exe dist/windows
-	env GOOS=darwin  GOARCH=amd64  go build uhppote-simulator; mv uhppote-simulator dist/macosx
-	env GOOS=linux   GOARCH=amd64  go build uhppote-simulator; mv uhppote-simulator dist/linux
+	mkdir -p $(DIST)/windows
+	mkdir -p $(DIST)/macosx
+	mkdir -p $(DIST)/linux
+	env GOOS=windows GOARCH=amd64  go build uhppote-cli;       mv uhppote-cli.exe       $(DIST)/windows
+	env GOOS=darwin  GOARCH=amd64  go build uhppote-cli;       mv uhppote-cli           $(DIST)/macosx
+	env GOOS=linux   GOARCH=amd64  go build uhppote-cli;       mv uhppote-cli           $(DIST)/linux
+	env GOOS=windows GOARCH=amd64  go build uhppote-simulator; mv uhppote-simulator.exe $(DIST)/windows
+	env GOOS=darwin  GOARCH=amd64  go build uhppote-simulator; mv uhppote-simulator     $(DIST)/macosx
+	env GOOS=linux   GOARCH=amd64  go build uhppote-simulator; mv uhppote-simulator     $(DIST)/linux
 
 build: format
 	go install uhppote-cli
@@ -51,10 +53,13 @@ integration-tests: build
 	go test -count=1 src/integration-tests/*.go
 
 benchmark: build
-	go test src/encoding/bcd/*.go -bench .
+	go test src/uhppote/encoding/bcd/*.go -bench .
 
 coverage: build
-	go test -cover .
+	go clean -testcache
+	go test -cover src/uhppote/*.go
+	go test -cover src/uhppote/encoding/bcd/*.go
+	go test -cover src/uhppote/encoding/UTO311-L0x/*.go
 
 clean:
 	go clean
@@ -86,9 +91,7 @@ run: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) revoke         $(SERIALNO) $(CARD)
 
 get-devices: build
-#	$(CLI) --bind 0.0.0.0:0 $(DEBUG) get-devices
-#	$(CLI) --bind $(LOCAL) --broadcast "192.168.1.255:60000" $(DEBUG) get-devices
-	$(CLI) --bind $(LOCAL) --broadcast "255.255.255.255:60000" $(DEBUG) get-devices
+	$(CLI) --bind $(LOCAL) $(DEBUG) get-devices
 
 set-address: build
 	$(CLI) -bind $(LOCAL) $(DEBUG) set-address $(SERIALNO) '192.168.1.125' '255.255.255.0' '0.0.0.0'
@@ -110,13 +113,13 @@ set-door-delay: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) set-door-delay $(SERIALNO) $(DOOR) 5
 
 get-listener: build
-	$(CLI) --bind  $(DEBUG) get-listener $(SERIALNO)
+	$(CLI) --bind $(LOCAL) $(DEBUG) get-listener $(SERIALNO)
 
 set-listener: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) set-listener $(SERIALNO) 192.168.1.100:40000
 
 get-cards: build
-	$(CLI) --config ".local" $(DEBUG) get-cards $(SERIALNO)
+	$(CLI) --bind $(LOCAL) $(DEBUG) get-cards $(SERIALNO)
 
 get-card: build
 	$(CLI) $(DEBUG) get-card $(SERIALNO) $(CARD)
@@ -131,7 +134,7 @@ revoke-all: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) revoke-all $(SERIALNO)
 
 load-acl: build
-	$(CLI) --config ".simulation" $(DEBUG) load-acl example.tsv
+	$(CLI) --config .UTO311-L04 $(DEBUG) load-acl debug.tsv
 
 get-events: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) get-events $(SERIALNO)
@@ -139,8 +142,8 @@ get-events: build
 get-event-index: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) get-event-index $(SERIALNO)
 
-set-events-index: build
-	$(CLI) --bind $(LOCAL) $(DEBUG) set-events-index $(SERIALNO) 23
+set-event-index: build
+	$(CLI) --bind $(LOCAL) $(DEBUG) set-event-index $(SERIALNO) 23
 
 open: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) open $(SERIALNO) 1

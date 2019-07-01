@@ -34,7 +34,7 @@ func (s *Simulator) GetCardByIndex(request *uhppote.GetCardByIndexRequest) (inte
 		return nil, nil
 	}
 
-	response := uhppote.GetCardByIdResponse{
+	response := uhppote.GetCardByIndexResponse{
 		SerialNumber: s.SerialNumber,
 	}
 
