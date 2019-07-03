@@ -155,7 +155,7 @@ simulator: build
 	./bin/uhppote-simulator --debug --devices "./runtime/simulation/devices"
 
 simulator-device: build
-	./bin/uhppote-simulator --debug --devices "runtime/simulation/devices" new-device 666 --gzip
+	./bin/uhppote-simulator --debug --devices "runtime/simulation/devices" new-device 666
 
 
 

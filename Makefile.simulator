@@ -34,10 +34,10 @@ get-devices: build
 # 
 # get-status: build 
 # 	$(CLI) $(DEBUG) get-status $(SERIALNO)
-# 
-# get-time: build 
-# 	$(CLI) $(DEBUG) get-time $(SERIALNO)
-# 
+
+get-time: build 
+	$(CLI) $(DEBUG) get-time $(SERIALNO)
+
 # set-time: build 
 # 	$(CLI) $(DEBUG) set-time $(SERIALNO)
 # 
