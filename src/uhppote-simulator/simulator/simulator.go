@@ -11,6 +11,8 @@ import (
 	"uhppote/types"
 )
 
+type Offset time.Duration
+
 type Simulator struct {
 	File         string             `json:"-"`
 	Compressed   bool               `json:"-"`
@@ -20,8 +22,30 @@ type Simulator struct {
 	Gateway      net.IP             `json:"gateway"`
 	MacAddress   types.MacAddress   `json:"MAC"`
 	Version      types.Version      `json:"version"`
-	Date         types.Date         `json:"-"`
+	TimeOffset   Offset             `json:"offset"`
 	Cards        entities.CardList  `json:"cards"`
+}
+
+func (t Offset) MarshalJSON() ([]byte, error) {
+	return json.Marshal(time.Duration(t).String())
+}
+
+func (t *Offset) UnmarshalJSON(bytes []byte) error {
+	var s string
+
+	err := json.Unmarshal(bytes, &s)
+	if err != nil {
+		return err
+	}
+
+	d, err := time.ParseDuration(s)
+	if err != nil {
+		return err
+	}
+
+	*t = Offset(d)
+
+	return nil
 }
 
 func Load(filepath string, compressed bool) (*Simulator, error) {
@@ -54,14 +78,8 @@ func loadGZ(filepath string) (*Simulator, error) {
 		return nil, err
 	}
 
-	date, err := time.ParseInLocation("20060102", "20180816", time.Local)
-	if err != nil {
-		return nil, err
-	}
-
 	simulator.File = filepath
 	simulator.Compressed = true
-	simulator.Date = types.Date(date)
 
 	return simulator, nil
 }
@@ -78,14 +96,8 @@ func load(filepath string) (*Simulator, error) {
 		return nil, err
 	}
 
-	date, err := time.ParseInLocation("20060102", "20180816", time.Local)
-	if err != nil {
-		return nil, err
-	}
-
 	simulator.File = filepath
 	simulator.Compressed = false
-	simulator.Date = types.Date(date)
 
 	return simulator, nil
 }

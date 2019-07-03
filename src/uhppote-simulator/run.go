@@ -20,11 +20,11 @@ type handler struct {
 }
 
 var handlers = map[byte]*handler{
-	0x94: &handler{
-		0x94,
-		func() interface{} { return new(uhppote.FindDevicesRequest) },
+	0x32: &handler{
+		0x32,
+		func() interface{} { return new(uhppote.GetTimeRequest) },
 		func(s *simulator.Simulator, rq interface{}) (interface{}, error) {
-			return s.Find(rq.(*uhppote.FindDevicesRequest))
+			return s.GetTime(rq.(*uhppote.GetTimeRequest))
 		},
 	},
 
@@ -65,6 +65,14 @@ var handlers = map[byte]*handler{
 		func() interface{} { return new(uhppote.GetCardByIndexRequest) },
 		func(s *simulator.Simulator, rq interface{}) (interface{}, error) {
 			return s.GetCardByIndex(rq.(*uhppote.GetCardByIndexRequest))
+		},
+	},
+
+	0x94: &handler{
+		0x94,
+		func() interface{} { return new(uhppote.FindDevicesRequest) },
+		func(s *simulator.Simulator, rq interface{}) (interface{}, error) {
+			return s.Find(rq.(*uhppote.FindDevicesRequest))
 		},
 	},
 }
