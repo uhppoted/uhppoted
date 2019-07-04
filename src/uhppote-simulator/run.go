@@ -20,6 +20,14 @@ type handler struct {
 }
 
 var handlers = map[byte]*handler{
+	0x30: &handler{
+		0x30,
+		func() interface{} { return new(uhppote.SetTimeRequest) },
+		func(s *simulator.Simulator, rq interface{}) (interface{}, error) {
+			return s.SetTime(rq.(*uhppote.SetTimeRequest))
+		},
+	},
+
 	0x32: &handler{
 		0x32,
 		func() interface{} { return new(uhppote.GetTimeRequest) },
