@@ -38,9 +38,9 @@ get-devices: build
 get-time: build 
 	$(CLI) $(DEBUG) get-time $(SERIALNO)
 
-# set-time: build 
-# 	$(CLI) $(DEBUG) set-time $(SERIALNO)
-# 
+set-time: build 
+	$(CLI) $(DEBUG) set-time $(SERIALNO)
+
 # get-door-delay: build 
 # 	$(CLI) $(DEBUG) get-door-delay $(SERIALNO) $(DOOR)
 # 

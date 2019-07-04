@@ -1,6 +1,8 @@
 ## v0.03
 
 1. Simulator
+   - get-status
+
 2. get-acl
 
 # TODO
@@ -23,3 +25,4 @@
 13. Reload simulator on device file change
 14. Verify fields in listen events/status replies:
     - battery status can be (at least) 0x00, 0x01 and 0x04
+15. websocket command interface
