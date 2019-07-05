@@ -1,6 +1,8 @@
 package types
 
 import (
+	"errors"
+	"fmt"
 	"time"
 	"uhppote/encoding/bcd"
 )
@@ -9,6 +11,20 @@ type SystemTime time.Time
 
 func (t SystemTime) String() string {
 	return time.Time(t).Format("15:04:05")
+}
+
+func (d SystemTime) MarshalUT0311L0x() ([]byte, error) {
+	encoded, err := bcd.Encode(time.Time(d).Format("150405"))
+
+	if err != nil {
+		return []byte{}, errors.New(fmt.Sprintf("Error encoding system time %v to BCD: [%v]", d, err))
+	}
+
+	if encoded == nil {
+		return []byte{}, errors.New(fmt.Sprintf("Unknown error encoding system time %v to BCD", d))
+	}
+
+	return *encoded, nil
 }
 
 func (t *SystemTime) UnmarshalUT0311L0x(bytes []byte) (interface{}, error) {
