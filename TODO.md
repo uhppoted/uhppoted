@@ -1,5 +1,7 @@
 ## v0.03
 
+*FIX interface{} nil assignment*
+
 1. Simulator
    - get-status
 
