@@ -5,7 +5,7 @@ import (
 )
 
 func (s *Simulator) GetCardById(request *uhppote.GetCardByIdRequest) (interface{}, error) {
-	if s.SerialNumber != request.SerialNumber {
+	if request.SerialNumber != s.SerialNumber {
 		return nil, nil
 	}
 
@@ -30,7 +30,7 @@ func (s *Simulator) GetCardById(request *uhppote.GetCardByIdRequest) (interface{
 }
 
 func (s *Simulator) GetCardByIndex(request *uhppote.GetCardByIndexRequest) (interface{}, error) {
-	if s.SerialNumber != request.SerialNumber {
+	if request.SerialNumber != s.SerialNumber {
 		return nil, nil
 	}
 
