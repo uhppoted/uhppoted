@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"reflect"
 	"regexp"
 	"uhppote"
 	"uhppote-simulator/simulator"
@@ -57,6 +58,14 @@ var handlers = map[byte]*handler{
 		func() interface{} { return new(uhppote.DeleteCardRequest) },
 		func(s *simulator.Simulator, rq interface{}) (interface{}, error) {
 			return s.DeleteCard(rq.(*uhppote.DeleteCardRequest))
+		},
+	},
+
+	0x54: &handler{
+		0x54,
+		func() interface{} { return new(uhppote.DeleteCardsRequest) },
+		func(s *simulator.Simulator, rq interface{}) (interface{}, error) {
+			return s.DeleteCards(rq.(*uhppote.DeleteCardsRequest))
 		},
 	},
 
@@ -183,7 +192,7 @@ func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
 		response, err := h.dispatcher(s, request)
 		if err != nil {
 			fmt.Printf("ERROR: %v\n", err)
-		} else if response != nil {
+		} else if response != nil && !reflect.ValueOf(response).IsNil() {
 			send(c, src, response)
 		}
 	}

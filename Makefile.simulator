@@ -54,7 +54,7 @@ set-time: build
 # 	$(CLI) $(DEBUG) set-listener $(SERIALNO) 192.168.1.100: build40000
  
 get-cards: build 
-	$(CLI) $(DEBUG) get-cards $(SERIALNO)
+	$(CLI) get-cards $(SERIALNO)
  
 get-card: build 
 	$(CLI) $(DEBUG) get-card $(SERIALNO) $(CARD)
@@ -65,8 +65,8 @@ grant: build
 revoke: build 
 	$(CLI) $(DEBUG) revoke 305419896 $(CARD)
 
-# revoke-all: build 
-# 	$(CLI) $(DEBUG) revoke-all $(SERIALNO)
+revoke-all: build 
+	$(CLI) $(DEBUG) revoke-all $(SERIALNO)
  
 load-acl: build 
 	$(CLI) $(DEBUG) load-acl simulator.tsv
@@ -82,6 +82,3 @@ load-acl: build
 # 
 # open: build 
 # 	$(CLI) $(DEBUG) open $(SERIALNO) 1
-# 
-# listen: build 
-# 	$(CLI) --bind 192.168.1.100: build40000 $(DEBUG) listen 

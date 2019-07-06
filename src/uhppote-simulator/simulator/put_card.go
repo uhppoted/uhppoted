@@ -6,6 +6,10 @@ import (
 )
 
 func (s *Simulator) PutCard(request *uhppote.PutCardRequest) (*uhppote.PutCardResponse, error) {
+	if request.SerialNumber != s.SerialNumber {
+		return nil, nil
+	}
+
 	card := entities.Card{
 		CardNumber: request.CardNumber,
 		From:       request.From,

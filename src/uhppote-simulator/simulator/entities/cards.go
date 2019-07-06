@@ -47,3 +47,13 @@ func (l *CardList) Delete(cardNumber uint32) bool {
 
 	return false
 }
+
+func (l *CardList) DeleteAll() bool {
+	old := *l
+	*l = (*l)[:0]
+	for ix, _ := range old {
+		old[ix] = nil
+	}
+
+	return true
+}
