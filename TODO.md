@@ -3,7 +3,7 @@
 *FIX interface{} nil assignment*
 
 1. Simulator
-   - get-status
+   - open-door: add event
 
 2. get-acl
 

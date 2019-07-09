@@ -4,7 +4,7 @@ import (
 	"uhppote"
 )
 
-func (s *Simulator) GetCardById(request *uhppote.GetCardByIdRequest) (interface{}, error) {
+func (s *Simulator) GetCardById(request *uhppote.GetCardByIdRequest) (*uhppote.GetCardByIdResponse, error) {
 	if request.SerialNumber != s.SerialNumber {
 		return nil, nil
 	}
@@ -29,7 +29,7 @@ func (s *Simulator) GetCardById(request *uhppote.GetCardByIdRequest) (interface{
 	return &response, nil
 }
 
-func (s *Simulator) GetCardByIndex(request *uhppote.GetCardByIndexRequest) (interface{}, error) {
+func (s *Simulator) GetCardByIndex(request *uhppote.GetCardByIndexRequest) (*uhppote.GetCardByIndexResponse, error) {
 	if request.SerialNumber != s.SerialNumber {
 		return nil, nil
 	}
