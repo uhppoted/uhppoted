@@ -80,5 +80,5 @@ load-acl: build
 # set-events-index: build 
 # 	$(CLI) $(DEBUG) set-events-index $(SERIALNO) 23
 # 
-# open: build 
-# 	$(CLI) $(DEBUG) open $(SERIALNO) 1
+open: build 
+	$(CLI) $(DEBUG) open $(SERIALNO) 1
