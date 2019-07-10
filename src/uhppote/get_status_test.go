@@ -73,12 +73,12 @@ func TestUnmarshalGetStatusResponse(t *testing.T) {
 		t.Errorf("Incorrect 'door' - expected:%v, got:%v", 3, reply.Door)
 	}
 
-	if !reply.DoorOpen {
-		t.Errorf("Incorrect 'door open' - expected:%v, got:%v", true, reply.DoorOpen)
+	if !reply.DoorOpened {
+		t.Errorf("Incorrect 'door opened' - expected:%v, got:%v", true, reply.DoorOpened)
 	}
 
-	if reply.CardNumber != 6154410 {
-		t.Errorf("Incorrect 'card number' - expected:%v, got:%v", 6154410, reply.CardNumber)
+	if reply.UserId != 6154410 {
+		t.Errorf("Incorrect 'user ID' - expected:%v, got:%v", 6154410, reply.UserId)
 	}
 
 	swiped, _ := time.ParseInLocation("2006-01-02 15:04:05", "2019-04-19 17:00:09", time.Local)

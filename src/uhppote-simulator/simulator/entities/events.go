@@ -5,21 +5,14 @@ import (
 )
 
 type Event struct {
-	RecordNumber byte           `json:"record-number"`
+	RecordNumber uint32         `json:"record-number"`
+	Type         uint8          `json:"type"`
 	Granted      bool           `json:"granted"`
-	Door         byte           `json:"door"`
-	Opened       bool           `json:"opened"`
-	CardNumber   uint32         `json:"card-number"`
+	Door         uint8          `json:"door"`
+	DoorOpened   bool           `json:"door-opened"`
+	UserId       uint32         `json:"user-id"`
 	Timestamp    types.DateTime `json:"timestamp"`
-	Reason       byte           `json:"reason"`
-	Door1State   bool           `json:"door1-state"`
-	Door2State   bool           `json:"door2-state"`
-	Door3State   bool           `json:"door3-state"`
-	Door4State   bool           `json:"door4-state"`
-	Door1Button  bool           `json:"door1-button"`
-	Door2Button  bool           `json:"door2-button"`
-	Door3Button  bool           `json:"door3-button"`
-	Door4Button  bool           `json:"door4-button"`
+	RecordType   uint8          `json:"record-type"`
 }
 
 type EventList struct {
@@ -30,7 +23,9 @@ type EventList struct {
 // TODO: implement Marshal/Unmarshal
 func (l *EventList) Add(event *Event) {
 	if event != nil {
+		event.RecordNumber = l.LastIndex + 1
 		l.Events = append(l.Events, *event)
+		l.LastIndex = l.LastIndex + 1
 	}
 }
 

@@ -13,8 +13,8 @@ type Event struct {
 	SwipeRecord    byte               `uhppote:"offset:12"`
 	Granted        bool               `uhppote:"offset:13"`
 	Door           byte               `uhppote:"offset:14"`
-	DoorOpen       bool               `uhppote:"offset:15"`
-	CardNumber     uint32             `uhppote:"offset:16"`
+	DoorOpened     bool               `uhppote:"offset:15"`
+	UserId         uint32             `uhppote:"offset:16"`
 	SwipeDateTime  types.DateTime     `uhppote:"offset:20"`
 	SwipeReason    byte               `uhppote:"offset:27"`
 	Door1State     bool               `uhppote:"offset:28"`
@@ -59,8 +59,8 @@ func (event Event) transform() *types.Status {
 		SwipeRecord:    event.SwipeRecord,
 		Granted:        event.Granted,
 		Door:           event.Door,
-		DoorOpen:       event.DoorOpen,
-		CardNumber:     event.CardNumber,
+		DoorOpened:     event.DoorOpened,
+		UserId:         event.UserId,
 		SwipeDateTime:  event.SwipeDateTime,
 		SwipeReason:    event.SwipeReason,
 		DoorState:      []bool{event.Door1State, event.Door2State, event.Door3State, event.Door4State},

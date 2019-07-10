@@ -3,9 +3,8 @@
 *FIX interface{} nil assignment*
 
 1. Simulator
-   - open-door: add event
-
-2. get-acl
+   - get-event
+   - add door state/buttons to current state
 
 # TODO
 
@@ -28,3 +27,4 @@
 14. Verify fields in listen events/status replies:
     - battery status can be (at least) 0x00, 0x01 and 0x04
 15. websocket command interface
+16. get-acl
