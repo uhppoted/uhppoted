@@ -29,21 +29,21 @@ func (s *Simulator) GetStatus(request *uhppote.GetStatusRequest) (interface{}, e
 	}
 
 	if event != nil {
-		response.SwipeRecord = event.RecordNumber
+		//		response.SwipeRecord = event.RecordNumber
 		response.Granted = event.Granted
 		response.Door = event.Door
-		response.DoorOpen = event.Opened
-		response.CardNumber = event.CardNumber
+		response.DoorOpened = event.DoorOpened
+		response.UserId = event.UserId
 		response.SwipeDateTime = event.Timestamp
-		response.SwipeReason = event.Reason
-		response.Door1State = event.Door1State
-		response.Door2State = event.Door2State
-		response.Door3State = event.Door3State
-		response.Door4State = event.Door4State
-		response.Door1Button = event.Door1Button
-		response.Door2Button = event.Door2Button
-		response.Door3Button = event.Door3Button
-		response.Door4Button = event.Door4Button
+		response.SwipeReason = event.Type
+		//		response.Door1State = event.Door1State
+		//		response.Door2State = event.Door2State
+		//		response.Door3State = event.Door3State
+		//		response.Door4State = event.Door4State
+		//		response.Door1Button = event.Door1Button
+		//		response.Door2Button = event.Door2Button
+		//		response.Door3Button = event.Door3Button
+		//		response.Door4Button = event.Door4Button
 	}
 
 	return &response, nil

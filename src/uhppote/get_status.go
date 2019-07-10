@@ -17,8 +17,8 @@ type GetStatusResponse struct {
 	SwipeRecord    byte               `uhppote:"offset:12"`
 	Granted        bool               `uhppote:"offset:13"`
 	Door           byte               `uhppote:"offset:14"`
-	DoorOpen       bool               `uhppote:"offset:15"`
-	CardNumber     uint32             `uhppote:"offset:16"`
+	DoorOpened     bool               `uhppote:"offset:15"`
+	UserId         uint32             `uhppote:"offset:16"`
 	SwipeDateTime  types.DateTime     `uhppote:"offset:20"`
 	SwipeReason    byte               `uhppote:"offset:27"`
 	Door1State     bool               `uhppote:"offset:28"`
@@ -61,8 +61,8 @@ func (u *UHPPOTE) GetStatus(serialNumber uint32) (*types.Status, error) {
 		SwipeRecord:    reply.SwipeRecord,
 		Granted:        reply.Granted,
 		Door:           reply.Door,
-		DoorOpen:       reply.DoorOpen,
-		CardNumber:     reply.CardNumber,
+		DoorOpened:     reply.DoorOpened,
+		UserId:         reply.UserId,
 		SwipeDateTime:  reply.SwipeDateTime,
 		SwipeReason:    reply.SwipeReason,
 		DoorState:      []bool{reply.Door1State, reply.Door2State, reply.Door3State, reply.Door4State},

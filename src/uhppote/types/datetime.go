@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -41,4 +42,26 @@ func (d *DateTime) UnmarshalUT0311L0x(bytes []byte) (interface{}, error) {
 	v := DateTime(datetime)
 
 	return &v, nil
+}
+
+func (d DateTime) MarshalJSON() ([]byte, error) {
+	return json.Marshal(time.Time(d).Format("2006-01-02 15:04:05"))
+}
+
+func (d *DateTime) UnmarshalJSON(bytes []byte) error {
+	var s string
+
+	err := json.Unmarshal(bytes, &s)
+	if err != nil {
+		return err
+	}
+
+	date, err := time.ParseInLocation("2006-01-02 15:04:05", s, time.Local)
+	if err != nil {
+		return err
+	}
+
+	*d = DateTime(date)
+
+	return nil
 }

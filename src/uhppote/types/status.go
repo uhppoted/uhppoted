@@ -11,8 +11,8 @@ type Status struct {
 	SwipeRecord    byte
 	Granted        bool
 	Door           byte
-	DoorOpen       bool
-	CardNumber     uint32
+	DoorOpened     bool
+	UserId         uint32
 	SwipeDateTime  DateTime
 	SwipeReason    byte
 	DoorState      []bool
@@ -34,8 +34,8 @@ func (s *Status) String() string {
 	b.WriteString(fmt.Sprintf(" %d", s.SwipeRecord))
 	b.WriteString(fmt.Sprintf(" %v", s.Granted))
 	b.WriteString(fmt.Sprintf(" %d", s.Door))
-	b.WriteString(fmt.Sprintf(" %v", s.DoorOpen))
-	b.WriteString(fmt.Sprintf(" %d", s.CardNumber))
+	b.WriteString(fmt.Sprintf(" %v", s.DoorOpened))
+	b.WriteString(fmt.Sprintf(" %d", s.UserId))
 	b.WriteString(fmt.Sprintf(" %s", s.SwipeDateTime.String()))
 	b.WriteString(fmt.Sprintf(" %d", s.SwipeReason))
 	b.WriteString(fmt.Sprintf(" %v %v %v %v", s.DoorState[0], s.DoorState[1], s.DoorState[2], s.DoorState[3]))
