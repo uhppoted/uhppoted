@@ -17,8 +17,8 @@ type GetEventResponse struct {
 	Type         uint8              `uhppote:"offset:12"`
 	Granted      bool               `uhppote:"offset:13"`
 	Door         uint8              `uhppote:"offset:14"`
-	DoorState    uint8              `uhppote:"offset:15"`
-	CardNumber   uint32             `uhppote:"offset:16"`
+	DoorOpened   bool               `uhppote:"offset:15"`
+	UserId       uint32             `uhppote:"offset:16"`
 	Timestamp    types.DateTime     `uhppote:"offset:20"`
 	RecordType   uint8              `uhppote:"offset:27"`
 }
@@ -42,8 +42,8 @@ func (u *UHPPOTE) GetEvent(serialNumber, index uint32) (*types.Event, error) {
 		Type:         reply.Type,
 		Granted:      reply.Granted,
 		Door:         reply.Door,
-		DoorState:    reply.DoorState,
-		CardNumber:   reply.CardNumber,
+		DoorOpened:   reply.DoorOpened,
+		UserId:       reply.UserId,
 		Timestamp:    reply.Timestamp,
 		RecordType:   reply.RecordType,
 	}, nil
