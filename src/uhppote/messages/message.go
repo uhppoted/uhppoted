@@ -1,4 +1,7 @@
 package messages
 
-type Message interface {
+type Request interface {
+}
+
+type Response interface {
 }

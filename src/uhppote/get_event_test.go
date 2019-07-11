@@ -75,12 +75,12 @@ func TestUnmarshalGetEventResponse(t *testing.T) {
 		t.Errorf("Incorrect 'door' - expected:%d, got:%d\n", 3, reply.Door)
 	}
 
-	if reply.DoorState != 1 {
-		t.Errorf("Incorrect 'door state' - expected:%d, got:%d\n", 1, reply.DoorState)
+	if reply.DoorOpened != true {
+		t.Errorf("Incorrect 'door opened' - expected:%v, got:%v\n", true, reply.DoorOpened)
 	}
 
-	if reply.CardNumber != 6154413 {
-		t.Errorf("Incorrect 'card number' - expected:%d, got: %v\n", 6154413, reply.CardNumber)
+	if reply.UserId != 6154413 {
+		t.Errorf("Incorrect 'user ID' - expected:%d, got: %v\n", 6154413, reply.UserId)
 	}
 
 	timestamp, _ := time.ParseInLocation("2006-01-02 15:04:05", "2019-02-10 07:12:01", time.Local)
