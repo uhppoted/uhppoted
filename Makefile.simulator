@@ -71,9 +71,9 @@ revoke-all: build
 load-acl: build 
 	$(CLI) $(DEBUG) load-acl simulator.tsv
  
-# get-events: build 
-# 	$(CLI) $(DEBUG) get-events $(SERIALNO)
-# 
+get-events: build 
+	$(CLI) $(DEBUG) get-events $(SERIALNO)
+
 # get-event-index: build 
 # 	$(CLI) $(DEBUG) get-event-index $(SERIALNO)
 # 
