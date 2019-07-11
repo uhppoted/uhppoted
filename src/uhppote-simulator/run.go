@@ -17,103 +17,103 @@ import (
 
 type handler struct {
 	msgType    byte
-	factory    func() messages.Message
-	dispatcher func(*simulator.Simulator, messages.Message) (interface{}, error)
+	factory    func() messages.Request
+	dispatcher func(*simulator.Simulator, messages.Request) (interface{}, error)
 }
 
 var handlers = map[byte]*handler{
 	0x20: &handler{
 		0x20,
-		func() messages.Message { return new(uhppote.GetStatusRequest) },
-		func(s *simulator.Simulator, rq messages.Message) (interface{}, error) {
+		func() messages.Request { return new(uhppote.GetStatusRequest) },
+		func(s *simulator.Simulator, rq messages.Request) (interface{}, error) {
 			return s.GetStatus(rq.(*uhppote.GetStatusRequest))
 		},
 	},
 
 	0x30: &handler{
 		0x30,
-		func() messages.Message { return new(uhppote.SetTimeRequest) },
-		func(s *simulator.Simulator, rq messages.Message) (interface{}, error) {
+		func() messages.Request { return new(uhppote.SetTimeRequest) },
+		func(s *simulator.Simulator, rq messages.Request) (interface{}, error) {
 			return s.SetTime(rq.(*uhppote.SetTimeRequest))
 		},
 	},
 
 	0x32: &handler{
 		0x32,
-		func() messages.Message { return new(uhppote.GetTimeRequest) },
-		func(s *simulator.Simulator, rq messages.Message) (interface{}, error) {
+		func() messages.Request { return new(uhppote.GetTimeRequest) },
+		func(s *simulator.Simulator, rq messages.Request) (interface{}, error) {
 			return s.GetTime(rq.(*uhppote.GetTimeRequest))
 		},
 	},
 
 	0x40: &handler{
 		0x40,
-		func() messages.Message { return new(uhppote.OpenDoorRequest) },
-		func(s *simulator.Simulator, rq messages.Message) (interface{}, error) {
+		func() messages.Request { return new(uhppote.OpenDoorRequest) },
+		func(s *simulator.Simulator, rq messages.Request) (interface{}, error) {
 			return s.OpenDoor(rq.(*uhppote.OpenDoorRequest))
 		},
 	},
 
 	0x50: &handler{
 		0x50,
-		func() messages.Message { return new(uhppote.PutCardRequest) },
-		func(s *simulator.Simulator, rq messages.Message) (interface{}, error) {
+		func() messages.Request { return new(uhppote.PutCardRequest) },
+		func(s *simulator.Simulator, rq messages.Request) (interface{}, error) {
 			return s.PutCard(rq.(*uhppote.PutCardRequest))
 		},
 	},
 
 	0x52: &handler{
 		0x52,
-		func() messages.Message { return new(uhppote.DeleteCardRequest) },
-		func(s *simulator.Simulator, rq messages.Message) (interface{}, error) {
+		func() messages.Request { return new(uhppote.DeleteCardRequest) },
+		func(s *simulator.Simulator, rq messages.Request) (interface{}, error) {
 			return s.DeleteCard(rq.(*uhppote.DeleteCardRequest))
 		},
 	},
 
 	0x54: &handler{
 		0x54,
-		func() messages.Message { return new(uhppote.DeleteCardsRequest) },
-		func(s *simulator.Simulator, rq messages.Message) (interface{}, error) {
+		func() messages.Request { return new(uhppote.DeleteCardsRequest) },
+		func(s *simulator.Simulator, rq messages.Request) (interface{}, error) {
 			return s.DeleteCards(rq.(*uhppote.DeleteCardsRequest))
 		},
 	},
 
 	0x58: &handler{
 		0x58,
-		func() messages.Message { return new(uhppote.GetCardsRequest) },
-		func(s *simulator.Simulator, rq messages.Message) (interface{}, error) {
+		func() messages.Request { return new(uhppote.GetCardsRequest) },
+		func(s *simulator.Simulator, rq messages.Request) (interface{}, error) {
 			return s.GetCards(rq.(*uhppote.GetCardsRequest))
 		},
 	},
 
 	0x5a: &handler{
 		0x5a,
-		func() messages.Message { return new(uhppote.GetCardByIdRequest) },
-		func(s *simulator.Simulator, rq messages.Message) (interface{}, error) {
+		func() messages.Request { return new(uhppote.GetCardByIdRequest) },
+		func(s *simulator.Simulator, rq messages.Request) (interface{}, error) {
 			return s.GetCardById(rq.(*uhppote.GetCardByIdRequest))
 		},
 	},
 
 	0x5c: &handler{
 		0x5c,
-		func() messages.Message { return new(uhppote.GetCardByIndexRequest) },
-		func(s *simulator.Simulator, rq messages.Message) (interface{}, error) {
+		func() messages.Request { return new(uhppote.GetCardByIndexRequest) },
+		func(s *simulator.Simulator, rq messages.Request) (interface{}, error) {
 			return s.GetCardByIndex(rq.(*uhppote.GetCardByIndexRequest))
 		},
 	},
 
 	0x94: &handler{
 		0x94,
-		func() messages.Message { return new(uhppote.FindDevicesRequest) },
-		func(s *simulator.Simulator, rq messages.Message) (interface{}, error) {
+		func() messages.Request { return new(uhppote.FindDevicesRequest) },
+		func(s *simulator.Simulator, rq messages.Request) (interface{}, error) {
 			return s.Find(rq.(*uhppote.FindDevicesRequest))
 		},
 	},
 
 	0xb0: &handler{
 		0xb0,
-		func() messages.Message { return new(uhppote.GetEventRequest) },
-		func(s *simulator.Simulator, rq messages.Message) (interface{}, error) {
+		func() messages.Request { return new(uhppote.GetEventRequest) },
+		func(s *simulator.Simulator, rq messages.Request) (interface{}, error) {
 			return s.GetEvent(rq.(*uhppote.GetEventRequest))
 		},
 	},
