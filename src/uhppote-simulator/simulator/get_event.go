@@ -15,8 +15,6 @@ func (s *Simulator) GetEvent(request *uhppote.GetEventRequest) (*uhppote.GetEven
 	}
 
 	if event := s.Events.Get(index); event != nil {
-		//utc := time.Now().UTC()
-		//datetime := utc.Add(time.Duration(s.TimeOffset))
 		response := uhppote.GetEventResponse{
 			SerialNumber: s.SerialNumber,
 			Index:        index,

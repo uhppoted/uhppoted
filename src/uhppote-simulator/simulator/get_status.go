@@ -26,24 +26,25 @@ func (s *Simulator) GetStatus(request *uhppote.GetStatusRequest) (interface{}, e
 		SpecialMessage: s.SpecialMessage,
 		Battery:        s.Battery,
 		FireAlarm:      s.FireAlarm,
+
+		Door1State:  s.Doors[1].Open,
+		Door2State:  s.Doors[2].Open,
+		Door3State:  s.Doors[3].Open,
+		Door4State:  s.Doors[4].Open,
+		Door1Button: s.Doors[1].Button,
+		Door2Button: s.Doors[2].Button,
+		Door3Button: s.Doors[3].Button,
+		Door4Button: s.Doors[4].Button,
 	}
 
 	if event != nil {
-		//		response.SwipeRecord = event.RecordNumber
+		// response.SwipeRecord = s.Events.LastIndex
 		response.Granted = event.Granted
 		response.Door = event.Door
 		response.DoorOpened = event.DoorOpened
 		response.UserId = event.UserId
 		response.SwipeDateTime = event.Timestamp
 		response.SwipeReason = event.Type
-		//		response.Door1State = event.Door1State
-		//		response.Door2State = event.Door2State
-		//		response.Door3State = event.Door3State
-		//		response.Door4State = event.Door4State
-		//		response.Door1Button = event.Door1Button
-		//		response.Door2Button = event.Door2Button
-		//		response.Door3Button = event.Door3Button
-		//		response.Door4Button = event.Door4Button
 	}
 
 	return &response, nil
