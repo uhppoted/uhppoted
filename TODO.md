@@ -3,8 +3,8 @@
 *FIX interface{} nil assignment*
 
 1. Simulator
-   - get-door-delay
-   - add door state/buttons to current state
+   - set-door-delay
+   - simulate door delay
 
 # TODO
 
