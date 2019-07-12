@@ -13,6 +13,12 @@ import (
 
 type Offset time.Duration
 
+type Door struct {
+	Open   bool  `json:"-"`
+	Button bool  `json:"-"`
+	Delay  uint8 `json:"delay"`
+}
+
 type Simulator struct {
 	File           string             `json:"-"`
 	Compressed     bool               `json:"-"`
@@ -26,6 +32,7 @@ type Simulator struct {
 	Cards          entities.CardList  `json:"cards"`
 	Events         entities.EventList `json:"events"`
 	SystemState    byte               `json:"state"`
+	Doors          map[uint8]Door     `json:"doors"`
 	PacketNumber   uint32             `json:"packet-number"`
 	Backup         uint32             `json:"backup"`
 	SpecialMessage byte               `json:"special-message"`
@@ -105,6 +112,14 @@ func load(filepath string) (*Simulator, error) {
 
 	simulator.File = filepath
 	simulator.Compressed = false
+
+	if simulator.Doors == nil {
+		simulator.Doors = make(map[uint8]Door)
+		for i := 1; i <= 4; i++ {
+			ix := uint8(i)
+			simulator.Doors[ix] = Door{false, false, 5}
+		}
+	}
 
 	return simulator, nil
 }
