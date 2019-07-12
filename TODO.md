@@ -1,10 +1,14 @@
 ## v0.03
 
-*FIX interface{} nil assignment*
+# IN PROGRESS
 
-1. Simulator
-   - set-door-delay
-   - simulate door delay
+Simulator
+- simulate door delay
+- get-event-index
+- set-event-index
+- get-listener
+- set-listener
+- REPL
 
 # TODO
 
@@ -28,3 +32,4 @@
     - battery status can be (at least) 0x00, 0x01 and 0x04
 15. websocket command interface
 16. get-acl
+17. uhppoted

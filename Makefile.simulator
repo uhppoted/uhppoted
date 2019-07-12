@@ -44,9 +44,9 @@ set-time: build
 get-door-delay: build 
 	$(CLI) $(DEBUG) get-door-delay $(SERIALNO) $(DOOR)
 
-# set-door-delay: build 
-# 	$(CLI) $(DEBUG) set-door-delay $(SERIALNO) $(DOOR) 5
-# 
+set-door-delay: build 
+	$(CLI) $(DEBUG) set-door-delay $(SERIALNO) $(DOOR) 5
+
 # get-listener: build 
 # 	$(CLI) $(DEBUG) get-listener $(SERIALNO)
 # 
@@ -79,6 +79,6 @@ get-events: build
 # 
 # set-events-index: build 
 # 	$(CLI) $(DEBUG) set-events-index $(SERIALNO) 23
-# 
+
 open: build 
 	$(CLI) $(DEBUG) open $(SERIALNO) 1

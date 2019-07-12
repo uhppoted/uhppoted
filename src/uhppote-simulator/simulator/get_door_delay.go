@@ -9,18 +9,16 @@ func (s *Simulator) GetDoorDelay(request *uhppote.GetDoorDelayRequest) (*uhppote
 		return nil, nil
 	}
 
-	door := request.Door
-
-	if door > 0 && door <= 4 {
-		response := uhppote.GetDoorDelayResponse{
-			SerialNumber: s.SerialNumber,
-			Door:         door,
-			Unit:         0x03,
-			Delay:        s.Doors[door].Delay,
-		}
-
-		return &response, nil
+	if request.Door < 1 || request.Door > 4 {
+		return nil, nil
 	}
 
-	return nil, nil
+	response := uhppote.GetDoorDelayResponse{
+		SerialNumber: s.SerialNumber,
+		Door:         request.Door,
+		Unit:         0x03,
+		Delay:        s.Doors[request.Door].Delay,
+	}
+
+	return &response, nil
 }

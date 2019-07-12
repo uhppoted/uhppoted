@@ -102,6 +102,14 @@ var handlers = map[byte]*handler{
 		},
 	},
 
+	0x80: &handler{
+		0x80,
+		func() messages.Request { return new(uhppote.SetDoorDelayRequest) },
+		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+			return s.SetDoorDelay(rq.(*uhppote.SetDoorDelayRequest))
+		},
+	},
+
 	0x82: &handler{
 		0x82,
 		func() messages.Request { return new(uhppote.GetDoorDelayRequest) },

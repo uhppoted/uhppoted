@@ -29,15 +29,15 @@ type Simulator struct {
 	MacAddress     types.MacAddress   `json:"MAC"`
 	Version        types.Version      `json:"version"`
 	TimeOffset     Offset             `json:"offset"`
-	Cards          entities.CardList  `json:"cards"`
-	Events         entities.EventList `json:"events"`
+	Doors          map[uint8]*Door    `json:"doors"`
 	SystemState    byte               `json:"state"`
-	Doors          map[uint8]Door     `json:"doors"`
 	PacketNumber   uint32             `json:"packet-number"`
 	Backup         uint32             `json:"backup"`
 	SpecialMessage byte               `json:"special-message"`
 	Battery        byte               `json:"battery"`
 	FireAlarm      byte               `json:"fire-alarm"`
+	Cards          entities.CardList  `json:"cards"`
+	Events         entities.EventList `json:"events"`
 }
 
 func (t Offset) MarshalJSON() ([]byte, error) {
@@ -114,10 +114,12 @@ func load(filepath string) (*Simulator, error) {
 	simulator.Compressed = false
 
 	if simulator.Doors == nil {
-		simulator.Doors = make(map[uint8]Door)
-		for i := 1; i <= 4; i++ {
-			ix := uint8(i)
-			simulator.Doors[ix] = Door{false, false, 5}
+		simulator.Doors = make(map[uint8]*Door)
+	}
+
+	for i := uint8(1); i <= 4; i++ {
+		if simulator.Doors[i] == nil {
+			simulator.Doors[i] = &Door{false, false, 5}
 		}
 	}
 
