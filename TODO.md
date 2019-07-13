@@ -3,11 +3,11 @@
 # IN PROGRESS
 
 Simulator
-- simulate door delay
 - get-event-index
 - set-event-index
 - get-listener
 - set-listener
+- set-address
 - REPL
 
 # TODO

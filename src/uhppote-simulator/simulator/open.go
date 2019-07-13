@@ -13,17 +13,16 @@ func (s *Simulator) OpenDoor(request *uhppote.OpenDoorRequest) (interface{}, err
 	}
 
 	granted := false
-	saved := false
+	door := request.Door
 
-	if request.Door > 0 && request.Door <= 4 {
-		granted = true
-		utc := time.Now().UTC()
-		datetime := utc.Add(time.Duration(s.TimeOffset))
+	if !(door < 1 || door > 4) {
+		granted = s.Doors[door].Open()
 
+		datetime := time.Now().UTC().Add(time.Duration(s.TimeOffset))
 		event := entities.Event{
 			Type:       0x02,
-			Granted:    true,
-			Door:       request.Door,
+			Granted:    granted,
+			Door:       door,
 			DoorOpened: true,
 			UserId:     3922570474,
 			Timestamp:  types.DateTime(datetime),
@@ -31,17 +30,12 @@ func (s *Simulator) OpenDoor(request *uhppote.OpenDoorRequest) (interface{}, err
 		}
 
 		s.Events.Add(&event)
-
-		err := s.Save()
-		if err == nil {
-			saved = true
-		}
-
+		s.Save()
 	}
 
 	response := uhppote.OpenDoorResponse{
 		SerialNumber: s.SerialNumber,
-		Succeeded:    granted && saved,
+		Succeeded:    granted,
 	}
 
 	return &response, nil

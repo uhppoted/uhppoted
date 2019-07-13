@@ -27,14 +27,15 @@ func (s *Simulator) GetStatus(request *uhppote.GetStatusRequest) (interface{}, e
 		Battery:        s.Battery,
 		FireAlarm:      s.FireAlarm,
 
-		Door1State:  s.Doors[1].Open,
-		Door2State:  s.Doors[2].Open,
-		Door3State:  s.Doors[3].Open,
-		Door4State:  s.Doors[4].Open,
-		Door1Button: s.Doors[1].Button,
-		Door2Button: s.Doors[2].Button,
-		Door3Button: s.Doors[3].Button,
-		Door4Button: s.Doors[4].Button,
+		Door1State: s.Doors[1].IsOpen(),
+		Door2State: s.Doors[2].IsOpen(),
+		Door3State: s.Doors[3].IsOpen(),
+		Door4State: s.Doors[4].IsOpen(),
+
+		Door1Button: s.Doors[1].IsButtonPressed(),
+		Door2Button: s.Doors[2].IsButtonPressed(),
+		Door3Button: s.Doors[3].IsButtonPressed(),
+		Door4Button: s.Doors[4].IsButtonPressed(),
 	}
 
 	if event != nil {

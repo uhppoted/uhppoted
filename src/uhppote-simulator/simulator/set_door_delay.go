@@ -2,6 +2,7 @@ package simulator
 
 import (
 	"uhppote"
+	"uhppote-simulator/simulator/entities"
 )
 
 func (s *Simulator) SetDoorDelay(request *uhppote.SetDoorDelayRequest) (*uhppote.SetDoorDelayResponse, error) {
@@ -18,7 +19,7 @@ func (s *Simulator) SetDoorDelay(request *uhppote.SetDoorDelayRequest) (*uhppote
 		return nil, nil
 	}
 
-	s.Doors[door].Delay = request.Delay
+	s.Doors[door].Delay = entities.Delay(uint64(request.Delay) * 1000000000)
 
 	err := s.Save()
 	if err != nil {
@@ -29,7 +30,7 @@ func (s *Simulator) SetDoorDelay(request *uhppote.SetDoorDelayRequest) (*uhppote
 		SerialNumber: s.SerialNumber,
 		Door:         door,
 		Unit:         0x03,
-		Delay:        s.Doors[door].Delay,
+		Delay:        s.Doors[door].Delay.Seconds(),
 	}
 
 	return &response, nil
