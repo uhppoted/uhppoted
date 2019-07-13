@@ -13,31 +13,25 @@ import (
 
 type Offset time.Duration
 
-type Door struct {
-	Open   bool  `json:"-"`
-	Button bool  `json:"-"`
-	Delay  uint8 `json:"delay"`
-}
-
 type Simulator struct {
-	File           string             `json:"-"`
-	Compressed     bool               `json:"-"`
-	SerialNumber   types.SerialNumber `json:"serial-number"`
-	IpAddress      net.IP             `json:"address"`
-	SubnetMask     net.IP             `json:"subnet"`
-	Gateway        net.IP             `json:"gateway"`
-	MacAddress     types.MacAddress   `json:"MAC"`
-	Version        types.Version      `json:"version"`
-	TimeOffset     Offset             `json:"offset"`
-	Doors          map[uint8]*Door    `json:"doors"`
-	SystemState    byte               `json:"state"`
-	PacketNumber   uint32             `json:"packet-number"`
-	Backup         uint32             `json:"backup"`
-	SpecialMessage byte               `json:"special-message"`
-	Battery        byte               `json:"battery"`
-	FireAlarm      byte               `json:"fire-alarm"`
-	Cards          entities.CardList  `json:"cards"`
-	Events         entities.EventList `json:"events"`
+	File           string                   `json:"-"`
+	Compressed     bool                     `json:"-"`
+	SerialNumber   types.SerialNumber       `json:"serial-number"`
+	IpAddress      net.IP                   `json:"address"`
+	SubnetMask     net.IP                   `json:"subnet"`
+	Gateway        net.IP                   `json:"gateway"`
+	MacAddress     types.MacAddress         `json:"MAC"`
+	Version        types.Version            `json:"version"`
+	TimeOffset     Offset                   `json:"offset"`
+	Doors          map[uint8]*entities.Door `json:"doors"`
+	SystemState    byte                     `json:"state"`
+	PacketNumber   uint32                   `json:"packet-number"`
+	Backup         uint32                   `json:"backup"`
+	SpecialMessage byte                     `json:"special-message"`
+	Battery        byte                     `json:"battery"`
+	FireAlarm      byte                     `json:"fire-alarm"`
+	Cards          entities.CardList        `json:"cards"`
+	Events         entities.EventList       `json:"events"`
 }
 
 func (t Offset) MarshalJSON() ([]byte, error) {
@@ -114,12 +108,12 @@ func load(filepath string) (*Simulator, error) {
 	simulator.Compressed = false
 
 	if simulator.Doors == nil {
-		simulator.Doors = make(map[uint8]*Door)
+		simulator.Doors = make(map[uint8]*entities.Door)
 	}
 
 	for i := uint8(1); i <= 4; i++ {
 		if simulator.Doors[i] == nil {
-			simulator.Doors[i] = &Door{false, false, 5}
+			simulator.Doors[i] = entities.NewDoor(i)
 		}
 	}
 
