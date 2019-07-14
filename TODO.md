@@ -7,7 +7,6 @@ Simulator
 - set-event-index
 - get-listener
 - set-listener
-- set-address
 - REPL
 
 # TODO
