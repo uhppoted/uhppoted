@@ -29,8 +29,8 @@ debug: build
 get-devices: build 
 	$(CLI) $(DEBUG) get-devices
  
-# set-address: build 
-# 	$(CLI) $(DEBUG) set-address $(SERIALNO) '192.168.1.125' '255.255.255.0' '0.0.0.0'
+set-address: build 
+	$(CLI) $(DEBUG) set-address $(SERIALNO) '192.168.1.100' '255.255.255.0' '192.168.1.1'
 
 get-status: build 
 	$(CLI) $(DEBUG) get-status $(SERIALNO)
