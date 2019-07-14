@@ -16,22 +16,22 @@ import (
 )
 
 type handler struct {
-	msgType    byte
-	factory    func() messages.Request
-	dispatcher func(*simulator.Simulator, messages.Request) (messages.Response, error)
+	unmarshaller func([]byte) (*messages.Request, error)
+	factory      func() messages.Request
+	dispatcher   func(*simulator.Simulator, messages.Request) (messages.Response, error)
 }
 
 var handlers = map[byte]*handler{
 	0x20: &handler{
-		0x20,
-		func() messages.Request { return new(uhppote.GetStatusRequest) },
+		messages.UnmarshalRequest,
+		func() messages.Request { return new(messages.GetStatusRequest) },
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.GetStatus(rq.(*uhppote.GetStatusRequest))
+			return s.GetStatus(rq.(*messages.GetStatusRequest))
 		},
 	},
 
 	0x30: &handler{
-		0x30,
+		nil,
 		func() messages.Request { return new(uhppote.SetTimeRequest) },
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
 			return s.SetTime(rq.(*uhppote.SetTimeRequest))
@@ -39,7 +39,7 @@ var handlers = map[byte]*handler{
 	},
 
 	0x32: &handler{
-		0x32,
+		nil,
 		func() messages.Request { return new(uhppote.GetTimeRequest) },
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
 			return s.GetTime(rq.(*uhppote.GetTimeRequest))
@@ -47,7 +47,7 @@ var handlers = map[byte]*handler{
 	},
 
 	0x40: &handler{
-		0x40,
+		nil,
 		func() messages.Request { return new(uhppote.OpenDoorRequest) },
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
 			return s.OpenDoor(rq.(*uhppote.OpenDoorRequest))
@@ -55,7 +55,7 @@ var handlers = map[byte]*handler{
 	},
 
 	0x50: &handler{
-		0x50,
+		nil,
 		func() messages.Request { return new(uhppote.PutCardRequest) },
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
 			return s.PutCard(rq.(*uhppote.PutCardRequest))
@@ -63,7 +63,7 @@ var handlers = map[byte]*handler{
 	},
 
 	0x52: &handler{
-		0x52,
+		nil,
 		func() messages.Request { return new(uhppote.DeleteCardRequest) },
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
 			return s.DeleteCard(rq.(*uhppote.DeleteCardRequest))
@@ -71,7 +71,7 @@ var handlers = map[byte]*handler{
 	},
 
 	0x54: &handler{
-		0x54,
+		nil,
 		func() messages.Request { return new(uhppote.DeleteCardsRequest) },
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
 			return s.DeleteCards(rq.(*uhppote.DeleteCardsRequest))
@@ -79,7 +79,7 @@ var handlers = map[byte]*handler{
 	},
 
 	0x58: &handler{
-		0x58,
+		nil,
 		func() messages.Request { return new(uhppote.GetCardsRequest) },
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
 			return s.GetCards(rq.(*uhppote.GetCardsRequest))
@@ -87,7 +87,7 @@ var handlers = map[byte]*handler{
 	},
 
 	0x5a: &handler{
-		0x5a,
+		nil,
 		func() messages.Request { return new(uhppote.GetCardByIdRequest) },
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
 			return s.GetCardById(rq.(*uhppote.GetCardByIdRequest))
@@ -95,7 +95,7 @@ var handlers = map[byte]*handler{
 	},
 
 	0x5c: &handler{
-		0x5c,
+		nil,
 		func() messages.Request { return new(uhppote.GetCardByIndexRequest) },
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
 			return s.GetCardByIndex(rq.(*uhppote.GetCardByIndexRequest))
@@ -103,7 +103,7 @@ var handlers = map[byte]*handler{
 	},
 
 	0x80: &handler{
-		0x80,
+		nil,
 		func() messages.Request { return new(uhppote.SetDoorDelayRequest) },
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
 			return s.SetDoorDelay(rq.(*uhppote.SetDoorDelayRequest))
@@ -111,7 +111,7 @@ var handlers = map[byte]*handler{
 	},
 
 	0x82: &handler{
-		0x82,
+		nil,
 		func() messages.Request { return new(uhppote.GetDoorDelayRequest) },
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
 			return s.GetDoorDelay(rq.(*uhppote.GetDoorDelayRequest))
@@ -119,7 +119,7 @@ var handlers = map[byte]*handler{
 	},
 
 	0x94: &handler{
-		0x94,
+		nil,
 		func() messages.Request { return new(uhppote.FindDevicesRequest) },
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
 			return s.Find(rq.(*uhppote.FindDevicesRequest))
@@ -127,7 +127,7 @@ var handlers = map[byte]*handler{
 	},
 
 	0x96: &handler{
-		0x96,
+		nil,
 		func() messages.Request { return new(uhppote.SetAddressRequest) },
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
 			return s.SetAddress(rq.(*uhppote.SetAddressRequest))
@@ -135,7 +135,7 @@ var handlers = map[byte]*handler{
 	},
 
 	0xb0: &handler{
-		0xb0,
+		nil,
 		func() messages.Request { return new(uhppote.GetEventRequest) },
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
 			return s.GetEvent(rq.(*uhppote.GetEventRequest))
@@ -221,8 +221,27 @@ func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
 		return
 	}
 
-	request := h.factory()
+	unmarshaller := h.unmarshaller
+	if unmarshaller != nil {
+		request, err := unmarshaller(bytes)
+		if err != nil {
+			fmt.Printf("ERROR: %v\n", err)
+			return
+		}
 
+		for _, s := range simulators {
+			response, err := h.dispatcher(s, *request)
+			if err != nil {
+				fmt.Printf("ERROR: %v\n", err)
+			} else if response != nil && !reflect.ValueOf(response).IsNil() {
+				send(c, src, response)
+			}
+		}
+		return
+	}
+
+	// TODO: remove when all requests moved to RequestUnmarshal
+	request := h.factory()
 	err := codec.Unmarshal(bytes, request)
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
@@ -237,7 +256,6 @@ func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
 			send(c, src, response)
 		}
 	}
-
 }
 
 func receive(c *net.UDPConn) ([]byte, *net.UDPAddr, error) {

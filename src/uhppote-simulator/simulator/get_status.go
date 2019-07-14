@@ -2,11 +2,11 @@ package simulator
 
 import (
 	"time"
-	"uhppote"
+	"uhppote/messages"
 	"uhppote/types"
 )
 
-func (s *Simulator) GetStatus(request *uhppote.GetStatusRequest) (interface{}, error) {
+func (s *Simulator) GetStatus(request *messages.GetStatusRequest) (interface{}, error) {
 	if s.SerialNumber != request.SerialNumber {
 		return nil, nil
 	}
@@ -15,7 +15,7 @@ func (s *Simulator) GetStatus(request *uhppote.GetStatusRequest) (interface{}, e
 	datetime := utc.Add(time.Duration(s.TimeOffset))
 	event := s.Events.Get(s.Events.LastIndex)
 
-	response := uhppote.GetStatusResponse{
+	response := messages.GetStatusResponse{
 		SerialNumber:   s.SerialNumber,
 		LastIndex:      s.Events.LastIndex,
 		SystemState:    s.SystemState,
