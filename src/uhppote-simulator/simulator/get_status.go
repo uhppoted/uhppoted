@@ -13,11 +13,11 @@ func (s *Simulator) GetStatus(request *messages.GetStatusRequest) (interface{}, 
 
 	utc := time.Now().UTC()
 	datetime := utc.Add(time.Duration(s.TimeOffset))
-	event := s.Events.Get(s.Events.LastIndex)
+	event := s.Events.Get(s.Events.LastIndex())
 
 	response := messages.GetStatusResponse{
 		SerialNumber:   s.SerialNumber,
-		LastIndex:      s.Events.LastIndex,
+		LastIndex:      s.Events.LastIndex(),
 		SystemState:    s.SystemState,
 		SystemDate:     types.SystemDate(datetime),
 		SystemTime:     types.SystemTime(datetime),

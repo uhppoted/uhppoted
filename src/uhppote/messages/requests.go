@@ -70,21 +70,24 @@ var handlers = map[byte]*handler{
 	//0xb0: &handler{
 	//	func() Request { return new(uhppote.GetEventRequest) },
 	//},
+
+	0xb4: &handler{
+		func() Request { return new(GetEventIndexRequest) },
+	},
 }
 
 func UnmarshalRequest(bytes []byte) (*Request, error) {
 	if len(bytes) != 64 {
-		return nil, errors.New(fmt.Sprintf("ERROR: %v\n", errors.New(fmt.Sprintf("Invalid message length %d", len(bytes)))))
+		return nil, errors.New(fmt.Sprintf("Invalid message length %d", len(bytes)))
 	}
 
 	if bytes[0] != 0x17 {
-		return nil, errors.New(fmt.Sprintf("ERROR: %v\n", errors.New(fmt.Sprintf("Invalid message type %02X", bytes[0]))))
+		return nil, errors.New(fmt.Sprintf("Invalid message type %02x", bytes[0]))
 	}
 
 	if h := handlers[bytes[1]]; h == nil {
-		return nil, errors.New(fmt.Sprintf("ERROR: %v\n", errors.New(fmt.Sprintf("Invalid command %02X", bytes[1]))))
+		return nil, errors.New(fmt.Sprintf("Unknown message type %02x", bytes[1]))
 	} else {
-
 		request := h.factory()
 		err := codec.Unmarshal(bytes, request)
 		if err != nil {

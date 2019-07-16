@@ -74,9 +74,9 @@ load-acl: build
 get-events: build 
 	$(CLI) $(DEBUG) get-events $(SERIALNO)
 
-# get-event-index: build 
-# 	$(CLI) $(DEBUG) get-event-index $(SERIALNO)
-# 
+get-event-index: build 
+	$(CLI) $(DEBUG) get-event-index $(SERIALNO)
+
 # set-events-index: build 
 # 	$(CLI) $(DEBUG) set-events-index $(SERIALNO) 23
 

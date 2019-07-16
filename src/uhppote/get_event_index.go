@@ -1,26 +1,16 @@
 package uhppote
 
 import (
+	"uhppote/messages"
 	"uhppote/types"
 )
 
-type GetEventIndexRequest struct {
-	MsgType      types.MsgType      `uhppote:"value:0xb4"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-}
-
-type GetEventIndexResponse struct {
-	MsgType      types.MsgType      `uhppote:"value:0xb4"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-	Index        uint32             `uhppote:"offset:8"`
-}
-
 func (u *UHPPOTE) GetEventIndex(serialNumber uint32) (*types.EventIndex, error) {
-	request := GetEventIndexRequest{
+	request := messages.GetEventIndexRequest{
 		SerialNumber: types.SerialNumber(serialNumber),
 	}
 
-	reply := GetEventIndexResponse{}
+	reply := messages.GetEventIndexResponse{}
 
 	err := u.Execute(serialNumber, request, &reply)
 	if err != nil {

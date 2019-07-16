@@ -16,16 +16,15 @@ type Event struct {
 }
 
 type EventList struct {
-	LastIndex uint32  `json:"index"`
-	Events    []Event `json:"events"`
+	Index  uint32  `json:"index"`
+	Events []Event `json:"events"`
 }
 
 // TODO: implement Marshal/Unmarshal
 func (l *EventList) Add(event *Event) {
 	if event != nil {
-		event.RecordNumber = l.LastIndex + 1
+		event.RecordNumber = uint32(len(l.Events) + 1)
 		l.Events = append(l.Events, *event)
-		l.LastIndex = l.LastIndex + 1
 	}
 }
 
@@ -35,4 +34,8 @@ func (l *EventList) Get(index uint32) *Event {
 	}
 
 	return nil
+}
+
+func (l *EventList) LastIndex() uint32 {
+	return uint32(len(l.Events))
 }

@@ -10,8 +10,8 @@ func (s *Simulator) GetEvent(request *uhppote.GetEventRequest) (*uhppote.GetEven
 	}
 
 	index := request.Index
-	if index > s.Events.LastIndex {
-		index = s.Events.LastIndex
+	if index > s.Events.LastIndex() {
+		index = s.Events.LastIndex()
 	}
 
 	if event := s.Events.Get(index); event != nil {
