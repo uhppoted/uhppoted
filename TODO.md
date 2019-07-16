@@ -3,11 +3,10 @@
 # IN PROGRESS
 
 Simulator
-- get-event-index
 - set-event-index
 - get-listener
 - set-listener
-- REPL
+- CLI
 
 # TODO
 
