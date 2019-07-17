@@ -1,6 +1,8 @@
 package entities
 
 import (
+	"errors"
+	"fmt"
 	"uhppote/types"
 )
 
@@ -38,4 +40,13 @@ func (l *EventList) Get(index uint32) *Event {
 
 func (l *EventList) LastIndex() uint32 {
 	return uint32(len(l.Events))
+}
+
+func (l *EventList) SetIndex(index uint32) error {
+	if index > 0 {
+		l.Index = index
+		return nil
+	}
+
+	return errors.New(fmt.Sprintf("Invalid event index:%v", index))
 }

@@ -126,6 +126,13 @@ var handlers = map[byte]*handler{
 		},
 	},
 
+	0xb2: &handler{
+		nil,
+		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+			return s.SetEventIndex(rq.(*messages.SetEventIndexRequest))
+		},
+	},
+
 	0xb4: &handler{
 		nil,
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
@@ -202,13 +209,13 @@ func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
 	}
 
 	if bytes[0] != 0x17 {
-		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Invalid message type %02X", bytes[0])))
+		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Invalid message type 0x%02x", bytes[0])))
 		return
 	}
 
 	h := handlers[bytes[1]]
 	if h == nil {
-		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Invalid command %02X", bytes[1])))
+		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Invalid command 0x%02x", bytes[1])))
 		return
 	}
 

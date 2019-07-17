@@ -77,8 +77,8 @@ get-events: build
 get-event-index: build 
 	$(CLI) $(DEBUG) get-event-index $(SERIALNO)
 
-# set-events-index: build 
-# 	$(CLI) $(DEBUG) set-events-index $(SERIALNO) 23
+set-event-index: build 
+	$(CLI) $(DEBUG) set-event-index $(SERIALNO) 23
 
 open: build 
 	$(CLI) $(DEBUG) open $(SERIALNO) 1
