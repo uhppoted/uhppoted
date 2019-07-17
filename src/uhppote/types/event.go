@@ -10,7 +10,7 @@ type EventIndex struct {
 type EventIndexResult struct {
 	SerialNumber SerialNumber
 	Index        uint32
-	Succeeded    bool
+	Changed      bool
 }
 
 type Event struct {
@@ -30,7 +30,7 @@ func (s *EventIndex) String() string {
 }
 
 func (s *EventIndexResult) String() string {
-	return fmt.Sprintf("%s %-8d %v", s.SerialNumber, s.Index, s.Succeeded)
+	return fmt.Sprintf("%s %-8d %v", s.SerialNumber, s.Index, s.Changed)
 }
 
 func (s *Event) String() string {

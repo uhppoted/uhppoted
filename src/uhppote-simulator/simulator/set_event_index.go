@@ -13,11 +13,10 @@ func (s *Simulator) SetEventIndex(request *messages.SetEventIndexRequest) (*mess
 		return nil, nil
 	}
 
-	set := false
+	updated := false
 	saved := false
 
-	if err := s.Events.SetIndex(request.Index); err == nil {
-		set = true
+	if updated = s.Events.SetIndex(request.Index); updated {
 		if err := s.Save(); err == nil {
 			saved = true
 		}
@@ -25,7 +24,7 @@ func (s *Simulator) SetEventIndex(request *messages.SetEventIndexRequest) (*mess
 
 	response := messages.SetEventIndexResponse{
 		SerialNumber: s.SerialNumber,
-		Success:      set && saved,
+		Changed:      updated && saved,
 	}
 
 	return &response, nil

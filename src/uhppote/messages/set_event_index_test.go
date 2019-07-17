@@ -57,8 +57,8 @@ func TestUnmarshalSetEventIndexResponse(t *testing.T) {
 		t.Errorf("Incorrect 'serial number' - expected:%d, got: %v\n", 423187757, reply.SerialNumber)
 	}
 
-	if !reply.Success {
-		t.Errorf("Incorrect 'success' - expected:%v, got:%v\n", true, reply.Success)
+	if !reply.Changed {
+		t.Errorf("Incorrect 'changed' - expected:%v, got:%v\n", true, reply.Changed)
 	}
 }
 

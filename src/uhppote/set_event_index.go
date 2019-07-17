@@ -22,6 +22,6 @@ func (u *UHPPOTE) SetEventIndex(serialNumber, index uint32) (*types.EventIndexRe
 	return &types.EventIndexResult{
 		SerialNumber: reply.SerialNumber,
 		Index:        index,
-		Succeeded:    reply.Success,
+		Changed:      reply.Changed,
 	}, nil
 }

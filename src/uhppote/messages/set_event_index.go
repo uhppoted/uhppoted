@@ -14,5 +14,5 @@ type SetEventIndexRequest struct {
 type SetEventIndexResponse struct {
 	MsgType      types.MsgType      `uhppote:"value:0xb2"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-	Success      bool               `uhppote:"offset:8"`
+	Changed      bool               `uhppote:"offset:8"`
 }
