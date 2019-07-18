@@ -2,11 +2,11 @@ package simulator
 
 import (
 	"time"
-	"uhppote"
+	"uhppote/messages"
 	"uhppote/types"
 )
 
-func (s *Simulator) SetTime(request *uhppote.SetTimeRequest) (interface{}, error) {
+func (s *Simulator) SetTime(request *messages.SetTimeRequest) (interface{}, error) {
 	if s.SerialNumber != request.SerialNumber {
 		return nil, nil
 	}
@@ -27,7 +27,7 @@ func (s *Simulator) SetTime(request *uhppote.SetTimeRequest) (interface{}, error
 		return nil, err
 	}
 
-	response := uhppote.SetTimeResponse{
+	response := messages.SetTimeResponse{
 		SerialNumber: s.SerialNumber,
 		DateTime:     types.DateTime(datetime),
 	}
