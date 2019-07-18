@@ -105,6 +105,13 @@ var handlers = map[byte]*handler{
 		},
 	},
 
+	0x92: &handler{
+		nil,
+		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+			return s.GetListener(rq.(*messages.GetListenerRequest))
+		},
+	},
+
 	0x94: &handler{
 		func() messages.Request { return new(uhppote.FindDevicesRequest) },
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {

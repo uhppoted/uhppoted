@@ -47,9 +47,9 @@ get-door-delay: build
 set-door-delay: build 
 	$(CLI) $(DEBUG) set-door-delay $(SERIALNO) $(DOOR) 5
 
-# get-listener: build 
-# 	$(CLI) $(DEBUG) get-listener $(SERIALNO)
-# 
+get-listener: build 
+	$(CLI) $(DEBUG) get-listener $(SERIALNO)
+
 # set-listener: build 
 # 	$(CLI) $(DEBUG) set-listener $(SERIALNO) 192.168.1.100: build40000
  
