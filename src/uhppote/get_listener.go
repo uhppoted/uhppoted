@@ -2,13 +2,9 @@ package uhppote
 
 import (
 	"net"
+	"uhppote/messages"
 	"uhppote/types"
 )
-
-type GetListenerRequest struct {
-	MsgType      types.MsgType      `uhppote:"value:0x92"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-}
 
 type GetListenerResponse struct {
 	MsgType      types.MsgType      `uhppote:"value:0x92"`
@@ -18,11 +14,11 @@ type GetListenerResponse struct {
 }
 
 func (u *UHPPOTE) GetListener(serialNumber uint32) (*types.Listener, error) {
-	request := GetListenerRequest{
+	request := messages.GetListenerRequest{
 		SerialNumber: types.SerialNumber(serialNumber),
 	}
 
-	reply := GetListenerResponse{}
+	reply := messages.GetListenerResponse{}
 
 	err := u.Execute(serialNumber, request, &reply)
 	if err != nil {

@@ -3,8 +3,6 @@
 # IN PROGRESS
 
 Simulator
-- set-event-index
-- get-listener
 - set-listener
 - CLI
 

@@ -24,6 +24,7 @@ type Simulator struct {
 	Version        types.Version            `json:"version"`
 	TimeOffset     Offset                   `json:"offset"`
 	Doors          map[uint8]*entities.Door `json:"doors"`
+	Listener       net.UDPAddr              `json:"listener"`
 	SystemState    byte                     `json:"state"`
 	PacketNumber   uint32                   `json:"packet-number"`
 	Backup         uint32                   `json:"backup"`
