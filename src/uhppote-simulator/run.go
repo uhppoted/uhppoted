@@ -105,6 +105,13 @@ var handlers = map[byte]*handler{
 		},
 	},
 
+	0x90: &handler{
+		nil,
+		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+			return s.SetListener(rq.(*messages.SetListenerRequest))
+		},
+	},
+
 	0x92: &handler{
 		nil,
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
