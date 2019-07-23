@@ -3,8 +3,11 @@
 # IN PROGRESS
 
 Simulator
-- set-listener
+- event reporting
+- REST interface
+- migrate messages
 - CLI
+- rework set-XXX to revert if save fails
 
 # TODO
 

@@ -50,8 +50,8 @@ set-door-delay: build
 get-listener: build 
 	$(CLI) $(DEBUG) get-listener $(SERIALNO)
 
-# set-listener: build 
-# 	$(CLI) $(DEBUG) set-listener $(SERIALNO) 192.168.1.100: build40000
+set-listener: build 
+	$(CLI) $(DEBUG) set-listener $(SERIALNO) 192.168.1.100:40000
  
 get-cards: build 
 	$(CLI) get-cards $(SERIALNO)
