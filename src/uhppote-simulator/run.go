@@ -15,6 +15,11 @@ import (
 	"uhppote/messages"
 )
 
+type message struct {
+	destination *net.UDPAddr
+	message     interface{}
+}
+
 type handler struct {
 	factory    func() messages.Request
 	dispatcher func(*simulator.Simulator, messages.Request) (messages.Response, error)
@@ -156,30 +161,12 @@ var handlers = map[byte]*handler{
 }
 
 func simulate() {
-	interrupt := make(chan int, 1)
 	bind, err := net.ResolveUDPAddr("udp", ":60000")
 	if err != nil {
 		fmt.Printf("%v\n", errors.New(fmt.Sprintf("Failed to resolve UDP bind address [%v]", err)))
 		return
 	}
 
-	go run(bind, interrupt)
-
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	<-c
-
-	stop(interrupt)
-
-	os.Exit(1)
-}
-
-func stop(interrupt chan int) {
-	interrupt <- 42
-	<-interrupt
-}
-
-func run(bind *net.UDPAddr, interrupt chan int) {
 	connection, err := net.ListenUDP("udp", bind)
 	if err != nil {
 		fmt.Printf("%v\n", errors.New(fmt.Sprintf("Failed to bind to UDP socket [%v]", err)))
@@ -189,34 +176,51 @@ func run(bind *net.UDPAddr, interrupt chan int) {
 	defer connection.Close()
 
 	wait := make(chan int, 1)
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt)
+
+	go run(connection, wait)
+
+	<-interrupt
+	connection.Close()
+	<-wait
+
+	os.Exit(1)
+}
+
+func run(connection *net.UDPConn, wait chan int) {
+	queue := make(chan message, 8)
+
 	go func() {
-		err := listenAndServe(connection)
+		err := listenAndServe(connection, queue)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 		}
 		wait <- 0
 	}()
 
-	<-interrupt
-	connection.Close()
-	<-wait
-	interrupt <- 0
+	go func() {
+		for {
+			msg := <-queue
+			send(connection, msg.destination, msg.message)
+		}
+	}()
 }
 
-func listenAndServe(c *net.UDPConn) error {
+func listenAndServe(c *net.UDPConn, queue chan message) error {
 	for {
 		request, remote, err := receive(c)
 		if err != nil {
 			return err
 		}
 
-		handle(c, remote, request)
+		handle(c, remote, request, queue)
 	}
 
 	return nil
 }
 
-func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
+func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte, queue chan message) {
 	if len(bytes) != 64 {
 		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Invalid message length %d", len(bytes))))
 		return
@@ -245,7 +249,7 @@ func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
 			if err != nil {
 				fmt.Printf("ERROR: %v\n", err)
 			} else if response != nil && !reflect.ValueOf(response).IsNil() {
-				send(c, src, response)
+				queue <- message{src, response}
 			}
 		}
 		return
@@ -264,7 +268,7 @@ func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
 		if err != nil {
 			fmt.Printf("ERROR: %v\n", err)
 		} else if response != nil && !reflect.ValueOf(response).IsNil() {
-			send(c, src, response)
+			queue <- message{src, response}
 		}
 	}
 }
@@ -285,18 +289,18 @@ func receive(c *net.UDPConn) ([]byte, *net.UDPAddr, error) {
 }
 
 func send(c *net.UDPConn, dest *net.UDPAddr, response interface{}) {
-	message, err := codec.Marshal(response)
+	msg, err := codec.Marshal(response)
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 		return
 	}
 
-	N, err := c.WriteTo(message, dest)
+	N, err := c.WriteTo(msg, dest)
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Failed to write to UDP socket [%v]", err)))
 	} else {
 		if options.debug {
-			fmt.Printf(" ... sent %v bytes to %v\n%s\n", N, dest, dump(message[0:N], " ...          "))
+			fmt.Printf(" ... sent %v bytes to %v\n%s\n", N, dest, dump(msg[0:N], " ...          "))
 		}
 	}
 }
