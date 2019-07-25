@@ -29,8 +29,7 @@ func (s *Simulator) OpenDoor(request *messages.OpenDoorRequest) (*messages.OpenD
 			RecordType: 0x2c,
 		}
 
-		s.Events.Add(&event)
-		s.Save()
+		s.Add(&event)
 	}
 
 	response := messages.OpenDoorResponse{

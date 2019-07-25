@@ -3,9 +3,9 @@
 # IN PROGRESS
 
 Simulator
-- event reporting
-- REST interface
 - migrate messages
+- rework simulator.run to use tx/rx channels
+- REST interface
 - CLI
 - rework set-XXX to revert if save fails
 

@@ -26,6 +26,9 @@ build: format
 debug: build 
 	$(CLI) $(DEBUG) get-devices
  
+listen: build
+	$(CLI) --bind 192.168.1.100:40000 $(DEBUG) listen 
+
 get-devices: build 
 	$(CLI) $(DEBUG) get-devices
  
