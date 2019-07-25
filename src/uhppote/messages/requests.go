@@ -23,9 +23,9 @@ var handlers = map[byte]*handler{
 	//	func() Request { return new(uhppote.GetTimeRequest) },
 	//},
 
-	//0x40: &handler{
-	//	func() Request { return new(uhppote.OpenDoorRequest) },
-	//},
+	0x40: &handler{
+		func() Request { return new(OpenDoorRequest) },
+	},
 
 	//0x50: &handler{
 	//	func() Request { return new(uhppote.PutCardRequest) },

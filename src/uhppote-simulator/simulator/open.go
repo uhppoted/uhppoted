@@ -2,12 +2,12 @@ package simulator
 
 import (
 	"time"
-	"uhppote"
 	"uhppote-simulator/simulator/entities"
+	"uhppote/messages"
 	"uhppote/types"
 )
 
-func (s *Simulator) OpenDoor(request *uhppote.OpenDoorRequest) (interface{}, error) {
+func (s *Simulator) OpenDoor(request *messages.OpenDoorRequest) (*messages.OpenDoorResponse, error) {
 	if s.SerialNumber != request.SerialNumber {
 		return nil, nil
 	}
@@ -33,7 +33,7 @@ func (s *Simulator) OpenDoor(request *uhppote.OpenDoorRequest) (interface{}, err
 		s.Save()
 	}
 
-	response := uhppote.OpenDoorResponse{
+	response := messages.OpenDoorResponse{
 		SerialNumber: s.SerialNumber,
 		Succeeded:    granted,
 	}
