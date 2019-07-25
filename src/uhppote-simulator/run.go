@@ -48,9 +48,9 @@ var handlers = map[byte]*handler{
 	},
 
 	0x40: &handler{
-		func() messages.Request { return new(uhppote.OpenDoorRequest) },
+		nil,
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.OpenDoor(rq.(*uhppote.OpenDoorRequest))
+			return s.OpenDoor(rq.(*messages.OpenDoorRequest))
 		},
 	},
 
