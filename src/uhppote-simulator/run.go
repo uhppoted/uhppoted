@@ -11,14 +11,10 @@ import (
 	"regexp"
 	"uhppote"
 	"uhppote-simulator/simulator"
+	"uhppote-simulator/simulator/entities"
 	codec "uhppote/encoding/UTO311-L0x"
 	"uhppote/messages"
 )
-
-type message struct {
-	destination *net.UDPAddr
-	message     interface{}
-}
 
 type handler struct {
 	factory    func() messages.Request
@@ -189,7 +185,11 @@ func simulate() {
 }
 
 func run(connection *net.UDPConn, wait chan int) {
-	queue := make(chan message, 8)
+	queue := make(chan entities.Message, 8)
+
+	for _, s := range simulators {
+		s.TxQueue = queue
+	}
 
 	go func() {
 		err := listenAndServe(connection, queue)
@@ -202,12 +202,12 @@ func run(connection *net.UDPConn, wait chan int) {
 	go func() {
 		for {
 			msg := <-queue
-			send(connection, msg.destination, msg.message)
+			send(connection, msg.Destination, msg.Message)
 		}
 	}()
 }
 
-func listenAndServe(c *net.UDPConn, queue chan message) error {
+func listenAndServe(c *net.UDPConn, queue chan entities.Message) error {
 	for {
 		request, remote, err := receive(c)
 		if err != nil {
@@ -220,7 +220,7 @@ func listenAndServe(c *net.UDPConn, queue chan message) error {
 	return nil
 }
 
-func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte, queue chan message) {
+func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte, queue chan entities.Message) {
 	if len(bytes) != 64 {
 		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Invalid message length %d", len(bytes))))
 		return
@@ -249,7 +249,7 @@ func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte, queue chan message) 
 			if err != nil {
 				fmt.Printf("ERROR: %v\n", err)
 			} else if response != nil && !reflect.ValueOf(response).IsNil() {
-				queue <- message{src, response}
+				queue <- entities.Message{src, response}
 			}
 		}
 		return
@@ -268,7 +268,7 @@ func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte, queue chan message) 
 		if err != nil {
 			fmt.Printf("ERROR: %v\n", err)
 		} else if response != nil && !reflect.ValueOf(response).IsNil() {
-			queue <- message{src, response}
+			queue <- entities.Message{src, response}
 		}
 	}
 }

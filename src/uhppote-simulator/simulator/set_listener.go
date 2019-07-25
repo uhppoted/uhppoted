@@ -10,7 +10,8 @@ func (s *Simulator) SetListener(request *messages.SetListenerRequest) (*messages
 		return nil, nil
 	}
 
-	s.Listener = net.UDPAddr{IP: request.Address, Port: int(request.Port)}
+	listener := net.UDPAddr{IP: request.Address, Port: int(request.Port)}
+	s.Listener = &listener
 
 	saved := false
 	err := s.Save()

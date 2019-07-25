@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net"
 	"time"
+	"uhppote"
 	"uhppote-simulator/simulator/entities"
 	"uhppote/types"
 )
@@ -14,8 +15,10 @@ import (
 type Offset time.Duration
 
 type Simulator struct {
-	File           string                   `json:"-"`
-	Compressed     bool                     `json:"-"`
+	File       string                `json:"-"`
+	Compressed bool                  `json:"-"`
+	TxQueue    chan entities.Message `json:"-"`
+
 	SerialNumber   types.SerialNumber       `json:"serial-number"`
 	IpAddress      net.IP                   `json:"address"`
 	SubnetMask     net.IP                   `json:"subnet"`
@@ -24,7 +27,7 @@ type Simulator struct {
 	Version        types.Version            `json:"version"`
 	TimeOffset     Offset                   `json:"offset"`
 	Doors          map[uint8]*entities.Door `json:"doors"`
-	Listener       net.UDPAddr              `json:"listener"`
+	Listener       *net.UDPAddr             `json:"listener"`
 	SystemState    byte                     `json:"state"`
 	PacketNumber   uint32                   `json:"packet-number"`
 	Backup         uint32                   `json:"backup"`
@@ -127,6 +130,54 @@ func (s *Simulator) Save() error {
 	}
 
 	return save(s.File, s)
+}
+
+func (s *Simulator) send(dest *net.UDPAddr, message interface{}) {
+	if dest != nil {
+		s.TxQueue <- entities.Message{dest, message}
+	}
+}
+
+func (s *Simulator) Add(e *entities.Event) {
+	if e != nil {
+		s.Events.Add(e)
+		s.Save()
+
+		utc := time.Now().UTC()
+		datetime := utc.Add(time.Duration(s.TimeOffset))
+		event := uhppote.Event{
+			SerialNumber:   s.SerialNumber,
+			LastIndex:      s.Events.LastIndex(),
+			SystemState:    s.SystemState,
+			SystemDate:     types.SystemDate(datetime),
+			SystemTime:     types.SystemTime(datetime),
+			PacketNumber:   s.PacketNumber,
+			Backup:         s.Backup,
+			SpecialMessage: s.SpecialMessage,
+			LowBattery:     s.Battery,
+			FireAlarm:      s.FireAlarm,
+
+			Door1State: s.Doors[1].IsOpen(),
+			Door2State: s.Doors[2].IsOpen(),
+			Door3State: s.Doors[3].IsOpen(),
+			Door4State: s.Doors[4].IsOpen(),
+
+			Door1Button: s.Doors[1].IsButtonPressed(),
+			Door2Button: s.Doors[2].IsButtonPressed(),
+			Door3Button: s.Doors[3].IsButtonPressed(),
+			Door4Button: s.Doors[4].IsButtonPressed(),
+
+			// SwipeRecord =
+			Granted:       e.Granted,
+			Door:          e.Door,
+			DoorOpened:    e.DoorOpened,
+			UserId:        e.UserId,
+			SwipeDateTime: e.Timestamp,
+			SwipeReason:   e.Type,
+		}
+
+		s.send(s.Listener, event)
+	}
 }
 
 func saveGZ(filepath string, s *Simulator) error {
