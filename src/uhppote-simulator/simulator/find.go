@@ -2,15 +2,15 @@ package simulator
 
 import (
 	"time"
-	"uhppote"
+	"uhppote/messages"
 	"uhppote/types"
 )
 
-func (s *Simulator) Find(request *uhppote.FindDevicesRequest) (*uhppote.FindDevicesResponse, error) {
+func (s *Simulator) Find(request *messages.FindDevicesRequest) (*messages.FindDevicesResponse, error) {
 	utc := time.Now().UTC()
 	datetime := utc.Add(time.Duration(s.TimeOffset))
 
-	response := uhppote.FindDevicesResponse{
+	response := messages.FindDevicesResponse{
 		SerialNumber: s.SerialNumber,
 		IpAddress:    s.IpAddress,
 		SubnetMask:   s.SubnetMask,

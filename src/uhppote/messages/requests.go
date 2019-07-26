@@ -67,9 +67,9 @@ var handlers = map[byte]*handler{
 		func() Request { return new(GetListenerRequest) },
 	},
 
-	//0x94: &handler{
-	//	func() Request { return new(uhppote.FindDevicesRequest) },
-	//},
+	0x94: &handler{
+		func() Request { return new(FindDevicesRequest) },
+	},
 
 	//0x96: &handler{
 	//	func() Request { return new(uhppote.SetAddressRequest) },
