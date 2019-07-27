@@ -26,6 +26,7 @@ format:
 	gofmt -w=true src/uhppote-simulator/commands/*.go
 	gofmt -w=true src/uhppote-simulator/simulator/*.go
 	gofmt -w=true src/uhppote-simulator/simulator/entities/*.go
+	gofmt -w=true src/uhppote-simulator/rest/*.go
 	gofmt -w=true src/integration-tests/*.go
 
 release: format

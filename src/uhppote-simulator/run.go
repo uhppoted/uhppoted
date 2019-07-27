@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"regexp"
 	"uhppote"
+	"uhppote-simulator/rest"
 	"uhppote-simulator/simulator"
 	"uhppote-simulator/simulator/entities"
 	codec "uhppote/encoding/UTO311-L0x"
@@ -205,6 +206,11 @@ func run(connection *net.UDPConn, wait chan int) {
 			send(connection, msg.Destination, msg.Message)
 		}
 	}()
+
+	go func() {
+		rest.Run()
+	}()
+
 }
 
 func listenAndServe(c *net.UDPConn, queue chan entities.Message) error {
