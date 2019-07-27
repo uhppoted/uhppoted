@@ -39,9 +39,9 @@ var handlers = map[byte]*handler{
 	//	func() Request { return new(uhppote.DeleteCardsRequest) },
 	//},
 
-	//0x58: &handler{
-	//	func() Request { return new(uhppote.GetCardsRequest) },
-	//},
+	0x58: &handler{
+		func() Request { return new(GetCardsRequest) },
+	},
 
 	0x5a: &handler{
 		func() Request { return new(GetCardByIdRequest) },
