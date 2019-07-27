@@ -1,15 +1,15 @@
 package simulator
 
 import (
-	"uhppote"
+	"uhppote/messages"
 )
 
-func (s *Simulator) GetCardById(request *uhppote.GetCardByIdRequest) (*uhppote.GetCardByIdResponse, error) {
+func (s *Simulator) GetCardById(request *messages.GetCardByIdRequest) (*messages.GetCardByIdResponse, error) {
 	if request.SerialNumber != s.SerialNumber {
 		return nil, nil
 	}
 
-	response := uhppote.GetCardByIdResponse{
+	response := messages.GetCardByIdResponse{
 		SerialNumber: s.SerialNumber,
 	}
 
@@ -29,12 +29,12 @@ func (s *Simulator) GetCardById(request *uhppote.GetCardByIdRequest) (*uhppote.G
 	return &response, nil
 }
 
-func (s *Simulator) GetCardByIndex(request *uhppote.GetCardByIndexRequest) (*uhppote.GetCardByIndexResponse, error) {
+func (s *Simulator) GetCardByIndex(request *messages.GetCardByIndexRequest) (*messages.GetCardByIndexResponse, error) {
 	if request.SerialNumber != s.SerialNumber {
 		return nil, nil
 	}
 
-	response := uhppote.GetCardByIndexResponse{
+	response := messages.GetCardByIndexResponse{
 		SerialNumber: s.SerialNumber,
 	}
 

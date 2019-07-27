@@ -11,6 +11,7 @@ Simulator
 
 # TODO
 
+0.  Rework uhppote to use bidirectional channel to serialize requests
 1.  Human readable output for e.g. get-status
 2.  JSON formatted output for e.g. get-status
 3.  Consistently include device serial number in output e.g. of get-time

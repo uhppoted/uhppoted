@@ -43,13 +43,13 @@ var handlers = map[byte]*handler{
 	//	func() Request { return new(uhppote.GetCardsRequest) },
 	//},
 
-	//0x5a: &handler{
-	//	func() Request { return new(uhppote.GetCardByIdRequest) },
-	//},
+	0x5a: &handler{
+		func() Request { return new(GetCardByIdRequest) },
+	},
 
-	//0x5c: &handler{
-	//	func() Request { return new(uhppote.GetCardByIndexRequest) },
-	//},
+	0x5c: &handler{
+		func() Request { return new(GetCardByIndexRequest) },
+	},
 
 	//0x80: &handler{
 	//	func() Request { return new(uhppote.SetDoorDelayRequest) },

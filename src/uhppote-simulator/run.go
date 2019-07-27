@@ -79,16 +79,16 @@ var handlers = map[byte]*handler{
 	},
 
 	0x5a: &handler{
-		func() messages.Request { return new(uhppote.GetCardByIdRequest) },
+		nil,
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.GetCardById(rq.(*uhppote.GetCardByIdRequest))
+			return s.GetCardById(rq.(*messages.GetCardByIdRequest))
 		},
 	},
 
 	0x5c: &handler{
-		func() messages.Request { return new(uhppote.GetCardByIndexRequest) },
+		nil,
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.GetCardByIndex(rq.(*uhppote.GetCardByIndexRequest))
+			return s.GetCardByIndex(rq.(*messages.GetCardByIndexRequest))
 		},
 	},
 
