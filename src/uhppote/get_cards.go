@@ -1,26 +1,16 @@
 package uhppote
 
 import (
+	"uhppote/messages"
 	"uhppote/types"
 )
 
-type GetCardsRequest struct {
-	MsgType      types.MsgType      `uhppote:"value:0x58"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-}
-
-type GetCardsResponse struct {
-	MsgType      types.MsgType      `uhppote:"value:0x58"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-	Records      uint32             `uhppote:"offset:8"`
-}
-
 func (u *UHPPOTE) GetCards(serialNumber uint32) (*types.RecordCount, error) {
-	request := GetCardsRequest{
+	request := messages.GetCardsRequest{
 		SerialNumber: types.SerialNumber(serialNumber),
 	}
 
-	reply := GetCardsResponse{}
+	reply := messages.GetCardsResponse{}
 
 	err := u.Execute(serialNumber, request, &reply)
 	if err != nil {

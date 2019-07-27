@@ -72,9 +72,9 @@ var handlers = map[byte]*handler{
 	},
 
 	0x58: &handler{
-		func() messages.Request { return new(uhppote.GetCardsRequest) },
+		nil,
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.GetCards(rq.(*uhppote.GetCardsRequest))
+			return s.GetCards(rq.(*messages.GetCardsRequest))
 		},
 	},
 
