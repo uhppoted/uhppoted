@@ -4,47 +4,12 @@ import (
 	"errors"
 	"fmt"
 	codec "uhppote/encoding/UTO311-L0x"
+	"uhppote/messages"
 	"uhppote/types"
 )
 
-type GetCardByIndexRequest struct {
-	MsgType      types.MsgType      `uhppote:"value:0x5c"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-	Index        uint32             `uhppote:"offset:8"`
-}
-
-type GetCardByIdRequest struct {
-	MsgType      types.MsgType      `uhppote:"value:0x5a"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-	CardNumber   uint32             `uhppote:"offset:8"`
-}
-
-type GetCardByIndexResponse struct {
-	MsgType      types.MsgType      `uhppote:"value:0x5c"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-	CardNumber   uint32             `uhppote:"offset:8"`
-	From         *types.Date        `uhppote:"offset:12"`
-	To           *types.Date        `uhppote:"offset:16"`
-	Door1        bool               `uhppote:"offset:20"`
-	Door2        bool               `uhppote:"offset:21"`
-	Door3        bool               `uhppote:"offset:22"`
-	Door4        bool               `uhppote:"offset:23"`
-}
-
-type GetCardByIdResponse struct {
-	MsgType      types.MsgType      `uhppote:"value:0x5a"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-	CardNumber   uint32             `uhppote:"offset:8"`
-	From         *types.Date        `uhppote:"offset:12"`
-	To           *types.Date        `uhppote:"offset:16"`
-	Door1        bool               `uhppote:"offset:20"`
-	Door2        bool               `uhppote:"offset:21"`
-	Door3        bool               `uhppote:"offset:22"`
-	Door4        bool               `uhppote:"offset:23"`
-}
-
 func (u *UHPPOTE) GetCardByIndex(serialNumber, index uint32) (*types.Card, error) {
-	request := GetCardByIndexRequest{
+	request := messages.GetCardByIndexRequest{
 		SerialNumber: types.SerialNumber(serialNumber),
 		Index:        index,
 	}
@@ -54,7 +19,7 @@ func (u *UHPPOTE) GetCardByIndex(serialNumber, index uint32) (*types.Card, error
 		return nil, err
 	}
 
-	response := GetCardByIndexResponse{}
+	response := messages.GetCardByIndexResponse{}
 	err = codec.Unmarshal(reply, &response)
 	if err != nil {
 		return nil, err
@@ -85,7 +50,7 @@ func (u *UHPPOTE) GetCardByIndex(serialNumber, index uint32) (*types.Card, error
 }
 
 func (u *UHPPOTE) GetCardById(serialNumber, cardNumber uint32) (*types.Card, error) {
-	request := GetCardByIdRequest{
+	request := messages.GetCardByIdRequest{
 		SerialNumber: types.SerialNumber(serialNumber),
 		CardNumber:   cardNumber,
 	}
@@ -95,7 +60,7 @@ func (u *UHPPOTE) GetCardById(serialNumber, cardNumber uint32) (*types.Card, err
 		return nil, err
 	}
 
-	response := GetCardByIdResponse{}
+	response := messages.GetCardByIdResponse{}
 	err = codec.Unmarshal(reply, &response)
 	if err != nil {
 		return nil, err
