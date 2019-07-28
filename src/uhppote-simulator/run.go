@@ -208,7 +208,7 @@ func run(connection *net.UDPConn, wait chan int) {
 	}()
 
 	go func() {
-		rest.Run()
+		rest.Run(simulators)
 	}()
 
 }

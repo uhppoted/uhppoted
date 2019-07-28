@@ -160,5 +160,11 @@ simulator: build
 simulator-device: build
 	./bin/uhppote-simulator --debug --devices "runtime/simulation/devices" new-device 666
 
+swagger: 
+	docker run -d -p 80:8080 swaggerapi/swagger-editor
+
+
+
+
 
 
