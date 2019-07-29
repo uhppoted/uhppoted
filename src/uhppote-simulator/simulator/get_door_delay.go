@@ -1,10 +1,10 @@
 package simulator
 
 import (
-	"uhppote"
+	"uhppote/messages"
 )
 
-func (s *Simulator) GetDoorDelay(request *uhppote.GetDoorDelayRequest) (*uhppote.GetDoorDelayResponse, error) {
+func (s *Simulator) GetDoorDelay(request *messages.GetDoorDelayRequest) (*messages.GetDoorDelayResponse, error) {
 	if request.SerialNumber != s.SerialNumber {
 		return nil, nil
 	}
@@ -13,7 +13,7 @@ func (s *Simulator) GetDoorDelay(request *uhppote.GetDoorDelayRequest) (*uhppote
 		return nil, nil
 	}
 
-	response := uhppote.GetDoorDelayResponse{
+	response := messages.GetDoorDelayResponse{
 		SerialNumber: s.SerialNumber,
 		Door:         request.Door,
 		Unit:         0x03,
