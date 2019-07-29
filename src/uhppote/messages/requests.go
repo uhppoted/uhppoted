@@ -55,9 +55,9 @@ var handlers = map[byte]*handler{
 	//	func() Request { return new(uhppote.SetDoorDelayRequest) },
 	//},
 
-	//0x82: &handler{
-	//	func() Request { return new(uhppote.GetDoorDelayRequest) },
-	//},
+	0x82: &handler{
+		func() Request { return new(GetDoorDelayRequest) },
+	},
 
 	0x90: &handler{
 		func() Request { return new(SetListenerRequest) },
