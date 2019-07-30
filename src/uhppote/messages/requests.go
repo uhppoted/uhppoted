@@ -19,24 +19,24 @@ var handlers = map[byte]*handler{
 		func() Request { return new(SetTimeRequest) },
 	},
 
-	//0x32: &handler{
-	//	func() Request { return new(uhppote.GetTimeRequest) },
-	//},
+	0x32: &handler{
+		func() Request { return new(GetTimeRequest) },
+	},
 
 	0x40: &handler{
 		func() Request { return new(OpenDoorRequest) },
 	},
 
 	//0x50: &handler{
-	//	func() Request { return new(uhppote.PutCardRequest) },
+	//	func() Request { return new(PutCardRequest) },
 	//},
 
 	//0x52: &handler{
-	//	func() Request { return new(uhppote.DeleteCardRequest) },
+	//	func() Request { return new(DeleteCardRequest) },
 	//},
 
 	//0x54: &handler{
-	//	func() Request { return new(uhppote.DeleteCardsRequest) },
+	//	func() Request { return new(DeleteCardsRequest) },
 	//},
 
 	0x58: &handler{
@@ -52,7 +52,7 @@ var handlers = map[byte]*handler{
 	},
 
 	//0x80: &handler{
-	//	func() Request { return new(uhppote.SetDoorDelayRequest) },
+	//	func() Request { return new(SetDoorDelayRequest) },
 	//},
 
 	0x82: &handler{
@@ -72,12 +72,12 @@ var handlers = map[byte]*handler{
 	},
 
 	//0x96: &handler{
-	//	func() Request { return new(uhppote.SetAddressRequest) },
+	//	func() Request { return new(SetAddressRequest) },
 	//},
 
-	//0xb0: &handler{
-	//	func() Request { return new(uhppote.GetEventRequest) },
-	//},
+	0xb0: &handler{
+		func() Request { return new(GetEventRequest) },
+	},
 
 	0xb2: &handler{
 		func() Request { return new(SetEventIndexRequest) },
