@@ -1,10 +1,10 @@
 package simulator
 
 import (
-	"uhppote"
+	"uhppote/messages"
 )
 
-func (s *Simulator) GetEvent(request *uhppote.GetEventRequest) (*uhppote.GetEventResponse, error) {
+func (s *Simulator) GetEvent(request *messages.GetEventRequest) (*messages.GetEventResponse, error) {
 	if s.SerialNumber != request.SerialNumber {
 		return nil, nil
 	}
@@ -15,7 +15,7 @@ func (s *Simulator) GetEvent(request *uhppote.GetEventRequest) (*uhppote.GetEven
 	}
 
 	if event := s.Events.Get(index); event != nil {
-		response := uhppote.GetEventResponse{
+		response := messages.GetEventResponse{
 			SerialNumber: s.SerialNumber,
 			Index:        index,
 			Type:         event.Type,

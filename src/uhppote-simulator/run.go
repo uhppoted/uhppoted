@@ -136,9 +136,9 @@ var handlers = map[byte]*handler{
 	},
 
 	0xb0: &handler{
-		func() messages.Request { return new(uhppote.GetEventRequest) },
+		nil,
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.GetEvent(rq.(*uhppote.GetEventRequest))
+			return s.GetEvent(rq.(*messages.GetEventRequest))
 		},
 	},
 
