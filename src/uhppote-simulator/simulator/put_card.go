@@ -14,10 +14,11 @@ func (s *Simulator) PutCard(request *uhppote.PutCardRequest) (*uhppote.PutCardRe
 		CardNumber: request.CardNumber,
 		From:       request.From,
 		To:         request.To,
-		Door1:      request.Door1,
-		Door2:      request.Door2,
-		Door3:      request.Door3,
-		Door4:      request.Door4,
+		Doors: map[uint8]bool{1: request.Door1,
+			2: request.Door2,
+			3: request.Door3,
+			4: request.Door4,
+		},
 	}
 
 	s.Cards.Put(&card)
