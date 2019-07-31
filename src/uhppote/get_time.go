@@ -1,26 +1,16 @@
 package uhppote
 
 import (
+	"uhppote/messages"
 	"uhppote/types"
 )
 
-type GetTimeRequest struct {
-	MsgType      types.MsgType      `uhppote:"value:0x32"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-}
-
-type GetTimeResponse struct {
-	MsgType      types.MsgType      `uhppote:"value:0x32"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-	DateTime     types.DateTime     `uhppote:"offset:8"`
-}
-
 func (u *UHPPOTE) GetTime(serialNumber uint32) (*types.Time, error) {
-	request := GetTimeRequest{
+	request := messages.GetTimeRequest{
 		SerialNumber: types.SerialNumber(serialNumber),
 	}
 
-	reply := GetTimeResponse{}
+	reply := messages.GetTimeResponse{}
 
 	err := u.Execute(serialNumber, request, &reply)
 	if err != nil {

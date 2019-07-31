@@ -19,9 +19,9 @@ var handlers = map[byte]*handler{
 		func() Request { return new(SetTimeRequest) },
 	},
 
-	//0x32: &handler{
-	//	func() Request { return new(GetTimeRequest) },
-	//},
+	0x32: &handler{
+		func() Request { return new(GetTimeRequest) },
+	},
 
 	0x40: &handler{
 		func() Request { return new(OpenDoorRequest) },
