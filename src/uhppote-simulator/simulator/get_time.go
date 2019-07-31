@@ -2,11 +2,11 @@ package simulator
 
 import (
 	"time"
-	"uhppote"
+	"uhppote/messages"
 	"uhppote/types"
 )
 
-func (s *Simulator) GetTime(request *uhppote.GetTimeRequest) (interface{}, error) {
+func (s *Simulator) GetTime(request *messages.GetTimeRequest) (interface{}, error) {
 	if s.SerialNumber != request.SerialNumber {
 		return nil, nil
 	}
@@ -14,7 +14,7 @@ func (s *Simulator) GetTime(request *uhppote.GetTimeRequest) (interface{}, error
 	utc := time.Now().UTC()
 	datetime := utc.Add(time.Duration(s.TimeOffset))
 
-	response := uhppote.GetTimeResponse{
+	response := messages.GetTimeResponse{
 		SerialNumber: s.SerialNumber,
 		DateTime:     types.DateTime(datetime),
 	}

@@ -38,9 +38,9 @@ var handlers = map[byte]*handler{
 	},
 
 	0x32: &handler{
-		func() messages.Request { return new(uhppote.GetTimeRequest) },
+		nil,
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.GetTime(rq.(*uhppote.GetTimeRequest))
+			return s.GetTime(rq.(*messages.GetTimeRequest))
 		},
 	},
 
