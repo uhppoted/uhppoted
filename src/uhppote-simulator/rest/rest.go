@@ -13,10 +13,8 @@ import (
 )
 
 type SwipeRequest struct {
-	Swipe struct {
-		Door       uint8  `json:"door"`
-		CardNumber uint32 `json:"card-number"`
-	} `json:"swipe"`
+	Door       uint8  `json:"door"`
+	CardNumber uint32 `json:"card-number"`
 }
 
 type SwipeResponse struct {
@@ -112,8 +110,9 @@ func swipe(ctx *context, w http.ResponseWriter, r *http.Request) {
 	for _, s := range ctx.simulators {
 		if s.SerialNumber == types.SerialNumber(deviceId) {
 			for _, c := range s.Cards {
-				if c.CardNumber == request.Swipe.CardNumber {
-					granted = c.Doors[request.Swipe.Door]
+				if c.CardNumber == request.CardNumber {
+					granted = c.Doors[request.Door]
+					message = "Access granted"
 				}
 			}
 		}
@@ -130,5 +129,6 @@ func swipe(ctx *context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(b)
 }
