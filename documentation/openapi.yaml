@@ -1,0 +1,80 @@
+openapi: "3.0.2"
+
+info:
+  version: 0.0.0
+  title: "twyst-uhppote-simulator"
+  description: "REST API for the twystd UHPPOTE simulator command interface"
+  license:
+    name: "MIT"
+    url: "https://github.com/twystd/uhppote-go/blob/master/LICENSE"
+    
+servers:    
+  - url: "http://127.0.0.1:8080/uhppote"
+  
+tags:
+  - name: "simulator"
+    description: "UHPPOTE simulator command interface"
+
+paths:
+  /simulator/{device-id}/swipe:
+    post:
+      summary: "Simulates a card swipe on an access reader"
+      tags:
+        - simulator
+      description: "Simulates a card swipe on an access reader, generating an access event"
+      operationId: swipeCard
+      parameters:
+        - name: device-id
+          in: path
+          description: "Simulator device ID"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 305419896
+      requestBody:
+        description: "Wiegand-26 access card details"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Swipe"     
+      responses:
+        '200':
+          description: "Access granted/denied"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Swiped"        
+        '405':
+          description: "Invalid request"
+
+components:
+  schemas:
+    Swipe:
+      required: 
+        - door
+        - card-number
+      properties:
+        door:
+          type: number
+          format: uint8
+          description: "Door # [1..4]"
+          example: 4
+        card-number:  
+          type: number
+          format: uint32
+          description: "Wiegand-26 card number"
+          example: 65538
+    Swiped:
+      required: 
+        - access-granted
+        - message
+      properties:
+        access-granted:
+          type: boolean
+          description: "true if access was granted"
+        message:
+          type: string
+          description: "Display message"
+
