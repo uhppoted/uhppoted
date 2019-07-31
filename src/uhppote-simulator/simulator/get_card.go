@@ -18,10 +18,10 @@ func (s *Simulator) GetCardById(request *messages.GetCardByIdRequest) (*messages
 			response.CardNumber = card.CardNumber
 			response.From = &card.From
 			response.To = &card.To
-			response.Door1 = card.Door1
-			response.Door2 = card.Door2
-			response.Door3 = card.Door3
-			response.Door4 = card.Door4
+			response.Door1 = card.Doors[1]
+			response.Door2 = card.Doors[2]
+			response.Door3 = card.Doors[3]
+			response.Door4 = card.Doors[4]
 			break
 		}
 	}
@@ -43,10 +43,10 @@ func (s *Simulator) GetCardByIndex(request *messages.GetCardByIndexRequest) (*me
 		response.CardNumber = card.CardNumber
 		response.From = &card.From
 		response.To = &card.To
-		response.Door1 = card.Door1
-		response.Door2 = card.Door2
-		response.Door3 = card.Door3
-		response.Door4 = card.Door4
+		response.Door1 = card.Doors[1]
+		response.Door2 = card.Doors[2]
+		response.Door3 = card.Doors[3]
+		response.Door4 = card.Doors[4]
 	}
 
 	return &response, nil

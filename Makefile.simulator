@@ -72,7 +72,7 @@ revoke-all: build
 	$(CLI) $(DEBUG) revoke-all $(SERIALNO)
  
 load-acl: build 
-	$(CLI) $(DEBUG) load-acl simulator.tsv
+	$(CLI) $(DEBUG) load-acl ./runtime/acl/simulator.tsv
  
 get-events: build 
 	$(CLI) $(DEBUG) get-events $(SERIALNO)

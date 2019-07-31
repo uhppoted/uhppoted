@@ -5,13 +5,10 @@ import (
 )
 
 type Card struct {
-	CardNumber uint32     `json:"number"`
-	From       types.Date `json:"from"`
-	To         types.Date `json:"to"`
-	Door1      bool       `json:"door-1"`
-	Door2      bool       `json:"door-2"`
-	Door3      bool       `json:"door-3"`
-	Door4      bool       `json:"door-4"`
+	CardNumber uint32         `json:"number"`
+	From       types.Date     `json:"from"`
+	To         types.Date     `json:"to"`
+	Doors      map[uint8]bool `json:"doors"`
 }
 
 type CardList []*Card

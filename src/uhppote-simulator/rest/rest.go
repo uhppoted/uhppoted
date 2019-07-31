@@ -3,7 +3,6 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
-	"html"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -13,21 +12,27 @@ import (
 	"uhppote/types"
 )
 
-type AccessCard struct {
-	CardNumber uint32 `json:"card-number"`
+type SwipeRequest struct {
+	Swipe struct {
+		Door       uint8  `json:"door"`
+		CardNumber uint32 `json:"card-number"`
+	} `json:"swipe"`
 }
 
-type Swipe struct {
-	Card AccessCard `json:"card"`
+type SwipeResponse struct {
+	Granted bool   `json:"access-granted"`
+	Message string `json:"message"`
 }
 
 type context struct {
 	simulators []*simulator.Simulator
 }
 
+type handlerfn func(*context, http.ResponseWriter, *http.Request)
+
 type handler struct {
 	re *regexp.Regexp
-	fn func(*context, http.ResponseWriter, *http.Request)
+	fn handlerfn
 }
 
 type dispatcher struct {
@@ -41,12 +46,12 @@ func Run(simulators []*simulator.Simulator) {
 	d.ctx = new(context)
 	d.ctx.simulators = simulators
 
-	d.Add("^/uhppote/simulator/[0-9]+/door/[1-4]/swipe$", swipe)
+	d.Add("^/uhppote/simulator/[0-9]+/swipe$", swipe)
 
 	log.Fatal(http.ListenAndServe(":8080", d))
 }
 
-func (d *dispatcher) Add(path string, h func(*context, http.ResponseWriter, *http.Request)) {
+func (d *dispatcher) Add(path string, h handlerfn) {
 	re := regexp.MustCompile(path)
 	d.handlers = append(d.handlers, handler{re, h})
 }
@@ -81,57 +86,49 @@ func swipe(ctx *context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	url := r.URL.Path
-	matches := regexp.MustCompile("^/uhppote/simulator/([0-9]+)/door/([1-4])/swipe$").FindStringSubmatch(url)
-	deviceId, _ := strconv.ParseUint(matches[1], 10, 32)
-	door, _ := strconv.ParseUint(matches[2], 10, 8)
+	matches := regexp.MustCompile("^/uhppote/simulator/([0-9]+)/swipe$").FindStringSubmatch(url)
+	deviceId, err := strconv.ParseUint(matches[1], 10, 32)
+	if err != nil {
+		http.Error(w, "Error reading request", http.StatusInternalServerError)
+		return
+	}
 
 	blob, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Fatal(err)
+		http.Error(w, "Error reading request", http.StatusInternalServerError)
+		return
 	}
 
-	var swipe Swipe
-	err = json.Unmarshal(blob, &swipe)
+	request := SwipeRequest{}
+	err = json.Unmarshal(blob, &request)
 	if err != nil {
 		http.Error(w, "Invalid request format", http.StatusBadRequest)
-	} else {
-		fmt.Printf("SWIPE: %v\n", swipe)
-		fmt.Println(deviceId)
-		fmt.Println(door)
-		fmt.Println(string(blob))
+		return
+	}
 
-		for _, s := range ctx.simulators {
-			if s.SerialNumber == types.SerialNumber(deviceId) {
-				for _, c := range s.Cards {
-					if c.CardNumber == swipe.Card.CardNumber {
-						switch door {
-						case 1:
-							if c.Door1 {
-								fmt.Fprintf(w, "Greeting earthling, %q", html.EscapeString(r.URL.Path))
-								return
-							}
-						case 2:
-							if c.Door2 {
-								fmt.Fprintf(w, "Greeting earthling, %q", html.EscapeString(r.URL.Path))
-								return
-							}
-						case 3:
-							if c.Door3 {
-								fmt.Fprintf(w, "Greeting earthling, %q", html.EscapeString(r.URL.Path))
-								return
-							}
-						case 4:
-							if c.Door4 {
-								fmt.Fprintf(w, "Greeting earthling, %q", html.EscapeString(r.URL.Path))
-								return
-							}
+	granted := false
+	message := "Access denied"
 
-						}
-					}
+	for _, s := range ctx.simulators {
+		if s.SerialNumber == types.SerialNumber(deviceId) {
+			for _, c := range s.Cards {
+				if c.CardNumber == request.Swipe.CardNumber {
+					granted = c.Doors[request.Swipe.Door]
 				}
 			}
 		}
-
-		fmt.Fprintf(w, "Access denied")
 	}
+
+	response := SwipeResponse{
+		Granted: granted,
+		Message: message,
+	}
+
+	b, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, "Error generating response", http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(b)
 }
