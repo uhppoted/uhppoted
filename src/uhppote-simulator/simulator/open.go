@@ -13,17 +13,19 @@ func (s *Simulator) OpenDoor(request *messages.OpenDoorRequest) (*messages.OpenD
 	}
 
 	granted := false
+	opened := false
 	door := request.Door
 
 	if !(door < 1 || door > 4) {
-		granted = s.Doors[door].Open()
+		granted = true
+		opened = s.Doors[door].Open()
 
 		datetime := time.Now().UTC().Add(time.Duration(s.TimeOffset))
 		event := entities.Event{
 			Type:       0x02,
 			Granted:    granted,
 			Door:       door,
-			DoorOpened: true,
+			DoorOpened: opened,
 			UserId:     3922570474,
 			Timestamp:  types.DateTime(datetime),
 			RecordType: 0x2c,
@@ -34,7 +36,7 @@ func (s *Simulator) OpenDoor(request *messages.OpenDoorRequest) (*messages.OpenD
 
 	response := messages.OpenDoorResponse{
 		SerialNumber: s.SerialNumber,
-		Succeeded:    granted,
+		Succeeded:    granted && opened,
 	}
 
 	return &response, nil
