@@ -69,11 +69,15 @@ components:
     Swiped:
       required: 
         - access-granted
+        - door-opened
         - message
       properties:
         access-granted:
           type: boolean
           description: "true if access was granted"
+        door-opened:
+          type: boolean
+          description: "true if door was opened"
         message:
           type: string
           description: "Display message"

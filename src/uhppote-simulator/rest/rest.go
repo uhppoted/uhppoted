@@ -9,7 +9,6 @@ import (
 	"regexp"
 	"strconv"
 	"uhppote-simulator/simulator"
-	"uhppote/types"
 )
 
 type SwipeRequest struct {
@@ -19,6 +18,7 @@ type SwipeRequest struct {
 
 type SwipeResponse struct {
 	Granted bool   `json:"access-granted"`
+	Opened  bool   `json:"door-opened"`
 	Message string `json:"message"`
 }
 
@@ -105,21 +105,20 @@ func swipe(ctx *context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	granted := false
+	opened := false
 	message := "Access denied"
 
 	for _, s := range ctx.simulators {
-		if s.SerialNumber == types.SerialNumber(deviceId) {
-			for _, c := range s.Cards {
-				if c.CardNumber == request.CardNumber {
-					granted = c.Doors[request.Door]
-					message = "Access granted"
-				}
-			}
+		if s.Swipe(uint32(deviceId), request.CardNumber, request.Door) {
+			granted = true
+			opened = true
+			message = "Access granted"
 		}
 	}
 
 	response := SwipeResponse{
 		Granted: granted,
+		Opened:  opened,
 		Message: message,
 	}
 
