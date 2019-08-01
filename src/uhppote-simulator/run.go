@@ -59,9 +59,9 @@ var handlers = map[byte]*handler{
 	},
 
 	0x52: &handler{
-		func() messages.Request { return new(uhppote.DeleteCardRequest) },
+		nil,
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.DeleteCard(rq.(*uhppote.DeleteCardRequest))
+			return s.DeleteCard(rq.(*messages.DeleteCardRequest))
 		},
 	},
 

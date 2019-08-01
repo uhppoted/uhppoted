@@ -1,10 +1,10 @@
 package simulator
 
 import (
-	"uhppote"
+	"uhppote/messages"
 )
 
-func (s *Simulator) DeleteCard(request *uhppote.DeleteCardRequest) (interface{}, error) {
+func (s *Simulator) DeleteCard(request *messages.DeleteCardRequest) (*messages.DeleteCardResponse, error) {
 	if request.SerialNumber != s.SerialNumber {
 		return nil, nil
 	}
@@ -18,7 +18,7 @@ func (s *Simulator) DeleteCard(request *uhppote.DeleteCardRequest) (interface{},
 		}
 	}
 
-	response := uhppote.DeleteCardResponse{
+	response := messages.DeleteCardResponse{
 		SerialNumber: s.SerialNumber,
 		Succeeded:    deleted && saved,
 	}
