@@ -1,11 +1,11 @@
 package simulator
 
 import (
-	"uhppote"
 	"uhppote-simulator/simulator/entities"
+	"uhppote/messages"
 )
 
-func (s *Simulator) SetDoorDelay(request *uhppote.SetDoorDelayRequest) (*uhppote.SetDoorDelayResponse, error) {
+func (s *Simulator) SetDoorDelay(request *messages.SetDoorDelayRequest) (*messages.SetDoorDelayResponse, error) {
 	if request.SerialNumber != s.SerialNumber {
 		return nil, nil
 	}
@@ -26,7 +26,7 @@ func (s *Simulator) SetDoorDelay(request *uhppote.SetDoorDelayRequest) (*uhppote
 		return nil, err
 	}
 
-	response := uhppote.SetDoorDelayResponse{
+	response := messages.SetDoorDelayResponse{
 		SerialNumber: s.SerialNumber,
 		Door:         door,
 		Unit:         0x03,

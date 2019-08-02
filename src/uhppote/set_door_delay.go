@@ -3,34 +3,19 @@ package uhppote
 import (
 	"errors"
 	"fmt"
+	"uhppote/messages"
 	"uhppote/types"
 )
 
-type SetDoorDelayRequest struct {
-	MsgType      types.MsgType      `uhppote:"value:0x80"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-	Door         uint8              `uhppote:"offset:8"`
-	Unit         uint8              `uhppote:"offset:9"`
-	Delay        uint8              `uhppote:"offset:10"`
-}
-
-type SetDoorDelayResponse struct {
-	MsgType      types.MsgType      `uhppote:"value:0x80"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-	Door         uint8              `uhppote:"offset:8"`
-	Unit         uint8              `uhppote:"offset:9"`
-	Delay        uint8              `uhppote:"offset:10"`
-}
-
 func (u *UHPPOTE) SetDoorDelay(serialNumber uint32, door uint8, delay uint8) (*types.DoorDelay, error) {
-	request := SetDoorDelayRequest{
+	request := messages.SetDoorDelayRequest{
 		SerialNumber: types.SerialNumber(serialNumber),
 		Door:         door,
 		Unit:         0x03,
 		Delay:        delay,
 	}
 
-	reply := SetDoorDelayResponse{}
+	reply := messages.SetDoorDelayResponse{}
 
 	err := u.Execute(serialNumber, request, &reply)
 	if err != nil {

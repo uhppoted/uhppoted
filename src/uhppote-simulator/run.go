@@ -9,7 +9,6 @@ import (
 	"os/signal"
 	"reflect"
 	"regexp"
-	"uhppote"
 	"uhppote-simulator/rest"
 	"uhppote-simulator/simulator"
 	"uhppote-simulator/simulator/entities"
@@ -52,9 +51,9 @@ var handlers = map[byte]*handler{
 	},
 
 	0x50: &handler{
-		func() messages.Request { return new(uhppote.PutCardRequest) },
+		nil,
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.PutCard(rq.(*uhppote.PutCardRequest))
+			return s.PutCard(rq.(*messages.PutCardRequest))
 		},
 	},
 
@@ -94,9 +93,9 @@ var handlers = map[byte]*handler{
 	},
 
 	0x80: &handler{
-		func() messages.Request { return new(uhppote.SetDoorDelayRequest) },
+		nil,
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.SetDoorDelay(rq.(*uhppote.SetDoorDelayRequest))
+			return s.SetDoorDelay(rq.(*messages.SetDoorDelayRequest))
 		},
 	},
 
@@ -129,9 +128,9 @@ var handlers = map[byte]*handler{
 	},
 
 	0x96: &handler{
-		func() messages.Request { return new(uhppote.SetAddressRequest) },
+		nil,
 		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.SetAddress(rq.(*uhppote.SetAddressRequest))
+			return s.SetAddress(rq.(*messages.SetAddressRequest))
 		},
 	},
 

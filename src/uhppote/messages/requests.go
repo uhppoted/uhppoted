@@ -27,9 +27,9 @@ var handlers = map[byte]*handler{
 		func() Request { return new(OpenDoorRequest) },
 	},
 
-	//0x50: &handler{
-	//	func() Request { return new(PutCardRequest) },
-	//},
+	0x50: &handler{
+		func() Request { return new(PutCardRequest) },
+	},
 
 	0x52: &handler{
 		func() Request { return new(DeleteCardRequest) },
@@ -51,9 +51,9 @@ var handlers = map[byte]*handler{
 		func() Request { return new(GetCardByIndexRequest) },
 	},
 
-	//0x80: &handler{
-	//	func() Request { return new(SetDoorDelayRequest) },
-	//},
+	0x80: &handler{
+		func() Request { return new(SetDoorDelayRequest) },
+	},
 
 	0x82: &handler{
 		func() Request { return new(GetDoorDelayRequest) },
@@ -71,9 +71,9 @@ var handlers = map[byte]*handler{
 		func() Request { return new(FindDevicesRequest) },
 	},
 
-	//0x96: &handler{
-	//	func() Request { return new(SetAddressRequest) },
-	//},
+	0x96: &handler{
+		func() Request { return new(SetAddressRequest) },
+	},
 
 	0xb0: &handler{
 		func() Request { return new(GetEventRequest) },
