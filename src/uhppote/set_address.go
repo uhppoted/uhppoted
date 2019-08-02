@@ -26,7 +26,7 @@ func (u *UHPPOTE) SetAddress(serialNumber uint32, address, mask, gateway net.IP)
 		Address:      address,
 		Mask:         mask,
 		Gateway:      gateway,
-		MagicNumber:  0x55aaaa55,
+		MagicWord:    0x55aaaa55,
 	}
 
 	// UTC0311-L04 doesn't seem to send a response. The reported remote IP address doesn't change on subsequent commands

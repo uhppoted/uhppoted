@@ -6,13 +6,14 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) SetAddress(request *messages.SetAddressRequest) (interface{}, error) {
+func (s *Simulator) SetAddress(request *messages.SetAddressRequest) interface{} {
 	if s.SerialNumber != request.SerialNumber {
-		return nil, nil
+		return nil
 	}
 
-	if request.MagicNumber != 0x55aaaa55 {
-		return nil, errors.New(fmt.Sprintf("Invalid 'magic number' - expected: %08x, received:%08x", 0x55aaaa55, request.MagicNumber))
+	if request.MagicWord != 0x55aaaa55 {
+		s.onError(errors.New(fmt.Sprintf("Invalid 'magic number' - expected: %08x, received:%08x", 0x55aaaa55, request.MagicWord)))
+		return nil
 	}
 
 	s.IpAddress = request.Address
@@ -21,8 +22,9 @@ func (s *Simulator) SetAddress(request *messages.SetAddressRequest) (interface{}
 
 	err := s.Save()
 	if err != nil {
-		return nil, err
+		s.onError(err)
+		return nil
 	}
 
-	return nil, nil
+	return nil
 }

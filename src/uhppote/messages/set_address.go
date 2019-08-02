@@ -11,5 +11,5 @@ type SetAddressRequest struct {
 	Address      net.IP             `uhppote:"offset:8"`
 	Mask         net.IP             `uhppote:"offset:12"`
 	Gateway      net.IP             `uhppote:"offset:16"`
-	MagicNumber  uint32             `uhppote:"offset:20"`
+	MagicWord    uint32             `uhppote:"offset:20"`
 }

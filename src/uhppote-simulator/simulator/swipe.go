@@ -36,7 +36,7 @@ func (s *Simulator) Swipe(deviceId uint32, cardNumber uint32, door uint8) bool {
 		RecordType: recordType,
 	}
 
-	s.Add(&event)
+	s.add(&event)
 
 	return granted && opened
 }

@@ -5,9 +5,9 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) SetListener(request *messages.SetListenerRequest) (*messages.SetListenerResponse, error) {
+func (s *Simulator) SetListener(request *messages.SetListenerRequest) *messages.SetListenerResponse {
 	if s.SerialNumber != request.SerialNumber {
-		return nil, nil
+		return nil
 	}
 
 	listener := net.UDPAddr{IP: request.Address, Port: int(request.Port)}
@@ -24,5 +24,5 @@ func (s *Simulator) SetListener(request *messages.SetListenerRequest) (*messages
 		Succeeded:    saved,
 	}
 
-	return &response, nil
+	return &response
 }

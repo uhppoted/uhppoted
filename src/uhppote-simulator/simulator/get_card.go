@@ -4,9 +4,9 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) GetCardById(request *messages.GetCardByIdRequest) (*messages.GetCardByIdResponse, error) {
+func (s *Simulator) GetCardById(request *messages.GetCardByIdRequest) *messages.GetCardByIdResponse {
 	if request.SerialNumber != s.SerialNumber {
-		return nil, nil
+		return nil
 	}
 
 	response := messages.GetCardByIdResponse{
@@ -26,12 +26,12 @@ func (s *Simulator) GetCardById(request *messages.GetCardByIdRequest) (*messages
 		}
 	}
 
-	return &response, nil
+	return &response
 }
 
-func (s *Simulator) GetCardByIndex(request *messages.GetCardByIndexRequest) (*messages.GetCardByIndexResponse, error) {
+func (s *Simulator) GetCardByIndex(request *messages.GetCardByIndexRequest) *messages.GetCardByIndexResponse {
 	if request.SerialNumber != s.SerialNumber {
-		return nil, nil
+		return nil
 	}
 
 	response := messages.GetCardByIndexResponse{
@@ -49,5 +49,5 @@ func (s *Simulator) GetCardByIndex(request *messages.GetCardByIndexRequest) (*me
 		response.Door4 = card.Doors[4]
 	}
 
-	return &response, nil
+	return &response
 }

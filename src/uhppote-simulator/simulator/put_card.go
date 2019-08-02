@@ -5,9 +5,9 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) PutCard(request *messages.PutCardRequest) (*messages.PutCardResponse, error) {
+func (s *Simulator) PutCard(request *messages.PutCardRequest) *messages.PutCardResponse {
 	if request.SerialNumber != s.SerialNumber {
-		return nil, nil
+		return nil
 	}
 
 	card := entities.Card{
@@ -34,5 +34,5 @@ func (s *Simulator) PutCard(request *messages.PutCardRequest) (*messages.PutCard
 		Succeeded:    saved,
 	}
 
-	return &response, nil
+	return &response
 }

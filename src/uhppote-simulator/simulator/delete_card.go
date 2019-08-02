@@ -4,9 +4,9 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) DeleteCard(request *messages.DeleteCardRequest) (*messages.DeleteCardResponse, error) {
+func (s *Simulator) DeleteCard(request *messages.DeleteCardRequest) *messages.DeleteCardResponse {
 	if request.SerialNumber != s.SerialNumber {
-		return nil, nil
+		return nil
 	}
 
 	deleted := s.Cards.Delete(request.CardNumber)
@@ -23,5 +23,5 @@ func (s *Simulator) DeleteCard(request *messages.DeleteCardRequest) (*messages.D
 		Succeeded:    deleted && saved,
 	}
 
-	return &response, nil
+	return &response
 }

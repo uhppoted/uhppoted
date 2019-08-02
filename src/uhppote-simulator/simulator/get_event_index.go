@@ -4,9 +4,9 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) GetEventIndex(request *messages.GetEventIndexRequest) (*messages.GetEventIndexResponse, error) {
+func (s *Simulator) GetEventIndex(request *messages.GetEventIndexRequest) *messages.GetEventIndexResponse {
 	if s.SerialNumber != request.SerialNumber {
-		return nil, nil
+		return nil
 	}
 
 	response := messages.GetEventIndexResponse{
@@ -14,5 +14,5 @@ func (s *Simulator) GetEventIndex(request *messages.GetEventIndexRequest) (*mess
 		Index:        s.Events.Index,
 	}
 
-	return &response, nil
+	return &response
 }

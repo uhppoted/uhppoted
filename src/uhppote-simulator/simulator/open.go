@@ -7,9 +7,9 @@ import (
 	"uhppote/types"
 )
 
-func (s *Simulator) OpenDoor(request *messages.OpenDoorRequest) (*messages.OpenDoorResponse, error) {
+func (s *Simulator) OpenDoor(request *messages.OpenDoorRequest) *messages.OpenDoorResponse {
 	if s.SerialNumber != request.SerialNumber {
-		return nil, nil
+		return nil
 	}
 
 	granted := false
@@ -31,7 +31,7 @@ func (s *Simulator) OpenDoor(request *messages.OpenDoorRequest) (*messages.OpenD
 			RecordType: 0x2c,
 		}
 
-		s.Add(&event)
+		s.add(&event)
 	}
 
 	response := messages.OpenDoorResponse{
@@ -39,5 +39,5 @@ func (s *Simulator) OpenDoor(request *messages.OpenDoorRequest) (*messages.OpenD
 		Succeeded:    granted && opened,
 	}
 
-	return &response, nil
+	return &response
 }

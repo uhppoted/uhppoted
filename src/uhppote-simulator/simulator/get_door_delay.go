@@ -4,13 +4,13 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) GetDoorDelay(request *messages.GetDoorDelayRequest) (*messages.GetDoorDelayResponse, error) {
+func (s *Simulator) GetDoorDelay(request *messages.GetDoorDelayRequest) *messages.GetDoorDelayResponse {
 	if request.SerialNumber != s.SerialNumber {
-		return nil, nil
+		return nil
 	}
 
 	if request.Door < 1 || request.Door > 4 {
-		return nil, nil
+		return nil
 	}
 
 	response := messages.GetDoorDelayResponse{
@@ -20,5 +20,5 @@ func (s *Simulator) GetDoorDelay(request *messages.GetDoorDelayRequest) (*messag
 		Delay:        s.Doors[request.Door].Delay.Seconds(),
 	}
 
-	return &response, nil
+	return &response
 }

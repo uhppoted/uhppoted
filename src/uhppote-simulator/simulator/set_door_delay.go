@@ -5,25 +5,26 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) SetDoorDelay(request *messages.SetDoorDelayRequest) (*messages.SetDoorDelayResponse, error) {
+func (s *Simulator) SetDoorDelay(request *messages.SetDoorDelayRequest) *messages.SetDoorDelayResponse {
 	if request.SerialNumber != s.SerialNumber {
-		return nil, nil
+		return nil
 	}
 
 	if request.Unit != 0x03 {
-		return nil, nil
+		return nil
 	}
 
 	door := request.Door
 	if door < 1 || door > 4 {
-		return nil, nil
+		return nil
 	}
 
 	s.Doors[door].Delay = entities.Delay(uint64(request.Delay) * 1000000000)
 
 	err := s.Save()
 	if err != nil {
-		return nil, err
+		s.onError(err)
+		return nil
 	}
 
 	response := messages.SetDoorDelayResponse{
@@ -33,5 +34,5 @@ func (s *Simulator) SetDoorDelay(request *messages.SetDoorDelayRequest) (*messag
 		Delay:        s.Doors[door].Delay.Seconds(),
 	}
 
-	return &response, nil
+	return &response
 }
