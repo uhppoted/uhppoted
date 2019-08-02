@@ -16,143 +16,83 @@ import (
 	"uhppote/messages"
 )
 
-type handler struct {
-	factory    func() messages.Request
-	dispatcher func(*simulator.Simulator, messages.Request) (messages.Response, error)
-}
+type handler func(*simulator.Simulator, messages.Request) (messages.Response, error)
 
-var handlers = map[byte]*handler{
-	0x20: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.GetStatus(rq.(*messages.GetStatusRequest))
-		},
+var handlers = map[byte]handler{
+	0x20: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.GetStatus(rq.(*messages.GetStatusRequest))
 	},
 
-	0x30: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.SetTime(rq.(*messages.SetTimeRequest))
-		},
+	0x30: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.SetTime(rq.(*messages.SetTimeRequest))
 	},
 
-	0x32: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.GetTime(rq.(*messages.GetTimeRequest))
-		},
+	0x32: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.GetTime(rq.(*messages.GetTimeRequest))
 	},
 
-	0x40: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.OpenDoor(rq.(*messages.OpenDoorRequest))
-		},
+	0x40: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.OpenDoor(rq.(*messages.OpenDoorRequest))
 	},
 
-	0x50: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.PutCard(rq.(*messages.PutCardRequest))
-		},
+	0x50: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.PutCard(rq.(*messages.PutCardRequest))
 	},
 
-	0x52: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.DeleteCard(rq.(*messages.DeleteCardRequest))
-		},
+	0x52: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.DeleteCard(rq.(*messages.DeleteCardRequest))
 	},
 
-	0x54: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.DeleteCards(rq.(*messages.DeleteCardsRequest))
-		},
+	0x54: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.DeleteCards(rq.(*messages.DeleteCardsRequest))
 	},
 
-	0x58: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.GetCards(rq.(*messages.GetCardsRequest))
-		},
+	0x58: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.GetCards(rq.(*messages.GetCardsRequest))
 	},
 
-	0x5a: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.GetCardById(rq.(*messages.GetCardByIdRequest))
-		},
+	0x5a: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.GetCardById(rq.(*messages.GetCardByIdRequest))
 	},
 
-	0x5c: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.GetCardByIndex(rq.(*messages.GetCardByIndexRequest))
-		},
+	0x5c: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.GetCardByIndex(rq.(*messages.GetCardByIndexRequest))
 	},
 
-	0x80: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.SetDoorDelay(rq.(*messages.SetDoorDelayRequest))
-		},
+	0x80: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.SetDoorDelay(rq.(*messages.SetDoorDelayRequest))
 	},
 
-	0x82: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.GetDoorDelay(rq.(*messages.GetDoorDelayRequest))
-		},
+	0x82: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.GetDoorDelay(rq.(*messages.GetDoorDelayRequest))
 	},
 
-	0x90: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.SetListener(rq.(*messages.SetListenerRequest))
-		},
+	0x90: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.SetListener(rq.(*messages.SetListenerRequest))
 	},
 
-	0x92: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.GetListener(rq.(*messages.GetListenerRequest))
-		},
+	0x92: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.GetListener(rq.(*messages.GetListenerRequest))
 	},
 
-	0x94: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.Find(rq.(*messages.FindDevicesRequest))
-		},
+	0x94: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.Find(rq.(*messages.FindDevicesRequest))
 	},
 
-	0x96: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.SetAddress(rq.(*messages.SetAddressRequest))
-		},
+	0x96: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.SetAddress(rq.(*messages.SetAddressRequest))
 	},
 
-	0xb0: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.GetEvent(rq.(*messages.GetEventRequest))
-		},
+	0xb0: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.GetEvent(rq.(*messages.GetEventRequest))
 	},
 
-	0xb2: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.SetEventIndex(rq.(*messages.SetEventIndexRequest))
-		},
+	0xb2: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.SetEventIndex(rq.(*messages.SetEventIndexRequest))
 	},
 
-	0xb4: &handler{
-		nil,
-		func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
-			return s.GetEventIndex(rq.(*messages.GetEventIndexRequest))
-		},
+	0xb4: func(s *simulator.Simulator, rq messages.Request) (messages.Response, error) {
+		return s.GetEventIndex(rq.(*messages.GetEventIndexRequest))
 	},
 }
 
@@ -242,34 +182,14 @@ func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte, queue chan entities.
 		return
 	}
 
-	if h.factory == nil {
-		request, err := messages.UnmarshalRequest(bytes)
-		if err != nil {
-			fmt.Printf("ERROR: %v\n", err)
-			return
-		}
-
-		for _, s := range simulators {
-			response, err := h.dispatcher(s, *request)
-			if err != nil {
-				fmt.Printf("ERROR: %v\n", err)
-			} else if response != nil && !reflect.ValueOf(response).IsNil() {
-				queue <- entities.Message{src, response}
-			}
-		}
-		return
-	}
-
-	// TODO: remove when all requests moved to RequestUnmarshal
-	request := h.factory()
-	err := codec.Unmarshal(bytes, request)
+	request, err := messages.UnmarshalRequest(bytes)
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 		return
 	}
 
 	for _, s := range simulators {
-		response, err := h.dispatcher(s, request)
+		response, err := h(s, *request)
 		if err != nil {
 			fmt.Printf("ERROR: %v\n", err)
 		} else if response != nil && !reflect.ValueOf(response).IsNil() {
