@@ -8,6 +8,7 @@ The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Acc
 
 ## Releases
 
+- v0.02: load access control list from TSV file
 - v0.01: bare-bones but functional CLI
 
 ## Modules
@@ -66,8 +67,8 @@ Supported commands:
 - get-events
 - get-swipe-index
 - set-event-index
-- open             
-- listen             
+- open
+- listen
 
 ## uhppote-simulator
 

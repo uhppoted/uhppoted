@@ -1,28 +1,17 @@
 package uhppote
 
 import (
+	"uhppote/messages"
 	"uhppote/types"
 )
 
-type DeleteCardsRequest struct {
-	MsgType      types.MsgType      `uhppote:"value:0x54"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-	MagicNumber  uint32             `uhppote:"offset:8"`
-}
-
-type DeleteCardsResponse struct {
-	MsgType      types.MsgType      `uhppote:"value:0x54"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-	Succeeded    bool               `uhppote:"offset:8"`
-}
-
 func (u *UHPPOTE) DeleteCards(serialNumber uint32) (*types.Result, error) {
-	request := DeleteCardsRequest{
+	request := messages.DeleteCardsRequest{
 		SerialNumber: types.SerialNumber(serialNumber),
 		MagicNumber:  0x55aaaa55,
 	}
 
-	reply := DeleteCardsResponse{}
+	reply := messages.DeleteCardsResponse{}
 
 	err := u.Execute(serialNumber, request, &reply)
 	if err != nil {
