@@ -20,7 +20,7 @@ Simulator
 5.  fuse
 6.  Look into ARP for set-address
 7.  Rework error handling to use Wrap/Frame
-8. godoc
+8.  godoc
 9. Integration tests
 10. Rework grant/revoke for individual doors (labelled)
 11. Dig into simulator not receiving broadcast unless listening on 0.0.0.0:60000
@@ -33,3 +33,4 @@ Simulator
 15. websocket command interface
 16. get-acl
 17. uhppoted
+18. Update to use modules

@@ -35,9 +35,9 @@ var handlers = map[byte]*handler{
 		func() Request { return new(DeleteCardRequest) },
 	},
 
-	//0x54: &handler{
-	//	func() Request { return new(DeleteCardsRequest) },
-	//},
+	0x54: &handler{
+		func() Request { return new(DeleteCardsRequest) },
+	},
 
 	0x58: &handler{
 		func() Request { return new(GetCardsRequest) },
