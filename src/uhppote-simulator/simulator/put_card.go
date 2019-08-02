@@ -1,11 +1,11 @@
 package simulator
 
 import (
-	"uhppote"
 	"uhppote-simulator/simulator/entities"
+	"uhppote/messages"
 )
 
-func (s *Simulator) PutCard(request *uhppote.PutCardRequest) (*uhppote.PutCardResponse, error) {
+func (s *Simulator) PutCard(request *messages.PutCardRequest) (*messages.PutCardResponse, error) {
 	if request.SerialNumber != s.SerialNumber {
 		return nil, nil
 	}
@@ -29,7 +29,7 @@ func (s *Simulator) PutCard(request *uhppote.PutCardRequest) (*uhppote.PutCardRe
 		saved = true
 	}
 
-	response := uhppote.PutCardResponse{
+	response := messages.PutCardResponse{
 		SerialNumber: s.SerialNumber,
 		Succeeded:    saved,
 	}

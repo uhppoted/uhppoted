@@ -1,4 +1,4 @@
-package uhppote
+package messages
 
 import (
 	"net"

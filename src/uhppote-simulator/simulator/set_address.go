@@ -3,10 +3,10 @@ package simulator
 import (
 	"errors"
 	"fmt"
-	"uhppote"
+	"uhppote/messages"
 )
 
-func (s *Simulator) SetAddress(request *uhppote.SetAddressRequest) (interface{}, error) {
+func (s *Simulator) SetAddress(request *messages.SetAddressRequest) (interface{}, error) {
 	if s.SerialNumber != request.SerialNumber {
 		return nil, nil
 	}

@@ -4,17 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"uhppote/messages"
 	"uhppote/types"
 )
-
-type SetAddressRequest struct {
-	MsgType      types.MsgType      `uhppote:"value:0x96"`
-	SerialNumber types.SerialNumber `uhppote:"offset:4"`
-	Address      net.IP             `uhppote:"offset:8"`
-	Mask         net.IP             `uhppote:"offset:12"`
-	Gateway      net.IP             `uhppote:"offset:16"`
-	MagicNumber  uint32             `uhppote:"offset:20"`
-}
 
 func (u *UHPPOTE) SetAddress(serialNumber uint32, address, mask, gateway net.IP) (*types.Result, error) {
 	if address.To4() == nil {
@@ -29,7 +21,7 @@ func (u *UHPPOTE) SetAddress(serialNumber uint32, address, mask, gateway net.IP)
 		return nil, errors.New(fmt.Sprintf("Invalid gateway address: %v", gateway))
 	}
 
-	request := SetAddressRequest{
+	request := messages.SetAddressRequest{
 		SerialNumber: types.SerialNumber(serialNumber),
 		Address:      address,
 		Mask:         mask,
