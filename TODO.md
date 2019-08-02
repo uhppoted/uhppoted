@@ -3,10 +3,12 @@
 # IN PROGRESS
 
 Simulator
-- migrate messages
 - rework simulator.run to use tx/rx channels
 - REST interface
-- CLI
+  - list devices
+  - new device
+  - delete device
+  - verify events
 - rework set-XXX to revert if save fails
 
 # TODO
@@ -34,3 +36,4 @@ Simulator
 16. get-acl
 17. uhppoted
 18. Update to use modules
+19. simulator-cli
