@@ -6,15 +6,16 @@ import (
 	"uhppote/types"
 )
 
-func (s *Simulator) SetTime(request *messages.SetTimeRequest) (interface{}, error) {
+func (s *Simulator) SetTime(request *messages.SetTimeRequest) *messages.SetTimeResponse {
 	if s.SerialNumber != request.SerialNumber {
-		return nil, nil
+		return nil
 	}
 
 	dt := time.Time(request.DateTime).Format("2006-01-02 15:04:05")
 	utc, err := time.ParseInLocation("2006-01-02 15:04:05", dt, time.UTC)
 	if err != nil {
-		return nil, err
+		s.onError(err)
+		return nil
 	}
 
 	now := time.Now().UTC()
@@ -24,7 +25,8 @@ func (s *Simulator) SetTime(request *messages.SetTimeRequest) (interface{}, erro
 	s.TimeOffset = Offset(delta)
 	err = s.Save()
 	if err != nil {
-		return nil, err
+		s.onError(err)
+		return nil
 	}
 
 	response := messages.SetTimeResponse{
@@ -32,5 +34,5 @@ func (s *Simulator) SetTime(request *messages.SetTimeRequest) (interface{}, erro
 		DateTime:     types.DateTime(datetime),
 	}
 
-	return &response, nil
+	return &response
 }

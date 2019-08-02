@@ -6,9 +6,9 @@ import (
 	"uhppote/types"
 )
 
-func (s *Simulator) GetTime(request *messages.GetTimeRequest) (interface{}, error) {
+func (s *Simulator) GetTime(request *messages.GetTimeRequest) *messages.GetTimeResponse {
 	if s.SerialNumber != request.SerialNumber {
-		return nil, nil
+		return nil
 	}
 
 	utc := time.Now().UTC()
@@ -19,5 +19,5 @@ func (s *Simulator) GetTime(request *messages.GetTimeRequest) (interface{}, erro
 		DateTime:     types.DateTime(datetime),
 	}
 
-	return &response, nil
+	return &response
 }

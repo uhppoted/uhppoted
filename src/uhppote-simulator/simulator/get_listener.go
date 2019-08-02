@@ -4,9 +4,9 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) GetListener(request *messages.GetListenerRequest) (*messages.GetListenerResponse, error) {
+func (s *Simulator) GetListener(request *messages.GetListenerRequest) *messages.GetListenerResponse {
 	if s.SerialNumber != request.SerialNumber {
-		return nil, nil
+		return nil
 	}
 
 	response := messages.GetListenerResponse{
@@ -15,5 +15,5 @@ func (s *Simulator) GetListener(request *messages.GetListenerRequest) (*messages
 		Port:         uint16(s.Listener.Port),
 	}
 
-	return &response, nil
+	return &response
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net"
 	"time"
@@ -138,7 +139,36 @@ func (s *Simulator) send(dest *net.UDPAddr, message interface{}) {
 	}
 }
 
-func (s *Simulator) Add(e *entities.Event) {
+func saveGZ(filepath string, s *Simulator) error {
+	b, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	var buffer bytes.Buffer
+	zw := gzip.NewWriter(&buffer)
+	_, err = zw.Write(b)
+	if err != nil {
+		return err
+	}
+
+	if err = zw.Close(); err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(filepath, buffer.Bytes(), 0644)
+}
+
+func save(filepath string, s *Simulator) error {
+	bytes, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(filepath, bytes, 0644)
+}
+
+func (s *Simulator) add(e *entities.Event) {
 	if e != nil {
 		s.Events.Add(e)
 		s.Save()
@@ -180,31 +210,6 @@ func (s *Simulator) Add(e *entities.Event) {
 	}
 }
 
-func saveGZ(filepath string, s *Simulator) error {
-	b, err := json.MarshalIndent(s, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	var buffer bytes.Buffer
-	zw := gzip.NewWriter(&buffer)
-	_, err = zw.Write(b)
-	if err != nil {
-		return err
-	}
-
-	if err = zw.Close(); err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(filepath, buffer.Bytes(), 0644)
-}
-
-func save(filepath string, s *Simulator) error {
-	bytes, err := json.MarshalIndent(s, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(filepath, bytes, 0644)
+func (s *Simulator) onError(err error) {
+	fmt.Printf("ERROR: %v\n", err)
 }

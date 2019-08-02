@@ -6,9 +6,9 @@ import (
 	"uhppote/types"
 )
 
-func (s *Simulator) GetStatus(request *messages.GetStatusRequest) (interface{}, error) {
+func (s *Simulator) GetStatus(request *messages.GetStatusRequest) *messages.GetStatusResponse {
 	if s.SerialNumber != request.SerialNumber {
-		return nil, nil
+		return nil
 	}
 
 	utc := time.Now().UTC()
@@ -48,5 +48,5 @@ func (s *Simulator) GetStatus(request *messages.GetStatusRequest) (interface{}, 
 		response.SwipeReason = event.Type
 	}
 
-	return &response, nil
+	return &response
 }

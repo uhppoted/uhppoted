@@ -1,16 +1,19 @@
 package simulator
 
 import (
+	"errors"
+	"fmt"
 	"uhppote/messages"
 )
 
-func (s *Simulator) SetEventIndex(request *messages.SetEventIndexRequest) (*messages.SetEventIndexResponse, error) {
+func (s *Simulator) SetEventIndex(request *messages.SetEventIndexRequest) *messages.SetEventIndexResponse {
 	if s.SerialNumber != request.SerialNumber {
-		return nil, nil
+		return nil
 	}
 
 	if request.MagicWord != 0x55aaaa55 {
-		return nil, nil
+		s.onError(errors.New(fmt.Sprintf("Invalid 'magic number' - expected: %08x, received:%08x", 0x55aaaa55, request.MagicWord)))
+		return nil
 	}
 
 	updated := false
@@ -27,5 +30,5 @@ func (s *Simulator) SetEventIndex(request *messages.SetEventIndexRequest) (*mess
 		Changed:      updated && saved,
 	}
 
-	return &response, nil
+	return &response
 }

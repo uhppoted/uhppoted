@@ -20,7 +20,7 @@ func TestMarshalSetAddressRequest(t *testing.T) {
 		Address:      net.IPv4(192, 168, 1, 125),
 		Mask:         net.IPv4(255, 255, 255, 0),
 		Gateway:      net.IPv4(192, 168, 1, 0),
-		MagicNumber:  0x55aaaa55,
+		MagicWord:    0x55aaaa55,
 	}
 
 	m, err := codec.Marshal(request)
