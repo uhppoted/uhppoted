@@ -6,7 +6,7 @@ import (
 	"uhppote/types"
 )
 
-func (s *Simulator) GetTime(request *messages.GetTimeRequest) *messages.GetTimeResponse {
+func (s *Simulator) getTime(request *messages.GetTimeRequest) *messages.GetTimeResponse {
 	if s.SerialNumber != request.SerialNumber {
 		return nil
 	}

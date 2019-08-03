@@ -18,53 +18,53 @@ import (
 type handler func(*Simulator, messages.Request) messages.Response
 
 var handlers = map[byte]handler{
-	0x20: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.GetStatus(rq.(*messages.GetStatusRequest))
-	},
+	// 0x20: func(s *Simulator, rq messages.Request) messages.Response {
+	//		return s.GetStatus(rq.(*messages.GetStatusRequest))
+	// },
 
-	0x30: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.SetTime(rq.(*messages.SetTimeRequest))
-	},
+	// 0x30: func(s *Simulator, rq messages.Request) messages.Response {
+	// 	return s.SetTime(rq.(*messages.SetTimeRequest))
+	// },
 
-	0x32: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.GetTime(rq.(*messages.GetTimeRequest))
-	},
+	// 0x32: func(s *Simulator, rq messages.Request) messages.Response {
+	// 	return s.GetTime(rq.(*messages.GetTimeRequest))
+	// },
 
-	0x40: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.OpenDoor(rq.(*messages.OpenDoorRequest))
-	},
+	// 0x40: func(s *Simulator, rq messages.Request) messages.Response {
+	// 	return s.OpenDoor(rq.(*messages.OpenDoorRequest))
+	// },
 
-	0x50: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.PutCard(rq.(*messages.PutCardRequest))
-	},
+	// 0x50: func(s *Simulator, rq messages.Request) messages.Response {
+	// 	return s.PutCard(rq.(*messages.PutCardRequest))
+	// },
 
-	0x52: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.DeleteCard(rq.(*messages.DeleteCardRequest))
-	},
+	// 0x52: func(s *Simulator, rq messages.Request) messages.Response {
+	// 	return s.DeleteCard(rq.(*messages.DeleteCardRequest))
+	// },
 
-	0x54: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.DeleteCards(rq.(*messages.DeleteCardsRequest))
-	},
+	// 0x54: func(s *Simulator, rq messages.Request) messages.Response {
+	// 	return s.DeleteCards(rq.(*messages.DeleteCardsRequest))
+	// },
 
-	0x58: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.GetCards(rq.(*messages.GetCardsRequest))
-	},
+	// 0x58: func(s *Simulator, rq messages.Request) messages.Response {
+	// 	return s.GetCards(rq.(*messages.GetCardsRequest))
+	// },
 
-	0x5a: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.GetCardById(rq.(*messages.GetCardByIdRequest))
-	},
+	// 0x5a: func(s *Simulator, rq messages.Request) messages.Response {
+	// 	return s.GetCardById(rq.(*messages.GetCardByIdRequest))
+	// },
 
-	0x5c: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.GetCardByIndex(rq.(*messages.GetCardByIndexRequest))
-	},
+	// 0x5c: func(s *Simulator, rq messages.Request) messages.Response {
+	// 	return s.GetCardByIndex(rq.(*messages.GetCardByIndexRequest))
+	// },
 
-	0x80: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.SetDoorDelay(rq.(*messages.SetDoorDelayRequest))
-	},
+	// 0x80: func(s *Simulator, rq messages.Request) messages.Response {
+	// 	return s.SetDoorDelay(rq.(*messages.SetDoorDelayRequest))
+	// },
 
-	0x82: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.GetDoorDelay(rq.(*messages.GetDoorDelayRequest))
-	},
+	// 0x82: func(s *Simulator, rq messages.Request) messages.Response {
+	// 	return s.GetDoorDelay(rq.(*messages.GetDoorDelayRequest))
+	// },
 
 	0x90: func(s *Simulator, rq messages.Request) messages.Response {
 		return s.SetListener(rq.(*messages.SetListenerRequest))
@@ -120,13 +120,47 @@ type Simulator struct {
 }
 
 func (s *Simulator) Handle(b byte, rq messages.Request) messages.Response {
-	h := handlers[b]
-	if h == nil {
-		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Unsupported message type 0x%02x", b)))
-		return nil
+	switch rq.(type) {
+	case *messages.GetStatusRequest:
+		return s.getStatus(rq.(*messages.GetStatusRequest))
+
+	case *messages.SetTimeRequest:
+		return s.setTime(rq.(*messages.SetTimeRequest))
+
+	case *messages.GetTimeRequest:
+		return s.getTime(rq.(*messages.GetTimeRequest))
+
+	case *messages.OpenDoorRequest:
+		return s.openDoor(rq.(*messages.OpenDoorRequest))
+
+	case *messages.PutCardRequest:
+		return s.putCard(rq.(*messages.PutCardRequest))
+
+	case *messages.DeleteCardRequest:
+		return s.deleteCard(rq.(*messages.DeleteCardRequest))
+
+	case *messages.DeleteCardsRequest:
+		return s.deleteCards(rq.(*messages.DeleteCardsRequest))
+
+	case *messages.GetCardsRequest:
+		return s.getCards(rq.(*messages.GetCardsRequest))
+
+	case *messages.GetCardByIndexRequest:
+		return s.getCardByIndex(rq.(*messages.GetCardByIndexRequest))
+
+	case *messages.SetDoorDelayRequest:
+		return s.setDoorDelay(rq.(*messages.SetDoorDelayRequest))
+
+	case *messages.GetDoorDelayRequest:
+		return s.GetDoorDelay(rq.(*messages.GetDoorDelayRequest))
 	}
 
-	return h(s, rq)
+	if h := handlers[b]; h != nil {
+		return h(s, rq)
+	}
+
+	fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Unsupported message type 0x%02x", b)))
+	return nil
 }
 
 func Load(filepath string, compressed bool) (*Simulator, error) {

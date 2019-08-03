@@ -40,6 +40,10 @@ func (delay Delay) Seconds() uint8 {
 	return uint8(time.Duration(delay).Seconds())
 }
 
+func DelayFromSeconds(t uint8) Delay {
+	return Delay(time.Duration(int64(t) * 1000000000))
+}
+
 func NewDoor(id uint8) *Door {
 	door := new(Door)
 

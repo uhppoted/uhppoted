@@ -29,7 +29,7 @@ func (s *Simulator) GetCardById(request *messages.GetCardByIdRequest) *messages.
 	return &response
 }
 
-func (s *Simulator) GetCardByIndex(request *messages.GetCardByIndexRequest) *messages.GetCardByIndexResponse {
+func (s *Simulator) getCardByIndex(request *messages.GetCardByIndexRequest) *messages.GetCardByIndexResponse {
 	if request.SerialNumber != s.SerialNumber {
 		return nil
 	}

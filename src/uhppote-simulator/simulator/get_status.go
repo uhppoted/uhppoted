@@ -6,7 +6,7 @@ import (
 	"uhppote/types"
 )
 
-func (s *Simulator) GetStatus(request *messages.GetStatusRequest) *messages.GetStatusResponse {
+func (s *Simulator) getStatus(request *messages.GetStatusRequest) *messages.GetStatusResponse {
 	if s.SerialNumber != request.SerialNumber {
 		return nil
 	}
