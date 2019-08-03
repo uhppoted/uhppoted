@@ -4,7 +4,7 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) GetCards(request *messages.GetCardsRequest) *messages.GetCardsResponse {
+func (s *Simulator) getCards(request *messages.GetCardsRequest) *messages.GetCardsResponse {
 	if s.SerialNumber != request.SerialNumber {
 		return nil
 	}

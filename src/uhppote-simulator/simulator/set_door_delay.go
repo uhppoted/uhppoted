@@ -5,7 +5,7 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) SetDoorDelay(request *messages.SetDoorDelayRequest) *messages.SetDoorDelayResponse {
+func (s *Simulator) setDoorDelay(request *messages.SetDoorDelayRequest) *messages.SetDoorDelayResponse {
 	if request.SerialNumber != s.SerialNumber {
 		return nil
 	}
@@ -24,7 +24,6 @@ func (s *Simulator) SetDoorDelay(request *messages.SetDoorDelayRequest) *message
 	err := s.Save()
 	if err != nil {
 		s.onError(err)
-		return nil
 	}
 
 	response := messages.SetDoorDelayResponse{

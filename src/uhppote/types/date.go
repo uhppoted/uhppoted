@@ -14,6 +14,16 @@ func (d Date) String() string {
 	return time.Time(d).Format("2006-01-02")
 }
 
+func DateFromString(s string) (*Date, error) {
+	date, err := time.ParseInLocation("2006-01-02", s, time.Local)
+	if err != nil {
+		return nil, err
+	}
+
+	x := Date(date)
+	return &x, nil
+}
+
 func (d Date) MarshalUT0311L0x() ([]byte, error) {
 	encoded, err := bcd.Encode(time.Time(d).Format("20060102"))
 

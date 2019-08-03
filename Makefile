@@ -50,6 +50,11 @@ test: build
 	go test -count=1 src/uhppote/messages/*.go
 	go test -count=1 src/uhppote/encoding/bcd/*.go
 	go test -count=1 src/uhppote/encoding/UTO311-L0x/*.go
+	go test -count=1 src/uhppote-simulator/simulator/*.go
+
+test-simulator: build
+	go clean -testcache
+	go test -count=1 src/uhppote-simulator/simulator/*.go
 
 integration-tests: build
 	go clean -testcache

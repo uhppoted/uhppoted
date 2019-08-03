@@ -7,7 +7,7 @@ import (
 	"uhppote/types"
 )
 
-func (s *Simulator) OpenDoor(request *messages.OpenDoorRequest) *messages.OpenDoorResponse {
+func (s *Simulator) openDoor(request *messages.OpenDoorRequest) *messages.OpenDoorResponse {
 	if s.SerialNumber != request.SerialNumber {
 		return nil
 	}

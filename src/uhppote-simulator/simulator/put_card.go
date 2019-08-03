@@ -5,7 +5,7 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) PutCard(request *messages.PutCardRequest) *messages.PutCardResponse {
+func (s *Simulator) putCard(request *messages.PutCardRequest) *messages.PutCardResponse {
 	if request.SerialNumber != s.SerialNumber {
 		return nil
 	}

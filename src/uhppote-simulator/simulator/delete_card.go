@@ -4,7 +4,7 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) DeleteCard(request *messages.DeleteCardRequest) *messages.DeleteCardResponse {
+func (s *Simulator) deleteCard(request *messages.DeleteCardRequest) *messages.DeleteCardResponse {
 	if request.SerialNumber != s.SerialNumber {
 		return nil
 	}
