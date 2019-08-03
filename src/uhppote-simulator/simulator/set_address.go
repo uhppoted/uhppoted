@@ -6,7 +6,7 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) SetAddress(request *messages.SetAddressRequest) interface{} {
+func (s *Simulator) setAddress(request *messages.SetAddressRequest) interface{} {
 	if s.SerialNumber != request.SerialNumber {
 		return nil
 	}

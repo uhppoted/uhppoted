@@ -15,86 +15,6 @@ import (
 	"uhppote/types"
 )
 
-type handler func(*Simulator, messages.Request) messages.Response
-
-var handlers = map[byte]handler{
-	// 0x20: func(s *Simulator, rq messages.Request) messages.Response {
-	//		return s.GetStatus(rq.(*messages.GetStatusRequest))
-	// },
-
-	// 0x30: func(s *Simulator, rq messages.Request) messages.Response {
-	// 	return s.SetTime(rq.(*messages.SetTimeRequest))
-	// },
-
-	// 0x32: func(s *Simulator, rq messages.Request) messages.Response {
-	// 	return s.GetTime(rq.(*messages.GetTimeRequest))
-	// },
-
-	// 0x40: func(s *Simulator, rq messages.Request) messages.Response {
-	// 	return s.OpenDoor(rq.(*messages.OpenDoorRequest))
-	// },
-
-	// 0x50: func(s *Simulator, rq messages.Request) messages.Response {
-	// 	return s.PutCard(rq.(*messages.PutCardRequest))
-	// },
-
-	// 0x52: func(s *Simulator, rq messages.Request) messages.Response {
-	// 	return s.DeleteCard(rq.(*messages.DeleteCardRequest))
-	// },
-
-	// 0x54: func(s *Simulator, rq messages.Request) messages.Response {
-	// 	return s.DeleteCards(rq.(*messages.DeleteCardsRequest))
-	// },
-
-	// 0x58: func(s *Simulator, rq messages.Request) messages.Response {
-	// 	return s.GetCards(rq.(*messages.GetCardsRequest))
-	// },
-
-	// 0x5a: func(s *Simulator, rq messages.Request) messages.Response {
-	// 	return s.GetCardById(rq.(*messages.GetCardByIdRequest))
-	// },
-
-	// 0x5c: func(s *Simulator, rq messages.Request) messages.Response {
-	// 	return s.GetCardByIndex(rq.(*messages.GetCardByIndexRequest))
-	// },
-
-	// 0x80: func(s *Simulator, rq messages.Request) messages.Response {
-	// 	return s.SetDoorDelay(rq.(*messages.SetDoorDelayRequest))
-	// },
-
-	// 0x82: func(s *Simulator, rq messages.Request) messages.Response {
-	// 	return s.GetDoorDelay(rq.(*messages.GetDoorDelayRequest))
-	// },
-
-	0x90: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.SetListener(rq.(*messages.SetListenerRequest))
-	},
-
-	0x92: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.GetListener(rq.(*messages.GetListenerRequest))
-	},
-
-	0x94: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.Find(rq.(*messages.FindDevicesRequest))
-	},
-
-	0x96: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.SetAddress(rq.(*messages.SetAddressRequest))
-	},
-
-	0xb0: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.GetEvent(rq.(*messages.GetEventRequest))
-	},
-
-	0xb2: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.SetEventIndex(rq.(*messages.SetEventIndexRequest))
-	},
-
-	0xb4: func(s *Simulator, rq messages.Request) messages.Response {
-		return s.GetEventIndex(rq.(*messages.GetEventIndexRequest))
-	},
-}
-
 type Simulator struct {
 	File       string                `json:"-"`
 	Compressed bool                  `json:"-"`
@@ -119,8 +39,8 @@ type Simulator struct {
 	Events         entities.EventList       `json:"events"`
 }
 
-func (s *Simulator) Handle(b byte, rq messages.Request) messages.Response {
-	switch rq.(type) {
+func (s *Simulator) Handle(rq messages.Request) messages.Response {
+	switch v := rq.(type) {
 	case *messages.GetStatusRequest:
 		return s.getStatus(rq.(*messages.GetStatusRequest))
 
@@ -153,14 +73,32 @@ func (s *Simulator) Handle(b byte, rq messages.Request) messages.Response {
 
 	case *messages.GetDoorDelayRequest:
 		return s.GetDoorDelay(rq.(*messages.GetDoorDelayRequest))
+
+	case *messages.SetListenerRequest:
+		return s.setListener(rq.(*messages.SetListenerRequest))
+
+	case *messages.GetListenerRequest:
+		return s.getListener(rq.(*messages.GetListenerRequest))
+
+	case *messages.FindDevicesRequest:
+		return s.find(rq.(*messages.FindDevicesRequest))
+
+	case *messages.SetAddressRequest:
+		return s.setAddress(rq.(*messages.SetAddressRequest))
+
+	case *messages.GetEventRequest:
+		return s.getEvent(rq.(*messages.GetEventRequest))
+
+	case *messages.SetEventIndexRequest:
+		return s.setEventIndex(rq.(*messages.SetEventIndexRequest))
+
+	case *messages.GetEventIndexRequest:
+		return s.GetEventIndex(rq.(*messages.GetEventIndexRequest))
+
+	default:
+		panic(errors.New(fmt.Sprintf("Unsupported message type %T", v)))
 	}
 
-	if h := handlers[b]; h != nil {
-		return h(s, rq)
-	}
-
-	fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Unsupported message type 0x%02x", b)))
-	return nil
 }
 
 func Load(filepath string, compressed bool) (*Simulator, error) {
@@ -228,11 +166,15 @@ func load(filepath string) (*Simulator, error) {
 }
 
 func (s *Simulator) Save() error {
-	if s.Compressed {
-		return saveGZ(s.File, s)
+	if s.File != "" {
+		if s.Compressed {
+			return saveGZ(s.File, s)
+		}
+
+		return save(s.File, s)
 	}
 
-	return save(s.File, s)
+	return nil
 }
 
 func (s *Simulator) send(dest *net.UDPAddr, message interface{}) {

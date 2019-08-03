@@ -6,7 +6,7 @@ import (
 	"uhppote/types"
 )
 
-func (s *Simulator) Find(request *messages.FindDevicesRequest) *messages.FindDevicesResponse {
+func (s *Simulator) find(request *messages.FindDevicesRequest) *messages.FindDevicesResponse {
 	utc := time.Now().UTC()
 	datetime := utc.Add(time.Duration(s.TimeOffset))
 

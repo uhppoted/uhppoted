@@ -6,7 +6,7 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) SetEventIndex(request *messages.SetEventIndexRequest) *messages.SetEventIndexResponse {
+func (s *Simulator) setEventIndex(request *messages.SetEventIndexRequest) *messages.SetEventIndexResponse {
 	if s.SerialNumber != request.SerialNumber {
 		return nil
 	}

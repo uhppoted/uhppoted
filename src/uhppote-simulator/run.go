@@ -92,7 +92,7 @@ func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte, queue chan entities.
 	}
 
 	for _, s := range simulators {
-		response := s.Handle(bytes[1], request)
+		response := s.Handle(request)
 		if response != nil && !reflect.ValueOf(response).IsNil() {
 			queue <- entities.Message{src, response}
 		}
