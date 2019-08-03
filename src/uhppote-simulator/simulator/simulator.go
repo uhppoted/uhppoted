@@ -4,16 +4,96 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net"
 	"time"
 	"uhppote"
 	"uhppote-simulator/simulator/entities"
+	"uhppote/messages"
 	"uhppote/types"
 )
 
-type Offset time.Duration
+type handler func(*Simulator, messages.Request) messages.Response
+
+var handlers = map[byte]handler{
+	0x20: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.GetStatus(rq.(*messages.GetStatusRequest))
+	},
+
+	0x30: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.SetTime(rq.(*messages.SetTimeRequest))
+	},
+
+	0x32: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.GetTime(rq.(*messages.GetTimeRequest))
+	},
+
+	0x40: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.OpenDoor(rq.(*messages.OpenDoorRequest))
+	},
+
+	0x50: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.PutCard(rq.(*messages.PutCardRequest))
+	},
+
+	0x52: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.DeleteCard(rq.(*messages.DeleteCardRequest))
+	},
+
+	0x54: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.DeleteCards(rq.(*messages.DeleteCardsRequest))
+	},
+
+	0x58: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.GetCards(rq.(*messages.GetCardsRequest))
+	},
+
+	0x5a: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.GetCardById(rq.(*messages.GetCardByIdRequest))
+	},
+
+	0x5c: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.GetCardByIndex(rq.(*messages.GetCardByIndexRequest))
+	},
+
+	0x80: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.SetDoorDelay(rq.(*messages.SetDoorDelayRequest))
+	},
+
+	0x82: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.GetDoorDelay(rq.(*messages.GetDoorDelayRequest))
+	},
+
+	0x90: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.SetListener(rq.(*messages.SetListenerRequest))
+	},
+
+	0x92: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.GetListener(rq.(*messages.GetListenerRequest))
+	},
+
+	0x94: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.Find(rq.(*messages.FindDevicesRequest))
+	},
+
+	0x96: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.SetAddress(rq.(*messages.SetAddressRequest))
+	},
+
+	0xb0: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.GetEvent(rq.(*messages.GetEventRequest))
+	},
+
+	0xb2: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.SetEventIndex(rq.(*messages.SetEventIndexRequest))
+	},
+
+	0xb4: func(s *Simulator, rq messages.Request) messages.Response {
+		return s.GetEventIndex(rq.(*messages.GetEventIndexRequest))
+	},
+}
 
 type Simulator struct {
 	File       string                `json:"-"`
@@ -26,7 +106,7 @@ type Simulator struct {
 	Gateway        net.IP                   `json:"gateway"`
 	MacAddress     types.MacAddress         `json:"MAC"`
 	Version        types.Version            `json:"version"`
-	TimeOffset     Offset                   `json:"offset"`
+	TimeOffset     entities.Offset          `json:"offset"`
 	Doors          map[uint8]*entities.Door `json:"doors"`
 	Listener       *net.UDPAddr             `json:"listener"`
 	SystemState    byte                     `json:"state"`
@@ -39,26 +119,14 @@ type Simulator struct {
 	Events         entities.EventList       `json:"events"`
 }
 
-func (t Offset) MarshalJSON() ([]byte, error) {
-	return json.Marshal(time.Duration(t).String())
-}
-
-func (t *Offset) UnmarshalJSON(bytes []byte) error {
-	var s string
-
-	err := json.Unmarshal(bytes, &s)
-	if err != nil {
-		return err
+func (s *Simulator) Handle(b byte, rq messages.Request) messages.Response {
+	h := handlers[b]
+	if h == nil {
+		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Unsupported message type 0x%02x", b)))
+		return nil
 	}
 
-	d, err := time.ParseDuration(s)
-	if err != nil {
-		return err
-	}
-
-	*t = Offset(d)
-
-	return nil
+	return h(s, rq)
 }
 
 func Load(filepath string, compressed bool) (*Simulator, error) {
