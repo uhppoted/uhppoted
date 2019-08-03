@@ -10,8 +10,7 @@ Simulator
   - delete device
   - verify events
 - rework set-XXX to revert if save fails
-- define Simulator as an interface and simplify run.dispatcher
-  (or use a type switch: https://tour.golang.org/methods/16)
+- define Simulator as an interface 
 
 # TODO
 

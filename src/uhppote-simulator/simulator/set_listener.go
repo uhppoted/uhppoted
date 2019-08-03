@@ -5,7 +5,7 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) SetListener(request *messages.SetListenerRequest) *messages.SetListenerResponse {
+func (s *Simulator) setListener(request *messages.SetListenerRequest) *messages.SetListenerResponse {
 	if s.SerialNumber != request.SerialNumber {
 		return nil
 	}
@@ -16,7 +16,7 @@ func (s *Simulator) SetListener(request *messages.SetListenerRequest) *messages.
 	saved := false
 	err := s.Save()
 	if err == nil {
-		saved = false
+		saved = true
 	}
 
 	response := messages.SetListenerResponse{

@@ -4,7 +4,7 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) GetListener(request *messages.GetListenerRequest) *messages.GetListenerResponse {
+func (s *Simulator) getListener(request *messages.GetListenerRequest) *messages.GetListenerResponse {
 	if s.SerialNumber != request.SerialNumber {
 		return nil
 	}
