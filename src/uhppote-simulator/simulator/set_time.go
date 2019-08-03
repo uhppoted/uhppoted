@@ -2,6 +2,7 @@ package simulator
 
 import (
 	"time"
+	"uhppote-simulator/simulator/entities"
 	"uhppote/messages"
 	"uhppote/types"
 )
@@ -22,7 +23,7 @@ func (s *Simulator) SetTime(request *messages.SetTimeRequest) *messages.SetTimeR
 	delta := utc.Sub(now)
 	datetime := now.Add(delta)
 
-	s.TimeOffset = Offset(delta)
+	s.TimeOffset = entities.Offset(delta)
 	err = s.Save()
 	if err != nil {
 		s.onError(err)

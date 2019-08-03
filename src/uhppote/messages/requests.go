@@ -88,7 +88,7 @@ var handlers = map[byte]*handler{
 	},
 }
 
-func UnmarshalRequest(bytes []byte) (*Request, error) {
+func UnmarshalRequest(bytes []byte) (Request, error) {
 	if len(bytes) != 64 {
 		return nil, errors.New(fmt.Sprintf("Invalid message length %d", len(bytes)))
 	}
@@ -106,6 +106,6 @@ func UnmarshalRequest(bytes []byte) (*Request, error) {
 			return nil, err
 		}
 
-		return &request, nil
+		return request, nil
 	}
 }

@@ -10,91 +10,10 @@ import (
 	"reflect"
 	"regexp"
 	"uhppote-simulator/rest"
-	"uhppote-simulator/simulator"
 	"uhppote-simulator/simulator/entities"
 	codec "uhppote/encoding/UTO311-L0x"
 	"uhppote/messages"
 )
-
-type handler func(*simulator.Simulator, messages.Request) messages.Response
-
-var handlers = map[byte]handler{
-	0x20: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.GetStatus(rq.(*messages.GetStatusRequest))
-	},
-
-	0x30: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.SetTime(rq.(*messages.SetTimeRequest))
-	},
-
-	0x32: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.GetTime(rq.(*messages.GetTimeRequest))
-	},
-
-	0x40: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.OpenDoor(rq.(*messages.OpenDoorRequest))
-	},
-
-	0x50: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.PutCard(rq.(*messages.PutCardRequest))
-	},
-
-	0x52: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.DeleteCard(rq.(*messages.DeleteCardRequest))
-	},
-
-	0x54: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.DeleteCards(rq.(*messages.DeleteCardsRequest))
-	},
-
-	0x58: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.GetCards(rq.(*messages.GetCardsRequest))
-	},
-
-	0x5a: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.GetCardById(rq.(*messages.GetCardByIdRequest))
-	},
-
-	0x5c: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.GetCardByIndex(rq.(*messages.GetCardByIndexRequest))
-	},
-
-	0x80: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.SetDoorDelay(rq.(*messages.SetDoorDelayRequest))
-	},
-
-	0x82: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.GetDoorDelay(rq.(*messages.GetDoorDelayRequest))
-	},
-
-	0x90: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.SetListener(rq.(*messages.SetListenerRequest))
-	},
-
-	0x92: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.GetListener(rq.(*messages.GetListenerRequest))
-	},
-
-	0x94: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.Find(rq.(*messages.FindDevicesRequest))
-	},
-
-	0x96: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.SetAddress(rq.(*messages.SetAddressRequest))
-	},
-
-	0xb0: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.GetEvent(rq.(*messages.GetEventRequest))
-	},
-
-	0xb2: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.SetEventIndex(rq.(*messages.SetEventIndexRequest))
-	},
-
-	0xb4: func(s *simulator.Simulator, rq messages.Request) messages.Response {
-		return s.GetEventIndex(rq.(*messages.GetEventIndexRequest))
-	},
-}
 
 func simulate() {
 	bind, err := net.ResolveUDPAddr("udp", ":60000")
@@ -166,22 +85,6 @@ func listenAndServe(c *net.UDPConn, queue chan entities.Message) error {
 }
 
 func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte, queue chan entities.Message) {
-	if len(bytes) != 64 {
-		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Invalid message length %d", len(bytes))))
-		return
-	}
-
-	if bytes[0] != 0x17 {
-		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Invalid message type 0x%02x", bytes[0])))
-		return
-	}
-
-	h := handlers[bytes[1]]
-	if h == nil {
-		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Invalid command 0x%02x", bytes[1])))
-		return
-	}
-
 	request, err := messages.UnmarshalRequest(bytes)
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
@@ -189,7 +92,7 @@ func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte, queue chan entities.
 	}
 
 	for _, s := range simulators {
-		response := h(s, *request)
+		response := s.Handle(bytes[1], request)
 		if response != nil && !reflect.ValueOf(response).IsNil() {
 			queue <- entities.Message{src, response}
 		}
