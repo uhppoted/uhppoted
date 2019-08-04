@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
+	"reflect"
 	"time"
 	"uhppote"
 	"uhppote-simulator/simulator/entities"
@@ -18,7 +19,7 @@ import (
 type Simulator struct {
 	File       string                `json:"-"`
 	Compressed bool                  `json:"-"`
-	TxQueue    chan entities.Message `json:"-"`
+	TxQ        chan entities.Message `json:"-"`
 
 	SerialNumber   types.SerialNumber       `json:"serial-number"`
 	IpAddress      net.IP                   `json:"address"`
@@ -39,7 +40,11 @@ type Simulator struct {
 	Events         entities.EventList       `json:"events"`
 }
 
-func (s *Simulator) Handle(rq messages.Request) messages.Response {
+func (s *Simulator) Handle(src *net.UDPAddr, rq messages.Request) {
+	s.send(src, s.handle(rq))
+}
+
+func (s *Simulator) handle(rq messages.Request) messages.Response {
 	switch v := rq.(type) {
 	case *messages.GetStatusRequest:
 		return s.getStatus(rq.(*messages.GetStatusRequest))
@@ -178,8 +183,8 @@ func (s *Simulator) Save() error {
 }
 
 func (s *Simulator) send(dest *net.UDPAddr, message interface{}) {
-	if dest != nil {
-		s.TxQueue <- entities.Message{dest, message}
+	if dest != nil && message != nil && !reflect.ValueOf(message).IsNil() {
+		s.TxQ <- entities.Message{dest, message}
 	}
 }
 

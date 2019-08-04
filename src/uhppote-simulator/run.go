@@ -7,7 +7,6 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	"reflect"
 	"regexp"
 	"uhppote-simulator/rest"
 	"uhppote-simulator/simulator/entities"
@@ -47,7 +46,7 @@ func run(connection *net.UDPConn, wait chan int) {
 	queue := make(chan entities.Message, 8)
 
 	for _, s := range simulators {
-		s.TxQueue = queue
+		s.TxQ = queue
 	}
 
 	go func() {
@@ -92,10 +91,7 @@ func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte, queue chan entities.
 	}
 
 	for _, s := range simulators {
-		response := s.Handle(request)
-		if response != nil && !reflect.ValueOf(response).IsNil() {
-			queue <- entities.Message{src, response}
-		}
+		s.Handle(src, request)
 	}
 }
 

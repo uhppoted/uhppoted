@@ -235,6 +235,9 @@ func testHandle(request messages.Request, expected messages.Response, t *testing
 		},
 	}
 
+	txq := make(chan entities.Message, 8)
+	src := net.UDPAddr{IP: net.IPv4(10, 0, 0, 1), Port: 12345}
+
 	s := Simulator{
 		SerialNumber: 12345,
 		IpAddress:    net.IPv4(10, 0, 0, 100),
@@ -246,16 +249,22 @@ func testHandle(request messages.Request, expected messages.Response, t *testing
 		Cards:        cards,
 		Events:       events,
 		Doors:        doors,
+
+		TxQ: txq,
 	}
 
-	response := s.Handle(request)
+	s.Handle(&src, request)
 
-	if response == nil && expected != nil {
-		t.Errorf("Invalid response: Expected: %v, got: %v", expected, response)
-		return
-	}
+	if expected != nil {
+		response := <-txq
 
-	if !reflect.DeepEqual(response, expected) {
-		t.Errorf("Incorrect response: Expected: %v, got: %v", expected, response)
+		if response.Message == nil {
+			t.Errorf("Invalid response: Expected: %v, got: %v", expected, response)
+			return
+		}
+
+		if !reflect.DeepEqual(response.Message, expected) {
+			t.Errorf("Incorrect response: Expected: %v, got: %v", expected, response)
+		}
 	}
 }
