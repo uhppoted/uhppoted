@@ -3,32 +3,32 @@ package simulator
 import (
 	"errors"
 	"fmt"
+	"net"
 	"uhppote/messages"
 )
 
-func (s *Simulator) setEventIndex(request *messages.SetEventIndexRequest) *messages.SetEventIndexResponse {
-	if s.SerialNumber != request.SerialNumber {
-		return nil
-	}
+func (s *Simulator) setEventIndex(addr *net.UDPAddr, request *messages.SetEventIndexRequest) {
+	if s.SerialNumber == request.SerialNumber {
 
-	if request.MagicWord != 0x55aaaa55 {
-		s.onError(errors.New(fmt.Sprintf("Invalid 'magic number' - expected: %08x, received:%08x", 0x55aaaa55, request.MagicWord)))
-		return nil
-	}
+		if request.MagicWord != 0x55aaaa55 {
+			s.onError(errors.New(fmt.Sprintf("Invalid 'magic number' - expected: %08x, received:%08x", 0x55aaaa55, request.MagicWord)))
+		} else {
 
-	updated := false
-	saved := false
+			updated := s.Events.SetIndex(request.Index)
 
-	if updated = s.Events.SetIndex(request.Index); updated {
-		if err := s.Save(); err == nil {
-			saved = true
+			response := messages.SetEventIndexResponse{
+				SerialNumber: s.SerialNumber,
+				Changed:      updated,
+			}
+
+			s.send(addr, &response)
+
+			if updated {
+				if err := s.Save(); err != nil {
+					s.onError(err)
+				}
+			}
+
 		}
 	}
-
-	response := messages.SetEventIndexResponse{
-		SerialNumber: s.SerialNumber,
-		Changed:      updated && saved,
-	}
-
-	return &response
 }

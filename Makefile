@@ -54,7 +54,7 @@ test: build
 
 test-simulator: build
 	go clean -testcache
-	go test -count=1 src/uhppote-simulator/simulator/*.go
+	go test -count=1 src/uhppote-simulator/simulator/*.go 
 
 integration-tests: build
 	go clean -testcache

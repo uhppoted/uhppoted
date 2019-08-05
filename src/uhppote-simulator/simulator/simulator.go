@@ -41,69 +41,67 @@ type Simulator struct {
 }
 
 func (s *Simulator) Handle(src *net.UDPAddr, rq messages.Request) {
-	s.send(src, s.handle(rq))
-}
-
-func (s *Simulator) handle(rq messages.Request) messages.Response {
 	switch v := rq.(type) {
 	case *messages.GetStatusRequest:
-		return s.getStatus(rq.(*messages.GetStatusRequest))
+		s.getStatus(src, rq.(*messages.GetStatusRequest))
 
 	case *messages.SetTimeRequest:
-		return s.setTime(rq.(*messages.SetTimeRequest))
+		s.setTime(src, rq.(*messages.SetTimeRequest))
 
 	case *messages.GetTimeRequest:
-		return s.getTime(rq.(*messages.GetTimeRequest))
+		s.getTime(src, rq.(*messages.GetTimeRequest))
 
 	case *messages.OpenDoorRequest:
-		return s.openDoor(rq.(*messages.OpenDoorRequest))
+		s.openDoor(src, rq.(*messages.OpenDoorRequest))
 
 	case *messages.PutCardRequest:
-		return s.putCard(rq.(*messages.PutCardRequest))
+		s.putCard(src, rq.(*messages.PutCardRequest))
 
 	case *messages.DeleteCardRequest:
-		return s.deleteCard(rq.(*messages.DeleteCardRequest))
+		s.deleteCard(src, rq.(*messages.DeleteCardRequest))
 
 	case *messages.DeleteCardsRequest:
-		return s.deleteCards(rq.(*messages.DeleteCardsRequest))
+		s.deleteCards(src, rq.(*messages.DeleteCardsRequest))
 
 	case *messages.GetCardsRequest:
-		return s.getCards(rq.(*messages.GetCardsRequest))
+		s.getCards(src, rq.(*messages.GetCardsRequest))
+
+	case *messages.GetCardByIdRequest:
+		s.getCardById(src, rq.(*messages.GetCardByIdRequest))
 
 	case *messages.GetCardByIndexRequest:
-		return s.getCardByIndex(rq.(*messages.GetCardByIndexRequest))
+		s.getCardByIndex(src, rq.(*messages.GetCardByIndexRequest))
 
 	case *messages.SetDoorDelayRequest:
-		return s.setDoorDelay(rq.(*messages.SetDoorDelayRequest))
+		s.setDoorDelay(src, rq.(*messages.SetDoorDelayRequest))
 
 	case *messages.GetDoorDelayRequest:
-		return s.GetDoorDelay(rq.(*messages.GetDoorDelayRequest))
+		s.getDoorDelay(src, rq.(*messages.GetDoorDelayRequest))
 
 	case *messages.SetListenerRequest:
-		return s.setListener(rq.(*messages.SetListenerRequest))
+		s.setListener(src, rq.(*messages.SetListenerRequest))
 
 	case *messages.GetListenerRequest:
-		return s.getListener(rq.(*messages.GetListenerRequest))
+		s.getListener(src, rq.(*messages.GetListenerRequest))
 
 	case *messages.FindDevicesRequest:
-		return s.find(rq.(*messages.FindDevicesRequest))
+		s.find(src, rq.(*messages.FindDevicesRequest))
 
 	case *messages.SetAddressRequest:
-		return s.setAddress(rq.(*messages.SetAddressRequest))
+		s.setAddress(src, rq.(*messages.SetAddressRequest))
 
 	case *messages.GetEventRequest:
-		return s.getEvent(rq.(*messages.GetEventRequest))
+		s.getEvent(src, rq.(*messages.GetEventRequest))
 
 	case *messages.SetEventIndexRequest:
-		return s.setEventIndex(rq.(*messages.SetEventIndexRequest))
+		s.setEventIndex(src, rq.(*messages.SetEventIndexRequest))
 
 	case *messages.GetEventIndexRequest:
-		return s.GetEventIndex(rq.(*messages.GetEventIndexRequest))
+		s.getEventIndex(src, rq.(*messages.GetEventIndexRequest))
 
 	default:
 		panic(errors.New(fmt.Sprintf("Unsupported message type %T", v)))
 	}
-
 }
 
 func Load(filepath string, compressed bool) (*Simulator, error) {
@@ -255,7 +253,7 @@ func (s *Simulator) add(e *entities.Event) {
 			SwipeReason:   e.Type,
 		}
 
-		s.send(s.Listener, event)
+		s.send(s.Listener, &event)
 	}
 }
 

@@ -1,12 +1,13 @@
 package simulator
 
 import (
+	"net"
 	"time"
 	"uhppote/messages"
 	"uhppote/types"
 )
 
-func (s *Simulator) find(request *messages.FindDevicesRequest) *messages.FindDevicesResponse {
+func (s *Simulator) find(addr *net.UDPAddr, request *messages.FindDevicesRequest) {
 	utc := time.Now().UTC()
 	datetime := utc.Add(time.Duration(s.TimeOffset))
 
@@ -20,5 +21,5 @@ func (s *Simulator) find(request *messages.FindDevicesRequest) *messages.FindDev
 		Date:         types.Date(datetime),
 	}
 
-	return &response
+	s.send(addr, &response)
 }
