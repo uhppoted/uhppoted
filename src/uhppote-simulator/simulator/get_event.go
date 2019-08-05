@@ -1,34 +1,31 @@
 package simulator
 
 import (
+	"net"
 	"uhppote/messages"
 )
 
-func (s *Simulator) getEvent(request *messages.GetEventRequest) *messages.GetEventResponse {
-	if s.SerialNumber != request.SerialNumber {
-		return nil
-	}
-
-	index := request.Index
-	if index > s.Events.LastIndex() {
-		index = s.Events.LastIndex()
-	}
-
-	if event := s.Events.Get(index); event != nil {
-		response := messages.GetEventResponse{
-			SerialNumber: s.SerialNumber,
-			Index:        index,
-			Type:         event.Type,
-			Granted:      event.Granted,
-			Door:         event.Door,
-			DoorOpened:   event.DoorOpened,
-			UserId:       event.UserId,
-			Timestamp:    event.Timestamp,
-			RecordType:   event.RecordType,
+func (s *Simulator) getEvent(addr *net.UDPAddr, request *messages.GetEventRequest) {
+	if s.SerialNumber == request.SerialNumber {
+		index := request.Index
+		if index > s.Events.LastIndex() {
+			index = s.Events.LastIndex()
 		}
 
-		return &response
-	}
+		if event := s.Events.Get(index); event != nil {
+			response := messages.GetEventResponse{
+				SerialNumber: s.SerialNumber,
+				Index:        index,
+				Type:         event.Type,
+				Granted:      event.Granted,
+				Door:         event.Door,
+				DoorOpened:   event.DoorOpened,
+				UserId:       event.UserId,
+				Timestamp:    event.Timestamp,
+				RecordType:   event.RecordType,
+			}
 
-	return nil
+			s.send(addr, &response)
+		}
+	}
 }

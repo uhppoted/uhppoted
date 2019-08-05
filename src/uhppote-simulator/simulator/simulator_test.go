@@ -10,6 +10,144 @@ import (
 	"uhppote/types"
 )
 
+// TODO: ignore date/time fields
+// func TestHandleGetStatus(t *testing.T) {
+// 	swipeDateTime, _ := types.DateTimeFromString("2019-08-01 12:34:56")
+// 	request := messages.GetStatusRequest{
+// 		SerialNumber: 12345,
+// 	}
+//
+// 	response := messages.GetStatusResponse{
+// 		SerialNumber:  12345,
+// 		LastIndex:     3,
+// 		SwipeRecord:   0x00,
+// 		Granted:       false,
+// 		Door:          3,
+// 		DoorOpened:    false,
+// 		UserId:        1234567890,
+// 		SwipeDateTime: *swipeDateTime,
+// 		SwipeReason:   0x05,
+// 		Door1State:    false,
+// 		Door2State:    false,
+// 		Door3State:    false,
+// 		Door4State:    false,
+// 		Door1Button:   false,
+// 		Door2Button:   false,
+// 		Door3Button:   false,
+// 		Door4Button:   false,
+// 		SystemState:   0x00,
+// 		//	SystemDate     types.SystemDate   `uhppote:"offset:51"`
+// 		//	SystemTime     types.SystemTime   `uhppote:"offset:37"`
+// 		PacketNumber:   0,
+// 		Backup:         0,
+// 		SpecialMessage: 0,
+// 		Battery:        0,
+// 		FireAlarm:      0,
+// 	}
+//
+// 	testHandle(&request, &response, t)
+// }
+
+func TestHandleOpenDoor(t *testing.T) {
+	request := messages.OpenDoorRequest{
+		SerialNumber: 12345,
+		Door:         3,
+	}
+
+	response := messages.OpenDoorResponse{
+		SerialNumber: 12345,
+		Succeeded:    true,
+	}
+
+	testHandle(&request, &response, t)
+}
+
+func TestHandlePutCardRequest(t *testing.T) {
+	from, _ := types.DateFromString("2019-01-01")
+	to, _ := types.DateFromString("2019-12-31")
+	request := messages.PutCardRequest{
+		SerialNumber: 12345,
+		CardNumber:   192837465,
+		From:         *from,
+		To:           *to,
+		Door1:        true,
+		Door2:        false,
+		Door3:        true,
+		Door4:        false,
+	}
+
+	response := messages.PutCardResponse{
+		SerialNumber: 12345,
+		Succeeded:    true,
+	}
+
+	testHandle(&request, &response, t)
+}
+
+func TestHandleDeleteCardRequest(t *testing.T) {
+	request := messages.DeleteCardRequest{
+		SerialNumber: 12345,
+		CardNumber:   192837465,
+	}
+
+	response := messages.DeleteCardResponse{
+		SerialNumber: 12345,
+		Succeeded:    true,
+	}
+
+	testHandle(&request, &response, t)
+}
+
+func TestHandleDeleteCardsRequest(t *testing.T) {
+	request := messages.DeleteCardsRequest{
+		SerialNumber: 12345,
+		MagicWord:    0x55aaaa55,
+	}
+
+	response := messages.DeleteCardsResponse{
+		SerialNumber: 12345,
+		Succeeded:    true,
+	}
+
+	testHandle(&request, &response, t)
+}
+
+func TestHandleGetCardsRequest(t *testing.T) {
+	request := messages.GetCardsRequest{
+		SerialNumber: 12345,
+	}
+
+	response := messages.GetCardsResponse{
+		SerialNumber: 12345,
+		Records:      3,
+	}
+
+	testHandle(&request, &response, t)
+}
+
+func TestHandleGetCardById(t *testing.T) {
+	from, _ := types.DateFromString("2019-01-01")
+	to, _ := types.DateFromString("2019-12-31")
+
+	request := messages.GetCardByIdRequest{
+		SerialNumber: 12345,
+		CardNumber:   192837465,
+	}
+
+	response := messages.GetCardByIdResponse{
+		SerialNumber: 12345,
+		CardNumber:   192837465,
+		From:         from,
+		To:           to,
+		Door1:        true,
+		Door2:        false,
+		Door3:        false,
+		Door4:        true,
+	}
+
+	testHandle(&request, &response, t)
+}
+
 func TestHandleGetCardByIndex(t *testing.T) {
 	from, _ := types.DateFromString("2019-01-01")
 	to, _ := types.DateFromString("2019-12-31")
@@ -256,15 +394,25 @@ func testHandle(request messages.Request, expected messages.Response, t *testing
 	s.Handle(&src, request)
 
 	if expected != nil {
-		response := <-txq
+		timeout := make(chan bool, 1)
+		go func() {
+			time.Sleep(100 * time.Millisecond)
+			timeout <- true
+		}()
 
-		if response.Message == nil {
-			t.Errorf("Invalid response: Expected: %v, got: %v", expected, response)
-			return
-		}
+		select {
+		case response := <-txq:
+			if response.Message == nil {
+				t.Errorf("Invalid response: Expected: %v, got: %v", expected, response)
+				return
+			}
 
-		if !reflect.DeepEqual(response.Message, expected) {
-			t.Errorf("Incorrect response: Expected: %v, got: %v", expected, response)
+			if !reflect.DeepEqual(response.Message, expected) {
+				t.Errorf("Incorrect response: Expected:\n%v, got:s\n%v", expected, response.Message)
+			}
+
+		case <-timeout:
+			t.Errorf("No response from simulator")
 		}
 	}
 }

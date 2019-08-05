@@ -8,7 +8,7 @@ import (
 func (u *UHPPOTE) DeleteCards(serialNumber uint32) (*types.Result, error) {
 	request := messages.DeleteCardsRequest{
 		SerialNumber: types.SerialNumber(serialNumber),
-		MagicNumber:  0x55aaaa55,
+		MagicWord:    0x55aaaa55,
 	}
 
 	reply := messages.DeleteCardsResponse{}

@@ -1,27 +1,26 @@
 package simulator
 
 import (
+	"net"
 	"uhppote/messages"
 )
 
-func (s *Simulator) deleteCard(request *messages.DeleteCardRequest) *messages.DeleteCardResponse {
-	if request.SerialNumber != s.SerialNumber {
-		return nil
-	}
+func (s *Simulator) deleteCard(addr *net.UDPAddr, request *messages.DeleteCardRequest) {
+	if request.SerialNumber == s.SerialNumber {
 
-	deleted := s.Cards.Delete(request.CardNumber)
-	saved := false
+		deleted := s.Cards.Delete(request.CardNumber)
 
-	if deleted {
-		if err := s.Save(); err == nil {
-			saved = true
+		response := messages.DeleteCardResponse{
+			SerialNumber: s.SerialNumber,
+			Succeeded:    deleted,
+		}
+
+		s.send(addr, &response)
+
+		if deleted {
+			if err := s.Save(); err != nil {
+				s.onError(err)
+			}
 		}
 	}
-
-	response := messages.DeleteCardResponse{
-		SerialNumber: s.SerialNumber,
-		Succeeded:    deleted && saved,
-	}
-
-	return &response
 }
