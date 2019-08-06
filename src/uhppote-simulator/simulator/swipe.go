@@ -6,7 +6,7 @@ import (
 	"uhppote/types"
 )
 
-func (s *Simulator) Swipe(deviceId uint32, cardNumber uint32, door uint8) bool {
+func (s *Simulator) Swipe(deviceId uint32, cardNumber uint32, door uint8) (bool, uint32) {
 	granted := false
 	opened := false
 	eventType := uint8(0x01)
@@ -36,7 +36,7 @@ func (s *Simulator) Swipe(deviceId uint32, cardNumber uint32, door uint8) bool {
 		RecordType: recordType,
 	}
 
-	s.add(&event)
+	eventId := s.add(&event)
 
-	return granted && opened
+	return granted && opened, eventId
 }

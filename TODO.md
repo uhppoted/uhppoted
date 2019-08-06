@@ -4,11 +4,10 @@
 
 Simulator
 - REST interface
-  - list devices
   - new device
   - delete device
   - verify events
-- rework set-XXX to revert if save fails
+- rework set-XXX/save
 - rework simulator.run to use rx channels
 - define Simulator as an interface 
 

@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 	"uhppote-simulator/simulator"
+	"uhppote/types"
 )
 
 type SwipeRequest struct {
@@ -20,6 +21,16 @@ type SwipeResponse struct {
 	Granted bool   `json:"access-granted"`
 	Opened  bool   `json:"door-opened"`
 	Message string `json:"message"`
+}
+
+type Device struct {
+	DeviceId   uint32 `json:"device-id"`
+	DeviceType string `json:"device-type"`
+	URI        string `json:"uri"`
+}
+
+type DeviceList struct {
+	Devices []Device `json:"devices"`
 }
 
 type context struct {
@@ -44,6 +55,7 @@ func Run(simulators []*simulator.Simulator) {
 	d.ctx = new(context)
 	d.ctx.simulators = simulators
 
+	d.Add("^/uhppote/simulator$", list)
 	d.Add("^/uhppote/simulator/[0-9]+/swipe$", swipe)
 
 	log.Fatal(http.ListenAndServe(":8080", d))
@@ -77,9 +89,42 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Unsupported API", http.StatusBadRequest)
 }
 
+func list(ctx *context, w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, fmt.Sprintf("Invalid method:%s - expected GET", r.Method), http.StatusMethodNotAllowed)
+		return
+	}
+
+	_, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error reading request", http.StatusInternalServerError)
+		return
+	}
+
+	devices := make([]Device, 0)
+
+	for _, s := range ctx.simulators {
+		devices = append(devices, Device{
+			DeviceId:   uint32(s.SerialNumber),
+			DeviceType: "UTC3011-L04",
+			URI:        fmt.Sprintf("/uhppote/simulator/%d", uint32(s.SerialNumber)),
+		})
+	}
+
+	response := DeviceList{devices}
+	b, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, "Error generating response", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(b)
+}
+
 func swipe(ctx *context, w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, fmt.Sprintf("Invalid method:%s - expected POST", r.Method), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("Invalid method:%s - expected POST", r.Method), http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -104,30 +149,35 @@ func swipe(ctx *context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	granted := false
-	opened := false
-	message := "Access denied"
-
 	for _, s := range ctx.simulators {
-		if s.Swipe(uint32(deviceId), request.CardNumber, request.Door) {
-			granted = true
-			opened = true
-			message = "Access granted"
+		if s.SerialNumber == types.SerialNumber(deviceId) {
+			granted, eventId := s.Swipe(uint32(deviceId), request.CardNumber, request.Door)
+			opened := false
+			message := "Access denied"
+
+			if granted {
+				opened = true
+				message = "Access granted"
+			}
+
+			response := SwipeResponse{
+				Granted: granted,
+				Opened:  opened,
+				Message: message,
+			}
+
+			b, err := json.Marshal(response)
+			if err != nil {
+				http.Error(w, "Error generating response", http.StatusInternalServerError)
+				return
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Location", fmt.Sprintf("/uhppote/simulator/%d/events/%d", s.SerialNumber, eventId))
+			w.Write(b)
+			return
 		}
 	}
 
-	response := SwipeResponse{
-		Granted: granted,
-		Opened:  opened,
-		Message: message,
-	}
-
-	b, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, "Error generating response", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(b)
+	http.Error(w, fmt.Sprintf("Device with ID %d does not exist", deviceId), http.StatusNotFound)
 }

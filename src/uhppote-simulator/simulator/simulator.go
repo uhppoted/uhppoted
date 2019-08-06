@@ -215,7 +215,7 @@ func save(filepath string, s *Simulator) error {
 	return ioutil.WriteFile(filepath, bytes, 0644)
 }
 
-func (s *Simulator) add(e *entities.Event) {
+func (s *Simulator) add(e *entities.Event) uint32 {
 	if e != nil {
 		s.Events.Add(e)
 		s.Save()
@@ -254,7 +254,11 @@ func (s *Simulator) add(e *entities.Event) {
 		}
 
 		s.send(s.Listener, &event)
+
+		return s.Events.LastIndex()
 	}
+
+	return 0
 }
 
 func (s *Simulator) onError(err error) {

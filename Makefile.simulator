@@ -86,5 +86,8 @@ set-event-index: build
 open: build 
 	$(CLI) $(DEBUG) open $(SERIALNO) 1
 
+list-devices:
+	curl -X GET "http://127.0.0.1:8080/uhppote/simulator" -H "accept: application/json"
+
 swipe:
 	curl -X POST "http://127.0.0.1:8080/uhppote/simulator/305419896/swipe" -H "accept: application/json" -H "Content-Type: application/json" -d "{\"door\":4,\"card-number\":65538}"

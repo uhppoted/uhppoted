@@ -1,7 +1,7 @@
 openapi: "3.0.2"
 
 info:
-  version: 0.0.0
+  version: 0.1.0
   title: "twyst-uhppote-simulator"
   description: "REST API for the twystd UHPPOTE simulator command interface"
   license:
@@ -16,11 +16,28 @@ tags:
     description: "UHPPOTE simulator command interface"
 
 paths:
-  /simulator/{device-id}/swipe:
-    post:
-      summary: "Simulates a card swipe on an access reader"
+  /simulator:
+    get:
       tags:
         - simulator
+      summary: "Retrieves a list of active simulators"
+      description: "Retrieves the list of simulated UHPPOTE devices"
+      operationId: listDevices
+      responses:
+        '200':
+          description: "List of simulated devices"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DeviceList"        
+        '405':
+          description: "Invalid request"
+
+  /simulator/{device-id}/swipe:
+    post:
+      tags:
+        - simulator
+      summary: "Simulates a card swipe on an access reader"
       description: "Simulates a card swipe on an access reader, generating an access event"
       operationId: swipeCard
       parameters:
@@ -42,15 +59,52 @@ paths:
       responses:
         '200':
           description: "Access granted/denied"
+          headers:
+            Location:
+              schema:
+                type: string
+              description: "URL for swipe event"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Swiped"        
-        '405':
-          description: "Invalid request"
+        '400':
+          description: "Invalid request format"
+        '404':
+          description: "No device with ID matching device-id"
 
 components:
   schemas:
+    Device:
+      required: 
+        - device-id
+        - device-type
+        - uri
+      properties:
+        device-id:
+          type: number
+          format: uint32
+          description: "Simulator device ID"
+          example: 305419896
+        device-type:  
+          type: string
+          format: string
+          description: "UHPPOTE device type"
+          example: "UTO311-L04"
+        uri:  
+          type: string
+          format: URI
+          description: "Base URI for the device"
+          example: "/uhppote/simulator/305419896"
+    DeviceList:
+      required: 
+        - devices
+      properties:
+        devices:
+          type: array
+          items:
+            $ref: "#/components/schemas/Device"        
+          description: "List of simulator devices"
     Swipe:
       required: 
         - door
