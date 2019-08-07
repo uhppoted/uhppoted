@@ -132,17 +132,23 @@ components:
       required: 
         - device-id
         - device-type
+        - compressed
       properties:
         device-id:
           type: number
           format: uint32
           description: "Simulator device ID"
-          example: 305419896
+          example: 753186420
         device-type:  
           type: string
-          format: string
-          description: "UHPPOTE device type"
-          example: "UTO311-L04"
+          format: "UTCO311-L04"
+          description: "UHPPOTE device type. Only UTCO311-L04 is supported at present"
+          example: "UTCO311-L04"
+        compressed:  
+          type: boolean
+          format: true/false
+          description: "Persisted as gzipped file if true"
+          example: false
     Swipe:
       required: 
         - door
