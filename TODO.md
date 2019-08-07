@@ -4,12 +4,13 @@
 
 Simulator
 - REST interface
-  - new device
   - delete device
   - verify events
 - rework set-XXX/save
 - rework simulator.run to use rx channels
 - define Simulator as an interface 
+- fix Context.TxQ hack
+- remove Command interface
 
 # TODO
 

@@ -2,7 +2,7 @@ package simulator
 
 import (
 	"time"
-	"uhppote-simulator/simulator/entities"
+	"uhppote-simulator/entities"
 	"uhppote/types"
 )
 

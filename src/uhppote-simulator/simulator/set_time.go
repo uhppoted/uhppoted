@@ -3,7 +3,7 @@ package simulator
 import (
 	"net"
 	"time"
-	"uhppote-simulator/simulator/entities"
+	"uhppote-simulator/entities"
 	"uhppote/messages"
 	"uhppote/types"
 )

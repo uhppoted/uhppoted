@@ -13,7 +13,6 @@ import (
 
 var cli = []commands.Command{
 	&commands.VersionCommand{VERSION},
-	&commands.NewDeviceCommand{},
 }
 
 var VERSION = "v0.03.0"
@@ -25,8 +24,6 @@ var options = struct {
 	dir:   "./devices",
 	debug: false,
 }
-
-var simulators = []*simulator.Simulator{}
 
 func main() {
 	flag.StringVar(&options.dir, "devices", "devices", "Specifies the simulation device directory")
@@ -49,8 +46,12 @@ func main() {
 		return
 	}
 
-	simulators = load(options.dir)
-	simulate()
+	ctx := simulator.Context{
+		Directory:  options.dir,
+		Simulators: load(options.dir),
+	}
+
+	simulate(&ctx)
 }
 
 func parse() (commands.Command, error) {
@@ -102,7 +103,7 @@ func load(dir string) []*simulator.Simulator {
 
 	fmt.Println()
 
-	l := make([]*simulator.Simulator, len(simulators))
+	l := make([]*simulator.Simulator, 0)
 
 	for _, s := range devices {
 		l = append(l, s)
