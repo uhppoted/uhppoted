@@ -8,13 +8,14 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"uhppote-simulator/entities"
 	"uhppote-simulator/rest"
-	"uhppote-simulator/simulator/entities"
+	"uhppote-simulator/simulator"
 	codec "uhppote/encoding/UTO311-L0x"
 	"uhppote/messages"
 )
 
-func simulate() {
+func simulate(ctx *simulator.Context) {
 	bind, err := net.ResolveUDPAddr("udp", ":60000")
 	if err != nil {
 		fmt.Printf("%v\n", errors.New(fmt.Sprintf("Failed to resolve UDP bind address [%v]", err)))
@@ -33,7 +34,7 @@ func simulate() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	go run(connection, wait)
+	go run(ctx, connection, wait)
 
 	<-interrupt
 	connection.Close()
@@ -42,15 +43,15 @@ func simulate() {
 	os.Exit(1)
 }
 
-func run(connection *net.UDPConn, wait chan int) {
-	queue := make(chan entities.Message, 8)
+func run(ctx *simulator.Context, connection *net.UDPConn, wait chan int) {
+	ctx.TxQ = make(chan entities.Message, 8)
 
-	for _, s := range simulators {
-		s.TxQ = queue
+	for _, s := range ctx.Simulators {
+		s.TxQ = ctx.TxQ
 	}
 
 	go func() {
-		err := listenAndServe(connection, queue)
+		err := listenAndServe(ctx, connection)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 		}
@@ -59,38 +60,38 @@ func run(connection *net.UDPConn, wait chan int) {
 
 	go func() {
 		for {
-			msg := <-queue
+			msg := <-ctx.TxQ
 			send(connection, msg.Destination, msg.Message)
 		}
 	}()
 
 	go func() {
-		rest.Run(simulators)
+		rest.Run(ctx)
 	}()
 
 }
 
-func listenAndServe(c *net.UDPConn, queue chan entities.Message) error {
+func listenAndServe(ctx *simulator.Context, c *net.UDPConn) error {
 	for {
 		request, remote, err := receive(c)
 		if err != nil {
 			return err
 		}
 
-		handle(c, remote, request, queue)
+		handle(ctx, c, remote, request)
 	}
 
 	return nil
 }
 
-func handle(c *net.UDPConn, src *net.UDPAddr, bytes []byte, queue chan entities.Message) {
+func handle(ctx *simulator.Context, c *net.UDPConn, src *net.UDPAddr, bytes []byte) {
 	request, err := messages.UnmarshalRequest(bytes)
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 		return
 	}
 
-	for _, s := range simulators {
+	for _, s := range ctx.Simulators {
 		s.Handle(src, request)
 	}
 }

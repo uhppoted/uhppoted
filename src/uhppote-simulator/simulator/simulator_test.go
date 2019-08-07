@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 	"time"
-	"uhppote-simulator/simulator/entities"
+	"uhppote-simulator/entities"
 	"uhppote/messages"
 	"uhppote/types"
 )

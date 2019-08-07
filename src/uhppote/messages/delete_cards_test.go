@@ -16,7 +16,7 @@ func TestMarshalDeleteCardsRequest(t *testing.T) {
 
 	request := DeleteCardsRequest{
 		SerialNumber: 423187757,
-		MagicNumber:  0x55aaaa55,
+		MagicWord:    0x55aaaa55,
 	}
 
 	m, err := codec.Marshal(request)

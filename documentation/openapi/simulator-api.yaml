@@ -1,7 +1,7 @@
 openapi: "3.0.2"
 
 info:
-  version: 0.1.0
+  version: 0.3.0
   title: "twyst-uhppote-simulator"
   description: "REST API for the twystd UHPPOTE simulator command interface"
   license:
@@ -30,6 +30,29 @@ paths:
             application/json:
               schema:
                   $ref: "#/components/schemas/DeviceList"        
+        '405':
+          description: "Invalid request"
+    post:
+      tags:
+        - simulator
+      summary: "Creates a new simulator device"
+      description: "Creates a new simulator device. An existing device with the same device ID is not overwritten."
+      operationId: createDevice
+      requestBody:
+        description: "Device ID and type"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewDevice"     
+      responses:
+        '200':
+          description: "Device create request processed"
+          headers:
+            Location:
+              schema:
+                type: string
+              description: "URL for created device"
         '405':
           description: "Invalid request"
 
@@ -105,6 +128,21 @@ components:
           items:
             $ref: "#/components/schemas/Device"        
           description: "List of simulator devices"
+    NewDevice:
+      required: 
+        - device-id
+        - device-type
+      properties:
+        device-id:
+          type: number
+          format: uint32
+          description: "Simulator device ID"
+          example: 305419896
+        device-type:  
+          type: string
+          format: string
+          description: "UHPPOTE device type"
+          example: "UTO311-L04"
     Swipe:
       required: 
         - door

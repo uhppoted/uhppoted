@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"time"
 	"uhppote"
-	"uhppote-simulator/simulator/entities"
+	"uhppote-simulator/entities"
 	"uhppote/messages"
 	"uhppote/types"
 )
@@ -181,7 +181,11 @@ func (s *Simulator) Save() error {
 }
 
 func (s *Simulator) send(dest *net.UDPAddr, message interface{}) {
-	if dest != nil && message != nil && !reflect.ValueOf(message).IsNil() {
+	if s.TxQ == nil {
+		panic(fmt.Sprintf("Device %d: missing TXQ", s.SerialNumber))
+	}
+
+	if s.TxQ != nil && dest != nil && message != nil && !reflect.ValueOf(message).IsNil() {
 		s.TxQ <- entities.Message{dest, message}
 	}
 }

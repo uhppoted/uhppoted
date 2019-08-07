@@ -5,12 +5,31 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
+	"net"
 	"net/http"
+	"path"
 	"regexp"
 	"strconv"
 	"uhppote-simulator/simulator"
 	"uhppote/types"
 )
+
+type Device struct {
+	DeviceId   uint32 `json:"device-id"`
+	DeviceType string `json:"device-type"`
+	URI        string `json:"uri"`
+}
+
+type DeviceList struct {
+	Devices []Device `json:"devices"`
+}
+
+type NewDeviceRequest struct {
+	DeviceId   uint32 `json:"device-id"`
+	DeviceType string `json:"device-type"`
+	Compressed bool   `json:"compressed"`
+}
 
 type SwipeRequest struct {
 	Door       uint8  `json:"door"`
@@ -23,21 +42,7 @@ type SwipeResponse struct {
 	Message string `json:"message"`
 }
 
-type Device struct {
-	DeviceId   uint32 `json:"device-id"`
-	DeviceType string `json:"device-type"`
-	URI        string `json:"uri"`
-}
-
-type DeviceList struct {
-	Devices []Device `json:"devices"`
-}
-
-type context struct {
-	simulators []*simulator.Simulator
-}
-
-type handlerfn func(*context, http.ResponseWriter, *http.Request)
+type handlerfn func(*simulator.Context, http.ResponseWriter, *http.Request)
 
 type handler struct {
 	re *regexp.Regexp
@@ -45,20 +50,20 @@ type handler struct {
 }
 
 type dispatcher struct {
-	ctx      *context
+	ctx      *simulator.Context
 	handlers []handler
 }
 
-func Run(simulators []*simulator.Simulator) {
-	d := new(dispatcher)
+func Run(ctx *simulator.Context) {
+	d := dispatcher{
+		ctx,
+		make([]handler, 0),
+	}
 
-	d.ctx = new(context)
-	d.ctx.simulators = simulators
-
-	d.Add("^/uhppote/simulator$", list)
+	d.Add("^/uhppote/simulator$", devices)
 	d.Add("^/uhppote/simulator/[0-9]+/swipe$", swipe)
 
-	log.Fatal(http.ListenAndServe(":8080", d))
+	log.Fatal(http.ListenAndServe(":8080", &d))
 }
 
 func (d *dispatcher) Add(path string, h handlerfn) {
@@ -89,12 +94,20 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Unsupported API", http.StatusBadRequest)
 }
 
-func list(ctx *context, w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, fmt.Sprintf("Invalid method:%s - expected GET", r.Method), http.StatusMethodNotAllowed)
-		return
-	}
+func devices(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		list(ctx, w, r)
 
+	case http.MethodPost:
+		create(ctx, w, r)
+
+	default:
+		http.Error(w, fmt.Sprintf("Invalid method:%s - expected GET", r.Method), http.StatusMethodNotAllowed)
+	}
+}
+
+func list(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 	_, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "Error reading request", http.StatusInternalServerError)
@@ -103,7 +116,7 @@ func list(ctx *context, w http.ResponseWriter, r *http.Request) {
 
 	devices := make([]Device, 0)
 
-	for _, s := range ctx.simulators {
+	for _, s := range ctx.Simulators {
 		devices = append(devices, Device{
 			DeviceId:   uint32(s.SerialNumber),
 			DeviceType: "UTC3011-L04",
@@ -122,7 +135,71 @@ func list(ctx *context, w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func swipe(ctx *context, w http.ResponseWriter, r *http.Request) {
+func create(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
+	blob, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error reading request", http.StatusInternalServerError)
+		return
+	}
+
+	request := NewDeviceRequest{}
+	err = json.Unmarshal(blob, &request)
+	if err != nil {
+		http.Error(w, "Invalid request format", http.StatusBadRequest)
+		return
+	}
+
+	if request.DeviceId < 1 {
+		http.Error(w, "Missing device ID", http.StatusBadRequest)
+		return
+	}
+
+	if request.DeviceType != "UTC0311-L04" {
+		http.Error(w, "Invalid  device type - expected UTC0311-L04", http.StatusBadRequest)
+		return
+	}
+
+	for _, s := range ctx.Simulators {
+		if s.SerialNumber == types.SerialNumber(request.DeviceId) {
+			w.Header().Set("Location", fmt.Sprintf("/uhppote/simulator/%d", request.DeviceId))
+			w.Header().Set("Content-Type", "application/json")
+			return
+		}
+	}
+
+	filename := fmt.Sprintf("%d.json", request.DeviceId)
+	if request.Compressed {
+		filename = fmt.Sprintf("%d.json.gz", request.DeviceId)
+	}
+
+	mac := make([]byte, 6)
+	rand.Read(mac)
+
+	device := simulator.Simulator{
+		File:         path.Join(ctx.Directory, filename),
+		Compressed:   request.Compressed,
+		TxQ:          ctx.TxQ,
+		SerialNumber: types.SerialNumber(request.DeviceId),
+		IpAddress:    net.IPv4(0, 0, 0, 0),
+		SubnetMask:   net.IPv4(255, 255, 255, 0),
+		Gateway:      net.IPv4(0, 0, 0, 0),
+		MacAddress:   types.MacAddress(mac),
+		Version:      0x0892,
+	}
+
+	err = (&device).Save()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error persisting device: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	ctx.Simulators = append(ctx.Simulators, &device)
+
+	w.Header().Set("Location", fmt.Sprintf("/uhppote/simulator/%d", request.DeviceId))
+	w.Header().Set("Content-Type", "application/json")
+}
+
+func swipe(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, fmt.Sprintf("Invalid method:%s - expected POST", r.Method), http.StatusMethodNotAllowed)
 		return
@@ -149,7 +226,7 @@ func swipe(ctx *context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, s := range ctx.simulators {
+	for _, s := range ctx.Simulators {
 		if s.SerialNumber == types.SerialNumber(deviceId) {
 			granted, eventId := s.Swipe(uint32(deviceId), request.CardNumber, request.Door)
 			opened := false

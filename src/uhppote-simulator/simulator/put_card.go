@@ -2,7 +2,7 @@ package simulator
 
 import (
 	"net"
-	"uhppote-simulator/simulator/entities"
+	"uhppote-simulator/entities"
 	"uhppote/messages"
 )
 
