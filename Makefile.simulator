@@ -89,5 +89,11 @@ open: build
 list-devices:
 	curl -X GET "http://127.0.0.1:8080/uhppote/simulator" -H "accept: application/json"
 
+create-device:
+	curl -X POST "http://127.0.0.1:8080/uhppote/simulator" -H "accept: */*" -H "Content-Type: application/json" -d "{\"device-id\":753186420,\"device-type\":\"UTC0311-L04\",\"compressed\":false}"
+
+delete-device:
+	curl -X DELETE "http://127.0.0.1:8080/uhppote/simulator/753186420" -H "accept: */*"
+
 swipe:
 	curl -X POST "http://127.0.0.1:8080/uhppote/simulator/305419896/swipe" -H "accept: application/json" -H "Content-Type: application/json" -d "{\"door\":4,\"card-number\":65538}"
