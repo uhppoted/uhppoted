@@ -7,6 +7,7 @@ import (
 	"path"
 	"path/filepath"
 	"uhppote-simulator/commands"
+	"uhppote-simulator/entities"
 	"uhppote-simulator/simulator"
 	"uhppote/types"
 )
@@ -47,8 +48,11 @@ func main() {
 	}
 
 	ctx := simulator.Context{
-		Directory:  options.dir,
-		Simulators: load(options.dir),
+		Directory: options.dir,
+		DeviceList: simulator.DeviceList{
+			TxQ:        make(chan entities.Message, 8),
+			Simulators: load(options.dir),
+		},
 	}
 
 	simulate(&ctx)

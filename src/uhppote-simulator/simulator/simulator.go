@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
+	"os"
 	"reflect"
 	"time"
 	"uhppote"
@@ -175,6 +176,22 @@ func (s *Simulator) Save() error {
 		}
 
 		return save(s.File, s)
+	}
+
+	return nil
+}
+
+func (s *Simulator) Delete() error {
+	if s.File != "" {
+		if err := os.Remove(s.File); err != nil {
+			return err
+		}
+
+		if _, err := os.Stat(s.File); err != nil {
+			if !os.IsNotExist(err) {
+				return err
+			}
+		}
 	}
 
 	return nil

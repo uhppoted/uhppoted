@@ -3,13 +3,13 @@
 # IN PROGRESS
 
 Simulator
+- fix Context.TxQ hack
 - REST interface
-  - delete device
   - verify events
+  - HTML file
 - rework set-XXX/save
 - rework simulator.run to use rx channels
 - define Simulator as an interface 
-- fix Context.TxQ hack
 - remove Command interface
 
 # TODO
