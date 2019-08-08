@@ -32,6 +32,9 @@ paths:
                   $ref: "#/components/schemas/DeviceList"        
         '405':
           description: "Invalid request"
+        default:
+          description: "Request failed"
+
     post:
       tags:
         - simulator
@@ -55,6 +58,36 @@ paths:
               description: "URL for created device"
         '405':
           description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+  /simulator/{device-id}:
+    delete:
+      tags:
+        - simulator
+      summary: "Deletes a simulator device"
+      description: "Removes all trace of a simulator device"
+      operationId: deleteDevice
+      parameters:
+        - name: device-id
+          in: path
+          description: "Simulator device ID"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 753186420
+      responses:
+        '200':
+          description: "Device deleted"
+        '404':
+          description: "No device with ID matching device-id"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
 
   /simulator/{device-id}/swipe:
     post:
@@ -95,6 +128,10 @@ paths:
           description: "Invalid request format"
         '404':
           description: "No device with ID matching device-id"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
 
 components:
   schemas:
@@ -113,7 +150,7 @@ components:
           type: string
           format: string
           description: "UHPPOTE device type"
-          example: "UTO311-L04"
+          example: "UTC0311-L04"
         uri:  
           type: string
           format: URI
@@ -143,7 +180,7 @@ components:
           type: string
           format: "UTCO311-L04"
           description: "UHPPOTE device type. Only UTCO311-L04 is supported at present"
-          example: "UTCO311-L04"
+          example: "UTC0311-L04"
         compressed:  
           type: boolean
           format: true/false
