@@ -5,10 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"math/rand"
-	"net"
 	"net/http"
-	"path"
 	"regexp"
 	"strconv"
 	"uhppote-simulator/simulator"
@@ -61,6 +58,7 @@ func Run(ctx *simulator.Context) {
 	}
 
 	d.Add("^/uhppote/simulator$", devices)
+	d.Add("^/uhppote/simulator/[0-9]+", device)
 	d.Add("^/uhppote/simulator/[0-9]+/swipe$", swipe)
 
 	log.Fatal(http.ListenAndServe(":8080", &d))
@@ -103,7 +101,17 @@ func devices(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 		create(ctx, w, r)
 
 	default:
-		http.Error(w, fmt.Sprintf("Invalid method:%s - expected GET", r.Method), http.StatusMethodNotAllowed)
+		http.Error(w, fmt.Sprintf("Invalid method:%s - expected GET or POST", r.Method), http.StatusMethodNotAllowed)
+	}
+}
+
+func device(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodDelete:
+		delete(ctx, w, r)
+
+	default:
+		http.Error(w, fmt.Sprintf("Invalid method:%s - expected DELETE", r.Method), http.StatusMethodNotAllowed)
 	}
 }
 
@@ -116,7 +124,7 @@ func list(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 
 	devices := make([]Device, 0)
 
-	for _, s := range ctx.Simulators {
+	for _, s := range ctx.DeviceList.Simulators {
 		devices = append(devices, Device{
 			DeviceId:   uint32(s.SerialNumber),
 			DeviceType: "UTC3011-L04",
@@ -159,44 +167,40 @@ func create(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, s := range ctx.Simulators {
-		if s.SerialNumber == types.SerialNumber(request.DeviceId) {
-			w.Header().Set("Location", fmt.Sprintf("/uhppote/simulator/%d", request.DeviceId))
+	err = ctx.DeviceList.Add(request.DeviceId, request.Compressed, ctx.Directory)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error creating device %d: %v", request.DeviceId, err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Location", fmt.Sprintf("/uhppote/simulator/%d", request.DeviceId))
+	w.Header().Set("Content-Type", "application/json")
+}
+
+func delete(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
+	url := r.URL.Path
+	matches := regexp.MustCompile("^/uhppote/simulator/([0-9]+)$").FindStringSubmatch(url)
+	deviceId, err := strconv.ParseUint(matches[1], 10, 32)
+	if err != nil {
+		http.Error(w, "Error reading request", http.StatusInternalServerError)
+		return
+	}
+
+	_, err = ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error reading request", http.StatusInternalServerError)
+		return
+	}
+
+	for _, s := range ctx.DeviceList.Simulators {
+		if s.SerialNumber == types.SerialNumber(deviceId) {
+			ctx.DeviceList.Delete(uint32(deviceId))
 			w.Header().Set("Content-Type", "application/json")
 			return
 		}
 	}
 
-	filename := fmt.Sprintf("%d.json", request.DeviceId)
-	if request.Compressed {
-		filename = fmt.Sprintf("%d.json.gz", request.DeviceId)
-	}
-
-	mac := make([]byte, 6)
-	rand.Read(mac)
-
-	device := simulator.Simulator{
-		File:         path.Join(ctx.Directory, filename),
-		Compressed:   request.Compressed,
-		TxQ:          ctx.TxQ,
-		SerialNumber: types.SerialNumber(request.DeviceId),
-		IpAddress:    net.IPv4(0, 0, 0, 0),
-		SubnetMask:   net.IPv4(255, 255, 255, 0),
-		Gateway:      net.IPv4(0, 0, 0, 0),
-		MacAddress:   types.MacAddress(mac),
-		Version:      0x0892,
-	}
-
-	err = (&device).Save()
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error persisting device: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	ctx.Simulators = append(ctx.Simulators, &device)
-
-	w.Header().Set("Location", fmt.Sprintf("/uhppote/simulator/%d", request.DeviceId))
-	w.Header().Set("Content-Type", "application/json")
+	http.Error(w, fmt.Sprintf("No device with ID %d", deviceId), http.StatusNotFound)
 }
 
 func swipe(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
@@ -226,7 +230,7 @@ func swipe(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, s := range ctx.Simulators {
+	for _, s := range ctx.DeviceList.Simulators {
 		if s.SerialNumber == types.SerialNumber(deviceId) {
 			granted, eventId := s.Swipe(uint32(deviceId), request.CardNumber, request.Door)
 			opened := false
@@ -256,5 +260,5 @@ func swipe(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	http.Error(w, fmt.Sprintf("Device with ID %d does not exist", deviceId), http.StatusNotFound)
+	http.Error(w, fmt.Sprintf("No device with ID %d", deviceId), http.StatusNotFound)
 }

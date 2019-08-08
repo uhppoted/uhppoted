@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
-	"uhppote-simulator/entities"
 	"uhppote-simulator/rest"
 	"uhppote-simulator/simulator"
 	codec "uhppote/encoding/UTO311-L0x"
@@ -44,10 +43,8 @@ func simulate(ctx *simulator.Context) {
 }
 
 func run(ctx *simulator.Context, connection *net.UDPConn, wait chan int) {
-	ctx.TxQ = make(chan entities.Message, 8)
-
-	for _, s := range ctx.Simulators {
-		s.TxQ = ctx.TxQ
+	for _, s := range ctx.DeviceList.Simulators {
+		s.TxQ = ctx.DeviceList.TxQ
 	}
 
 	go func() {
@@ -60,7 +57,7 @@ func run(ctx *simulator.Context, connection *net.UDPConn, wait chan int) {
 
 	go func() {
 		for {
-			msg := <-ctx.TxQ
+			msg := <-ctx.DeviceList.TxQ
 			send(connection, msg.Destination, msg.Message)
 		}
 	}()
@@ -91,7 +88,7 @@ func handle(ctx *simulator.Context, c *net.UDPConn, src *net.UDPAddr, bytes []by
 		return
 	}
 
-	for _, s := range ctx.Simulators {
+	for _, s := range ctx.DeviceList.Simulators {
 		s.Handle(src, request)
 	}
 }
