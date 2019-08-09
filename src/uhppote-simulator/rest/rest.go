@@ -9,7 +9,6 @@ import (
 	"regexp"
 	"strconv"
 	"uhppote-simulator/simulator"
-	"uhppote/types"
 )
 
 type Device struct {
@@ -124,13 +123,13 @@ func list(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 
 	devices := make([]Device, 0)
 
-	for _, s := range ctx.DeviceList.Simulators {
+	ctx.DeviceList.Apply(func(s *simulator.Simulator) {
 		devices = append(devices, Device{
 			DeviceId:   uint32(s.SerialNumber),
 			DeviceType: "UTC3011-L04",
 			URI:        fmt.Sprintf("/uhppote/simulator/%d", uint32(s.SerialNumber)),
 		})
-	}
+	})
 
 	response := DeviceList{devices}
 	b, err := json.Marshal(response)
@@ -192,15 +191,14 @@ func delete(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, s := range ctx.DeviceList.Simulators {
-		if s.SerialNumber == types.SerialNumber(deviceId) {
-			ctx.DeviceList.Delete(uint32(deviceId))
-			w.Header().Set("Content-Type", "application/json")
-			return
-		}
+	if s := ctx.DeviceList.Find(uint32(deviceId)); s == nil {
+		http.Error(w, fmt.Sprintf("No device with ID %d", deviceId), http.StatusNotFound)
+		return
 	}
 
-	http.Error(w, fmt.Sprintf("No device with ID %d", deviceId), http.StatusNotFound)
+	ctx.DeviceList.Delete(uint32(deviceId))
+
+	w.Header().Set("Content-Type", "application/json")
 }
 
 func swipe(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
@@ -230,35 +228,34 @@ func swipe(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, s := range ctx.DeviceList.Simulators {
-		if s.SerialNumber == types.SerialNumber(deviceId) {
-			granted, eventId := s.Swipe(uint32(deviceId), request.CardNumber, request.Door)
-			opened := false
-			message := "Access denied"
-
-			if granted {
-				opened = true
-				message = "Access granted"
-			}
-
-			response := SwipeResponse{
-				Granted: granted,
-				Opened:  opened,
-				Message: message,
-			}
-
-			b, err := json.Marshal(response)
-			if err != nil {
-				http.Error(w, "Error generating response", http.StatusInternalServerError)
-				return
-			}
-
-			w.Header().Set("Content-Type", "application/json")
-			w.Header().Set("Location", fmt.Sprintf("/uhppote/simulator/%d/events/%d", s.SerialNumber, eventId))
-			w.Write(b)
-			return
-		}
+	s := ctx.DeviceList.Find(uint32(deviceId))
+	if s == nil {
+		http.Error(w, fmt.Sprintf("No device with ID %d", deviceId), http.StatusNotFound)
+		return
 	}
 
-	http.Error(w, fmt.Sprintf("No device with ID %d", deviceId), http.StatusNotFound)
+	granted, eventId := s.Swipe(uint32(deviceId), request.CardNumber, request.Door)
+	opened := false
+	message := "Access denied"
+
+	if granted {
+		opened = true
+		message = "Access granted"
+	}
+
+	response := SwipeResponse{
+		Granted: granted,
+		Opened:  opened,
+		Message: message,
+	}
+
+	b, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, "Error generating response", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Location", fmt.Sprintf("/uhppote/simulator/%d/events/%d", s.SerialNumber, eventId))
+	w.Write(b)
 }

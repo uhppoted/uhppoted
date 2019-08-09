@@ -3,10 +3,8 @@
 # IN PROGRESS
 
 Simulator
-- fix Context.TxQ hack
-- rework set-XXX/save
-- rework simulator.run to use rx channels
 - define Simulator as an interface 
+- rework set-XXX/save
 
 # TODO
 
@@ -37,3 +35,4 @@ Simulator
 20. REST interface
     - verify events
     - HTML file
+21. Rework simulator.run to use rx channels
