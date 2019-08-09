@@ -3,18 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 	"path"
 	"path/filepath"
-	"uhppote-simulator/commands"
 	"uhppote-simulator/entities"
 	"uhppote-simulator/simulator"
 	"uhppote/types"
 )
-
-var cli = []commands.Command{
-	&commands.VersionCommand{VERSION},
-}
 
 var VERSION = "v0.03.0"
 
@@ -31,19 +25,13 @@ func main() {
 	flag.BoolVar(&options.debug, "debug", false, "Displays simulator activity")
 	flag.Parse()
 
-	cmd, err := parse()
-	if err != nil {
-		fmt.Printf("\n   ERROR: %v\n\n", err)
-		os.Exit(1)
-	}
-
-	if cmd != nil {
-		cmd.Execute(options.dir)
+	if len(flag.Args()) > 0 && flag.Arg(0) == "help" {
+		help()
 		return
 	}
 
-	if len(flag.Args()) > 0 && flag.Arg(0) == "help" {
-		help()
+	if len(flag.Args()) > 0 && flag.Arg(0) == "version" {
+		version()
 		return
 	}
 
@@ -56,21 +44,6 @@ func main() {
 	}
 
 	simulate(&ctx)
-}
-
-func parse() (commands.Command, error) {
-	var cmd commands.Command = nil
-	var err error = nil
-
-	if len(os.Args) > 1 {
-		for _, c := range cli {
-			if c.CLI() == flag.Arg(0) {
-				cmd = c
-			}
-		}
-	}
-
-	return cmd, err
 }
 
 func load(dir string) []*simulator.Simulator {
@@ -116,31 +89,11 @@ func load(dir string) []*simulator.Simulator {
 	return l
 }
 
-func help() {
-	if len(flag.Args()) > 0 && flag.Arg(0) == "help" {
-		if len(flag.Args()) > 1 {
-
-			if flag.Arg(1) == "commands" {
-				helpCommands()
-				return
-			}
-
-			for _, c := range cli {
-				if c.CLI() == flag.Arg(1) {
-					c.Help()
-					return
-				}
-			}
-
-			fmt.Printf("Invalid command: %v. Type 'help commands' to get a list of supported commands\n", flag.Arg(1))
-			return
-		}
-	}
-
-	usage()
+func version() {
+	fmt.Printf("%v\n", VERSION)
 }
 
-func usage() {
+func help() {
 	fmt.Println()
 	fmt.Println("  Usage: uhppote-simulator [options] <command>")
 	fmt.Println()
@@ -148,28 +101,13 @@ func usage() {
 	fmt.Println()
 	fmt.Println("  Commands:")
 	fmt.Println()
+	fmt.Println("    version          Displays the simulator version")
 	fmt.Println("    help             Displays this message")
 	fmt.Println("                     For help on a specific command use 'uhppote-cli help <command>'")
-
-	for _, c := range cli {
-		fmt.Printf("    %-16s %s\n", c.CLI(), c.Description())
-	}
-
 	fmt.Println()
 	fmt.Println("  Options:")
 	fmt.Println()
 	fmt.Println("    --devices   Sets the directory to which to load and save simulator device files")
 	fmt.Println("    --debug     Displays vaguely useful internal information")
-	fmt.Println()
-}
-
-func helpCommands() {
-	fmt.Println("Supported commands:")
-	fmt.Println()
-
-	for _, c := range cli {
-		fmt.Printf(" %-16s %s\n", c.CLI(), c.Usage())
-	}
-
 	fmt.Println()
 }
