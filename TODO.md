@@ -4,13 +4,9 @@
 
 Simulator
 - fix Context.TxQ hack
-- REST interface
-  - verify events
-  - HTML file
 - rework set-XXX/save
 - rework simulator.run to use rx channels
 - define Simulator as an interface 
-- remove Command interface
 
 # TODO
 
@@ -38,3 +34,6 @@ Simulator
 17. uhppoted
 18. Update to use modules
 19. simulator-cli
+20. REST interface
+    - verify events
+    - HTML file

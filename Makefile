@@ -23,7 +23,6 @@ format:
 	gofmt -w=true src/uhppote-cli/config/*.go
 	gofmt -w=true src/uhppote-cli/parsers/*.go
 	gofmt -w=true src/uhppote-simulator/*.go
-	gofmt -w=true src/uhppote-simulator/commands/*.go
 	gofmt -w=true src/uhppote-simulator/simulator/*.go
 	gofmt -w=true src/uhppote-simulator/rest/*.go
 	gofmt -w=true src/uhppote-simulator/entities/*.go
