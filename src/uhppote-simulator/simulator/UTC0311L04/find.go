@@ -1,4 +1,4 @@
-package simulator
+package UTC0311L04
 
 import (
 	"net"
@@ -7,7 +7,7 @@ import (
 	"uhppote/types"
 )
 
-func (s *Simulator) find(addr *net.UDPAddr, request *messages.FindDevicesRequest) {
+func (s *UTC0311L04) find(addr *net.UDPAddr, request *messages.FindDevicesRequest) {
 	utc := time.Now().UTC()
 	datetime := utc.Add(time.Duration(s.TimeOffset))
 

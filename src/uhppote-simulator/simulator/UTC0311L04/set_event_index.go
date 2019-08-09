@@ -1,4 +1,4 @@
-package simulator
+package UTC0311L04
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) setEventIndex(addr *net.UDPAddr, request *messages.SetEventIndexRequest) {
+func (s *UTC0311L04) setEventIndex(addr *net.UDPAddr, request *messages.SetEventIndexRequest) {
 	if s.SerialNumber == request.SerialNumber {
 
 		if request.MagicWord != 0x55aaaa55 {

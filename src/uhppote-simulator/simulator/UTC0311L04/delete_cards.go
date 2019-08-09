@@ -1,11 +1,11 @@
-package simulator
+package UTC0311L04
 
 import (
 	"net"
 	"uhppote/messages"
 )
 
-func (s *Simulator) deleteCards(addr *net.UDPAddr, request *messages.DeleteCardsRequest) {
+func (s *UTC0311L04) deleteCards(addr *net.UDPAddr, request *messages.DeleteCardsRequest) {
 	if request.SerialNumber == s.SerialNumber {
 		deleted := false
 

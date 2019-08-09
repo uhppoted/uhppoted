@@ -1,4 +1,4 @@
-package simulator
+package UTC0311L04
 
 import (
 	"net"
@@ -8,7 +8,7 @@ import (
 	"uhppote/types"
 )
 
-func (s *Simulator) openDoor(addr *net.UDPAddr, request *messages.OpenDoorRequest) {
+func (s *UTC0311L04) openDoor(addr *net.UDPAddr, request *messages.OpenDoorRequest) {
 	if s.SerialNumber == request.SerialNumber {
 		granted := false
 		opened := false

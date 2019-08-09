@@ -1,11 +1,11 @@
-package simulator
+package UTC0311L04
 
 import (
 	"net"
 	"uhppote/messages"
 )
 
-func (s *Simulator) getEvent(addr *net.UDPAddr, request *messages.GetEventRequest) {
+func (s *UTC0311L04) getEvent(addr *net.UDPAddr, request *messages.GetEventRequest) {
 	if s.SerialNumber == request.SerialNumber {
 		index := request.Index
 		if index > s.Events.LastIndex() {

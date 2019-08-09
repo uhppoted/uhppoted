@@ -3,7 +3,6 @@
 # IN PROGRESS
 
 Simulator
-- define Simulator as an interface 
 - rework set-XXX/save
 
 # TODO

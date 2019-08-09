@@ -84,7 +84,7 @@ func handle(ctx *simulator.Context, c *net.UDPConn, src *net.UDPAddr, bytes []by
 		return
 	}
 
-	f := func(s *simulator.Simulator) {
+	f := func(s simulator.Simulator) {
 		s.Handle(src, request)
 	}
 

@@ -1,4 +1,4 @@
-package simulator
+package UTC0311L04
 
 import (
 	"net"
@@ -6,7 +6,7 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) putCard(addr *net.UDPAddr, request *messages.PutCardRequest) {
+func (s *UTC0311L04) putCard(addr *net.UDPAddr, request *messages.PutCardRequest) {
 	if request.SerialNumber == s.SerialNumber {
 		card := entities.Card{
 			CardNumber: request.CardNumber,

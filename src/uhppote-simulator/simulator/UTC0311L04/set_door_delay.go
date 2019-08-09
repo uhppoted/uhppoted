@@ -1,4 +1,4 @@
-package simulator
+package UTC0311L04
 
 import (
 	"net"
@@ -6,7 +6,7 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) setDoorDelay(addr *net.UDPAddr, request *messages.SetDoorDelayRequest) {
+func (s *UTC0311L04) setDoorDelay(addr *net.UDPAddr, request *messages.SetDoorDelayRequest) {
 	if request.SerialNumber == s.SerialNumber && request.Unit == 0x03 {
 		door := request.Door
 		if !(door < 1 || door > 4) {
