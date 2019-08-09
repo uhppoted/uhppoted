@@ -43,10 +43,6 @@ func simulate(ctx *simulator.Context) {
 }
 
 func run(ctx *simulator.Context, connection *net.UDPConn, wait chan int) {
-	for _, s := range ctx.DeviceList.Simulators {
-		s.TxQ = ctx.DeviceList.TxQ
-	}
-
 	go func() {
 		err := listenAndServe(ctx, connection)
 		if err != nil {
@@ -57,7 +53,7 @@ func run(ctx *simulator.Context, connection *net.UDPConn, wait chan int) {
 
 	go func() {
 		for {
-			msg := <-ctx.DeviceList.TxQ
+			msg := ctx.DeviceList.GetMessage()
 			send(connection, msg.Destination, msg.Message)
 		}
 	}()
@@ -88,9 +84,11 @@ func handle(ctx *simulator.Context, c *net.UDPConn, src *net.UDPAddr, bytes []by
 		return
 	}
 
-	for _, s := range ctx.DeviceList.Simulators {
+	f := func(s *simulator.Simulator) {
 		s.Handle(src, request)
 	}
+
+	ctx.DeviceList.Apply(f)
 }
 
 func receive(c *net.UDPConn) ([]byte, *net.UDPAddr, error) {
