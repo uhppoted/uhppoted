@@ -1,11 +1,11 @@
-package simulator
+package UTC0311L04
 
 import (
 	"net"
 	"uhppote/messages"
 )
 
-func (s *Simulator) getCardById(addr *net.UDPAddr, request *messages.GetCardByIdRequest) {
+func (s *UTC0311L04) getCardById(addr *net.UDPAddr, request *messages.GetCardByIdRequest) {
 	if request.SerialNumber == s.SerialNumber {
 		response := messages.GetCardByIdResponse{
 			SerialNumber: s.SerialNumber,
@@ -28,7 +28,7 @@ func (s *Simulator) getCardById(addr *net.UDPAddr, request *messages.GetCardById
 	}
 }
 
-func (s *Simulator) getCardByIndex(addr *net.UDPAddr, request *messages.GetCardByIndexRequest) {
+func (s *UTC0311L04) getCardByIndex(addr *net.UDPAddr, request *messages.GetCardByIndexRequest) {
 	if request.SerialNumber == s.SerialNumber {
 		response := messages.GetCardByIndexResponse{
 			SerialNumber: s.SerialNumber,

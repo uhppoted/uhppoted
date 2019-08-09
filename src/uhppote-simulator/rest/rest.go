@@ -57,7 +57,7 @@ func Run(ctx *simulator.Context) {
 	}
 
 	d.Add("^/uhppote/simulator$", devices)
-	d.Add("^/uhppote/simulator/[0-9]+", device)
+	d.Add("^/uhppote/simulator/[0-9]+$", device)
 	d.Add("^/uhppote/simulator/[0-9]+/swipe$", swipe)
 
 	log.Fatal(http.ListenAndServe(":8080", &d))
@@ -123,11 +123,11 @@ func list(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 
 	devices := make([]Device, 0)
 
-	ctx.DeviceList.Apply(func(s *simulator.Simulator) {
+	ctx.DeviceList.Apply(func(s simulator.Simulator) {
 		devices = append(devices, Device{
-			DeviceId:   uint32(s.SerialNumber),
+			DeviceId:   s.DeviceID(),
 			DeviceType: "UTC3011-L04",
-			URI:        fmt.Sprintf("/uhppote/simulator/%d", uint32(s.SerialNumber)),
+			URI:        fmt.Sprintf("/uhppote/simulator/%d", s.DeviceID()),
 		})
 	})
 
@@ -256,6 +256,6 @@ func swipe(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Location", fmt.Sprintf("/uhppote/simulator/%d/events/%d", s.SerialNumber, eventId))
+	w.Header().Set("Location", fmt.Sprintf("/uhppote/simulator/%d/events/%d", s.DeviceID(), eventId))
 	w.Write(b)
 }

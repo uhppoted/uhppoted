@@ -1,4 +1,4 @@
-package simulator
+package UTC0311L04
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 	"uhppote/messages"
 )
 
-func (s *Simulator) setAddress(addr *net.UDPAddr, request *messages.SetAddressRequest) {
+func (s *UTC0311L04) setAddress(addr *net.UDPAddr, request *messages.SetAddressRequest) {
 	if s.SerialNumber == request.SerialNumber {
 		if request.MagicWord == 0x55aaaa55 {
 			s.IpAddress = request.Address

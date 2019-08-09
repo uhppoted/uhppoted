@@ -6,7 +6,7 @@ import (
 	"path"
 	"path/filepath"
 	"uhppote-simulator/simulator"
-	"uhppote/types"
+	"uhppote-simulator/simulator/UTC0311L04"
 )
 
 var VERSION = "v0.03.0"
@@ -42,10 +42,10 @@ func main() {
 	simulate(&ctx)
 }
 
-func load(dir string) []*simulator.Simulator {
+func load(dir string) []simulator.Simulator {
 	fmt.Printf("   ... loading devices from '%s'\n", dir)
 
-	devices := map[types.SerialNumber]*simulator.Simulator{}
+	devices := map[uint32]simulator.Simulator{}
 
 	list := []struct {
 		glob       string
@@ -59,15 +59,16 @@ func load(dir string) []*simulator.Simulator {
 		files, err := filepath.Glob(path.Join(dir, g.glob))
 		if err == nil {
 			for _, f := range files {
-				s, err := simulator.Load(f, g.compressed)
+				s, err := UTC0311L04.Load(f, g.compressed)
 				if err != nil {
 					fmt.Printf("   ... error loading device from file '%s': %v\n", f, err)
 				} else {
-					if devices[s.SerialNumber] == nil {
-						devices[s.SerialNumber] = s
+					deviceId := s.DeviceID()
+					if devices[deviceId] == nil {
+						devices[deviceId] = s
 						fmt.Printf("   ... loaded device  from '%s'\n", f)
 					} else {
-						fmt.Printf("   ... duplicate serial number %v in device file '%s' - using device loaded from '%s'\n", s.SerialNumber, f, devices[s.SerialNumber].File)
+						fmt.Printf("   ... duplicate serial number %v in device file '%s' - using device loaded from '%s'\n", deviceId, f, devices[deviceId].FilePath())
 					}
 				}
 			}
@@ -76,7 +77,7 @@ func load(dir string) []*simulator.Simulator {
 
 	fmt.Println()
 
-	l := make([]*simulator.Simulator, 0)
+	l := make([]simulator.Simulator, 0)
 
 	for _, s := range devices {
 		l = append(l, s)
@@ -103,7 +104,7 @@ func help() {
 	fmt.Println()
 	fmt.Println("  Options:")
 	fmt.Println()
-	fmt.Println("    --devices   Sets the directory to which to load and save simulator device files")
-	fmt.Println("    --debug     Displays vaguely useful internal information")
+	fmt.Println("    --devices <directory>  Sets the directory to which to load and save simulator device files")
+	fmt.Println("    --debug                Displays vaguely useful internal information")
 	fmt.Println()
 }

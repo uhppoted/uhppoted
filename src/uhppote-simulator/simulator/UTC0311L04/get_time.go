@@ -1,4 +1,4 @@
-package simulator
+package UTC0311L04
 
 import (
 	"net"
@@ -7,7 +7,7 @@ import (
 	"uhppote/types"
 )
 
-func (s *Simulator) getTime(addr *net.UDPAddr, request *messages.GetTimeRequest) {
+func (s *UTC0311L04) getTime(addr *net.UDPAddr, request *messages.GetTimeRequest) {
 	if s.SerialNumber == request.SerialNumber {
 
 		utc := time.Now().UTC()

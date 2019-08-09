@@ -1,11 +1,11 @@
-package simulator
+package UTC0311L04
 
 import (
 	"net"
 	"uhppote/messages"
 )
 
-func (s *Simulator) setListener(addr *net.UDPAddr, request *messages.SetListenerRequest) {
+func (s *UTC0311L04) setListener(addr *net.UDPAddr, request *messages.SetListenerRequest) {
 	if s.SerialNumber == request.SerialNumber {
 
 		listener := net.UDPAddr{IP: request.Address, Port: int(request.Port)}
