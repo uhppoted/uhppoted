@@ -29,8 +29,8 @@ func (u *UHPPOTE) SetAddress(serialNumber uint32, address, mask, gateway net.IP)
 		MagicWord:    0x55aaaa55,
 	}
 
-	// UTC0311-L04 doesn't seem to send a response. The reported remote IP address doesn't change on subsequent commands
-	// (both internally and onl Wireshark) but the UTC0311-L04 only replies to ping's on the new IP address. Wireshark
+	// UT0311-L04 doesn't seem to send a response. The reported remote IP address doesn't change on subsequent commands
+	// (both internally and onl Wireshark) but the UT0311-L04 only replies to ping's on the new IP address. Wireshark
 	// reports a 'Gratuitous ARP request' which looks correct after a set-address. Might be something to do with the
 	// TPLink or OSX ARP implementation.
 	if err := u.Execute(serialNumber, request, nil); err != nil {

@@ -16,7 +16,7 @@ format:
 	gofmt -w=true src/uhppote-simulator/*.go
 	gofmt -w=true src/uhppote-simulator/simulator/*.go
 	gofmt -w=true src/uhppote-simulator/entities/*.go
-	gofmt -w=true src/uhppote-simulator/simulator/UTC0311L04/*.go
+	gofmt -w=true src/uhppote-simulator/simulator/UT0311L04/*.go
 	gofmt -w=true src/integration-tests/*.go
 
 build: format
@@ -90,7 +90,7 @@ list-devices:
 	curl -X GET "http://127.0.0.1:8080/uhppote/simulator" -H "accept: application/json"
 
 create-device:
-	curl -X POST "http://127.0.0.1:8080/uhppote/simulator" -H "accept: */*" -H "Content-Type: application/json" -d "{\"device-id\":753186420,\"device-type\":\"UTC0311-L04\",\"compressed\":false}"
+	curl -X POST "http://127.0.0.1:8080/uhppote/simulator" -H "accept: */*" -H "Content-Type: application/json" -d "{\"device-id\":753186420,\"device-type\":\"UT0311-L04\",\"compressed\":false}"
 
 delete-device:
 	curl -X DELETE "http://127.0.0.1:8080/uhppote/simulator/753186420" -H "accept: */*"

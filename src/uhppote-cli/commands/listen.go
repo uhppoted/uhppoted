@@ -41,6 +41,6 @@ func (c *ListenCommand) Usage() string {
 }
 
 func (c *ListenCommand) Help() {
-	fmt.Println("Listens for access control events from UHPPOTE UTC3110-L0x controllers configured to send events to this IP address and port")
+	fmt.Println("Listens for access control events from UHPPOTE UT0311-L0x controllers configured to send events to this IP address and port")
 	fmt.Println()
 }

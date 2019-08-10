@@ -1,4 +1,4 @@
-package UTC0311L04
+package UT0311L04
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"uhppote/messages"
 )
 
-func (s *UTC0311L04) setDoorDelay(addr *net.UDPAddr, request *messages.SetDoorDelayRequest) {
+func (s *UT0311L04) setDoorDelay(addr *net.UDPAddr, request *messages.SetDoorDelayRequest) {
 	if request.SerialNumber == s.SerialNumber {
 		if request.Unit != 0x03 {
 			fmt.Printf("ERROR: Invalid time unit' - expected: %02x, received:%02x", 0x03, request.Unit)

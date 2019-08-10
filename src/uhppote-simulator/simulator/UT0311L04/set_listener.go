@@ -1,4 +1,4 @@
-package UTC0311L04
+package UT0311L04
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"uhppote/messages"
 )
 
-func (s *UTC0311L04) setListener(addr *net.UDPAddr, request *messages.SetListenerRequest) {
+func (s *UT0311L04) setListener(addr *net.UDPAddr, request *messages.SetListenerRequest) {
 	if s.SerialNumber == request.SerialNumber {
 
 		listener := net.UDPAddr{IP: request.Address, Port: int(request.Port)}

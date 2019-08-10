@@ -1,4 +1,4 @@
-package UTC0311L04
+package UT0311L04
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	"uhppote/types"
 )
 
-func (s *UTC0311L04) Swipe(deviceId uint32, cardNumber uint32, door uint8) (bool, uint32) {
+func (s *UT0311L04) Swipe(deviceId uint32, cardNumber uint32, door uint8) (bool, uint32) {
 	granted := false
 	opened := false
 	eventType := uint8(0x01)

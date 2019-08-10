@@ -150,7 +150,7 @@ components:
           type: string
           format: string
           description: "UHPPOTE device type"
-          example: "UTC0311-L04"
+          example: "UT0311-L04"
         uri:  
           type: string
           format: URI
@@ -178,9 +178,9 @@ components:
           example: 753186420
         device-type:  
           type: string
-          format: "UTCO311-L04"
-          description: "UHPPOTE device type. Only UTCO311-L04 is supported at present"
-          example: "UTC0311-L04"
+          format: "UTO311-L04"
+          description: "UHPPOTE device type. Only UTO311-L04 is supported at present"
+          example: "UT0311-L04"
         compressed:  
           type: boolean
           format: true/false

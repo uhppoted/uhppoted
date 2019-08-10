@@ -1,4 +1,4 @@
-package UTC0311L04
+package UT0311L04
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"uhppote/messages"
 )
 
-func (s *UTC0311L04) setAddress(addr *net.UDPAddr, request *messages.SetAddressRequest) {
+func (s *UT0311L04) setAddress(addr *net.UDPAddr, request *messages.SetAddressRequest) {
 	if s.SerialNumber == request.SerialNumber {
 		if request.MagicWord != 0x55aaaa55 {
 			fmt.Printf("ERROR: Invalid 'magic word' - expected: %08x, received:%08x", 0x55aaaa55, request.MagicWord)

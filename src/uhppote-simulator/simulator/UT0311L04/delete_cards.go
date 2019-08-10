@@ -1,4 +1,4 @@
-package UTC0311L04
+package UT0311L04
 
 import (
 	"fmt"
@@ -6,12 +6,15 @@ import (
 	"uhppote/messages"
 )
 
-func (s *UTC0311L04) deleteCard(addr *net.UDPAddr, request *messages.DeleteCardRequest) {
+func (s *UT0311L04) deleteCards(addr *net.UDPAddr, request *messages.DeleteCardsRequest) {
 	if request.SerialNumber == s.SerialNumber {
+		deleted := false
 
-		deleted := s.Cards.Delete(request.CardNumber)
+		if request.MagicWord == 0x55aaaa55 {
+			deleted = s.Cards.DeleteAll()
+		}
 
-		response := messages.DeleteCardResponse{
+		response := messages.DeleteCardsResponse{
 			SerialNumber: s.SerialNumber,
 			Succeeded:    deleted,
 		}
