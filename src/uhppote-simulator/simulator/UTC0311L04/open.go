@@ -33,7 +33,7 @@ func (s *UTC0311L04) openDoor(addr *net.UDPAddr, request *messages.OpenDoorReque
 				DoorOpened: opened,
 				UserId:     3922570474,
 				Timestamp:  types.DateTime(datetime),
-				RecordType: 0x2c,
+				Result:     0x2c,
 			}
 
 			s.add(&event)

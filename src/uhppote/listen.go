@@ -10,13 +10,13 @@ type Event struct {
 	MsgType        types.MsgType      `uhppote:"value:0x20"`
 	SerialNumber   types.SerialNumber `uhppote:"offset:4"`
 	LastIndex      uint32             `uhppote:"offset:8"`
-	SwipeRecord    byte               `uhppote:"offset:12"`
+	EventType      byte               `uhppote:"offset:12"`
 	Granted        bool               `uhppote:"offset:13"`
 	Door           byte               `uhppote:"offset:14"`
 	DoorOpened     bool               `uhppote:"offset:15"`
 	UserId         uint32             `uhppote:"offset:16"`
-	SwipeDateTime  types.DateTime     `uhppote:"offset:20"`
-	SwipeReason    byte               `uhppote:"offset:27"`
+	Timestamp      types.DateTime     `uhppote:"offset:20"`
+	EventResult    byte               `uhppote:"offset:27"`
 	Door1State     bool               `uhppote:"offset:28"`
 	Door2State     bool               `uhppote:"offset:29"`
 	Door3State     bool               `uhppote:"offset:30"`
@@ -56,13 +56,13 @@ func (event Event) transform() *types.Status {
 	return &types.Status{
 		SerialNumber:   event.SerialNumber,
 		LastIndex:      event.LastIndex,
-		SwipeRecord:    event.SwipeRecord,
+		EventType:      event.EventType,
 		Granted:        event.Granted,
 		Door:           event.Door,
 		DoorOpened:     event.DoorOpened,
 		UserId:         event.UserId,
-		SwipeDateTime:  event.SwipeDateTime,
-		SwipeReason:    event.SwipeReason,
+		EventTimestamp: event.Timestamp,
+		EventResult:    event.EventResult,
 		DoorState:      []bool{event.Door1State, event.Door2State, event.Door3State, event.Door4State},
 		DoorButton:     []bool{event.Door1Button, event.Door2Button, event.Door3Button, event.Door4Button},
 		SystemState:    event.SystemState,

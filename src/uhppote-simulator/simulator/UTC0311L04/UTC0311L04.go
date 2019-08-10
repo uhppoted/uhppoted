@@ -71,6 +71,10 @@ func (s *UTC0311L04) DeviceID() uint32 {
 	return uint32(s.SerialNumber)
 }
 
+func (s *UTC0311L04) DeviceType() string {
+	return "UTC0311-L04"
+}
+
 func (s *UTC0311L04) FilePath() string {
 	return s.file
 }
@@ -303,13 +307,13 @@ func (s *UTC0311L04) add(e *entities.Event) uint32 {
 			Door3Button: s.Doors[3].IsButtonPressed(),
 			Door4Button: s.Doors[4].IsButtonPressed(),
 
-			// SwipeRecord =
-			Granted:       e.Granted,
-			Door:          e.Door,
-			DoorOpened:    e.DoorOpened,
-			UserId:        e.UserId,
-			SwipeDateTime: e.Timestamp,
-			SwipeReason:   e.Type,
+			EventType:   e.Type,
+			EventResult: e.Result,
+			Timestamp:   e.Timestamp,
+			UserId:      e.UserId,
+			Granted:     e.Granted,
+			Door:        e.Door,
+			DoorOpened:  e.DoorOpened,
 		}
 
 		s.send(s.Listener, &event)
@@ -318,8 +322,4 @@ func (s *UTC0311L04) add(e *entities.Event) uint32 {
 	}
 
 	return 0
-}
-
-func (s *UTC0311L04) onError(err error) {
-	fmt.Printf("ERROR: %v\n", err)
 }

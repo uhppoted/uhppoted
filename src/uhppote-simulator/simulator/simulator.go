@@ -8,6 +8,7 @@ import (
 
 type Simulator interface {
 	DeviceID() uint32
+	DeviceType() string
 	FilePath() string
 	SetTxQ(chan entities.Message)
 

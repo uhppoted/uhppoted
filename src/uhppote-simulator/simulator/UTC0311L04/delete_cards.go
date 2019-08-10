@@ -1,6 +1,7 @@
 package UTC0311L04
 
 import (
+	"fmt"
 	"net"
 	"uhppote/messages"
 )
@@ -22,7 +23,7 @@ func (s *UTC0311L04) deleteCards(addr *net.UDPAddr, request *messages.DeleteCard
 
 		if deleted {
 			if err := s.Save(); err != nil {
-				s.onError(err)
+				fmt.Printf("ERROR: %v\n", err)
 			}
 		}
 	}

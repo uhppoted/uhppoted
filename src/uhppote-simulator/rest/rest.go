@@ -126,7 +126,7 @@ func list(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 	ctx.DeviceList.Apply(func(s simulator.Simulator) {
 		devices = append(devices, Device{
 			DeviceId:   s.DeviceID(),
-			DeviceType: "UTC3011-L04",
+			DeviceType: s.DeviceType(),
 			URI:        fmt.Sprintf("/uhppote/simulator/%d", s.DeviceID()),
 		})
 	})

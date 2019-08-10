@@ -37,13 +37,13 @@ func (s *UTC0311L04) getStatus(addr *net.UDPAddr, request *messages.GetStatusReq
 		}
 
 		if event != nil {
-			// response.SwipeRecord = s.Events.LastIndex
+			response.EventType = event.Type
 			response.Granted = event.Granted
 			response.Door = event.Door
 			response.DoorOpened = event.DoorOpened
 			response.UserId = event.UserId
-			response.SwipeDateTime = event.Timestamp
-			response.SwipeReason = event.Type
+			response.EventTimestamp = event.Timestamp
+			response.EventResult = event.Result
 		}
 
 		s.send(addr, &response)

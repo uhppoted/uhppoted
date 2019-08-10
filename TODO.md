@@ -2,9 +2,6 @@
 
 # IN PROGRESS
 
-Simulator
-- rework set-XXX/save
-
 # TODO
 
 0.  Rework uhppote to use bidirectional channel to serialize requests
@@ -32,6 +29,5 @@ Simulator
 18. Update to use modules
 19. simulator-cli
 20. REST interface
-    - verify events
-    - HTML file
+    - HTML
 21. Rework simulator.run to use rx channels
