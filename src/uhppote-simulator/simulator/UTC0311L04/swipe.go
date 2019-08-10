@@ -10,7 +10,7 @@ func (s *UTC0311L04) Swipe(deviceId uint32, cardNumber uint32, door uint8) (bool
 	granted := false
 	opened := false
 	eventType := uint8(0x01)
-	recordType := uint8(0x06)
+	result := uint8(0x06)
 
 	if s.SerialNumber == types.SerialNumber(deviceId) {
 		for _, c := range s.Cards {
@@ -19,7 +19,7 @@ func (s *UTC0311L04) Swipe(deviceId uint32, cardNumber uint32, door uint8) (bool
 					granted = true
 					opened = s.Doors[door].Open()
 					eventType = 0x02
-					recordType = 0x2c
+					result = 0x01
 				}
 			}
 		}
@@ -33,7 +33,7 @@ func (s *UTC0311L04) Swipe(deviceId uint32, cardNumber uint32, door uint8) (bool
 		DoorOpened: opened,
 		UserId:     cardNumber,
 		Timestamp:  types.DateTime(datetime),
-		RecordType: recordType,
+		Result:     result,
 	}
 
 	eventId := s.add(&event)

@@ -12,7 +12,7 @@ type Event struct {
 	DoorOpened   bool           `json:"door-opened"`
 	UserId       uint32         `json:"user-id"`
 	Timestamp    types.DateTime `json:"timestamp"`
-	RecordType   uint8          `json:"record-type"`
+	Result       uint8          `json:"result"`
 }
 
 type EventList struct {

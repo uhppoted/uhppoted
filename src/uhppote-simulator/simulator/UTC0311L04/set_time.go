@@ -1,6 +1,7 @@
 package UTC0311L04
 
 import (
+	"fmt"
 	"net"
 	"time"
 	"uhppote-simulator/entities"
@@ -13,7 +14,7 @@ func (s *UTC0311L04) setTime(addr *net.UDPAddr, request *messages.SetTimeRequest
 		dt := time.Time(request.DateTime).Format("2006-01-02 15:04:05")
 		utc, err := time.ParseInLocation("2006-01-02 15:04:05", dt, time.UTC)
 		if err != nil {
-			s.onError(err)
+			fmt.Printf("ERROR: %v\n", err)
 			return
 		}
 
@@ -22,17 +23,15 @@ func (s *UTC0311L04) setTime(addr *net.UDPAddr, request *messages.SetTimeRequest
 		datetime := now.Add(delta)
 
 		s.TimeOffset = entities.Offset(delta)
-		err = s.Save()
-		if err != nil {
-			s.onError(err)
-			return
-		}
-
 		response := messages.SetTimeResponse{
 			SerialNumber: s.SerialNumber,
 			DateTime:     types.DateTime(datetime),
 		}
 
 		s.send(addr, &response)
+
+		if err = s.Save(); err != nil {
+			fmt.Printf("ERROR: %v\n", err)
+		}
 	}
 }

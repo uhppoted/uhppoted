@@ -1,6 +1,7 @@
 package UTC0311L04
 
 import (
+	"fmt"
 	"net"
 	"uhppote/messages"
 )
@@ -18,9 +19,8 @@ func (s *UTC0311L04) setListener(addr *net.UDPAddr, request *messages.SetListene
 
 		s.send(addr, &response)
 
-		err := s.Save()
-		if err != nil {
-			s.onError(err)
+		if err := s.Save(); err != nil {
+			fmt.Printf("ERROR: %v\n", err)
 		}
 	}
 }

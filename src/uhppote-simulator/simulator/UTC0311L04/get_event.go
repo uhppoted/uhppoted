@@ -22,7 +22,7 @@ func (s *UTC0311L04) getEvent(addr *net.UDPAddr, request *messages.GetEventReque
 				DoorOpened:   event.DoorOpened,
 				UserId:       event.UserId,
 				Timestamp:    event.Timestamp,
-				RecordType:   event.RecordType,
+				Result:       event.Result,
 			}
 
 			s.send(addr, &response)
