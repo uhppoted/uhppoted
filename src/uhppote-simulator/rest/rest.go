@@ -161,8 +161,8 @@ func create(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if request.DeviceType != "UTC0311-L04" {
-		http.Error(w, "Invalid  device type - expected UTC0311-L04", http.StatusBadRequest)
+	if request.DeviceType != "UT0311-L04" {
+		http.Error(w, "Invalid  device type - expected UT0311-L04", http.StatusBadRequest)
 		return
 	}
 

@@ -1,4 +1,4 @@
-package UTC0311L04
+package UT0311L04
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"uhppote/messages"
 )
 
-func (s *UTC0311L04) putCard(addr *net.UDPAddr, request *messages.PutCardRequest) {
+func (s *UT0311L04) putCard(addr *net.UDPAddr, request *messages.PutCardRequest) {
 	if request.SerialNumber == s.SerialNumber {
 		card := entities.Card{
 			CardNumber: request.CardNumber,

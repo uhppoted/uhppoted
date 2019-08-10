@@ -6,7 +6,7 @@ CARD = 6154410
 SERIALNO = 423187757
 DOOR = 3
 VERSION = 0.03.0
-DIST = dist/$(VERSION)
+DIST = dist/uhppote-v$(VERSION)
 
 all: test      \
 	 benchmark \
@@ -26,7 +26,7 @@ format:
 	gofmt -w=true src/uhppote-simulator/simulator/*.go
 	gofmt -w=true src/uhppote-simulator/rest/*.go
 	gofmt -w=true src/uhppote-simulator/entities/*.go
-	gofmt -w=true src/uhppote-simulator/simulator/UTC0311L04/*.go
+	gofmt -w=true src/uhppote-simulator/simulator/UT0311L04/*.go
 	gofmt -w=true src/integration-tests/*.go
 
 release: format

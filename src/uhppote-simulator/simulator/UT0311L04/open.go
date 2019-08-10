@@ -1,4 +1,4 @@
-package UTC0311L04
+package UT0311L04
 
 import (
 	"net"
@@ -8,7 +8,7 @@ import (
 	"uhppote/types"
 )
 
-func (s *UTC0311L04) openDoor(addr *net.UDPAddr, request *messages.OpenDoorRequest) {
+func (s *UT0311L04) openDoor(addr *net.UDPAddr, request *messages.OpenDoorRequest) {
 	if s.SerialNumber == request.SerialNumber {
 		granted := false
 		opened := false

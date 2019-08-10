@@ -1,4 +1,4 @@
-package UTC0311L04
+package UT0311L04
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"uhppote/types"
 )
 
-func (s *UTC0311L04) setTime(addr *net.UDPAddr, request *messages.SetTimeRequest) {
+func (s *UT0311L04) setTime(addr *net.UDPAddr, request *messages.SetTimeRequest) {
 	if s.SerialNumber == request.SerialNumber {
 		dt := time.Time(request.DateTime).Format("2006-01-02 15:04:05")
 		utc, err := time.ParseInLocation("2006-01-02 15:04:05", dt, time.UTC)

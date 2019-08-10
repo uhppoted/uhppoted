@@ -1,11 +1,11 @@
-package UTC0311L04
+package UT0311L04
 
 import (
 	"net"
 	"uhppote/messages"
 )
 
-func (s *UTC0311L04) getEventIndex(addr *net.UDPAddr, request *messages.GetEventIndexRequest) {
+func (s *UT0311L04) getEventIndex(addr *net.UDPAddr, request *messages.GetEventIndexRequest) {
 	if s.SerialNumber == request.SerialNumber {
 		response := messages.GetEventIndexResponse{
 			SerialNumber: s.SerialNumber,

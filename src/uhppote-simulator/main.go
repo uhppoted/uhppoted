@@ -6,7 +6,7 @@ import (
 	"path"
 	"path/filepath"
 	"uhppote-simulator/simulator"
-	"uhppote-simulator/simulator/UTC0311L04"
+	"uhppote-simulator/simulator/UT0311L04"
 )
 
 var VERSION = "v0.03.0"
@@ -59,7 +59,7 @@ func load(dir string) []simulator.Simulator {
 		files, err := filepath.Glob(path.Join(dir, g.glob))
 		if err == nil {
 			for _, f := range files {
-				s, err := UTC0311L04.Load(f, g.compressed)
+				s, err := UT0311L04.Load(f, g.compressed)
 				if err != nil {
 					fmt.Printf("   ... error loading device from file '%s': %v\n", f, err)
 				} else {

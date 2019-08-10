@@ -1,4 +1,4 @@
-package UTC0311L04
+package UT0311L04
 
 import (
 	"net"
@@ -7,7 +7,7 @@ import (
 	"uhppote/types"
 )
 
-func (s *UTC0311L04) getStatus(addr *net.UDPAddr, request *messages.GetStatusRequest) {
+func (s *UT0311L04) getStatus(addr *net.UDPAddr, request *messages.GetStatusRequest) {
 	if s.SerialNumber == request.SerialNumber {
 		utc := time.Now().UTC()
 		datetime := utc.Add(time.Duration(s.TimeOffset))

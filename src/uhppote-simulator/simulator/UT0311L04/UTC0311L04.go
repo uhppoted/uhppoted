@@ -1,4 +1,4 @@
-package UTC0311L04
+package UT0311L04
 
 import (
 	"bytes"
@@ -19,7 +19,7 @@ import (
 	"uhppote/types"
 )
 
-type UTC0311L04 struct {
+type UT0311L04 struct {
 	file       string                `json:"-"`
 	compressed bool                  `json:"-"`
 	txq        chan entities.Message `json:"-"`
@@ -43,7 +43,7 @@ type UTC0311L04 struct {
 	Events         entities.EventList       `json:"events"`
 }
 
-func NewUTC0311L04(deviceId uint32, dir string, compressed bool) *UTC0311L04 {
+func NewUT0311L04(deviceId uint32, dir string, compressed bool) *UT0311L04 {
 	filename := fmt.Sprintf("%d.json", deviceId)
 	if compressed {
 		filename = fmt.Sprintf("%d.json.gz", deviceId)
@@ -52,7 +52,7 @@ func NewUTC0311L04(deviceId uint32, dir string, compressed bool) *UTC0311L04 {
 	mac := make([]byte, 6)
 	rand.Read(mac)
 
-	device := UTC0311L04{
+	device := UT0311L04{
 		file:       path.Join(dir, filename),
 		compressed: compressed,
 
@@ -67,23 +67,23 @@ func NewUTC0311L04(deviceId uint32, dir string, compressed bool) *UTC0311L04 {
 	return &device
 }
 
-func (s *UTC0311L04) DeviceID() uint32 {
+func (s *UT0311L04) DeviceID() uint32 {
 	return uint32(s.SerialNumber)
 }
 
-func (s *UTC0311L04) DeviceType() string {
-	return "UTC0311-L04"
+func (s *UT0311L04) DeviceType() string {
+	return "UT0311-L04"
 }
 
-func (s *UTC0311L04) FilePath() string {
+func (s *UT0311L04) FilePath() string {
 	return s.file
 }
 
-func (s *UTC0311L04) SetTxQ(txq chan entities.Message) {
+func (s *UT0311L04) SetTxQ(txq chan entities.Message) {
 	s.txq = txq
 }
 
-func (s *UTC0311L04) Handle(src *net.UDPAddr, rq messages.Request) {
+func (s *UT0311L04) Handle(src *net.UDPAddr, rq messages.Request) {
 	switch v := rq.(type) {
 	case *messages.GetStatusRequest:
 		s.getStatus(src, rq.(*messages.GetStatusRequest))
@@ -147,7 +147,7 @@ func (s *UTC0311L04) Handle(src *net.UDPAddr, rq messages.Request) {
 	}
 }
 
-func Load(filepath string, compressed bool) (*UTC0311L04, error) {
+func Load(filepath string, compressed bool) (*UT0311L04, error) {
 	if compressed {
 		return loadGZ(filepath)
 	}
@@ -155,7 +155,7 @@ func Load(filepath string, compressed bool) (*UTC0311L04, error) {
 	return load(filepath)
 }
 
-func loadGZ(filepath string) (*UTC0311L04, error) {
+func loadGZ(filepath string) (*UT0311L04, error) {
 	b, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		return nil, err
@@ -171,7 +171,7 @@ func loadGZ(filepath string) (*UTC0311L04, error) {
 		return nil, err
 	}
 
-	simulator := new(UTC0311L04)
+	simulator := new(UT0311L04)
 	err = json.Unmarshal(buffer, simulator)
 	if err != nil {
 		return nil, err
@@ -183,13 +183,13 @@ func loadGZ(filepath string) (*UTC0311L04, error) {
 	return simulator, nil
 }
 
-func load(filepath string) (*UTC0311L04, error) {
+func load(filepath string) (*UT0311L04, error) {
 	bytes, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		return nil, err
 	}
 
-	simulator := new(UTC0311L04)
+	simulator := new(UT0311L04)
 	err = json.Unmarshal(bytes, simulator)
 	if err != nil {
 		return nil, err
@@ -211,7 +211,7 @@ func load(filepath string) (*UTC0311L04, error) {
 	return simulator, nil
 }
 
-func (s *UTC0311L04) Save() error {
+func (s *UT0311L04) Save() error {
 	if s.file != "" {
 		if s.compressed {
 			return saveGZ(s.file, s)
@@ -223,7 +223,7 @@ func (s *UTC0311L04) Save() error {
 	return nil
 }
 
-func (s *UTC0311L04) Delete() error {
+func (s *UT0311L04) Delete() error {
 	if s.file != "" {
 		if err := os.Remove(s.file); err != nil {
 			return err
@@ -239,7 +239,7 @@ func (s *UTC0311L04) Delete() error {
 	return nil
 }
 
-func (s *UTC0311L04) send(dest *net.UDPAddr, message interface{}) {
+func (s *UT0311L04) send(dest *net.UDPAddr, message interface{}) {
 	if s.txq == nil {
 		panic(fmt.Sprintf("Device %d: missing TXQ", s.SerialNumber))
 	}
@@ -249,7 +249,7 @@ func (s *UTC0311L04) send(dest *net.UDPAddr, message interface{}) {
 	}
 }
 
-func saveGZ(filepath string, s *UTC0311L04) error {
+func saveGZ(filepath string, s *UT0311L04) error {
 	b, err := json.MarshalIndent(s, "", "  ")
 	if err != nil {
 		return err
@@ -269,7 +269,7 @@ func saveGZ(filepath string, s *UTC0311L04) error {
 	return ioutil.WriteFile(filepath, buffer.Bytes(), 0644)
 }
 
-func save(filepath string, s *UTC0311L04) error {
+func save(filepath string, s *UT0311L04) error {
 	bytes, err := json.MarshalIndent(s, "", "  ")
 	if err != nil {
 		return err
@@ -278,7 +278,7 @@ func save(filepath string, s *UTC0311L04) error {
 	return ioutil.WriteFile(filepath, bytes, 0644)
 }
 
-func (s *UTC0311L04) add(e *entities.Event) uint32 {
+func (s *UT0311L04) add(e *entities.Event) uint32 {
 	if e != nil {
 		s.Events.Add(e)
 		s.Save()

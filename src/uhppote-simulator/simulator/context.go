@@ -2,7 +2,7 @@ package simulator
 
 import (
 	"uhppote-simulator/entities"
-	"uhppote-simulator/simulator/UTC0311L04"
+	"uhppote-simulator/simulator/UT0311L04"
 )
 
 type DeviceList struct {
@@ -54,7 +54,7 @@ func (l *DeviceList) Add(deviceId uint32, compressed bool, dir string) error {
 		}
 	}
 
-	device := UTC0311L04.NewUTC0311L04(deviceId, dir, compressed)
+	device := UT0311L04.NewUT0311L04(deviceId, dir, compressed)
 	device.SetTxQ(l.txq)
 	err := device.Save()
 	if err != nil {

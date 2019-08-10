@@ -1,11 +1,11 @@
-package UTC0311L04
+package UT0311L04
 
 import (
 	"net"
 	"uhppote/messages"
 )
 
-func (s *UTC0311L04) getDoorDelay(addr *net.UDPAddr, request *messages.GetDoorDelayRequest) {
+func (s *UT0311L04) getDoorDelay(addr *net.UDPAddr, request *messages.GetDoorDelayRequest) {
 	if request.SerialNumber == s.SerialNumber {
 
 		if !(request.Door < 1 || request.Door > 4) {
