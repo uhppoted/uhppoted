@@ -61,8 +61,8 @@ func TestUnmarshalGetStatusResponse(t *testing.T) {
 		t.Errorf("Incorrect 'last index' - expected:%v, got:%v", 57, reply.LastIndex)
 	}
 
-	if reply.SwipeRecord != 1 {
-		t.Errorf("Incorrect 'swipe record' - expected:%v, got:%v", 1, reply.SwipeRecord)
+	if reply.EventType != 1 {
+		t.Errorf("Incorrect 'event type' - expected:%v, got:%v", 1, reply.EventType)
 	}
 
 	if reply.Granted {
@@ -82,12 +82,12 @@ func TestUnmarshalGetStatusResponse(t *testing.T) {
 	}
 
 	swiped, _ := time.ParseInLocation("2006-01-02 15:04:05", "2019-04-19 17:00:09", time.Local)
-	if reply.SwipeDateTime != types.DateTime(swiped) {
-		t.Errorf("Incorrect 'swipe date/time' - expected:%s, got:%s", swiped.Format("2006-01-02 15:04:05"), reply.SwipeDateTime)
+	if reply.EventTimestamp != types.DateTime(swiped) {
+		t.Errorf("Incorrect 'event timestamp' - expected:%s, got:%s", swiped.Format("2006-01-02 15:04:05"), reply.EventTimestamp)
 	}
 
-	if reply.SwipeReason != 6 {
-		t.Errorf("Incorrect 'swipe reason' - expected:%v, got:%v", 6, reply.SwipeReason)
+	if reply.EventResult != 6 {
+		t.Errorf("Incorrect 'event result' - expected:%v, got:%v", 6, reply.EventResult)
 	}
 
 	if !reply.Door1State {
