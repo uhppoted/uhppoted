@@ -1,6 +1,6 @@
 # uhppote-go
 
-Go CLI implementation for the UHPPOTE UT0311-L04 TCP/IP Wiegand Access Control Board. The current incarnation is essentially a rework in Go of the [carbonsphere/UHPPOTE](https://github.com/carbonsphere/UHPPOTE) PHP implementation.
+Go CLI and daemon/service implementation for the UHPPOTE UT0311-L04 TCP/IP Wiegand Access Control Board. The current incarnation is essentially a rework in Go of the [carbonsphere/UHPPOTE](https://github.com/carbonsphere/UHPPOTE) PHP implementation.
 
 ## Raison d'être
 
@@ -14,24 +14,31 @@ The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Acc
 
 ## Modules
 
-- uhppote:           UDP interface to UHPPOTE UTO0311-L0x controllers
-- uhppote-cli:       CLI for use with bash scripts
-- uhppote-simulator: UHPPOTE simulator for development use
+| Module            | Description                                                           |
+| ----------------- | --------------------------------------------------------------------- |
+| uhppote           | core library, implements the UDP interface to UTO0311-L0x controllers |
+| uhppote-cli       | CLI                                                                   |
+| uhppoted          | daemon/service for remote access to UTO0311-L0x controllers           |
+| uhppote-simulator | UT0311-L04 simulator for development use                              |
 
 ## Installation
+
+### Building from source
+
+### Binaries
 
 ## uhppote
 
 Supported functions:
 - FindDevices
 - SetAddress
+- GetStatus
 - GetTime
 - SetTime
 - GetDoorDelay
 - SetDoorDelay
 - GetListener
 - SetListener
-- GetStatus
 - GetCards
 - GetCardByIndex
 - GetCardById
@@ -40,7 +47,7 @@ Supported functions:
 - GetEvent
 - GetEventIndex
 - SetEventIndex
-- Open
+- OpenDoor
 - Listen
 
 ## uhppote-cli
@@ -53,13 +60,13 @@ Supported commands:
 - version
 - get-devices
 - set-address
+- get-status
 - get-time
 - set-time
 - get-door-delay
 - set-door-delay
 - get-listener
 - set-listener
-- get-status
 - get-cards
 - get-card
 - get-events
@@ -74,7 +81,7 @@ Supported commands:
 
 ## uhppote-simulator
 
-Usage: *uhppote-simulator --devices=<dir>*
+Usage: *uhppote-simulator --devices=\<dir\>*
 
 Supported options:
 - --help
