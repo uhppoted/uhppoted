@@ -9,7 +9,7 @@ import (
 	"uhppote-simulator/simulator/UT0311L04"
 )
 
-var VERSION = "v0.03.0"
+var VERSION = "v0.04.0"
 
 var options = struct {
 	dir   string

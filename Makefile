@@ -22,6 +22,9 @@ format:
 	gofmt -w=true src/uhppote-cli/commands/*.go
 	gofmt -w=true src/uhppote-cli/config/*.go
 	gofmt -w=true src/uhppote-cli/parsers/*.go
+	gofmt -w=true src/uhppoted/*.go
+	gofmt -w=true src/uhppoted/rest/*.go
+	gofmt -w=true src/uhppoted/eventlog/*.go
 	gofmt -w=true src/uhppote-simulator/*.go
 	gofmt -w=true src/uhppote-simulator/simulator/*.go
 	gofmt -w=true src/uhppote-simulator/rest/*.go
@@ -43,6 +46,7 @@ release: format
 build: format
 	go install uhppote-cli
 	go install uhppote-simulator
+	go install uhppoted
 
 test: build
 	go clean -testcache
@@ -164,6 +168,9 @@ simulator: build
 
 simulator-device: build
 	./bin/uhppote-simulator --debug --devices "runtime/simulation/devices" new-device 666
+
+uhppoted: build
+	./bin/uhppoted 
 
 swagger: 
 	docker run -d -p 80:8080 swaggerapi/swagger-editor

@@ -1,33 +1,40 @@
-## v0.03
+## v0.04
 
 # IN PROGRESS
 
+uhppoted
+  - REST API (debug)
+  - websocket command interface
+  - MQTT
+  - watchdog
+
 # TODO
 
-0.  Rework uhppote to use bidirectional channel to serialize requests
-1.  Human readable output for e.g. get-status
-2.  JSON formatted output for e.g. get-status
-3.  Consistently include device serial number in output e.g. of get-time
-4.  Document protocol
+1.  Rework uhppote to use bidirectional channel to serialize requests
+2.  Consistently include device serial number in output e.g. of get-time
+3.  Document protocol
     - ASN.1
-5.  fuse
-6.  Look into ARP for set-address
-7.  Rework error handling to use Wrap/Frame
-8.  godoc
-9. Integration tests
-10. Rework grant/revoke for individual doors (labelled)
-11. Dig into simulator not receiving broadcast unless listening on 0.0.0.0:60000
+4.  fuse
+5.  Look into ARP for set-address
+6.  Rework error handling to use Wrap/Frame
+7.  godoc
+8.  Integration tests
+9. Dig into simulator not receiving broadcast unless listening on 0.0.0.0:60000
     (Ref. https://groups.google.com/forum/#!topic/golang-nuts/nbmYWwHCgPc)
-12. Autodetect gzipped files
+10. Autodetect gzipped files
     (Ref. ttps://stackoverflow.com/questions/28309988/how-to-read-from-either-gzip-or-plain-text-reader-in-golang)
-13. Reload simulator on device file change
-14. Verify fields in listen events/status replies:
+11. Verify fields in listen events/status replies:
     - battery status can be (at least) 0x00, 0x01 and 0x04
-15. websocket command interface
-16. get-acl
-17. uhppoted
-18. Update to use modules
-19. simulator-cli
-20. REST interface
-    - HTML
-21. Rework simulator.run to use rx channels
+12. Update to use modules
+
+### CLI
+- Rework grant/revoke for individual doors (labelled)
+- get-acl
+- Human readable output for e.g. get-status
+- JSON formatted output for e.g. get-status
+
+### simulator
+- simulator-cli
+- HTML
+- Rework simulator.run to use rx channels
+- Reload simulator on device file change
