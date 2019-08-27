@@ -27,7 +27,7 @@ func main() {
 
 	flag.Parse()
 
-	if err := os.MkdirAll(*dir, os.ModeDir|0744); err != nil {
+	if err := os.MkdirAll(*dir, os.ModeDir|os.ModePerm); err != nil {
 		log.Fatal(fmt.Sprintf("Error creating working directoryi '%v'", *dir), err)
 	}
 
@@ -127,7 +127,7 @@ func listen(logger *log.Logger, interrupt chan os.Signal) error {
 			}
 
 		case <-k.C:
-			log.Printf("... keepalive")
+			log.Printf("... keep-alive")
 			keepalive()
 
 		case <-interrupt:

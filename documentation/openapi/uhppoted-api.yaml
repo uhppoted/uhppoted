@@ -1,0 +1,70 @@
+openapi: "3.0.2"
+
+info:
+  version: 0.3.0
+  title: "twystd-uhppoted"
+  description: "REST API for the twystd UHPPOTE service"
+  license:
+    name: "MIT"
+    url: "https://github.com/twystd/uhppote-go/blob/master/LICENSE"
+    
+servers:    
+  - url: "http://127.0.0.1:8001/uhppote"
+  
+tags:
+  - name: "uhppote"
+    description: "UHPPOTE service REST interface"
+
+paths:
+  /device:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves a list of active devices"
+      description: "Retrieves the list of active UHPPOTE devices"
+      operationId: listDevices
+      responses:
+        '200':
+          description: "List of active devices"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DeviceList"        
+        '405':
+          description: "Invalid request"
+        default:
+          description: "Request failed"
+
+
+components:
+  schemas:
+    Device:
+      required: 
+        - device-id
+        - device-type
+        - uri
+      properties:
+        device-id:
+          type: number
+          format: uint32
+          description: "Simulator device ID"
+          example: 305419896
+        device-type:  
+          type: string
+          format: string
+          description: "UHPPOTE device type"
+          example: "UT0311-L04"
+        uri:  
+          type: string
+          format: URI
+          description: "Base URI for the device"
+          example: "/uhppote/simulator/305419896"
+    DeviceList:
+      required: 
+        - devices
+      properties:
+        devices:
+          type: array
+          items:
+            $ref: "#/components/schemas/Device"        
+          description: "List of simulator devices"

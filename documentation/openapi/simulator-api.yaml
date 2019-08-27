@@ -2,7 +2,7 @@ openapi: "3.0.2"
 
 info:
   version: 0.3.0
-  title: "twyst-uhppote-simulator"
+  title: "twystd-uhppote-simulator"
   description: "REST API for the twystd UHPPOTE simulator command interface"
   license:
     name: "MIT"
