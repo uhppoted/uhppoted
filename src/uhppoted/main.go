@@ -7,10 +7,12 @@ import (
 	"io/ioutil"
 	"log"
 	"log/syslog"
+	"net"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+	"uhppote"
 	"uhppoted/eventlog"
 	"uhppoted/rest"
 )
@@ -101,8 +103,13 @@ func listen(logger *log.Logger, interrupt chan os.Signal) error {
 
 	log.Printf("... listening")
 
+	u := uhppote.UHPPOTE{
+		Devices: make(map[uint32]*net.UDPAddr),
+		Debug:   true,
+	}
+
 	go func() {
-		rest.Run(nil)
+		rest.Run(&u)
 	}()
 
 	defer rest.Close()

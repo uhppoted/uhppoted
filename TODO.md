@@ -4,6 +4,8 @@
 
 ### uhppoted
 - [ ] REST API (debug)
+      - [ ] Add HTTP method to dispatch matching
+      - [ ] Include logging in context
 - [ ] websocket command interface
 - [ ] MQTT 
 - [ ] watchdog

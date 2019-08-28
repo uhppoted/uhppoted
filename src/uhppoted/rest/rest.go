@@ -6,9 +6,10 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"uhppote"
 )
 
-type handlerfn func(*context.Context, http.ResponseWriter, *http.Request)
+type handlerfn func(context.Context, http.ResponseWriter, *http.Request)
 
 type handler struct {
 	re *regexp.Regexp
@@ -16,13 +17,13 @@ type handler struct {
 }
 
 type dispatcher struct {
-	ctx      *context.Context
+	u        *uhppote.UHPPOTE
 	handlers []handler
 }
 
-func Run(ctx *context.Context) {
+func Run(u *uhppote.UHPPOTE) {
 	d := dispatcher{
-		ctx,
+		u,
 		make([]handler, 0),
 	}
 
@@ -53,7 +54,8 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	url := r.URL.Path
 	for _, h := range d.handlers {
 		if h.re.MatchString(url) {
-			h.fn(d.ctx, w, r)
+			ctx := context.WithValue(context.Background(), "uhppote", d.u)
+			h.fn(ctx, w, r)
 			return
 		}
 	}
@@ -62,10 +64,11 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Unsupported API", http.StatusBadRequest)
 }
 
-func devices(ctx *context.Context, w http.ResponseWriter, r *http.Request) {
+func devices(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		http.Error(w, "NOT IMPLEMENTED", http.StatusNotImplemented)
+		u := ctx.Value("uhppote").(*uhppote.UHPPOTE)
+		GetDevices(u, w, r)
 
 	default:
 		http.Error(w, fmt.Sprintf("Invalid method:%s - expected GET or POST", r.Method), http.StatusMethodNotAllowed)
