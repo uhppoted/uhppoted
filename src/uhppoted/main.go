@@ -128,7 +128,6 @@ func listen(logger *log.Logger, interrupt chan os.Signal) error {
 	for {
 		select {
 		case <-tick.C:
-			log.Printf("... tick")
 			if err := watchdog(touched); err != nil {
 				return err
 			}

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strconv"
 	"uhppote"
 )
 
@@ -28,6 +29,7 @@ func Run(u *uhppote.UHPPOTE) {
 	}
 
 	d.Add("^/uhppote/device$", devices)
+	d.Add("^/uhppote/device/[0-9]+$", device)
 
 	log.Fatal(http.ListenAndServe(":8001", &d))
 }
@@ -71,6 +73,25 @@ func devices(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		GetDevices(u, w, r)
 
 	default:
-		http.Error(w, fmt.Sprintf("Invalid method:%s - expected GET or POST", r.Method), http.StatusMethodNotAllowed)
+		http.Error(w, fmt.Sprintf("Invalid method:%s - expected GET", r.Method), http.StatusMethodNotAllowed)
+	}
+}
+
+func device(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		u := ctx.Value("uhppote").(*uhppote.UHPPOTE)
+		url := r.URL.Path
+		matches := regexp.MustCompile("^/uhppote/device/([0-9]+)$").FindStringSubmatch(url)
+		deviceId, err := strconv.ParseUint(matches[1], 10, 32)
+		if err != nil {
+			http.Error(w, "Error reading request", http.StatusInternalServerError)
+			return
+		}
+
+		GetDevice(uint32(deviceId), u, w, r)
+
+	default:
+		http.Error(w, fmt.Sprintf("Invalid method:%s - expected GET", r.Method), http.StatusMethodNotAllowed)
 	}
 }

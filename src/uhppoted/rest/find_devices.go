@@ -10,6 +10,12 @@ import (
 type Device struct {
 	DeviceId   uint32 `json:"device-id"`
 	DeviceType string `json:"device-type"`
+	IpAddress  string `json:"ip-address"`
+	SubnetMask string `json:"subnet-mask"`
+	Gateway    string `json:"gateway-address"`
+	MacAddress string `json:"mac-address"`
+	Version    string `json:"version"`
+	Date       string `json:"date"`
 	URI        string `json:"uri"`
 }
 
@@ -30,6 +36,12 @@ func GetDevices(u *uhppote.UHPPOTE, w http.ResponseWriter, r *http.Request) {
 		list = append(list, Device{
 			DeviceId:   uint32(d.SerialNumber),
 			DeviceType: "UTO311-L04",
+			IpAddress:  d.IpAddress.String(),
+			SubnetMask: d.SubnetMask.String(),
+			Gateway:    d.Gateway.String(),
+			MacAddress: d.MacAddress.String(),
+			Version:    fmt.Sprintf("%04x", d.Version),
+			Date:       d.Date.String(),
 			URI:        fmt.Sprintf("/uhppote/device/%d", d.SerialNumber),
 		})
 	}
@@ -43,4 +55,41 @@ func GetDevices(u *uhppote.UHPPOTE, w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(b)
+}
+
+func GetDevice(deviceId uint32, u *uhppote.UHPPOTE, w http.ResponseWriter, r *http.Request) {
+	devices, err := u.FindDevices()
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error retrieving device list: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	for _, d := range devices {
+		if uint32(d.SerialNumber) == deviceId {
+			response := Device{
+				DeviceId:   uint32(d.SerialNumber),
+				DeviceType: "UTO311-L04",
+				IpAddress:  d.IpAddress.String(),
+				SubnetMask: d.SubnetMask.String(),
+				Gateway:    d.Gateway.String(),
+				MacAddress: d.MacAddress.String(),
+				Version:    fmt.Sprintf("%04x", d.Version),
+				Date:       d.Date.String(),
+				URI:        fmt.Sprintf("/uhppote/device/%d", d.SerialNumber),
+			}
+
+			b, err := json.Marshal(response)
+			if err != nil {
+				http.Error(w, "Error generating response", http.StatusInternalServerError)
+				return
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(b)
+			return
+		}
+	}
+
+	http.Error(w, fmt.Sprintf("No device with ID '%v'", deviceId), http.StatusNotFound)
 }
