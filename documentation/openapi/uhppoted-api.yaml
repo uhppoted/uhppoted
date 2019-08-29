@@ -32,9 +32,42 @@ paths:
                   $ref: "#/components/schemas/DeviceList"        
         '405':
           description: "Invalid request"
+        '500':
+          description: "Internal system error"
         default:
           description: "Request failed"
 
+  /device/{device-id}:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves a single device information"
+      description: "Retrieves the basic configuration for a UHPPOTE device"
+      operationId: getDevice
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 753186420
+      responses:
+        '200':
+          description: "Device configuration"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Device"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
 
 components:
   schemas:
@@ -42,18 +75,49 @@ components:
       required: 
         - device-id
         - device-type
+        - ip-address
         - uri
       properties:
         device-id:
           type: number
           format: uint32
-          description: "Simulator device ID"
+          description: "Device serial number"
           example: 305419896
         device-type:  
           type: string
           format: string
           description: "UHPPOTE device type"
           example: "UT0311-L04"
+        ip-address:  
+          type: string
+          format: IPv4 address
+          description: "Device IP address"
+          example: "192.168.1.50"
+        subnet-mask:  
+          type: string
+          format: IPv4 address
+          description: "Device IP subnet mask"
+          example: "255.25.255.0"
+        gateway-address:  
+          type: string
+          format: IPv4 address
+          description: "Device IP gateway address"
+          example: "192.168.1.1"
+        mac-address:  
+          type: string
+          format: 6 byte hexadecimal
+          description: "Device MAC address"
+          example: "00:12:23:34:45:56"
+        version:  
+          type: string
+          format: uint16 hexadecimal
+          description: "Device firmware version"
+          example: "0892"
+        date:  
+          type: string
+          format: yyyy-mm-dd
+          description: "Device current date"
+          example: "2019-08-28"
         uri:  
           type: string
           format: URI
