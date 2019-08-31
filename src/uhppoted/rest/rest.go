@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"regexp"
-	"strconv"
 	"uhppote"
 )
 
@@ -30,6 +29,7 @@ func Run(u *uhppote.UHPPOTE) {
 
 	d.Add("^/uhppote/device$", http.MethodGet, getDevices)
 	d.Add("^/uhppote/device/[0-9]+$", http.MethodGet, getDevice)
+	d.Add("^/uhppote/device/[0-9]+/status$", http.MethodGet, getStatus)
 
 	log.Fatal(http.ListenAndServe(":8001", &d))
 }
@@ -64,22 +64,4 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// Fall-through handler
 	http.Error(w, "Unsupported API", http.StatusBadRequest)
-}
-
-func getDevices(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	u := ctx.Value("uhppote").(*uhppote.UHPPOTE)
-	GetDevices(u, w, r)
-}
-
-func getDevice(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	u := ctx.Value("uhppote").(*uhppote.UHPPOTE)
-	url := r.URL.Path
-	matches := regexp.MustCompile("^/uhppote/device/([0-9]+)$").FindStringSubmatch(url)
-	deviceId, err := strconv.ParseUint(matches[1], 10, 32)
-	if err != nil {
-		http.Error(w, "Error reading request", http.StatusInternalServerError)
-		return
-	}
-
-	GetDevice(uint32(deviceId), u, w, r)
 }
