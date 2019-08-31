@@ -16,7 +16,6 @@ type Device struct {
 	MacAddress string `json:"mac-address"`
 	Version    string `json:"version"`
 	Date       string `json:"date"`
-	URI        string `json:"uri"`
 }
 
 type DeviceList struct {
@@ -42,7 +41,6 @@ func GetDevices(u *uhppote.UHPPOTE, w http.ResponseWriter, r *http.Request) {
 			MacAddress: d.MacAddress.String(),
 			Version:    fmt.Sprintf("%04x", d.Version),
 			Date:       d.Date.String(),
-			URI:        fmt.Sprintf("/uhppote/device/%d", d.SerialNumber),
 		})
 	}
 
@@ -76,7 +74,6 @@ func GetDevice(deviceId uint32, u *uhppote.UHPPOTE, w http.ResponseWriter, r *ht
 				MacAddress: d.MacAddress.String(),
 				Version:    fmt.Sprintf("%04x", d.Version),
 				Date:       d.Date.String(),
-				URI:        fmt.Sprintf("/uhppote/device/%d", d.SerialNumber),
 			}
 
 			b, err := json.Marshal(response)

@@ -139,7 +139,6 @@ components:
       required: 
         - device-id
         - device-type
-        - uri
       properties:
         device-id:
           type: number
@@ -151,11 +150,6 @@ components:
           format: string
           description: "UHPPOTE device type"
           example: "UT0311-L04"
-        uri:  
-          type: string
-          format: URI
-          description: "Base URI for the device"
-          example: "/uhppote/simulator/305419896"
     DeviceList:
       required: 
         - devices

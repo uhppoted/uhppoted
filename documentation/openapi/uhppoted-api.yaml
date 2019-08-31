@@ -52,7 +52,7 @@ paths:
           schema:
             type: integer
             format: uint64
-            example: 753186420
+            example: 305419896
       responses:
         '200':
           description: "Device configuration"
@@ -76,7 +76,11 @@ components:
         - device-id
         - device-type
         - ip-address
-        - uri
+        - subnet-mask
+        - gateway-address
+        - mac-address
+        - version
+        - date
       properties:
         device-id:
           type: number
@@ -118,11 +122,6 @@ components:
           format: yyyy-mm-dd
           description: "Device current date"
           example: "2019-08-28"
-        uri:  
-          type: string
-          format: URI
-          description: "Base URI for the device"
-          example: "/uhppote/simulator/305419896"
     DeviceList:
       required: 
         - devices

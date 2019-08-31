@@ -14,7 +14,6 @@ import (
 type Device struct {
 	DeviceId   uint32 `json:"device-id"`
 	DeviceType string `json:"device-type"`
-	URI        string `json:"uri"`
 }
 
 type DeviceList struct {
@@ -127,7 +126,6 @@ func list(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 		devices = append(devices, Device{
 			DeviceId:   s.DeviceID(),
 			DeviceType: s.DeviceType(),
-			URI:        fmt.Sprintf("/uhppote/simulator/%d", s.DeviceID()),
 		})
 	})
 
