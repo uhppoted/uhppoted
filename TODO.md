@@ -4,8 +4,15 @@
 
 ### uhppoted
 - [ ] REST API (debug)
-      - [ ] Add HTTP method to dispatch matching
+      - [x] Add HTTP method to dispatch matching
       - [ ] Include logging in context
+      - [ ] Don't return internal error information unless debug is on
+      - [ ] Log internal error information
+      - [ ] TLS with client certificate enforced
+      - [ ] Swagger UI
+      - [x] Get devices
+      - [x] Get device
+      - [x] Get device status
 - [ ] websocket command interface
 - [ ] MQTT 
 - [ ] watchdog
@@ -23,6 +30,7 @@
 - [ ] HTML
 - [ ] Rework simulator.run to use rx channels
 - [ ] Reload simulator on device file change
+- [ ] Swagger UI
 
 ### Other
 

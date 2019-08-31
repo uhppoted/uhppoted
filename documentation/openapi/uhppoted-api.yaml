@@ -68,9 +68,51 @@ paths:
           description: "Internal system error"
         default:
           description: "Request failed"
+          
+  /device/{device-id}/status:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves the device status"
+      description: "Retrieves the current status of a device"
+      operationId: getDeviceStatus
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 305419896
+      responses:
+        '200':
+          description: "Device status"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DeviceStatus"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
 
 components:
   schemas:
+    DeviceList:
+      required: 
+        - devices
+      properties:
+        devices:
+          type: array
+          items:
+            $ref: "#/components/schemas/Device"        
+          description: "List of simulator devices"
+
     Device:
       required: 
         - device-id
@@ -122,12 +164,116 @@ components:
           format: yyyy-mm-dd
           description: "Device current date"
           example: "2019-08-28"
-    DeviceList:
+
+    DeviceStatus:
       required: 
-        - devices
+        - device-id
+        - last-event-index
+        - event-type
+        - access-granted
+        - door
+        - door-opened
+        - user-id
+        - event-timestamp
+        - event-result
+        - door-state 
+        - door-buttons
+        - system-state
+        - system-datetime
+        - packet-number
+        - backup-state
+        - special-message
+        - battery-status
+        - fire-alarm-status
       properties:
-        devices:
+        device-id:
+          type: number
+          format: uint32
+          description: "Device serial number"
+          example: 305419896
+        last-event-index:
+          type: number
+          format: uint32
+          description: "Index of last recorded event"
+          example: 37
+        event-type:
+          type: number
+          format: uint8
+          description: "Type of last recorded event"
+          example: 3
+        access-granted:
+          type: boolean
+          format: true/false
+          description: "Access granted/refused"
+          example: true
+        door:
+          type: number
+          format: uint8 (1..4)
+          description: "Door ID for event"
+          example: 3
+        door-opened:
+          type: boolean
+          format: true/false
+          description: "Door opened to request"
+          example: true
+        user-id:
+          type: number
+          format: uint32
+          description: "User ID (card number for swipe events)"
+          example: 1928374646
+        event-timestamp:  
+          type: string
+          format: yyyy-mm-dd HH:mm:ss
+          description: "Event timestamp"
+          example: "2019-08-28 15:32:29"
+        event-result:  
+          type: integer
+          format: event result code
+          description: "Event result code"
+          example: 6
+        door-state:  
           type: array
-          items:
-            $ref: "#/components/schemas/Device"        
-          description: "List of simulator devices"
+          format: array of 4 boolean values
+          description: "Door open state array"
+          example: [true, false, false, true]
+        door-buttons:  
+          type: array
+          format: array of 4 boolean values
+          description: "Door button state array"
+          example: [false, false, false, true]
+        system-state:  
+          type: integer
+          format: uint8
+          description: "System state flag set"
+          example: 0
+        system-datetime:  
+          type: string
+          format: yyyy-mm-dd HH:mm:ss
+          description: "Current system date and time"
+          example: "2019-08-28 15:32:29"
+        packet-number:  
+          type: integer
+          format: uint8
+          description: "Packet number, whatever that entails"
+          example: 0
+        backup-state:  
+          type: integer
+          format: uint8
+          description: "Backup state code, whatever that entails"
+          example: 0
+        special-message:  
+          type: integer
+          format: uint8
+          description: "Special message code, whatever that entails"
+          example: 0
+        battery-status:  
+          type: integer
+          format: uint8
+          description: "Battery status flag set"
+          example: 0
+        fire-alarm-status:  
+          type: integer
+          format: uint8
+          description: "Fire alarm status flag set"
+          example: 0
+

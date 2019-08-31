@@ -1,29 +1,34 @@
 package rest
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
+	"regexp"
+	"strconv"
 	"uhppote"
+	"uhppote/types"
 )
 
 type Device struct {
-	DeviceId   uint32 `json:"device-id"`
-	DeviceType string `json:"device-type"`
-	IpAddress  string `json:"ip-address"`
-	SubnetMask string `json:"subnet-mask"`
-	Gateway    string `json:"gateway-address"`
-	MacAddress string `json:"mac-address"`
-	Version    string `json:"version"`
-	Date       string `json:"date"`
+	SerialNumber types.SerialNumber `json:"serial-number"`
+	DeviceType   string             `json:"device-type"`
+	IpAddress    net.IP             `json:"ip-address"`
+	SubnetMask   net.IP             `json:"subnet-mask"`
+	Gateway      net.IP             `json:"gateway-address"`
+	MacAddress   types.MacAddress   `json:"mac-address"`
+	Version      types.Version      `json:"version"`
+	Date         types.Date         `json:"date"`
 }
 
 type DeviceList struct {
 	Devices []Device `json:"devices"`
 }
 
-func GetDevices(u *uhppote.UHPPOTE, w http.ResponseWriter, r *http.Request) {
-	devices, err := u.FindDevices()
+func getDevices(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	devices, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevices()
 
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error retrieving device list: %v", err), http.StatusInternalServerError)
@@ -33,14 +38,14 @@ func GetDevices(u *uhppote.UHPPOTE, w http.ResponseWriter, r *http.Request) {
 	list := make([]Device, 0)
 	for _, d := range devices {
 		list = append(list, Device{
-			DeviceId:   uint32(d.SerialNumber),
-			DeviceType: "UTO311-L04",
-			IpAddress:  d.IpAddress.String(),
-			SubnetMask: d.SubnetMask.String(),
-			Gateway:    d.Gateway.String(),
-			MacAddress: d.MacAddress.String(),
-			Version:    fmt.Sprintf("%04x", d.Version),
-			Date:       d.Date.String(),
+			SerialNumber: d.SerialNumber,
+			DeviceType:   "UTO311-L04",
+			IpAddress:    d.IpAddress,
+			SubnetMask:   d.SubnetMask,
+			Gateway:      d.Gateway,
+			MacAddress:   d.MacAddress,
+			Version:      d.Version,
+			Date:         d.Date,
 		})
 	}
 
@@ -55,8 +60,16 @@ func GetDevices(u *uhppote.UHPPOTE, w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-func GetDevice(deviceId uint32, u *uhppote.UHPPOTE, w http.ResponseWriter, r *http.Request) {
-	devices, err := u.FindDevices()
+func getDevice(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	url := r.URL.Path
+	matches := regexp.MustCompile("^/uhppote/device/([0-9]+)$").FindStringSubmatch(url)
+	deviceId, err := strconv.ParseUint(matches[1], 10, 32)
+	if err != nil {
+		http.Error(w, "Error reading request", http.StatusInternalServerError)
+		return
+	}
+
+	devices, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevices()
 
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error retrieving device list: %v", err), http.StatusInternalServerError)
@@ -64,16 +77,16 @@ func GetDevice(deviceId uint32, u *uhppote.UHPPOTE, w http.ResponseWriter, r *ht
 	}
 
 	for _, d := range devices {
-		if uint32(d.SerialNumber) == deviceId {
+		if d.SerialNumber == types.SerialNumber(deviceId) {
 			response := Device{
-				DeviceId:   uint32(d.SerialNumber),
-				DeviceType: "UTO311-L04",
-				IpAddress:  d.IpAddress.String(),
-				SubnetMask: d.SubnetMask.String(),
-				Gateway:    d.Gateway.String(),
-				MacAddress: d.MacAddress.String(),
-				Version:    fmt.Sprintf("%04x", d.Version),
-				Date:       d.Date.String(),
+				SerialNumber: d.SerialNumber,
+				DeviceType:   "UTO311-L04",
+				IpAddress:    d.IpAddress,
+				SubnetMask:   d.SubnetMask,
+				Gateway:      d.Gateway,
+				MacAddress:   d.MacAddress,
+				Version:      d.Version,
+				Date:         d.Date,
 			}
 
 			b, err := json.Marshal(response)
