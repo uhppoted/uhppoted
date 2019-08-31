@@ -50,7 +50,9 @@ paths:
               $ref: "#/components/schemas/NewDevice"     
       responses:
         '200':
-          description: "Device create request processed"
+          description: "Device already exists"
+        '201':
+          description: "Device created successfully"
           headers:
             Location:
               schema:

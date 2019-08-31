@@ -164,13 +164,19 @@ func create(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = ctx.DeviceList.Add(request.DeviceId, request.Compressed, ctx.Directory)
+	created, err := ctx.DeviceList.Add(request.DeviceId, request.Compressed, ctx.Directory)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error creating device %d: %v", request.DeviceId, err), http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Location", fmt.Sprintf("/uhppote/simulator/%d", request.DeviceId))
+	if created {
+		w.Header().Set("Location", fmt.Sprintf("/uhppote/simulator/%d", request.DeviceId))
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 }
 

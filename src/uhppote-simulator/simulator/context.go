@@ -47,10 +47,10 @@ func (l *DeviceList) Find(deviceId uint32) Simulator {
 	return nil
 }
 
-func (l *DeviceList) Add(deviceId uint32, compressed bool, dir string) error {
+func (l *DeviceList) Add(deviceId uint32, compressed bool, dir string) (bool, error) {
 	for _, s := range l.devices {
 		if s.DeviceID() == deviceId {
-			return nil
+			return false, nil
 		}
 	}
 
@@ -58,12 +58,12 @@ func (l *DeviceList) Add(deviceId uint32, compressed bool, dir string) error {
 	device.SetTxQ(l.txq)
 	err := device.Save()
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	l.devices = append(l.devices, device)
 
-	return nil
+	return true, nil
 }
 
 func (l *DeviceList) Delete(deviceId uint32) error {
