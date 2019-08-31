@@ -43,4 +43,6 @@
 11. Verify fields in listen events/status replies:
     - battery status can be (at least) 0x00, 0x01 and 0x04
 12. Update to use modules
+13. Mojave/HomeKit
+14. Phoenix UI
 

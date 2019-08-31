@@ -2,7 +2,6 @@ package rest
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"regexp"
@@ -13,8 +12,9 @@ import (
 type handlerfn func(context.Context, http.ResponseWriter, *http.Request)
 
 type handler struct {
-	re *regexp.Regexp
-	fn handlerfn
+	re     *regexp.Regexp
+	method string
+	fn     handlerfn
 }
 
 type dispatcher struct {
@@ -28,8 +28,8 @@ func Run(u *uhppote.UHPPOTE) {
 		make([]handler, 0),
 	}
 
-	d.Add("^/uhppote/device$", devices)
-	d.Add("^/uhppote/device/[0-9]+$", device)
+	d.Add("^/uhppote/device$", http.MethodGet, getDevices)
+	d.Add("^/uhppote/device/[0-9]+$", http.MethodGet, getDevice)
 
 	log.Fatal(http.ListenAndServe(":8001", &d))
 }
@@ -37,9 +37,9 @@ func Run(u *uhppote.UHPPOTE) {
 func Close() {
 }
 
-func (d *dispatcher) Add(path string, h handlerfn) {
+func (d *dispatcher) Add(path string, method string, h handlerfn) {
 	re := regexp.MustCompile(path)
-	d.handlers = append(d.handlers, handler{re, h})
+	d.handlers = append(d.handlers, handler{re, method, h})
 }
 
 func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +55,7 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Dispatch to handler
 	url := r.URL.Path
 	for _, h := range d.handlers {
-		if h.re.MatchString(url) {
+		if h.re.MatchString(url) && r.Method == h.method {
 			ctx := context.WithValue(context.Background(), "uhppote", d.u)
 			h.fn(ctx, w, r)
 			return
@@ -66,32 +66,20 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Unsupported API", http.StatusBadRequest)
 }
 
-func devices(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		u := ctx.Value("uhppote").(*uhppote.UHPPOTE)
-		GetDevices(u, w, r)
-
-	default:
-		http.Error(w, fmt.Sprintf("Invalid method:%s - expected GET", r.Method), http.StatusMethodNotAllowed)
-	}
+func getDevices(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	u := ctx.Value("uhppote").(*uhppote.UHPPOTE)
+	GetDevices(u, w, r)
 }
 
-func device(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		u := ctx.Value("uhppote").(*uhppote.UHPPOTE)
-		url := r.URL.Path
-		matches := regexp.MustCompile("^/uhppote/device/([0-9]+)$").FindStringSubmatch(url)
-		deviceId, err := strconv.ParseUint(matches[1], 10, 32)
-		if err != nil {
-			http.Error(w, "Error reading request", http.StatusInternalServerError)
-			return
-		}
-
-		GetDevice(uint32(deviceId), u, w, r)
-
-	default:
-		http.Error(w, fmt.Sprintf("Invalid method:%s - expected GET", r.Method), http.StatusMethodNotAllowed)
+func getDevice(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	u := ctx.Value("uhppote").(*uhppote.UHPPOTE)
+	url := r.URL.Path
+	matches := regexp.MustCompile("^/uhppote/device/([0-9]+)$").FindStringSubmatch(url)
+	deviceId, err := strconv.ParseUint(matches[1], 10, 32)
+	if err != nil {
+		http.Error(w, "Error reading request", http.StatusInternalServerError)
+		return
 	}
+
+	GetDevice(uint32(deviceId), u, w, r)
 }
