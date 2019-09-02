@@ -2,40 +2,14 @@ package rest
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"regexp"
-	"strconv"
 	"uhppote"
 	"uhppote/types"
 )
 
-type Status struct {
-	SerialNumber   uint32         `json:"serial-number"`
-	LastEventIndex uint32         `json:"last-event-index"`
-	EventType      byte           `json:"event-type"`
-	Granted        bool           `json:"access-granted"`
-	Door           byte           `json:"door"`
-	DoorOpened     bool           `json:"door-opened"`
-	UserId         uint32         `json:"user-id"`
-	EventTimestamp types.DateTime `json:"event-timestamp"`
-	EventResult    byte           `json:"event-result"`
-	DoorState      []bool         `json:"door-states"`
-	DoorButton     []bool         `json:"door-buttons"`
-	SystemState    byte           `json:"system-state"`
-	SystemDateTime types.DateTime `json:"system-datetime"`
-	PacketNumber   uint32         `json:"packet-number"`
-	Backup         uint32         `json:"backup-state"`
-	SpecialMessage byte           `json:"special-message"`
-	Battery        byte           `json:"battery-status"`
-	FireAlarm      byte           `json:"fire-alarm-status"`
-}
-
 func getStatus(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	url := r.URL.Path
-	matches := regexp.MustCompile("^/uhppote/device/([0-9]+)/status$").FindStringSubmatch(url)
-	deviceId, err := strconv.ParseUint(matches[1], 10, 32)
+	deviceId, err := parse(r)
 	if err != nil {
 		http.Error(w, "Error reading request", http.StatusInternalServerError)
 		return
@@ -47,8 +21,25 @@ func getStatus(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := Status{
-		SerialNumber:   uint32(status.SerialNumber),
+	response := struct {
+		LastEventIndex uint32         `json:"last-event-index"`
+		EventType      byte           `json:"event-type"`
+		Granted        bool           `json:"access-granted"`
+		Door           byte           `json:"door"`
+		DoorOpened     bool           `json:"door-opened"`
+		UserId         uint32         `json:"user-id"`
+		EventTimestamp types.DateTime `json:"event-timestamp"`
+		EventResult    byte           `json:"event-result"`
+		DoorState      []bool         `json:"door-states"`
+		DoorButton     []bool         `json:"door-buttons"`
+		SystemState    byte           `json:"system-state"`
+		SystemDateTime types.DateTime `json:"system-datetime"`
+		PacketNumber   uint32         `json:"packet-number"`
+		Backup         uint32         `json:"backup-state"`
+		SpecialMessage byte           `json:"special-message"`
+		Battery        byte           `json:"battery-status"`
+		FireAlarm      byte           `json:"fire-alarm-status"`
+	}{
 		LastEventIndex: status.LastIndex,
 		EventType:      status.EventType,
 		Granted:        status.Granted,
@@ -68,12 +59,5 @@ func getStatus(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		FireAlarm:      status.FireAlarm,
 	}
 
-	b, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, "Error generating response", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(b)
+	reply(ctx, w, response)
 }

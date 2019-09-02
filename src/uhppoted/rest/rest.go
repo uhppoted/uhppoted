@@ -2,9 +2,12 @@ package rest
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"regexp"
+	"strconv"
 	"uhppote"
 )
 
@@ -30,6 +33,7 @@ func Run(u *uhppote.UHPPOTE) {
 	d.Add("^/uhppote/device$", http.MethodGet, getDevices)
 	d.Add("^/uhppote/device/[0-9]+$", http.MethodGet, getDevice)
 	d.Add("^/uhppote/device/[0-9]+/status$", http.MethodGet, getStatus)
+	d.Add("^/uhppote/device/[0-9]+/time$", http.MethodGet, getTime)
 
 	log.Fatal(http.ListenAndServe(":8001", &d))
 }
@@ -64,4 +68,31 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// Fall-through handler
 	http.Error(w, "Unsupported API", http.StatusBadRequest)
+}
+
+func parse(r *http.Request) (uint32, error) {
+	url := r.URL.Path
+	matches := regexp.MustCompile("^/uhppote/device/([0-9]+)(?:$|/.*$)").FindStringSubmatch(url)
+
+	if matches == nil {
+		return 0, errors.New("Invalid request - missing device ID")
+	}
+
+	deviceId, err := strconv.ParseUint(matches[1], 10, 32)
+	if err != nil {
+		return 0, errors.New("Invalid device ID")
+	}
+
+	return uint32(deviceId), nil
+}
+
+func reply(ctx context.Context, w http.ResponseWriter, response interface{}) {
+	b, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, "Error generating response", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(b)
 }
