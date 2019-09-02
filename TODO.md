@@ -3,20 +3,22 @@
 ## IN PROGRESS
 
 ### uhppoted
-- [ ] REST API (debug)
-      - [ ] Get device time
-      - [ ] Include logging in context
-      - [ ] Don't return internal error information unless debug is on
-      - [ ] Log internal error information
-      - [ ] TLS with client certificate enforced
-      - [ ] Swagger UI
-      - [x] Add HTTP method to dispatch matching
-      - [x] Get devices
-      - [x] Get device
-      - [x] Get device status
+
 - [ ] websocket command interface
 - [ ] MQTT 
 - [ ] watchdog
+
+#### REST API
+- [ ] Include logging in context
+- [ ] Don't return internal error information unless debug is on
+- [ ] Log internal error information
+- [ ] TLS with client certificate enforced
+- [ ] Swagger UI
+- [x] Add HTTP method to dispatch matching
+- [x] Get devices
+- [x] Get device
+- [x] Get device status
+- [x] Get device time
 
 ## TODO
 
