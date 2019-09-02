@@ -87,11 +87,43 @@ paths:
             example: 305419896
       responses:
         '200':
-          description: "Device status"
+          description: "Device current status"
           content:
             application/json:
               schema:
                   $ref: "#/components/schemas/DeviceStatus"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+  /device/{device-id}/time:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves the device time"
+      description: "Retrieves the device current date/time"
+      operationId: getDeviceTime
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 305419896
+      responses:
+        '200':
+          description: "Device current date/time"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DeviceTime"        
         '404':
           description: "No device with ID matching device-id"
         '405':
@@ -110,12 +142,27 @@ components:
         devices:
           type: array
           items:
-            $ref: "#/components/schemas/Device"        
+            $ref: "#/components/schemas/DeviceListItem"        
           description: "List of simulator devices"
+
+    DeviceListItem:
+      required: 
+        - device-id
+        - device-type
+      properties:
+        device-id:  
+          type: number
+          format: uint32
+          description: "UHPPOTE device serial number"
+          example: 305419896
+        device-type:  
+          type: string
+          format: string
+          description: "UHPPOTE device type"
+          example: "UT0311-L04"
 
     Device:
       required: 
-        - device-id
         - device-type
         - ip-address
         - subnet-mask
@@ -124,11 +171,6 @@ components:
         - version
         - date
       properties:
-        device-id:
-          type: number
-          format: uint32
-          description: "Device serial number"
-          example: 305419896
         device-type:  
           type: string
           format: string
@@ -167,7 +209,6 @@ components:
 
     DeviceStatus:
       required: 
-        - device-id
         - last-event-index
         - event-type
         - access-granted
@@ -186,11 +227,6 @@ components:
         - battery-status
         - fire-alarm-status
       properties:
-        device-id:
-          type: number
-          format: uint32
-          description: "Device serial number"
-          example: 305419896
         last-event-index:
           type: number
           format: uint32
@@ -277,3 +313,10 @@ components:
           description: "Fire alarm status flag set"
           example: 0
 
+    DeviceTime:
+      properties:
+        time:
+          type: string
+          format: yyyy-mm-dd HH:mm:ss
+          description: "Current device date/time"
+          example: "2019-08-28 15:32:29"
