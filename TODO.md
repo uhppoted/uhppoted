@@ -43,10 +43,11 @@
 
 ### Documentation
 
-### Other
 - [ ] TeX protocol description
 - [ ] ASN.1 protocol specification
 - [ ] godoc
+
+### Other
 
 1.  Rework uhppote to use bidirectional channel to serialize requests
 2.  Consistently include device serial number in output e.g. of get-time
