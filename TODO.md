@@ -10,7 +10,7 @@
 
 #### *REST API*
 - [ ] Include logging in context
-- [ ] Don't return internal error information unless debug is on
+- [ ] Return internal error information only if debug is enabled
 - [ ] Log internal error information
 - [ ] TLS with client certificate enforced
 - [ ] Swagger UI
