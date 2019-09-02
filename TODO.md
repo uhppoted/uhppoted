@@ -8,7 +8,7 @@
 - [ ] MQTT 
 - [ ] watchdog
 
-#### uhppoted REST API
+#### *REST API*
 - [ ] Include logging in context
 - [ ] Don't return internal error information unless debug is on
 - [ ] Log internal error information
