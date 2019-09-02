@@ -39,7 +39,7 @@
 - [ ] Rework simulator.run to use rx channels
 - [ ] Reload simulator on device file change
 - [ ] Swagger UI
-- [ ] Autodetect gzipped files (Ref. ttps://stackoverflow.com/questions/28309988/how-to-read-from-either-gzip-or-plain-text-reader-in-golang)
+- [ ] Autodetect gzipped files (https://stackoverflow.com/questions/28309988/how-to-read-from-either-gzip-or-plain-text-reader-in-golang)
 
 ### Documentation
 
