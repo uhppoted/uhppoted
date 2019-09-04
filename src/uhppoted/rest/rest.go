@@ -34,6 +34,7 @@ func Run(u *uhppote.UHPPOTE) {
 	d.Add("^/uhppote/device/[0-9]+$", http.MethodGet, getDevice)
 	d.Add("^/uhppote/device/[0-9]+/status$", http.MethodGet, getStatus)
 	d.Add("^/uhppote/device/[0-9]+/time$", http.MethodGet, getTime)
+	d.Add("^/uhppote/device/[0-9]+/time$", http.MethodPut, setTime)
 
 	log.Fatal(http.ListenAndServe(":8001", &d))
 }

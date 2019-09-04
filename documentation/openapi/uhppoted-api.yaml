@@ -133,6 +133,44 @@ paths:
         default:
           description: "Request failed"
 
+    put:
+      tags:
+        - uhppote
+      summary: "Sets the device time"
+      description: "Sets the device current date/time"
+      operationId: putDeviceTime
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 305419896
+      requestBody:
+        description: "Date time"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceTime"        
+      responses:
+        '200':
+          description: "Device current date/time"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DeviceTime"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
 components:
   schemas:
     DeviceList:
@@ -315,7 +353,7 @@ components:
 
     DeviceTime:
       properties:
-        time:
+        datetime:
           type: string
           format: yyyy-mm-dd HH:mm:ss
           description: "Current device date/time"
