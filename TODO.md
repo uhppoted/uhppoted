@@ -8,7 +8,7 @@
 - [ ] MQTT 
 - [ ] watchdog
 
-#### *REST API*
+#### REST API
 - [ ] Include logging in context
 - [ ] Return internal error information only if debug is enabled
 - [ ] Log internal error information
@@ -19,6 +19,7 @@
 - [x] Get device
 - [x] Get device status
 - [x] Get device time
+- [x] Set device time
 
 ## TODO
 
@@ -46,6 +47,9 @@
 - [ ] TeX protocol description
 - [ ] ASN.1 protocol specification
 - [ ] godoc
+- [ ] build documentation
+- [ ] install documentation
+- [ ] user manuals
 
 ### Other
 

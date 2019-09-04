@@ -15,7 +15,7 @@ func getTime(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetTime(uint32(deviceId))
+	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetTime(deviceId)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error retrieving device time: %v", err), http.StatusInternalServerError)
 		return

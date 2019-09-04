@@ -15,7 +15,7 @@ func getStatus(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	status, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetStatus(uint32(deviceId))
+	status, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetStatus(deviceId)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error retrieving device status: %v", err), http.StatusInternalServerError)
 		return
