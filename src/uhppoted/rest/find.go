@@ -40,11 +40,7 @@ func getDevices(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 }
 
 func getDevice(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	deviceId, err := parse(r)
-	if err != nil {
-		http.Error(w, "Error reading request", http.StatusInternalServerError)
-		return
-	}
+	deviceId := ctx.Value("device-id").(uint32)
 
 	devices, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevices()
 

@@ -11,12 +11,26 @@ import (
 	"uhppote/types"
 )
 
-func setTime(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	deviceId, err := parse(r)
+func getTime(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	deviceId := ctx.Value("device-id").(uint32)
+
+	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetTime(deviceId)
 	if err != nil {
-		http.Error(w, "Error reading request", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Error retrieving device time: %v", err), http.StatusInternalServerError)
 		return
 	}
+
+	response := struct {
+		DateTime types.DateTime `json:"datetime"`
+	}{
+		DateTime: result.DateTime,
+	}
+
+	reply(ctx, w, response)
+}
+
+func setTime(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	deviceId := ctx.Value("device-id").(uint32)
 
 	blob, err := ioutil.ReadAll(r.Body)
 	if err != nil {

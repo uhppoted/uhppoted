@@ -4,6 +4,7 @@
 
 ### uhppoted
 
+- [ ] Daemon/service interface
 - [ ] websocket command interface
 - [ ] MQTT 
 - [ ] watchdog
@@ -12,7 +13,7 @@
 - [ ] Include logging in context
 - [ ] Return internal error information only if debug is enabled
 - [ ] Log internal error information
-- [ ] TLS with client certificate enforced
+- [ ] TLS with pinned certificates
 - [ ] Swagger UI
 - [x] Add HTTP method to dispatch matching
 - [x] Get devices
@@ -20,6 +21,8 @@
 - [x] Get device status
 - [x] Get device time
 - [x] Set device time
+- [x] Get door delay
+- [x] Set door delay
 
 ## TODO
 

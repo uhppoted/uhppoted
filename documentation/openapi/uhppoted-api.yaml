@@ -171,6 +171,92 @@ paths:
         default:
           description: "Request failed"
 
+  /device/{device-id}/door/{door}/delay:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves the door delay"
+      description: "Retrieves the door delay setting in seconds"
+      operationId: getDoorDelay
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 305419896
+        - name: door
+          in: path
+          description: "Door number"
+          required: true
+          schema:
+            type: integer
+            format: uint8
+            example: 3
+      responses:
+        '200':
+          description: "Door delay (in seconds)"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DoorDelay"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+    put:
+      tags:
+        - uhppote
+      summary: "Sets the door delay"
+      description: "Sets the door delay in seconds"
+      operationId: putDoorDelay
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 305419896
+        - name: door
+          in: path
+          description: "Door number"
+          required: true
+          schema:
+            type: integer
+            format: uint8
+            example: 3
+      requestBody:
+        description: "Door delay in seconds"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DoorDelay"        
+      responses:
+        '200':
+          description: "Door delay in seconds"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DoorDelay"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
 components:
   schemas:
     DeviceList:
@@ -358,3 +444,11 @@ components:
           format: yyyy-mm-dd HH:mm:ss
           description: "Current device date/time"
           example: "2019-08-28 15:32:29"
+
+    DoorDelay:
+      properties:
+        delay:
+          type: number
+          format: uint8
+          description: "Door delay in seconds"
+          example: 5
