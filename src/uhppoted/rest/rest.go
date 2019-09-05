@@ -3,7 +3,6 @@ package rest
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"log"
 	"net/http"
 	"regexp"
@@ -35,6 +34,8 @@ func Run(u *uhppote.UHPPOTE) {
 	d.Add("^/uhppote/device/[0-9]+/status$", http.MethodGet, getStatus)
 	d.Add("^/uhppote/device/[0-9]+/time$", http.MethodGet, getTime)
 	d.Add("^/uhppote/device/[0-9]+/time$", http.MethodPut, setTime)
+	d.Add("^/uhppote/device/[0-9]+/door/[1-4]/delay$", http.MethodGet, getDoorDelay)
+	d.Add("^/uhppote/device/[0-9]+/door/[1-4]/delay$", http.MethodPut, setDoorDelay)
 
 	log.Fatal(http.ListenAndServe(":8001", &d))
 }
@@ -62,6 +63,7 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	for _, h := range d.handlers {
 		if h.re.MatchString(url) && r.Method == h.method {
 			ctx := context.WithValue(context.Background(), "uhppote", d.u)
+			ctx = parse(ctx, r)
 			h.fn(ctx, w, r)
 			return
 		}
@@ -71,20 +73,26 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Unsupported API", http.StatusBadRequest)
 }
 
-func parse(r *http.Request) (uint32, error) {
+func parse(ctx context.Context, r *http.Request) context.Context {
 	url := r.URL.Path
+
 	matches := regexp.MustCompile("^/uhppote/device/([0-9]+)(?:$|/.*$)").FindStringSubmatch(url)
-
-	if matches == nil {
-		return 0, errors.New("Invalid request - missing device ID")
+	if matches != nil {
+		deviceId, err := strconv.ParseUint(matches[1], 10, 32)
+		if err == nil {
+			ctx = context.WithValue(ctx, "device-id", uint32(deviceId))
+		}
 	}
 
-	deviceId, err := strconv.ParseUint(matches[1], 10, 32)
-	if err != nil {
-		return 0, errors.New("Invalid device ID")
+	matches = regexp.MustCompile("^/uhppote/device/[0-9]+/door/([1-4])(?:$|/.*$$)").FindStringSubmatch(url)
+	if matches != nil {
+		door, err := strconv.ParseUint(matches[1], 10, 8)
+		if err == nil {
+			ctx = context.WithValue(ctx, "door", uint8(door))
+		}
 	}
 
-	return uint32(deviceId), nil
+	return ctx
 }
 
 func reply(ctx context.Context, w http.ResponseWriter, response interface{}) {

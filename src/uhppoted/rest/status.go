@@ -9,11 +9,7 @@ import (
 )
 
 func getStatus(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	deviceId, err := parse(r)
-	if err != nil {
-		http.Error(w, "Error reading request", http.StatusInternalServerError)
-		return
-	}
+	deviceId := ctx.Value("device-id").(uint32)
 
 	status, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetStatus(deviceId)
 	if err != nil {
