@@ -257,6 +257,39 @@ paths:
         default:
           description: "Request failed"
 
+  /device/{device-id}/card:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves the device card list"
+      description: "Retrieves the list of stored card numbers"
+      operationId: getCards
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 305419896
+      responses:
+        '200':
+          description: "Card list"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/CardList"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+
 components:
   schemas:
     DeviceList:
@@ -266,10 +299,10 @@ components:
         devices:
           type: array
           items:
-            $ref: "#/components/schemas/DeviceListItem"        
+            $ref: "#/components/schemas/DeviceID"        
           description: "List of simulator devices"
 
-    DeviceListItem:
+    DeviceID:
       required: 
         - device-id
         - device-type
@@ -452,3 +485,16 @@ components:
           format: uint8
           description: "Door delay in seconds"
           example: 5
+          
+    CardList:
+      required: 
+        - cards
+      properties:
+        devices:
+          type: array
+          items:
+             type: number
+             format: uint32
+             description: "Card number"
+             example: 192837465
+          description: "List of card numbers"

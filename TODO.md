@@ -7,6 +7,7 @@
 - [ ] Daemon/service interface
 - [ ] websocket command interface
 - [ ] MQTT 
+- [ ] GraphQL
 - [ ] watchdog
 
 #### REST API
@@ -15,6 +16,7 @@
 - [ ] Log internal error information
 - [ ] TLS with pinned certificates
 - [ ] Swagger UI
+- [ ] gzip response
 - [x] Add HTTP method to dispatch matching
 - [x] Get devices
 - [x] Get device
@@ -23,6 +25,7 @@
 - [x] Set device time
 - [x] Get door delay
 - [x] Set door delay
+- [x] Get cards
 
 ## TODO
 

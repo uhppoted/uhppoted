@@ -109,7 +109,7 @@ func listen(logger *log.Logger, interrupt chan os.Signal) error {
 	}
 
 	go func() {
-		rest.Run(&u)
+		rest.Run(&u, logger)
 	}()
 
 	defer rest.Close()
