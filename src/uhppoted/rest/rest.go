@@ -19,13 +19,15 @@ type handler struct {
 }
 
 type dispatcher struct {
-	u        *uhppote.UHPPOTE
+	uhppote  *uhppote.UHPPOTE
+	log      *log.Logger
 	handlers []handler
 }
 
-func Run(u *uhppote.UHPPOTE) {
+func Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	d := dispatcher{
 		u,
+		l,
 		make([]handler, 0),
 	}
 
@@ -36,6 +38,7 @@ func Run(u *uhppote.UHPPOTE) {
 	d.Add("^/uhppote/device/[0-9]+/time$", http.MethodPut, setTime)
 	d.Add("^/uhppote/device/[0-9]+/door/[1-4]/delay$", http.MethodGet, getDoorDelay)
 	d.Add("^/uhppote/device/[0-9]+/door/[1-4]/delay$", http.MethodPut, setDoorDelay)
+	d.Add("^/uhppote/device/[0-9]+/card$", http.MethodGet, getCards)
 
 	log.Fatal(http.ListenAndServe(":8001", &d))
 }
@@ -62,7 +65,8 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	url := r.URL.Path
 	for _, h := range d.handlers {
 		if h.re.MatchString(url) && r.Method == h.method {
-			ctx := context.WithValue(context.Background(), "uhppote", d.u)
+			ctx := context.WithValue(context.Background(), "uhppote", d.uhppote)
+			ctx = context.WithValue(ctx, "log", d.log)
 			ctx = parse(ctx, r)
 			h.fn(ctx, w, r)
 			return
