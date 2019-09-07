@@ -3,7 +3,6 @@ package rest
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"uhppote"
@@ -15,7 +14,8 @@ func getDoorDelay(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 
 	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorDelay(deviceId, door)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error retrieving door delay: %v", err), http.StatusInternalServerError)
+		warn(ctx, deviceId, "get-door-delay", err)
+		http.Error(w, "Error retrieving door delay", http.StatusInternalServerError)
 		return
 	}
 
@@ -34,24 +34,26 @@ func setDoorDelay(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 
 	blob, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		warn(ctx, deviceId, "set-door-delay", err)
 		http.Error(w, "Error reading request", http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Println("DEBUG ", string(blob))
 	body := struct {
 		Delay uint8 `json:"delay"`
 	}{}
 
 	err = json.Unmarshal(blob, &body)
 	if err != nil {
+		warn(ctx, deviceId, "set-door-delay", err)
 		http.Error(w, "Invalid request format", http.StatusBadRequest)
 		return
 	}
 
 	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).SetDoorDelay(deviceId, door, body.Delay)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error setting door delay: %v", err), http.StatusInternalServerError)
+		warn(ctx, deviceId, "set-door-delay", err)
+		http.Error(w, "Error setting door delay", http.StatusInternalServerError)
 		return
 	}
 

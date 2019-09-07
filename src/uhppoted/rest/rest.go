@@ -109,3 +109,7 @@ func reply(ctx context.Context, w http.ResponseWriter, response interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(b)
 }
+
+func warn(ctx context.Context, serialNumber uint32, operation string, err error) {
+	ctx.Value("log").(*log.Logger).Printf("WARN  %-12d %-20s %v\n", serialNumber, operation, err)
+}

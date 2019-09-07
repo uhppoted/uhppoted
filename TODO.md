@@ -11,13 +11,12 @@
 - [ ] watchdog
 
 #### REST API
-- [ ] Include logging in context
-- [ ] Return internal error information only if debug is enabled
-- [ ] Log internal error information
 - [ ] TLS with pinned certificates
 - [ ] Swagger UI
 - [ ] gzip response
 - [x] Add HTTP method to dispatch matching
+- [x] Log internal error information
+- [x] Include logging in context
 - [x] Get devices
 - [x] Get device
 - [x] Get device status

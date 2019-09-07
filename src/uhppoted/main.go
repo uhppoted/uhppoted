@@ -65,7 +65,7 @@ func run(logfile string, logfilesize int) {
 	// ... setup logging
 
 	events := eventlog.Ticker{Filename: logfile, MaxSize: logfilesize}
-	logger := log.New(&events, "", 0)
+	logger := log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
 
 	// ... syscall SIG handlers
 
