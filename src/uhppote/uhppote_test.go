@@ -1,14 +1,15 @@
 package uhppote
 
 import (
-	"encoding/hex"
-	"fmt"
 	"net"
 	"reflect"
-	"regexp"
+	"sync"
 	"testing"
+	"time"
 	"uhppote"
+	codec "uhppote/encoding/UTO311-L0x"
 	"uhppote/messages"
+	"uhppote/types"
 )
 
 func TestBroadcastAddressRequest(t *testing.T) {
@@ -24,18 +25,15 @@ func TestBroadcastAddressRequest(t *testing.T) {
 		CardNumber:   6154412,
 	}
 
-	bind, _ := net.ResolveUDPAddr("udp", "127.0.0.1:12345")
-	broadcast, _ := net.ResolveUDPAddr("udp", "127.0.0.1:60000")
-
 	u := uhppote.UHPPOTE{
 		Devices:          make(map[uint32]*net.UDPAddr),
 		Debug:            true,
-		BindAddress:      bind,
-		BroadcastAddress: broadcast,
+		BindAddress:      resolve("127.0.0.1:12345"),
+		BroadcastAddress: resolve("127.0.0.1:60000"),
 	}
 
 	closed := make(chan int)
-	c := listen("127.0.0.1:60000", closed, t)
+	c := listen(423187757, "127.0.0.1:60000", 0*time.Millisecond, closed, t)
 
 	if c != nil {
 		defer func() {
@@ -54,7 +52,7 @@ func TestBroadcastAddressRequest(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(reply, expected) {
-		t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", dump(expected, ""), dump(reply, ""))
+		t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", uhppote.Dump(expected, ""), uhppote.Dump(reply, ""))
 	}
 
 	c.Close()
@@ -62,70 +60,158 @@ func TestBroadcastAddressRequest(t *testing.T) {
 	<-closed
 }
 
-func TestDeviceDirectedRequest(t *testing.T) {
-	expected := []byte{
-		0x17, 0x52, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+func TestSequentialRequests(t *testing.T) {
+	expected := [][]byte{
+		{0x17, 0x52, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		},
+		{0x17, 0x52, 0x00, 0x00, 0x4c, 0xd3, 0x2a, 0x2d, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		},
 	}
 
 	request := messages.DeleteCardRequest{
-		SerialNumber: 423187757,
+		SerialNumber: 1000002,
 		CardNumber:   6154412,
 	}
 
-	bind, _ := net.ResolveUDPAddr("udp", "127.0.0.1:12345")
-	broadcast, _ := net.ResolveUDPAddr("udp", "127.0.0.1:60000")
-	d423187757, _ := net.ResolveUDPAddr("udp", "127.0.0.1:60001")
-	d757781324, _ := net.ResolveUDPAddr("udp", "127.0.0.1:60002")
-
 	u := uhppote.UHPPOTE{
 		Debug:            true,
-		BindAddress:      bind,
-		BroadcastAddress: broadcast,
+		BindAddress:      resolve("127.0.0.1:12345"),
+		BroadcastAddress: resolve("127.0.0.1:60000"),
 		Devices: map[uint32]*net.UDPAddr{
-			423187757: d423187757,
-			757781324: d757781324,
+			423187757: resolve("127.0.0.1:60001"),
+			757781324: resolve("127.0.0.1:60002"),
 		},
 	}
 
 	closed := make(chan int)
-	c := listen("127.0.0.1: 60001", closed, t)
-
-	if c != nil {
-		defer func() {
-			c.Close()
-		}()
+	listening := []*net.UDPConn{
+		listen(423187757, "127.0.0.1: 60001", 0*time.Millisecond, closed, t),
+		listen(757781324, "127.0.0.1: 60002", 0*time.Millisecond, closed, t),
 	}
 
-	reply, err := u.Send(423187757, request)
+	defer func() {
+		for _, c := range listening {
+			if c != nil {
+				c.Close()
+			}
+		}
+	}()
 
-	if err != nil {
+	if reply, err := u.Send(423187757, request); err != nil {
 		t.Fatalf("%v", err)
-	}
-
-	if reply == nil {
+	} else if reply == nil {
 		t.Fatalf("Invalid reply: %v", reply)
+	} else if !reflect.DeepEqual(reply, expected[0]) {
+		t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", uhppote.Dump(expected[0], ""), uhppote.Dump(reply, ""))
 	}
 
-	if !reflect.DeepEqual(reply, expected) {
-		t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", dump(expected, ""), dump(reply, ""))
+	if reply, err := u.Send(757781324, request); err != nil {
+		t.Fatalf("%v", err)
+	} else if reply == nil {
+		t.Fatalf("Invalid reply: %v", reply)
+	} else if !reflect.DeepEqual(reply, expected[1]) {
+		t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", uhppote.Dump(expected[1], ""), uhppote.Dump(reply, ""))
 	}
 
-	c.Close()
-
-	<-closed
+	for _, c := range listening {
+		if c != nil {
+			c.Close()
+			<-closed
+		}
+	}
 }
 
-func listen(address string, closed chan int, t *testing.T) *net.UDPConn {
-	response := []byte{
-		0x17, 0x52, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+func TestConcurentRequests(t *testing.T) {
+	t.Skip("SKIP - uhppote concurrency implementation is a work in progress")
+
+	expected := [][]byte{
+		{0x17, 0x52, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		},
+		{0x17, 0x52, 0x00, 0x00, 0x4c, 0xd3, 0x2a, 0x2d, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		},
 	}
 
+	request := messages.DeleteCardRequest{
+		SerialNumber: 1000002,
+		CardNumber:   6154412,
+	}
+
+	u := uhppote.UHPPOTE{
+		Debug:            true,
+		BindAddress:      resolve("127.0.0.1:12345"),
+		BroadcastAddress: resolve("127.0.0.1:60000"),
+		Devices: map[uint32]*net.UDPAddr{
+			423187757: resolve("127.0.0.1:60001"),
+			757781324: resolve("127.0.0.1:60002"),
+		},
+	}
+
+	closed := make(chan int)
+	listening := []*net.UDPConn{
+		listen(423187757, "127.0.0.1: 60001", 2500*time.Millisecond, closed, t),
+		listen(757781324, "127.0.0.1: 60002", 5000*time.Millisecond, closed, t),
+	}
+
+	defer func() {
+		for _, c := range listening {
+			if c != nil {
+				c.Close()
+			}
+		}
+	}()
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+
+		if reply, err := u.Send(423187757, request); err != nil {
+			t.Fatalf("%v", err)
+		} else if reply == nil {
+			t.Fatalf("Invalid reply: %v", reply)
+		} else if !reflect.DeepEqual(reply, expected[0]) {
+			t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", uhppote.Dump(expected[0], ""), uhppote.Dump(reply, ""))
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		time.Sleep(1000 * time.Millisecond)
+
+		if reply, err := u.Send(757781324, request); err != nil {
+			t.Fatalf("%v", err)
+		} else if reply == nil {
+			t.Fatalf("Invalid reply: %v", reply)
+		} else if !reflect.DeepEqual(reply, expected[1]) {
+			t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", uhppote.Dump(expected[1], ""), uhppote.Dump(reply, ""))
+		}
+	}()
+
+	wg.Wait()
+
+	for _, c := range listening {
+		if c != nil {
+			c.Close()
+			<-closed
+		}
+	}
+}
+
+func listen(deviceId uint32, address string, delay time.Duration, closed chan int, t *testing.T) *net.UDPConn {
 	addr, err := net.ResolveUDPAddr("udp", address)
 	if err != nil {
 		t.Fatalf("Error setting up test UDP device: %v", err)
@@ -146,21 +232,36 @@ func listen(address string, closed chan int, t *testing.T) *net.UDPConn {
 				break
 			}
 
-			_, err = c.WriteTo(response, remote)
+			response := messages.DeleteCardResponse{
+				SerialNumber: types.SerialNumber(deviceId),
+				Succeeded:    true,
+			}
+
+			m, err := codec.Marshal(response)
+			if err != nil {
+				t.Logf("%v", err)
+				break
+			}
+
+			time.Sleep(delay)
+
+			_, err = c.WriteTo(m, remote)
 			if err != nil {
 				t.Logf("%v", err)
 				break
 			}
 		}
 
-		closed <- 0
+		closed <- 1
 	}()
 
 	return c
 }
 
-func dump(m []byte, prefix string) string {
-	regex := regexp.MustCompile("(?m)^(.*)")
+func resolve(address string) *net.UDPAddr {
+	if addr, err := net.ResolveUDPAddr("udp", address); err == nil {
+		return addr
+	}
 
-	return fmt.Sprintf("%s", regex.ReplaceAllString(hex.Dump(m), prefix+"$1"))
+	return nil
 }
