@@ -82,7 +82,7 @@ usage: build
 
 debug: build
 	go clean -testcache
-	go test -count=1 -run TestUnmarshal src/uhppote/encoding/UTO311-L0x/*.go
+	go test -count=1 src/uhppote/uhppote_test.go
 
 help: build
 	$(CLI)       help

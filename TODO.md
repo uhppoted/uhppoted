@@ -30,6 +30,7 @@
 
 ### uhppote
 - [ ] concurrent requests
+- [ ] update tests with Errorf + return to Fatalf
 
 ### CLI
 - [ ] Rework grant/revoke for individual doors (labelled)

@@ -22,13 +22,11 @@ func TestMarshalDeleteCardRequest(t *testing.T) {
 	m, err := codec.Marshal(request)
 
 	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-		return
+		t.Fatalf("Unexpected error: %v", err)
 	}
 
 	if !reflect.DeepEqual(m, expected) {
-		t.Errorf("Invalid byte array:\nExpected:\n%s\nReturned:\n%s", dump(expected, ""), dump(m, ""))
-		return
+		t.Fatalf("Invalid byte array:\nExpected:\n%s\nReturned:\n%s", dump(expected, ""), dump(m, ""))
 	}
 }
 
@@ -74,7 +72,6 @@ func TestUnmarshalDeleteCardResponseWithInvalidMsgType(t *testing.T) {
 	err := codec.Unmarshal(message, &reply)
 
 	if err == nil {
-		t.Errorf("Expected error: '%v'", "Invalid value in message - expected 0x52, received 0x94")
-		return
+		t.Fatalf("Expected error: '%v'", "Invalid value in message - expected 0x52, received 0x94")
 	}
 }
