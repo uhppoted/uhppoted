@@ -3,7 +3,6 @@ package rest
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -16,7 +15,8 @@ func getTime(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 
 	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetTime(deviceId)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error retrieving device time: %v", err), http.StatusInternalServerError)
+		warn(ctx, deviceId, "get-time", err)
+		http.Error(w, "Error retrieving device time", http.StatusInternalServerError)
 		return
 	}
 
@@ -34,6 +34,7 @@ func setTime(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 
 	blob, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		warn(ctx, deviceId, "set-time", err)
 		http.Error(w, "Error reading request", http.StatusInternalServerError)
 		return
 	}
@@ -44,13 +45,15 @@ func setTime(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(blob, &body)
 	if err != nil {
+		warn(ctx, deviceId, "set-time", err)
 		http.Error(w, "Invalid request format", http.StatusBadRequest)
 		return
 	}
 
 	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).SetTime(deviceId, time.Time(body.DateTime))
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error setting device time: %v", err), http.StatusInternalServerError)
+		warn(ctx, deviceId, "set-time", err)
+		http.Error(w, "Error setting device time", http.StatusInternalServerError)
 		return
 	}
 

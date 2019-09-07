@@ -2,7 +2,6 @@ package rest
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"uhppote"
 	"uhppote/types"
@@ -13,7 +12,8 @@ func getStatus(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 
 	status, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetStatus(deviceId)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error retrieving device status: %v", err), http.StatusInternalServerError)
+		warn(ctx, deviceId, "get-status", err)
+		http.Error(w, "Error retrieving device status", http.StatusInternalServerError)
 		return
 	}
 

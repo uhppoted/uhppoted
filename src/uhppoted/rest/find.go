@@ -18,7 +18,8 @@ func getDevices(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	devices, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevices()
 
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error retrieving device list: %v", err), http.StatusInternalServerError)
+		warn(ctx, 0, "get-devices", err)
+		http.Error(w, "Error retrieving device list", http.StatusInternalServerError)
 		return
 	}
 
@@ -45,7 +46,8 @@ func getDevice(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	devices, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevices()
 
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error retrieving device list: %v", err), http.StatusInternalServerError)
+		warn(ctx, deviceId, "get-device", err)
+		http.Error(w, "Error retrieving device list", http.StatusInternalServerError)
 		return
 	}
 
