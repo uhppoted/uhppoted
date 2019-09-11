@@ -289,6 +289,45 @@ paths:
         default:
           description: "Request failed"
 
+  /device/{device-id}/card/{card-number}:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves card access information"
+      description: "Retrieves the access permissions associated with the card number"
+      operationId: getCard
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 305419896
+        - name: card-number
+          in: path
+          description: "Card number"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 192837465
+      responses:
+        '200':
+          description: "Card access information"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Card"        
+        '404':
+          description: "No matching device and/or card"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
 
 components:
   schemas:
@@ -498,3 +537,34 @@ components:
              description: "Card number"
              example: 192837465
           description: "List of card numbers"
+
+    Card:
+      required: 
+        - card-number
+        - start-date
+        - end-date
+        - doors
+      properties:
+        card-number:  
+          type: number
+          format: uint32
+          description: "Card number"
+          example: 192837465
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "First date card is valid"
+          example: "2019-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Last date card is valid"
+          example: "2019-12-31"
+        doors:  
+          type: array
+          items:
+             type: boolean
+             format: true/false
+             description: "Door access granted"
+             example: true, false, false, true
+          description: "List of doors and access"

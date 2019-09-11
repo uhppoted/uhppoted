@@ -25,12 +25,14 @@
 - [x] Get door delay
 - [x] Set door delay
 - [x] Get cards
+- [x] Get card
 
 ## TODO
 
 ### uhppote
 - [ ] concurrent requests
 - [ ] update tests with Errorf + return to Fatalf
+- [ ] commonalise ACL implementation
 
 ### CLI
 - [ ] Rework grant/revoke for individual doors (labelled)

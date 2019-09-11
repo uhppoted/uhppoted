@@ -39,6 +39,7 @@ func Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	d.Add("^/uhppote/device/[0-9]+/door/[1-4]/delay$", http.MethodGet, getDoorDelay)
 	d.Add("^/uhppote/device/[0-9]+/door/[1-4]/delay$", http.MethodPut, setDoorDelay)
 	d.Add("^/uhppote/device/[0-9]+/card$", http.MethodGet, getCards)
+	d.Add("^/uhppote/device/[0-9]+/card/[0-9]+$", http.MethodGet, getCard)
 
 	log.Fatal(http.ListenAndServe(":8001", &d))
 }
@@ -88,11 +89,19 @@ func parse(ctx context.Context, r *http.Request) context.Context {
 		}
 	}
 
-	matches = regexp.MustCompile("^/uhppote/device/[0-9]+/door/([1-4])(?:$|/.*$$)").FindStringSubmatch(url)
+	matches = regexp.MustCompile("^/uhppote/device/[0-9]+/door/([1-4])(?:$|/.*$)").FindStringSubmatch(url)
 	if matches != nil {
 		door, err := strconv.ParseUint(matches[1], 10, 8)
 		if err == nil {
 			ctx = context.WithValue(ctx, "door", uint8(door))
+		}
+	}
+
+	matches = regexp.MustCompile("^/uhppote/device/[0-9]+/card/([0-9]+)$").FindStringSubmatch(url)
+	if matches != nil {
+		cardNumber, err := strconv.ParseUint(matches[1], 10, 32)
+		if err == nil {
+			ctx = context.WithValue(ctx, "card-number", uint32(cardNumber))
 		}
 	}
 
