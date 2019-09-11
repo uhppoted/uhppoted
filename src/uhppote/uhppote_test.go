@@ -127,7 +127,89 @@ func TestSequentialRequests(t *testing.T) {
 	}
 }
 
-func TestConcurentRequests(t *testing.T) {
+func TestConcurrentRequestsWithUnboundPort(t *testing.T) {
+	expected := [][]byte{
+		{0x17, 0x52, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		},
+		{0x17, 0x52, 0x00, 0x00, 0x4c, 0xd3, 0x2a, 0x2d, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		},
+	}
+
+	request := messages.DeleteCardRequest{
+		SerialNumber: 1000002,
+		CardNumber:   6154412,
+	}
+
+	u := uhppote.UHPPOTE{
+		Debug:            true,
+		BindAddress:      resolve("127.0.0.1:0"),
+		BroadcastAddress: resolve("127.0.0.1:60000"),
+		Devices: map[uint32]*net.UDPAddr{
+			423187757: resolve("127.0.0.1:60001"),
+			757781324: resolve("127.0.0.1:60002"),
+		},
+	}
+
+	closed := make(chan int)
+	listening := []*net.UDPConn{
+		listen(423187757, "127.0.0.1: 60001", 500*time.Millisecond, closed, t),
+		listen(757781324, "127.0.0.1: 60002", 1000*time.Millisecond, closed, t),
+	}
+
+	defer func() {
+		for _, c := range listening {
+			if c != nil {
+				c.Close()
+			}
+		}
+	}()
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+
+		if reply, err := u.Send(423187757, request); err != nil {
+			t.Fatalf("%v", err)
+		} else if reply == nil {
+			t.Fatalf("Invalid reply: %v", reply)
+		} else if !reflect.DeepEqual(reply, expected[0]) {
+			t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", uhppote.Dump(expected[0], ""), uhppote.Dump(reply, ""))
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		time.Sleep(1000 * time.Millisecond)
+
+		if reply, err := u.Send(757781324, request); err != nil {
+			t.Fatalf("%v", err)
+		} else if reply == nil {
+			t.Fatalf("Invalid reply: %v", reply)
+		} else if !reflect.DeepEqual(reply, expected[1]) {
+			t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", uhppote.Dump(expected[1], ""), uhppote.Dump(reply, ""))
+		}
+	}()
+
+	wg.Wait()
+
+	for _, c := range listening {
+		if c != nil {
+			c.Close()
+			<-closed
+		}
+	}
+}
+
+func TestConcurrentRequestsWithBoundPort(t *testing.T) {
 	t.Skip("SKIP - uhppote concurrency implementation is a work in progress")
 
 	expected := [][]byte{
@@ -160,8 +242,8 @@ func TestConcurentRequests(t *testing.T) {
 
 	closed := make(chan int)
 	listening := []*net.UDPConn{
-		listen(423187757, "127.0.0.1: 60001", 2500*time.Millisecond, closed, t),
-		listen(757781324, "127.0.0.1: 60002", 5000*time.Millisecond, closed, t),
+		listen(423187757, "127.0.0.1: 60001", 1000*time.Millisecond, closed, t),
+		listen(757781324, "127.0.0.1: 60002", 500*time.Millisecond, closed, t),
 	}
 
 	defer func() {
