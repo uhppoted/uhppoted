@@ -158,8 +158,8 @@ func TestConcurrentRequestsWithUnboundPort(t *testing.T) {
 
 	closed := make(chan int)
 	listening := []*net.UDPConn{
-		listen(423187757, "127.0.0.1: 60001", 500*time.Millisecond, closed, t),
-		listen(757781324, "127.0.0.1: 60002", 1000*time.Millisecond, closed, t),
+		listen(423187757, "127.0.0.1: 60001", 1500*time.Millisecond, closed, t),
+		listen(757781324, "127.0.0.1: 60002", 500*time.Millisecond, closed, t),
 	}
 
 	defer func() {
@@ -188,7 +188,7 @@ func TestConcurrentRequestsWithUnboundPort(t *testing.T) {
 	go func() {
 		defer wg.Done()
 
-		time.Sleep(1000 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
 
 		if reply, err := u.Send(757781324, request); err != nil {
 			t.Fatalf("%v", err)
@@ -272,7 +272,7 @@ func TestConcurrentRequestsWithBoundPort(t *testing.T) {
 	go func() {
 		defer wg.Done()
 
-		time.Sleep(1000 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
 
 		if reply, err := u.Send(757781324, request); err != nil {
 			t.Fatalf("%v", err)
