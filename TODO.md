@@ -26,6 +26,8 @@
 - [x] Set door delay
 - [x] Get cards
 - [x] Get card
+- [x] Delete cards
+- [x] Delete card
 
 ## TODO
 
@@ -74,4 +76,5 @@
 9.  Update to use modules
 10. Mojave/HomeKit
 11. Phoenix UI
+12. step-ca (https://smallstep.com/blog/private-acme-server)
 

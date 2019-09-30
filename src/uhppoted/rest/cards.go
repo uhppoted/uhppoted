@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"uhppote"
 	"uhppote/types"
@@ -62,4 +63,39 @@ func getCard(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	reply(ctx, w, response)
+}
+
+func deleteCards(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	deviceId := ctx.Value("device-id").(uint32)
+
+	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).DeleteCards(deviceId)
+	if err != nil {
+		warn(ctx, deviceId, "delete-cards", err)
+		http.Error(w, "Error deleting cards", http.StatusInternalServerError)
+		return
+	}
+
+	if !result.Succeeded {
+		warn(ctx, deviceId, "delete-cards", errors.New("Request failed"))
+		http.Error(w, "Error deleting cards", http.StatusInternalServerError)
+		return
+	}
+}
+
+func deleteCard(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	deviceId := ctx.Value("device-id").(uint32)
+	cardNumber := ctx.Value("card-number").(uint32)
+
+	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).DeleteCard(deviceId, cardNumber)
+	if err != nil {
+		warn(ctx, deviceId, "delete-card-by-id", err)
+		http.Error(w, "Error retrieving card", http.StatusInternalServerError)
+		return
+	}
+
+	if !result.Succeeded {
+		warn(ctx, deviceId, "delete-card", errors.New("Request failed"))
+		http.Error(w, "Error deleting card", http.StatusInternalServerError)
+		return
+	}
 }

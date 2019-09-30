@@ -29,7 +29,7 @@ func (s *UT0311L04) putCard(addr *net.UDPAddr, request *messages.PutCardRequest)
 
 		s.send(addr, &response)
 
-		if err := s.Save(); err == nil {
+		if err := s.Save(); err != nil {
 			fmt.Printf("ERROR: %v\n", err)
 		}
 	}

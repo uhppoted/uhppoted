@@ -40,6 +40,8 @@ func Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	d.Add("^/uhppote/device/[0-9]+/door/[1-4]/delay$", http.MethodPut, setDoorDelay)
 	d.Add("^/uhppote/device/[0-9]+/card$", http.MethodGet, getCards)
 	d.Add("^/uhppote/device/[0-9]+/card/[0-9]+$", http.MethodGet, getCard)
+	d.Add("^/uhppote/device/[0-9]+/card$", http.MethodDelete, deleteCards)
+	d.Add("^/uhppote/device/[0-9]+/card/[0-9]+$", http.MethodDelete, deleteCard)
 
 	log.Fatal(http.ListenAndServe(":8001", &d))
 }

@@ -289,6 +289,33 @@ paths:
         default:
           description: "Request failed"
 
+    delete:
+      tags:
+        - uhppote
+      summary: "Deletes the entire device card list"
+      description: "Deletes all stored card numbers"
+      operationId: deleteCards
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 305419896
+      responses:
+        '200':
+          description: "Stored card list cleared"
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
   /device/{device-id}/card/{card-number}:
     get:
       tags:
@@ -320,6 +347,41 @@ paths:
             application/json:
               schema:
                   $ref: "#/components/schemas/Card"        
+        '404':
+          description: "No matching device and/or card"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+          
+    delete:
+      tags:
+        - uhppote
+      summary: "Deletes a card"
+      description: "Removes the card associated with the card number from the stored card list"
+      operationId: deleteCard
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 305419896
+        - name: card-number
+          in: path
+          description: "Card number"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 192837465
+      responses:
+        '200':
+          description: "Card deleted"
         '404':
           description: "No matching device and/or card"
         '405':
