@@ -17,7 +17,7 @@ The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Acc
 | Module            | Description                                                           |
 | ----------------- | --------------------------------------------------------------------- |
 | uhppote           | core library, implements the UDP interface to UTO0311-L0x controllers |
-| uhppote-cli       | CLI                                                                   |
+| uhppote-cli       | command line interface                                                |
 | uhppoted          | daemon/service for remote access to UTO0311-L0x controllers           |
 | uhppote-simulator | UT0311-L04 simulator for development use                              |
 
