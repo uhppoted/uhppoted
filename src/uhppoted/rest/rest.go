@@ -42,6 +42,8 @@ func Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	d.Add("^/uhppote/device/[0-9]+/card/[0-9]+$", http.MethodGet, getCard)
 	d.Add("^/uhppote/device/[0-9]+/card$", http.MethodDelete, deleteCards)
 	d.Add("^/uhppote/device/[0-9]+/card/[0-9]+$", http.MethodDelete, deleteCard)
+	d.Add("^/uhppote/device/[0-9]+/event$", http.MethodGet, getEvents)
+	d.Add("^/uhppote/device/[0-9]+/event/[0-9]+$", http.MethodGet, getEvent)
 
 	log.Fatal(http.ListenAndServe(":8001", &d))
 }
@@ -104,6 +106,14 @@ func parse(ctx context.Context, r *http.Request) context.Context {
 		cardNumber, err := strconv.ParseUint(matches[1], 10, 32)
 		if err == nil {
 			ctx = context.WithValue(ctx, "card-number", uint32(cardNumber))
+		}
+	}
+
+	matches = regexp.MustCompile("^/uhppote/device/[0-9]+/event/([0-9]+)$").FindStringSubmatch(url)
+	if matches != nil {
+		eventId, err := strconv.ParseUint(matches[1], 10, 32)
+		if err == nil {
+			ctx = context.WithValue(ctx, "event-id", uint32(eventId))
 		}
 	}
 

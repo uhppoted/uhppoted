@@ -28,6 +28,8 @@
 - [x] Get card
 - [x] Delete cards
 - [x] Delete card
+- [x] Get events
+- [x] Get event
 
 ## TODO
 
