@@ -51,7 +51,7 @@ paths:
           required: true
           schema:
             type: integer
-            format: uint64
+            format: uint32
             example: 305419896
       responses:
         '200':
@@ -83,7 +83,7 @@ paths:
           required: true
           schema:
             type: integer
-            format: uint64
+            format: uint32
             example: 305419896
       responses:
         '200':
@@ -115,7 +115,7 @@ paths:
           required: true
           schema:
             type: integer
-            format: uint64
+            format: uint32
             example: 305419896
       responses:
         '200':
@@ -146,7 +146,7 @@ paths:
           required: true
           schema:
             type: integer
-            format: uint64
+            format: uint32
             example: 305419896
       requestBody:
         description: "Date time"
@@ -185,7 +185,7 @@ paths:
           required: true
           schema:
             type: integer
-            format: uint64
+            format: uint32
             example: 305419896
         - name: door
           in: path
@@ -224,7 +224,7 @@ paths:
           required: true
           schema:
             type: integer
-            format: uint64
+            format: uint32
             example: 305419896
         - name: door
           in: path
@@ -271,7 +271,7 @@ paths:
           required: true
           schema:
             type: integer
-            format: uint64
+            format: uint32
             example: 305419896
       responses:
         '200':
@@ -302,7 +302,7 @@ paths:
           required: true
           schema:
             type: integer
-            format: uint64
+            format: uint32
             example: 305419896
       responses:
         '200':
@@ -330,7 +330,7 @@ paths:
           required: true
           schema:
             type: integer
-            format: uint64
+            format: uint32
             example: 305419896
         - name: card-number
           in: path
@@ -338,7 +338,7 @@ paths:
           required: true
           schema:
             type: integer
-            format: uint64
+            format: uint32
             example: 192837465
       responses:
         '200':
@@ -369,7 +369,7 @@ paths:
           required: true
           schema:
             type: integer
-            format: uint64
+            format: uint32
             example: 305419896
         - name: card-number
           in: path
@@ -377,7 +377,7 @@ paths:
           required: true
           schema:
             type: integer
-            format: uint64
+            format: uint32
             example: 192837465
       responses:
         '200':
@@ -391,6 +391,78 @@ paths:
         default:
           description: "Request failed"
 
+  /device/{device-id}/event:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves the device event list"
+      description: "Retrieves the list of stored events"
+      operationId: getEvents
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 305419896
+      responses:
+        '200':
+          description: "Event list"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/EventList"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+  /device/{device-id}/event/{event-id}:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves a single event record"
+      description: "Retrieves the event record for an event ID"
+      operationId: getEvent
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 305419896
+        - name: event-id
+          in: path
+          description: "Event ID"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 31
+      responses:
+        '200':
+          description: "Event record"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Event"        
+        '404':
+          description: "No matching device and/or event"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+        
 components:
   schemas:
     DeviceList:
@@ -630,3 +702,60 @@ components:
              description: "Door access granted"
              example: true, false, false, true
           description: "List of doors and access"
+        
+    EventList:
+      required: 
+        - events
+      properties:
+        devices:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"        
+          description: "List of events"
+          
+    Event:
+      required: 
+        - event-id
+        - event-type
+        - access-granted
+        - door-id
+        - door-opened
+        - user-id
+        - timestamp
+        - event-result
+      properties:
+        event-id:  
+          type: number
+          format: uint32
+          description: "Event id"
+          example: 13
+        event-type:  
+          type: number
+          format: uint8
+          description: "Event type"
+          example: 1
+        access-granted:  
+          type: boolean
+          format: true/false
+          description: "Access granted"
+          example: true
+        door-id:  
+          type: number
+          format: uint8
+          description: "Door number [1..4]"
+          example: 2
+        user-id:  
+          type: number
+          format: uint32
+          description: "User ID, typically card number"
+          example: 192837465
+        timestamp:  
+          type: string
+          format: yyyy-MM-dd HH:mm:ss
+          description: "Event timestamp"
+          example: "2019-03-27 12:34:56"
+        event-result:  
+          type: number
+          format: uint8
+          description: "Event result"
+          example: 6
