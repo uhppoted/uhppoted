@@ -79,4 +79,15 @@
 10. Mojave/HomeKit
 11. Phoenix UI
 12. step-ca (https://smallstep.com/blog/private-acme-server)
+13. PDL
+    - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)
+    - [Diva](http://www.diva-portal.org/smash/get/diva2:407713/FULLTEXT01.pdf)
+    - [PADS/ML](https://pads.cs.tufts.edu/papers/tfp07.pdf)
+    - [PADS](https://www.cs.princeton.edu/~dpw/papers/700popl06.pdf)
+    - [DataScript](https://www.researchgate.net/publication/221108676_DataScript-_A_Specification_and_Scripting_Language_for_Binary_Data)
+    - [PADS/ML](https://www.cs.princeton.edu/~dpw/papers/padsml06.pdf)
+    - [PADS Project](http://www.padsproj.org/)
+    - [Mozilla IPDL](https://developer.mozilla.org/en-US/docs/Mozilla/IPDL/Tutorial)
+    - [PDL: Failure Semanics](https://www.researchgate.net/publication/2784726_A_Protocol_Description_Language_for_Customizing_Failure_Semantics)
+    - https://en.wikipedia.org/wiki/Abstract_Syntax_Notation_One
 
