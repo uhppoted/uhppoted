@@ -25,12 +25,12 @@ const (
 var retries = 0
 
 func main() {
-	log.Printf("uhppoted daemon (%d)\n", os.Getpid())
-
 	flag.Parse()
 
+	sysinit()
+
 	if err := os.MkdirAll(*dir, os.ModeDir|os.ModePerm); err != nil {
-		log.Fatal(fmt.Sprintf("Error creating working directoryi '%v'", *dir), err)
+		log.Fatal(fmt.Sprintf("Error creating working directory '%v'", *dir), err)
 	}
 
 	pid := fmt.Sprintf("%d\n", os.Getpid())
