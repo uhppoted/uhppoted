@@ -23,6 +23,7 @@ format:
 	gofmt -w=true src/uhppote-cli/config/*.go
 	gofmt -w=true src/uhppote-cli/parsers/*.go
 	gofmt -w=true src/uhppoted/*.go
+	gofmt -w=true src/uhppoted/commands/*.go
 	gofmt -w=true src/uhppoted/rest/*.go
 	gofmt -w=true src/uhppoted/eventlog/*.go
 	gofmt -w=true src/uhppote-simulator/*.go
@@ -171,6 +172,12 @@ simulator-device: build
 
 uhppoted: build
 	./bin/uhppoted 
+
+uhppoted-help: build
+	./bin/uhppoted help
+
+uhppoted-install: build
+	./bin/uhppoted install
 
 uhppoted-privileged: build
 	sudo ./bin/uhppoted --modify-application-firewall

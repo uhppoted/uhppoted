@@ -13,6 +13,7 @@ import (
 	"syscall"
 	"time"
 	"uhppote"
+	"uhppoted/commands"
 	"uhppoted/eventlog"
 	"uhppoted/rest"
 )
@@ -22,10 +23,34 @@ const (
 	IDLE        = time.Duration(60 * time.Second)
 )
 
+var cli = []commands.Command{
+	&commands.Install{},
+}
+
+var VERSION = "v0.04.0"
 var retries = 0
 
 func main() {
 	flag.Parse()
+
+	cmd, err := parse()
+	if err != nil {
+		fmt.Printf("\nError parsing command line: %v\n\n", err)
+		os.Exit(1)
+	}
+
+	ctx := commands.Context{}
+
+	if cmd != nil {
+		if err = cmd.Execute(ctx); err != nil {
+			fmt.Printf("\nERROR: %v\n\n", err)
+			os.Exit(1)
+		}
+
+		return
+	}
+
+	// ... default to 'run'
 
 	sysinit()
 
@@ -57,6 +82,80 @@ func main() {
 	run(*logfile, *logfilesize)
 }
 
+func parse() (commands.Command, error) {
+	var cmd commands.Command = nil
+	var err error = nil
+
+	if len(os.Args) > 1 {
+		for _, c := range cli {
+			if c.CLI() == flag.Arg(0) {
+				cmd = c
+			}
+		}
+	}
+
+	return cmd, err
+}
+
+func usage() {
+	fmt.Println()
+	fmt.Println("  Usage: uhppoted [options] <command>")
+	fmt.Println()
+	fmt.Println("  Commands:")
+	fmt.Println()
+	fmt.Println("    help          Displays this message. For help on a specific command use 'uhppoted help <command>'")
+
+	for _, c := range cli {
+		fmt.Printf("    %-13s %s\n", c.CLI(), c.Description())
+	}
+
+	fmt.Println()
+	fmt.Println("  Options:")
+	fmt.Println()
+	fmt.Println("    --dir         Sets the working directory")
+	fmt.Println("    --logfile     Sets the log file path")
+	fmt.Println("    --logfilesize Sets the log file size before forcing a log rotate")
+	fmt.Println("    --pid         Sets the PID file path")
+	fmt.Println("    --syslog      Writes log information to the syslog")
+	fmt.Println("    --debug       Displays vaguely useful internal information")
+	fmt.Println()
+}
+
+func help() {
+	if len(flag.Args()) > 0 && flag.Arg(0) == "help" {
+		if len(flag.Args()) > 1 {
+
+			if flag.Arg(1) == "commands" {
+				helpCommands()
+				return
+			}
+
+			for _, c := range cli {
+				if c.CLI() == flag.Arg(1) {
+					c.Help()
+					return
+				}
+			}
+
+			fmt.Printf("Invalid command: %v. Type 'help commands' to get a list of supported commands\n", flag.Arg(1))
+			return
+		}
+	}
+
+	usage()
+}
+
+func helpCommands() {
+	fmt.Println("Supported commands:")
+	fmt.Println()
+
+	for _, c := range cli {
+		fmt.Printf(" %-16s %s\n", c.CLI(), c.Usage())
+	}
+
+	fmt.Println()
+}
+
 func cleanup(pid string) {
 	os.Remove(pid)
 }
@@ -72,7 +171,7 @@ func run(logfile string, logfilesize int) {
 	interrupt := make(chan os.Signal, 1)
 	rotate := make(chan os.Signal, 1)
 
-	signal.Notify(interrupt, syscall.SIGINT)
+	signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM)
 	signal.Notify(rotate, syscall.SIGHUP)
 
 	go func() {
