@@ -5,6 +5,10 @@
 ### uhppoted
 
 - [ ] Daemon/service interface
+      - [ ] MacOS: SIG_TERM
+      - [ ] MacOS: --install
+      - [ ] MacOS: socket handoff
+
 - [ ] websocket command interface
 - [ ] MQTT 
 - [ ] GraphQL
