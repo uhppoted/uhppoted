@@ -1,15 +1,20 @@
 package commands
 
 import (
-	"fmt"
+	"errors"
+	"log"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+	"text/template"
 )
 
 type Install struct {
 }
 
 func (c *Install) Execute(ctx Context) error {
-	fmt.Println("...... installing")
-	return nil
+	return errors.New("uhppoted install: NOT IMPLEMENTED")
 }
 
 func (c *Install) CLI() string {
