@@ -163,7 +163,7 @@ func (c *Install) firewall() error {
 	return nil
 }
 
-func (c *Install) CLI() string {
+func (c *Install) Cmd() string {
 	return "install"
 }
 

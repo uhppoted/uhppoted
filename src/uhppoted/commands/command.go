@@ -10,7 +10,7 @@ type Context struct {
 
 type Command interface {
 	Execute(context Context) error
-	CLI() string
+	Cmd() string
 	Description() string
 	Usage() string
 	Help()
@@ -30,7 +30,7 @@ func Parse() (Command, error) {
 
 	if len(os.Args) > 1 {
 		for _, c := range cli {
-			if c.CLI() == flag.Arg(0) {
+			if c.Cmd() == flag.Arg(0) {
 				cmd = c
 			}
 		}
