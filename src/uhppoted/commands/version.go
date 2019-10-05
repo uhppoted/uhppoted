@@ -14,7 +14,7 @@ func (c *Version) Execute(ctx Context) error {
 	return nil
 }
 
-func (c *Version) CLI() string {
+func (c *Version) Cmd() string {
 	return "version"
 }
 

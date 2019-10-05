@@ -17,7 +17,7 @@ func (c *Help) Execute(ctx Context) error {
 		}
 
 		for _, c := range cli {
-			if c.CLI() == flag.Arg(1) {
+			if c.Cmd() == flag.Arg(1) {
 				c.Help()
 				return nil
 			}
@@ -31,7 +31,7 @@ func (c *Help) Execute(ctx Context) error {
 	return nil
 }
 
-func (c *Help) CLI() string {
+func (c *Help) Cmd() string {
 	return "help"
 }
 
@@ -57,7 +57,7 @@ func usage() {
 	fmt.Println("    help          Displays this message. For help on a specific command use 'uhppoted help <command>'")
 
 	for _, c := range cli {
-		fmt.Printf("    %-13s %s\n", c.CLI(), c.Description())
+		fmt.Printf("    %-13s %s\n", c.Cmd(), c.Description())
 	}
 
 	fmt.Println()
@@ -82,7 +82,7 @@ func help() {
 			}
 
 			for _, c := range cli {
-				if c.CLI() == flag.Arg(1) {
+				if c.Cmd() == flag.Arg(1) {
 					c.Help()
 					return
 				}
@@ -101,7 +101,7 @@ func helpCommands() {
 	fmt.Println()
 
 	for _, c := range cli {
-		fmt.Printf(" %-16s %s\n", c.CLI(), c.Usage())
+		fmt.Printf(" %-16s %s\n", c.Cmd(), c.Usage())
 	}
 
 	fmt.Println()
