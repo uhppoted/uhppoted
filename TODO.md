@@ -4,10 +4,13 @@
 
 ### uhppoted
 
-- [ ] Daemon/service interface
-      - [ ] MacOS: SIG_TERM
-      - [ ] MacOS: --install
-      - [ ] MacOS: socket handoff
+- [x] MacOS launchd daemon: SIG_TERM
+- [x] MacOS launchd daemon: --install
+- [ ] MacOS launchd daemon: --reinstall
+- [ ] MacOS launchd daemon: --uninstall
+- [ ] MacOS launchd daemon: socket handoff
+- [ ] Linux/systemd daemon/service
+- [ ] Windows service: https://github.com/golang/sys/blob/master/windows/svc/example/service.go
 
 - [ ] websocket command interface
 - [ ] MQTT 

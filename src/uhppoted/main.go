@@ -123,12 +123,12 @@ func listen(logger *log.Logger, interrupt chan os.Signal) error {
 
 	log.Printf("... listening")
 
-	address, _ := net.ResolveUDPAddr("udp", "0.0.0.0:60001")
+	// address, _ := net.ResolveUDPAddr("udp", "0.0.0.0:60001")
 
 	u := uhppote.UHPPOTE{
-		BindAddress: address,
-		Devices:     make(map[uint32]*net.UDPAddr),
-		Debug:       true,
+		// BindAddress: address,
+		Devices: make(map[uint32]*net.UDPAddr),
+		Debug:   true,
 	}
 
 	go func() {
