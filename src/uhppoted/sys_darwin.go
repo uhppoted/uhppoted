@@ -18,7 +18,7 @@ var useSyslog = flag.Bool("syslog", false, "Use syslog for event logging")
 var modifyFirewall = flag.Bool("modify-application-firewall", false, "Add 'uhppoted' to the MacOS application firewall and unblock incoming connections (requires 'sudo')")
 
 func sysinit() {
-	log.Printf("uhppoted daemon    - %s (PID %d)\n", "MacOS", os.Getpid())
+	log.Printf("uhppoted daemon %s - %s (PID %d)\n", VERSION, "MacOS", os.Getpid())
 
 	if *modifyFirewall {
 		unblock()
