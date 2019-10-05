@@ -180,7 +180,7 @@ uhppoted-help: build
 	./bin/uhppoted help
 
 uhppoted-install: build
-	./bin/uhppoted install
+	sudo ./bin/uhppoted install
 
 uhppoted-version: build
 	./bin/uhppoted version
