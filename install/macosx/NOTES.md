@@ -1,11 +1,25 @@
 ## MacOS Install Notes
 
-1. If Application Firewall is enabled, incoming UDP is blocked. Pending implementation of socket handoff, 
-a partial workaround is to add uhppoted to the firewall:
+### uhppoted
 ```
-sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
-sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add /usr/local/bin/uhppoted
-sudo /usr/libexec/ApplicationFirewall/socketfilterfw --unblockapp /usr/local/bin/uhppoted
-sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+sudo uhpppoted install
 ```
-This seems to be required on every startup.
+
+Installs *uhppoted* as a launchd system daemon:
+- Creates the com.github.twystd.uhppoted.plist launchd configuration file in /Library/LaunchDaemons
+- Creates the working directory /usr/local/var/com.github.twystd.uhppoted
+- Adds *uhppoted* to the application firewall (if enabled) and unblocks incoming connections
+
+The default configuration is set to 'run on load' and logs to the following files:
+- /usr/local/var/log/com.github.twystd.uhppoted.log
+- /usr/local/var/log/com.github.twystd.uhppoted.err
+
+Start the daemon:
+```
+sudo launchctl load /Library/LaunchDaemons/com.github.twystd.uhppoted.plist
+```
+
+Stop the daemon:
+```
+sudo launchctl unload /Library/LaunchDaemons/com.github.twystd.uhppoted.plist
+```
