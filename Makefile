@@ -173,14 +173,22 @@ simulator-device: build
 uhppoted: build
 	./bin/uhppoted 
 
+uhppoted-privileged: build
+	sudo ./bin/uhppoted --modify-application-firewall
+
 uhppoted-help: build
 	./bin/uhppoted help
 
 uhppoted-install: build
 	./bin/uhppoted install
 
-uhppoted-privileged: build
-	sudo ./bin/uhppoted --modify-application-firewall
+uhppoted-version: build
+	./bin/uhppoted version
+
+uhppoted-help: build
+	./bin/uhppoted help
+	./bin/uhppoted help commands
+	./bin/uhppoted help version
 
 swagger: 
 	docker run -d -p 80:8080 swaggerapi/swagger-editor
