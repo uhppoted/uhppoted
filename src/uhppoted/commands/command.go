@@ -19,7 +19,7 @@ type Command interface {
 var VERSION = "v0.04.0"
 
 var cli = []Command{
-	&Install{},
+	&Daemonize{},
 	&Version{VERSION},
 	&Help{},
 }
