@@ -2,7 +2,7 @@
 
 ### uhppoted
 ```
-sudo uhppoted install
+sudo uhppoted daemonize
 ```
 
 Installs *uhppoted* as a launchd system daemon:
