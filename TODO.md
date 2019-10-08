@@ -7,8 +7,10 @@
 - [x] MacOS launchd daemon: SIG_TERM
 - [x] MacOS launchd daemon: --daemonize
 - [x] MacOS launchd daemon reinstall
-- [ ] MacOS launchd daemon: --undaemonize
+- [x] MacOS launchd daemon: --undaemonize
 - [ ] MacOS launchd daemon: socket handoff
+- [ ] MacOS launchd daemon: logrotate
+- [ ] MacOS launchd XML plist file marshalling/unmarshalling
 - [ ] Linux/systemd daemon/service
 - [ ] Windows service: https://github.com/golang/sys/blob/master/windows/svc/example/service.go
 

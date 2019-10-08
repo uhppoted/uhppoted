@@ -14,7 +14,7 @@ type Daemonize struct {
 }
 
 func (c *Daemonize) Execute(ctx Context) error {
-	return errors.New("uhppoted install: NOT IMPLEMENTED")
+	return errors.New("uhppoted daemonize: NOT IMPLEMENTED")
 }
 
 func (c *Daemonize) CLI() string {
@@ -22,7 +22,7 @@ func (c *Daemonize) CLI() string {
 }
 
 func (c *Daemonize) Description() string {
-	return "Daemonizes uhppoted as a service/daemon"
+	return "Registers uhppoted as a service"
 }
 
 func (c *Daemonize) Usage() string {
@@ -32,6 +32,6 @@ func (c *Daemonize) Usage() string {
 func (c *Daemonize) Help() {
 	fmt.Println("Usage: uhppoted daemonize")
 	fmt.Println()
-	fmt.Println(" Daemonizes uhppoted as a service/daemon that runs on startup")
+	fmt.Println(" Registers uhppoted as a windows Service that runs on startup")
 	fmt.Println()
 }
