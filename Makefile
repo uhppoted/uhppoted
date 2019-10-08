@@ -179,6 +179,10 @@ uhppoted-privileged: build
 uhppoted-daemonize: build
 	sudo ./bin/uhppoted daemonize
 
+uhppoted-undaemonize: build
+	sudo ./bin/uhppoted undaemonize
+
+
 uhppoted-version: build
 	./bin/uhppoted version
 

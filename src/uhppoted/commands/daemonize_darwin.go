@@ -4,7 +4,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -50,7 +49,7 @@ type Daemonize struct {
 }
 
 func (c *Daemonize) Execute(ctx Context) error {
-	fmt.Println("...... daemonizing")
+	fmt.Println("   ... daemonizing")
 
 	if err := c.launchd(); err != nil {
 		return err
@@ -63,6 +62,13 @@ func (c *Daemonize) Execute(ctx Context) error {
 	if err := c.firewall(); err != nil {
 		return err
 	}
+
+	fmt.Println("   ... com.github.twystd.uhppoted registered as a LaunchDaemon")
+	fmt.Println()
+	fmt.Println("   The daemon will start automatically on the next system restart - to start it manually, execute the following command:")
+	fmt.Println()
+	fmt.Println("   sudo launchctl load /Libary/LaunchDaemons/com.github.twystd.uhppoted")
+	fmt.Println()
 
 	return nil
 }
@@ -171,6 +177,7 @@ func (c *Daemonize) parse(path string) (map[string]string, error) {
 }
 
 func (c *Daemonize) daemonize(path string, d data) error {
+	fmt.Printf("   ... creating '%s'\n", path)
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
@@ -188,68 +195,68 @@ func (c *Daemonize) daemonize(path string, d data) error {
 }
 
 func (c *Daemonize) mkdirs() error {
-	if err := os.MkdirAll("/usr/local/var/com.github.twystd.uhppoted", 0644); err != nil {
-		return err
-	}
+	dir := "/usr/local/var/com.github.twystd.uhppoted"
 
-	return nil
+	fmt.Printf("   ... creating '%s'\n", dir)
+
+	return os.MkdirAll(dir, 0644)
 }
 
 func (c *Daemonize) firewall() error {
-	log.Println()
-	log.Println("   ***")
-	log.Println("   *** WARNING: adding 'uhppoted' to the application firewall and unblocking incoming connections")
-	log.Println("   ***")
-	log.Println()
+	fmt.Println()
+	fmt.Println("   ***")
+	fmt.Println("   *** WARNING: adding 'uhppoted' to the application firewall and unblocking incoming connections")
+	fmt.Println("   ***")
+	fmt.Println()
 
 	path, err := os.Executable()
 	if err != nil {
-		log.Fatalf("Failed to get path to executable: %v\n", err)
+		fmt.Errorf("Failed to get path to executable: %v\n", err)
 		return err
 	}
 
 	cmd := exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--getglobalstate")
 	out, err := cmd.CombinedOutput()
-	log.Printf("   > %s", out)
+	fmt.Printf("   > %s", out)
 	if err != nil {
-		log.Fatalf("ERROR: Failed to retrieve application firewall global state (%v)\n", err)
+		fmt.Errorf("ERROR: Failed to retrieve application firewall global state (%v)\n", err)
 		return err
 	}
 
 	if strings.Contains(string(out), "State = 1") {
 		cmd = exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--setglobalstate", "off")
 		out, err = cmd.CombinedOutput()
-		log.Printf("   > %s", out)
+		fmt.Printf("   > %s", out)
 		if err != nil {
-			log.Fatalf("ERROR: Failed to disable the application firewall (%v)\n", err)
+			fmt.Errorf("ERROR: Failed to disable the application firewall (%v)\n", err)
 			return err
 		}
 
 		cmd = exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--add", path)
 		out, err = cmd.CombinedOutput()
-		log.Printf("   > %s", out)
+		fmt.Printf("   > %s", out)
 		if err != nil {
-			log.Fatalf("ERROR: Failed to add 'uhppoted' to the application firewall (%v)\n", err)
+			fmt.Errorf("ERROR: Failed to add 'uhppoted' to the application firewall (%v)\n", err)
 			return err
 		}
 
 		cmd = exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--unblockapp", path)
 		out, err = cmd.CombinedOutput()
-		log.Printf("   > %s", out)
+		fmt.Printf("   > %s", out)
 		if err != nil {
-			log.Fatalf("ERROR: Failed to unblock 'uhppoted' on the application firewall (%v)\n", err)
+			fmt.Errorf("ERROR: Failed to unblock 'uhppoted' on the application firewall (%v)\n", err)
 			return err
 		}
 
 		cmd = exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--setglobalstate", "on")
 		out, err = cmd.CombinedOutput()
-		log.Printf("   > %s", out)
+		fmt.Printf("   > %s", out)
 		if err != nil {
-			log.Fatalf("ERROR: Failed to re-enable the application firewall (%v)\n", err)
+			fmt.Errorf("ERROR: Failed to re-enable the application firewall (%v)\n", err)
 			return err
 		}
 
-		log.Println()
+		fmt.Println()
 	}
 
 	return nil
