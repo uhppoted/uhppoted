@@ -5,9 +5,9 @@
 ### uhppoted
 
 - [x] MacOS launchd daemon: SIG_TERM
-- [x] MacOS launchd daemon: --install
-- [ ] MacOS launchd daemon: --reinstall
-- [ ] MacOS launchd daemon: --uninstall
+- [x] MacOS launchd daemon: --daemonize
+- [x] MacOS launchd daemon reinstall
+- [ ] MacOS launchd daemon: --undaemonize
 - [ ] MacOS launchd daemon: socket handoff
 - [ ] Linux/systemd daemon/service
 - [ ] Windows service: https://github.com/golang/sys/blob/master/windows/svc/example/service.go
