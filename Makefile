@@ -176,11 +176,8 @@ uhppoted: build
 uhppoted-privileged: build
 	sudo ./bin/uhppoted --modify-application-firewall
 
-uhppoted-help: build
-	./bin/uhppoted help
-
-uhppoted-install: build
-	sudo ./bin/uhppoted install
+uhppoted-daemonize: build
+	sudo ./bin/uhppoted daemonize
 
 uhppoted-version: build
 	./bin/uhppoted version
