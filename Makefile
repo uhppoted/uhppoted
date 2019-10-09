@@ -26,6 +26,7 @@ format:
 	gofmt -w=true src/uhppoted/commands/*.go
 	gofmt -w=true src/uhppoted/rest/*.go
 	gofmt -w=true src/uhppoted/eventlog/*.go
+	gofmt -w=true src/uhppoted/encoding/plist/*.go
 	gofmt -w=true src/uhppote-simulator/*.go
 	gofmt -w=true src/uhppote-simulator/simulator/*.go
 	gofmt -w=true src/uhppote-simulator/rest/*.go
@@ -56,10 +57,15 @@ test: build
 	go test -count=1 src/uhppote/encoding/bcd/*.go
 	go test -count=1 src/uhppote/encoding/UTO311-L0x/*.go
 	go test -count=1 src/uhppote-simulator/simulator/*.go
+	go test -count=1 src/uhppoted/encoding/plist/*.go
 
 test-simulator: build
 	go clean -testcache
 	go test -count=1 src/uhppote-simulator/simulator/*.go 
+
+test-uhppoted: build
+	go clean -testcache
+	go test -count=1 src/uhppoted/encoding/plist/*.go 
 
 integration-tests: build
 	go clean -testcache
@@ -73,6 +79,7 @@ coverage: build
 	go test -cover src/uhppote/*.go
 	go test -cover src/uhppote/encoding/bcd/*.go
 	go test -cover src/uhppote/encoding/UTO311-L0x/*.go
+	go test -cover src/uhppoted/encoding/plist/*.go
 
 clean:
 	go clean
@@ -83,7 +90,7 @@ usage: build
 
 debug: build
 	go clean -testcache
-	go test -count=1 src/uhppote/uhppote_test.go
+	go test -count=1 src/uhppoted/encoding/plist/*.go
 
 help: build
 	$(CLI)       help
