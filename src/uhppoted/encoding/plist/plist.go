@@ -10,24 +10,11 @@ import (
 	"strconv"
 )
 
-var (
-	tString      = reflect.TypeOf(string(""))
-	tBool        = reflect.TypeOf(bool(false))
-	tInteger     = reflect.TypeOf(int(0))
-	tStringArray = reflect.TypeOf([]string{})
-)
-
 var instruction = xml.ProcInst{"xml", []byte(`version="1.0" encoding="UTF-8"`)}
 var doctype = xml.Directive([]byte(`DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"`))
 var newline = xml.CharData("\n")
 var dict = xml.StartElement{Name: xml.Name{"", "dict"}}
 var key = xml.StartElement{Name: xml.Name{"", "key"}}
-var integer = xml.StartElement{Name: xml.Name{"", "integer"}}
-var array = xml.StartElement{Name: xml.Name{"", "array"}}
-var boolean = map[bool]xml.StartElement{
-	true:  xml.StartElement{Name: xml.Name{"", "true"}},
-	false: xml.StartElement{Name: xml.Name{"", "false"}},
-}
 
 var header = []xml.Token{
 	instruction,
@@ -40,6 +27,15 @@ var body = xml.StartElement{
 	Name: xml.Name{"", "plist"},
 	Attr: []xml.Attr{
 		xml.Attr{xml.Name{"", "version"}, "1.0"}},
+}
+
+type encoding func(*xml.Encoder, reflect.Value) error
+
+var dispatch = map[reflect.Type]encoding{
+	reflect.TypeOf(string("")):  encodeString,
+	reflect.TypeOf(bool(false)): encodeBool,
+	reflect.TypeOf(int(0)):      encodeInt,
+	reflect.TypeOf([]string{}):  encodeStringArray,
 }
 
 func Encode(p interface{}) ([]byte, error) {
@@ -83,41 +79,11 @@ func encode(s reflect.Value) ([]byte, error) {
 				return buffer.Bytes(), err
 			}
 
-			switch t.Type {
-			case tString:
-				if err := encoder.Encode(f.String()); err != nil {
+			if g, ok := dispatch[t.Type]; ok {
+				if err := g(encoder, f); err != nil {
 					return buffer.Bytes(), err
 				}
-
-			case tBool:
-				v := xml.CharData("")
-				element := boolean[f.Bool()]
-				if err := encoder.EncodeElement(v, element); err != nil {
-					return buffer.Bytes(), err
-				}
-
-			case tInteger:
-				v := xml.CharData(strconv.FormatInt(f.Int(), 10))
-				if err := encoder.EncodeElement(v, integer); err != nil {
-					return buffer.Bytes(), err
-				}
-
-			case tStringArray:
-				if err := encoder.EncodeToken(array); err != nil {
-					return buffer.Bytes(), err
-				}
-
-				for j := 0; j < f.Len(); j++ {
-					if err := encoder.Encode(f.Index(j).String()); err != nil {
-						return buffer.Bytes(), err
-					}
-				}
-
-				if err := encoder.EncodeToken(array.End()); err != nil {
-					return buffer.Bytes(), err
-				}
-
-			default:
+			} else {
 				panic(errors.New(fmt.Sprintf("Cannot encode plist field with type '%v'", t.Type)))
 			}
 		}
@@ -137,6 +103,48 @@ func encode(s reflect.Value) ([]byte, error) {
 	encoder.Flush()
 
 	return buffer.Bytes(), nil
+}
+
+func encodeString(e *xml.Encoder, f reflect.Value) error {
+	value := f.String()
+	element := xml.StartElement{Name: xml.Name{"", "string"}}
+
+	return e.EncodeElement(value, element)
+}
+
+func encodeBool(e *xml.Encoder, f reflect.Value) error {
+	value := xml.CharData("")
+	element := xml.StartElement{Name: xml.Name{"", strconv.FormatBool(f.Bool())}}
+
+	return e.EncodeElement(value, element)
+}
+
+func encodeInt(e *xml.Encoder, f reflect.Value) error {
+	value := xml.CharData(strconv.FormatInt(f.Int(), 10))
+	element := xml.StartElement{Name: xml.Name{"", "integer"}}
+
+	return e.EncodeElement(value, element)
+}
+
+func encodeStringArray(e *xml.Encoder, f reflect.Value) error {
+	start := xml.StartElement{Name: xml.Name{"", "array"}}
+	end := start.End()
+
+	if err := e.EncodeToken(start); err != nil {
+		return err
+	}
+
+	for j := 0; j < f.Len(); j++ {
+		if err := encodeString(e, f.Index(j)); err != nil {
+			return err
+		}
+	}
+
+	if err := e.EncodeToken(end); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func Decode(bytes []byte) (interface{}, error) {
