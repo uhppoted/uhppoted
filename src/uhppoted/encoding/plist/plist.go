@@ -4,18 +4,30 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/xml"
+	"errors"
 	"fmt"
-	"sort"
+	"reflect"
+	"strconv"
 )
 
-type PListItem struct {
-	Key   string
-	Value interface{}
+var (
+	tString      = reflect.TypeOf(string(""))
+	tBool        = reflect.TypeOf(bool(false))
+	tInteger     = reflect.TypeOf(int(0))
+	tStringArray = reflect.TypeOf([]string{})
+)
+
+func Encode(p interface{}) ([]byte, error) {
+	v := reflect.ValueOf(p)
+
+	if v.Type().Kind() == reflect.Ptr {
+		return encode(v.Elem())
+	} else {
+		return encode(reflect.Indirect(v))
+	}
 }
 
-func Encode(p map[string]interface{}) ([]byte, error) {
-	var buffer bytes.Buffer
-
+func encode(s reflect.Value) ([]byte, error) {
 	instruction := xml.ProcInst{"xml", []byte(`version="1.0" encoding="UTF-8"`)}
 	doctype := xml.Directive([]byte(`DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"`))
 	newline := xml.CharData("\n")
@@ -26,14 +38,13 @@ func Encode(p map[string]interface{}) ([]byte, error) {
 			xml.Attr{xml.Name{"", "version"}, "1.0"}},
 	}
 
-	dict := xml.StartElement{
-		Name: xml.Name{"", "dict"},
-		Attr: []xml.Attr{},
-	}
-
-	key := xml.StartElement{
-		Name: xml.Name{"", "key"},
-		Attr: []xml.Attr{},
+	dict := xml.StartElement{Name: xml.Name{"", "dict"}}
+	key := xml.StartElement{Name: xml.Name{"", "key"}}
+	integer := xml.StartElement{Name: xml.Name{"", "integer"}}
+	array := xml.StartElement{Name: xml.Name{"", "array"}}
+	boolean := map[bool]xml.StartElement{
+		true:  xml.StartElement{Name: xml.Name{"", "true"}},
+		false: xml.StartElement{Name: xml.Name{"", "false"}},
 	}
 
 	header := []xml.Token{
@@ -43,8 +54,9 @@ func Encode(p map[string]interface{}) ([]byte, error) {
 		newline,
 	}
 
+	buffer := bytes.Buffer{}
 	encoder := xml.NewEncoder(bufio.NewWriter(&buffer))
-	encoder.Indent("", " ")
+	encoder.Indent("", "  ")
 
 	for _, token := range header {
 		if err := encoder.EncodeToken(token); err != nil {
@@ -60,21 +72,58 @@ func Encode(p map[string]interface{}) ([]byte, error) {
 		return buffer.Bytes(), err
 	}
 
-	// Sort keys just to make testing a bit saner
-	var keys []string
-	for k := range p {
-		keys = append(keys, k)
-	}
+	if s.Kind() == reflect.Struct {
+		N := s.NumField()
 
-	sort.Strings(keys)
+		for i := 0; i < N; i++ {
+			f := s.Field(i)
+			t := s.Type().Field(i)
+			k := t.Name
 
-	for _, k := range keys {
-		if err := encoder.EncodeElement(k, key); err != nil {
-			return buffer.Bytes(), err
+			if err := encoder.EncodeElement(k, key); err != nil {
+				return buffer.Bytes(), err
+			}
+
+			switch t.Type {
+			case tString:
+				if err := encoder.Encode(f.String()); err != nil {
+					return buffer.Bytes(), err
+				}
+
+			case tBool:
+				v := xml.CharData("")
+				element := boolean[f.Bool()]
+				if err := encoder.EncodeElement(v, element); err != nil {
+					return buffer.Bytes(), err
+				}
+
+			case tInteger:
+				v := xml.CharData(strconv.FormatInt(f.Int(), 10))
+				if err := encoder.EncodeElement(v, integer); err != nil {
+					return buffer.Bytes(), err
+				}
+
+			case tStringArray:
+				if err := encoder.EncodeToken(array); err != nil {
+					return buffer.Bytes(), err
+				}
+
+				for j := 0; j < f.Len(); j++ {
+					if err := encoder.Encode(f.Index(j).String()); err != nil {
+						return buffer.Bytes(), err
+					}
+				}
+
+				if err := encoder.EncodeToken(array.End()); err != nil {
+					return buffer.Bytes(), err
+				}
+
+			default:
+				panic(errors.New(fmt.Sprintf("Cannot encode plist field with type '%v'", t.Type)))
+			}
 		}
-		if err := encoder.Encode(p[k]); err != nil {
-			return buffer.Bytes(), err
-		}
+	} else {
+		panic(errors.New(fmt.Sprintf("Expecting struct, got '%v'", s.Kind())))
 	}
 
 	if err := encoder.EncodeToken(dict.End()); err != nil {
@@ -87,13 +136,9 @@ func Encode(p map[string]interface{}) ([]byte, error) {
 
 	encoder.Flush()
 
-	fmt.Println("----")
-	fmt.Println(string(buffer.Bytes()))
-	fmt.Println("---")
-
 	return buffer.Bytes(), nil
 }
 
-func Decode(bytes []byte) ([]PListItem, error) {
-	return []PListItem{}, nil
+func Decode(bytes []byte) (interface{}, error) {
+	return nil, nil
 }
