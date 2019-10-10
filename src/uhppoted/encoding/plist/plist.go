@@ -17,6 +17,31 @@ var (
 	tStringArray = reflect.TypeOf([]string{})
 )
 
+var instruction = xml.ProcInst{"xml", []byte(`version="1.0" encoding="UTF-8"`)}
+var doctype = xml.Directive([]byte(`DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"`))
+var newline = xml.CharData("\n")
+var dict = xml.StartElement{Name: xml.Name{"", "dict"}}
+var key = xml.StartElement{Name: xml.Name{"", "key"}}
+var integer = xml.StartElement{Name: xml.Name{"", "integer"}}
+var array = xml.StartElement{Name: xml.Name{"", "array"}}
+var boolean = map[bool]xml.StartElement{
+	true:  xml.StartElement{Name: xml.Name{"", "true"}},
+	false: xml.StartElement{Name: xml.Name{"", "false"}},
+}
+
+var header = []xml.Token{
+	instruction,
+	newline,
+	doctype,
+	newline,
+}
+
+var body = xml.StartElement{
+	Name: xml.Name{"", "plist"},
+	Attr: []xml.Attr{
+		xml.Attr{xml.Name{"", "version"}, "1.0"}},
+}
+
 func Encode(p interface{}) ([]byte, error) {
 	v := reflect.ValueOf(p)
 
@@ -28,32 +53,6 @@ func Encode(p interface{}) ([]byte, error) {
 }
 
 func encode(s reflect.Value) ([]byte, error) {
-	instruction := xml.ProcInst{"xml", []byte(`version="1.0" encoding="UTF-8"`)}
-	doctype := xml.Directive([]byte(`DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"`))
-	newline := xml.CharData("\n")
-
-	body := xml.StartElement{
-		Name: xml.Name{"", "plist"},
-		Attr: []xml.Attr{
-			xml.Attr{xml.Name{"", "version"}, "1.0"}},
-	}
-
-	dict := xml.StartElement{Name: xml.Name{"", "dict"}}
-	key := xml.StartElement{Name: xml.Name{"", "key"}}
-	integer := xml.StartElement{Name: xml.Name{"", "integer"}}
-	array := xml.StartElement{Name: xml.Name{"", "array"}}
-	boolean := map[bool]xml.StartElement{
-		true:  xml.StartElement{Name: xml.Name{"", "true"}},
-		false: xml.StartElement{Name: xml.Name{"", "false"}},
-	}
-
-	header := []xml.Token{
-		instruction,
-		newline,
-		doctype,
-		newline,
-	}
-
 	buffer := bytes.Buffer{}
 	encoder := xml.NewEncoder(bufio.NewWriter(&buffer))
 	encoder.Indent("", "  ")
@@ -68,11 +67,11 @@ func encode(s reflect.Value) ([]byte, error) {
 		return buffer.Bytes(), err
 	}
 
-	if err := encoder.EncodeToken(dict); err != nil {
-		return buffer.Bytes(), err
-	}
-
 	if s.Kind() == reflect.Struct {
+		if err := encoder.EncodeToken(dict); err != nil {
+			return buffer.Bytes(), err
+		}
+
 		N := s.NumField()
 
 		for i := 0; i < N; i++ {
@@ -122,12 +121,13 @@ func encode(s reflect.Value) ([]byte, error) {
 				panic(errors.New(fmt.Sprintf("Cannot encode plist field with type '%v'", t.Type)))
 			}
 		}
+
+		if err := encoder.EncodeToken(dict.End()); err != nil {
+			return buffer.Bytes(), err
+		}
+
 	} else {
 		panic(errors.New(fmt.Sprintf("Expecting struct, got '%v'", s.Kind())))
-	}
-
-	if err := encoder.EncodeToken(dict.End()); err != nil {
-		return buffer.Bytes(), err
 	}
 
 	if err := encoder.EncodeToken(body.End()); err != nil {
