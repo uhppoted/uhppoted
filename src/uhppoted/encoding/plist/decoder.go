@@ -28,8 +28,8 @@ func NewDecoder(r io.Reader) *Decoder {
 }
 
 func (d *Decoder) Decode(p interface{}) error {
-	doc := document{}
-	if err := doc.parse(d.reader); err != nil {
+	doc, err := parse(d.reader)
+	if err != nil {
 		return err
 	}
 
