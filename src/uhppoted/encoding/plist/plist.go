@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -25,7 +26,7 @@ type node struct {
 }
 
 type encoder func(*xml.Encoder, reflect.Value) error
-type decoder func(*xml.Decoder, string, reflect.Value) error
+type decoder func(*node, string, reflect.Value) error
 
 var encoders = map[reflect.Type]encoder{
 	reflect.TypeOf(string("")):  encodeString,
@@ -106,7 +107,7 @@ func encode(s reflect.Value) ([]byte, error) {
 					return buffer.Bytes(), err
 				}
 			} else {
-				panic(errors.New(fmt.Sprintf("Cannot encode plist field with type '%v'", t.Type)))
+				panic(errors.New(fmt.Sprintf("Cannot encode plist field '%s' with type '%v'", k, t.Type)))
 			}
 		}
 
@@ -170,81 +171,114 @@ func encodeStringArray(e *xml.Encoder, f reflect.Value) error {
 }
 
 func Decode(b []byte, p interface{}) error {
-	parse(bytes.NewReader(b))
-	decoder := xml.NewDecoder(bytes.NewReader(b))
-
-	for {
-		token, err := decoder.Token()
-		if err != nil {
-			return err
-		}
-
-		element, ok := token.(xml.StartElement)
-		if ok {
-			if element.Name.Local == "plist" {
-				break
-			}
-		}
+	doc := document{}
+	if err := doc.parse(bytes.NewReader(b)); err != nil {
+		return err
 	}
 
-	for {
-		token, err := decoder.Token()
-		if err != nil {
-			return err
-		}
+	v := reflect.ValueOf(p)
+	s := v.Elem()
 
-		if element, ok := token.(xml.StartElement); ok {
-			if element.Name.Local == "dict" {
-				break
+	if s.Kind() == reflect.Struct {
+		N := s.NumField()
+
+		for i := 0; i < N; i++ {
+			f := s.Field(i)
+			t := s.Type().Field(i)
+			k := t.Name
+			q := fmt.Sprintf(`/plist/dict/key[text="%s"]/next()`, k)
+
+			n, err := doc.query(q)
+			if err != nil {
+				return err
 			}
-		}
-	}
 
-	for {
-		token, err := decoder.Token()
-		if err != nil {
-			return err
-		}
-
-		if element, ok := token.(xml.EndElement); ok {
-			if element.Name.Local == "dict" {
-				break
-			}
-		}
-
-		if element, ok := token.(xml.StartElement); ok {
-			if element.Name.Local == "key" {
-				key, err := decodeKey(decoder)
-				if err != nil {
-					return err
+			if n != nil {
+				if !f.CanSet() {
+					return fmt.Errorf("Cannot set struct field '%s'", k)
 				}
 
-				err = decodeValue(decoder, key, p)
-				if err != nil {
-					return err
+				if g, ok := decoders[t.Type]; ok {
+					if err := g(n, k, f); err != nil {
+						return err
+					}
+				} else {
+					panic(errors.New(fmt.Sprintf("Cannot decode  plist field '%s' with type '%v'", k, t.Type)))
 				}
 			}
 		}
-	}
-
-	for {
-		token, err := decoder.Token()
-		if err != nil {
-			return err
-		}
-
-		if element, ok := token.(xml.EndElement); ok {
-			if element.Name.Local == "plist" {
-				break
-			}
-		}
+	} else {
+		panic(errors.New(fmt.Sprintf("Expecting struct, got '%v'", s.Kind())))
 	}
 
 	return nil
 }
 
-func parse(r io.Reader) (*document, error) {
-	doc := document{}
+func decodeString(n *node, field string, f reflect.Value) error {
+	if n.tag != "string" {
+		return fmt.Errorf("Invalid plist XML element '%s' for field '%s': expected 'string'", n.tag, field)
+	}
+
+	f.SetString(n.text)
+	return nil
+}
+
+func decodeBool(n *node, field string, f reflect.Value) error {
+	if n.tag == "true" {
+		f.SetBool(true)
+	} else if n.tag == "false" {
+		f.SetBool(false)
+	} else {
+		return fmt.Errorf("Invalid plist XML element '%s' for field '%s': expected 'bool'", n.tag, field)
+	}
+
+	return nil
+}
+
+func decodeInt(n *node, field string, f reflect.Value) error {
+	if n.tag != "integer" {
+		return fmt.Errorf("Invalid plist XML element '%s' for field '%s': expected 'integer'", n.tag, field)
+	}
+
+	if ivalue, err := strconv.ParseInt(n.text, 10, 64); err != nil {
+		return err
+	} else {
+		f.SetInt(ivalue)
+	}
+
+	return nil
+}
+
+func decodeStringArray(n *node, field string, f reflect.Value) error {
+	if n.tag != "array" {
+		return fmt.Errorf("Invalid plist XML element '%s' for field '%s': expected 'array'", n.tag, field)
+	}
+
+	strings := []string{}
+	p := n.child
+
+	for {
+		if p == nil {
+			break
+		} else if p.tag != "string" {
+			return fmt.Errorf("Invalid plist XML array element '%s' for field '%s': expected 'string'", p.tag, field)
+		}
+
+		strings = append(strings, p.text)
+		p = p.next
+	}
+
+	values := reflect.MakeSlice(reflect.Indirect(f).Type(), len(strings), len(strings))
+	for i, s := range strings {
+		values.Index(i).SetString(s)
+	}
+
+	f.Set(values)
+
+	return nil
+}
+
+func (doc *document) parse(r io.Reader) error {
 	decoder := xml.NewDecoder(r)
 
 	var current *node = nil
@@ -254,7 +288,7 @@ func parse(r io.Reader) (*document, error) {
 		token, err := decoder.Token()
 		if err != nil {
 			if err != io.EOF {
-				return nil, err
+				return err
 			}
 			break
 		}
@@ -309,11 +343,53 @@ func parse(r io.Reader) (*document, error) {
 		}
 	}
 
-	fmt.Println("----")
-	print(doc.root, 0)
-	fmt.Println("----")
+	return nil
+}
 
-	return &doc, nil
+func (doc *document) query(xpath string) (*node, error) {
+	re := regexp.MustCompile(`(\w+)(?:\[text="(.*?)"\])?`)
+	segments := strings.Split(xpath, "/")
+
+	var p *node = nil
+
+	for _, s := range segments[1:] {
+		if s == "next()" {
+			p = p.next
+			continue
+		}
+
+		match := re.FindStringSubmatch(s)
+
+		if match == nil {
+			return nil, fmt.Errorf("Invalid query: '%s'", xpath)
+		}
+
+		q := doc.root
+		if p != nil {
+			q = p.child
+		}
+
+		tag := match[1]
+		text := match[2]
+		for {
+			if q == nil {
+				return nil, nil
+			}
+
+			if q.tag == tag && (text == "" || q.text == text) {
+				p = q
+				break
+			} else {
+				q = q.next
+			}
+		}
+	}
+
+	return p, nil
+}
+
+func (doc *document) print() {
+	print(doc.root, 0)
 }
 
 func print(n *node, depth int) {
@@ -327,224 +403,4 @@ func print(n *node, depth int) {
 			print(n.next, depth)
 		}
 	}
-}
-
-func decodeKey(d *xml.Decoder) (string, error) {
-	token, err := d.Token()
-	if err != nil {
-		return "", err
-	}
-
-	chardata, ok := token.(xml.CharData)
-	if !ok {
-		return "", errors.New("Invalid plist 'key'")
-	}
-
-	key := string(chardata)
-
-	token, err = d.Token()
-	_, ok = token.(xml.EndElement)
-	if !ok {
-		return "", errors.New("Missing plist </key> element")
-	}
-
-	return key, nil
-}
-
-func decodeValue(d *xml.Decoder, key string, p interface{}) error {
-	v := reflect.ValueOf(p)
-	s := v.Elem()
-
-	if s.Kind() == reflect.Struct {
-		N := s.NumField()
-
-		for i := 0; i < N; i++ {
-			f := s.Field(i)
-			t := s.Type().Field(i)
-			k := t.Name
-
-			if k == key {
-				if g, ok := decoders[t.Type]; ok {
-					if err := g(d, k, f); err != nil {
-						return err
-					}
-				} else {
-					panic(errors.New(fmt.Sprintf("Cannot decode  plist field with type '%v'", t.Type)))
-				}
-			}
-		}
-
-	} else {
-		panic(errors.New(fmt.Sprintf("Expecting struct, got '%v'", s.Kind())))
-	}
-
-	return nil
-}
-
-func decodeString(d *xml.Decoder, name string, f reflect.Value) error {
-	if !f.CanSet() {
-		return fmt.Errorf("Cannot set struct field '%s'", name)
-	}
-
-	for {
-		token, err := d.Token()
-		if err != nil {
-			return err
-		}
-
-		if element, ok := token.(xml.StartElement); ok {
-			if element.Name.Local == "string" {
-				break
-			}
-
-			return fmt.Errorf("Invalid plist XML element '%s' for field '%s': expected 'string'", element.Name.Local, name)
-		}
-	}
-
-	token, err := d.Token()
-	if err != nil {
-		return err
-	}
-
-	chardata, ok := token.(xml.CharData)
-	if !ok {
-		return fmt.Errorf("Invalid plist 'string' for '%s'", name)
-	}
-
-	f.SetString(string(chardata))
-
-	return nil
-}
-
-func decodeBool(d *xml.Decoder, name string, f reflect.Value) error {
-	if !f.CanSet() {
-		return fmt.Errorf("Cannot set struct field '%s'", name)
-	}
-
-	for {
-		token, err := d.Token()
-		if err != nil {
-			return err
-		}
-
-		if element, ok := token.(xml.StartElement); ok {
-			if element.Name.Local == "true" {
-				f.SetBool(true)
-				return nil
-			}
-
-			if element.Name.Local == "false" {
-				f.SetBool(false)
-				return nil
-			}
-
-			return fmt.Errorf("Invalid plist XML element '%s' for field '%s': expected 'string'", element.Name.Local, name)
-		}
-	}
-
-	return fmt.Errorf("Missing plist value for field '%s'", name)
-}
-
-func decodeInt(d *xml.Decoder, name string, f reflect.Value) error {
-	if !f.CanSet() {
-		return fmt.Errorf("Cannot set struct field '%s'", name)
-	}
-
-	for {
-		token, err := d.Token()
-		if err != nil {
-			return err
-		}
-
-		if element, ok := token.(xml.StartElement); ok {
-			if element.Name.Local == "integer" {
-				break
-			}
-
-			return fmt.Errorf("Invalid plist XML element '%s' for field '%s': expected 'integer'", element.Name.Local, name)
-		}
-	}
-
-	token, err := d.Token()
-	if err != nil {
-		return err
-	}
-
-	chardata, ok := token.(xml.CharData)
-	if !ok {
-		return fmt.Errorf("Invalid plist 'integer' for '%s'", name)
-	}
-
-	ivalue, err := strconv.ParseInt(string(chardata), 10, 64)
-	if err != nil {
-		return err
-	}
-
-	f.SetInt(ivalue)
-
-	return nil
-}
-
-func decodeStringArray(d *xml.Decoder, name string, f reflect.Value) error {
-	if !f.CanSet() {
-		return fmt.Errorf("Cannot set struct field '%s'", name)
-	}
-
-	for {
-		token, err := d.Token()
-		if err != nil {
-			return err
-		}
-
-		if element, ok := token.(xml.StartElement); ok {
-			if element.Name.Local == "array" {
-				break
-			}
-
-			return fmt.Errorf("Invalid plist XML element '%s' for field '%s': expected 'array'", element.Name.Local, name)
-		}
-	}
-
-	strings := []string{}
-
-	for {
-		token, err := d.Token()
-		if err != nil {
-			return err
-		}
-
-		if element, ok := token.(xml.EndElement); ok {
-			if element.Name.Local == "array" {
-				break
-			}
-		}
-
-		if element, ok := token.(xml.StartElement); ok {
-			if element.Name.Local != "string" {
-				return fmt.Errorf("Invalid plist XML array element '%s' for field '%s': expected 'string'", element.Name.Local, name)
-			}
-
-			token, err := d.Token()
-			if err != nil {
-				return err
-			}
-
-			chardata, ok := token.(xml.CharData)
-			if !ok {
-				return fmt.Errorf("Invalid plist 'string' for '%s'", name)
-			}
-
-			strings = append(strings, string(chardata))
-		}
-	}
-
-	values := reflect.MakeSlice(reflect.Indirect(f).Type(), len(strings), len(strings))
-
-	for i, s := range strings {
-		values.Index(i).SetString(s)
-	}
-
-	f.Set(values)
-
-	return nil
 }
