@@ -59,7 +59,8 @@ func TestEncode(t *testing.T) {
 	}
 
 	buffer := bytes.Buffer{}
-	err := Encode(p, bufio.NewWriter(&buffer))
+	encoder := NewEncoder(bufio.NewWriter(&buffer))
+	err := encoder.Encode(p)
 	bytes := buffer.Bytes()
 
 	if err != nil {
@@ -86,7 +87,8 @@ func TestDecode(t *testing.T) {
 		Integer           int
 	}{}
 
-	err := Decode(bytes.NewReader([]byte(XML)), &p)
+	decoder := NewDecoder(bytes.NewReader([]byte(XML)))
+	err := decoder.Decode(&p)
 
 	if err != nil {
 		t.Errorf("plist.Decode returned unexpected error: %v", err)
