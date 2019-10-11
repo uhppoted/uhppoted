@@ -1,6 +1,8 @@
 package plist
 
 import (
+	"bufio"
+	"bytes"
 	"reflect"
 	"testing"
 )
@@ -56,7 +58,9 @@ func TestEncode(t *testing.T) {
 		Integer:           6521,
 	}
 
-	bytes, err := Encode(p)
+	buffer := bytes.Buffer{}
+	err := Encode(p, bufio.NewWriter(&buffer))
+	bytes := buffer.Bytes()
 
 	if err != nil {
 		t.Errorf("plist.Encode returned unexpected error: %v", err)
@@ -82,7 +86,7 @@ func TestDecode(t *testing.T) {
 		Integer           int
 	}{}
 
-	err := Decode([]byte(XML), &p)
+	err := Decode(bytes.NewReader([]byte(XML)), &p)
 
 	if err != nil {
 		t.Errorf("plist.Decode returned unexpected error: %v", err)
