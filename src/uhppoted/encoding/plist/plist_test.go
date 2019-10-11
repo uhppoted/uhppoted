@@ -124,4 +124,6 @@ func TestDecode(t *testing.T) {
 	if p.Integer != 6521 {
 		t.Errorf("plist.Decode returned unexpected integer for 'Integer' field: '%v'", p.Integer)
 	}
+
+	t.Errorf("DEBUGGING")
 }

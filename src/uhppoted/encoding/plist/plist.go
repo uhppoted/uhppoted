@@ -6,9 +6,40 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"io"
 	"reflect"
 	"strconv"
+	"strings"
 )
+
+type document struct {
+	root *node
+}
+
+type node struct {
+	tag    string
+	text   string
+	parent *node
+	child  *node
+	next   *node
+}
+
+type encoder func(*xml.Encoder, reflect.Value) error
+type decoder func(*xml.Decoder, string, reflect.Value) error
+
+var encoders = map[reflect.Type]encoder{
+	reflect.TypeOf(string("")):  encodeString,
+	reflect.TypeOf(bool(false)): encodeBool,
+	reflect.TypeOf(int(0)):      encodeInt,
+	reflect.TypeOf([]string{}):  encodeStringArray,
+}
+
+var decoders = map[reflect.Type]decoder{
+	reflect.TypeOf(string("")):  decodeString,
+	reflect.TypeOf(bool(false)): decodeBool,
+	reflect.TypeOf(int(0)):      decodeInt,
+	reflect.TypeOf([]string{}):  decodeStringArray,
+}
 
 var instruction = xml.ProcInst{"xml", []byte(`version="1.0" encoding="UTF-8"`)}
 var doctype = xml.Directive([]byte(`DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"`))
@@ -27,23 +58,6 @@ var body = xml.StartElement{
 	Name: xml.Name{"", "plist"},
 	Attr: []xml.Attr{
 		xml.Attr{xml.Name{"", "version"}, "1.0"}},
-}
-
-type encoder func(*xml.Encoder, reflect.Value) error
-type decoder func(*xml.Decoder, string, reflect.Value) error
-
-var encoders = map[reflect.Type]encoder{
-	reflect.TypeOf(string("")):  encodeString,
-	reflect.TypeOf(bool(false)): encodeBool,
-	reflect.TypeOf(int(0)):      encodeInt,
-	reflect.TypeOf([]string{}):  encodeStringArray,
-}
-
-var decoders = map[reflect.Type]decoder{
-	reflect.TypeOf(string("")):  decodeString,
-	reflect.TypeOf(bool(false)): decodeBool,
-	reflect.TypeOf(int(0)):      decodeInt,
-	reflect.TypeOf([]string{}):  decodeStringArray,
 }
 
 func Encode(p interface{}) ([]byte, error) {
@@ -156,6 +170,7 @@ func encodeStringArray(e *xml.Encoder, f reflect.Value) error {
 }
 
 func Decode(b []byte, p interface{}) error {
+	parse(bytes.NewReader(b))
 	decoder := xml.NewDecoder(bytes.NewReader(b))
 
 	for {
@@ -226,6 +241,92 @@ func Decode(b []byte, p interface{}) error {
 	}
 
 	return nil
+}
+
+func parse(r io.Reader) (*document, error) {
+	doc := document{}
+	decoder := xml.NewDecoder(r)
+
+	var current *node = nil
+	var peer *node = nil
+
+	for {
+		token, err := decoder.Token()
+		if err != nil {
+			if err != io.EOF {
+				return nil, err
+			}
+			break
+		}
+
+		if start, ok := token.(xml.StartElement); ok {
+			n := node{
+				tag:    start.Name.Local,
+				text:   "",
+				parent: nil,
+				child:  nil,
+				next:   nil,
+			}
+
+			if doc.root == nil {
+				doc.root = &n
+			}
+
+			if current != nil {
+				n.parent = current
+				if current.child == nil {
+					current.child = &n
+				}
+			} else if peer != nil {
+				n.parent = peer.parent
+				peer.next = &n
+			}
+
+			current = &n
+			peer = &n
+			continue
+		}
+
+		if _, ok := token.(xml.EndElement); ok {
+			if current == nil {
+				if peer != nil {
+					peer = peer.parent
+				} else {
+					peer = nil
+				}
+			}
+			current = nil
+			continue
+		}
+
+		if chardata, ok := token.(xml.CharData); ok {
+			if text := strings.TrimSpace(string(chardata)); text != "" {
+				if current != nil {
+					current.text = text
+				}
+			}
+			continue
+		}
+	}
+
+	fmt.Println("----")
+	print(doc.root, 0)
+	fmt.Println("----")
+
+	return &doc, nil
+}
+
+func print(n *node, depth int) {
+	indent := strings.Repeat(" ", depth)
+	if n != nil {
+		fmt.Printf("%p%s (%v)\n", n, indent, *n)
+		if n.child != nil {
+			print(n.child, depth+1)
+		}
+		if n.next != nil {
+			print(n.next, depth)
+		}
+	}
 }
 
 func decodeKey(d *xml.Decoder) (string, error) {
