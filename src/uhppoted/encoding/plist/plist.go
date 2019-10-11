@@ -1,8 +1,6 @@
 package plist
 
 import (
-	"bufio"
-	"bytes"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -14,7 +12,7 @@ import (
 )
 
 type document struct {
-	root *node
+	root node
 }
 
 type node struct {
@@ -61,34 +59,33 @@ var body = xml.StartElement{
 		xml.Attr{xml.Name{"", "version"}, "1.0"}},
 }
 
-func Encode(p interface{}) ([]byte, error) {
+func Encode(p interface{}, w io.Writer) error {
 	v := reflect.ValueOf(p)
 
 	if v.Type().Kind() == reflect.Ptr {
-		return encode(v.Elem())
+		return encode(v.Elem(), w)
 	} else {
-		return encode(reflect.Indirect(v))
+		return encode(reflect.Indirect(v), w)
 	}
 }
 
-func encode(s reflect.Value) ([]byte, error) {
-	buffer := bytes.Buffer{}
-	encoder := xml.NewEncoder(bufio.NewWriter(&buffer))
+func encode(s reflect.Value, w io.Writer) error {
+	encoder := xml.NewEncoder(w)
 	encoder.Indent("", "  ")
 
 	for _, token := range header {
 		if err := encoder.EncodeToken(token); err != nil {
-			return buffer.Bytes(), err
+			return err
 		}
 	}
 
 	if err := encoder.EncodeToken(body); err != nil {
-		return buffer.Bytes(), err
+		return err
 	}
 
 	if s.Kind() == reflect.Struct {
 		if err := encoder.EncodeToken(dict); err != nil {
-			return buffer.Bytes(), err
+			return err
 		}
 
 		N := s.NumField()
@@ -99,12 +96,12 @@ func encode(s reflect.Value) ([]byte, error) {
 			k := t.Name
 
 			if err := encoder.EncodeElement(k, key); err != nil {
-				return buffer.Bytes(), err
+				return err
 			}
 
 			if g, ok := encoders[t.Type]; ok {
 				if err := g(encoder, f); err != nil {
-					return buffer.Bytes(), err
+					return err
 				}
 			} else {
 				panic(errors.New(fmt.Sprintf("Cannot encode plist field '%s' with type '%v'", k, t.Type)))
@@ -112,7 +109,7 @@ func encode(s reflect.Value) ([]byte, error) {
 		}
 
 		if err := encoder.EncodeToken(dict.End()); err != nil {
-			return buffer.Bytes(), err
+			return err
 		}
 
 	} else {
@@ -120,12 +117,12 @@ func encode(s reflect.Value) ([]byte, error) {
 	}
 
 	if err := encoder.EncodeToken(body.End()); err != nil {
-		return buffer.Bytes(), err
+		return err
 	}
 
 	encoder.Flush()
 
-	return buffer.Bytes(), nil
+	return nil
 }
 
 func encodeString(e *xml.Encoder, f reflect.Value) error {
@@ -170,11 +167,13 @@ func encodeStringArray(e *xml.Encoder, f reflect.Value) error {
 	return nil
 }
 
-func Decode(b []byte, p interface{}) error {
-	doc := document{}
-	if err := doc.parse(bytes.NewReader(b)); err != nil {
+func Decode(r io.Reader, p interface{}) error {
+	doc := document{node{tag: "/"}}
+	if err := doc.parse(r); err != nil {
 		return err
 	}
+
+	doc.print()
 
 	v := reflect.ValueOf(p)
 	s := v.Elem()
@@ -281,7 +280,7 @@ func decodeStringArray(n *node, field string, f reflect.Value) error {
 func (doc *document) parse(r io.Reader) error {
 	decoder := xml.NewDecoder(r)
 
-	var current *node = nil
+	var current *node = &doc.root
 	var peer *node = nil
 
 	for {
@@ -300,10 +299,6 @@ func (doc *document) parse(r io.Reader) error {
 				parent: nil,
 				child:  nil,
 				next:   nil,
-			}
-
-			if doc.root == nil {
-				doc.root = &n
 			}
 
 			if current != nil {
@@ -350,7 +345,7 @@ func (doc *document) query(xpath string) (*node, error) {
 	re := regexp.MustCompile(`(\w+)(?:\[text="(.*?)"\])?`)
 	segments := strings.Split(xpath, "/")
 
-	var p *node = nil
+	var p *node = &doc.root
 
 	for _, s := range segments[1:] {
 		if s == "next()" {
@@ -359,18 +354,14 @@ func (doc *document) query(xpath string) (*node, error) {
 		}
 
 		match := re.FindStringSubmatch(s)
-
 		if match == nil {
 			return nil, fmt.Errorf("Invalid query: '%s'", xpath)
 		}
 
-		q := doc.root
-		if p != nil {
-			q = p.child
-		}
-
 		tag := match[1]
 		text := match[2]
+
+		q := p.child
 		for {
 			if q == nil {
 				return nil, nil
@@ -389,7 +380,7 @@ func (doc *document) query(xpath string) (*node, error) {
 }
 
 func (doc *document) print() {
-	print(doc.root, 0)
+	print(&doc.root, 0)
 }
 
 func print(n *node, depth int) {
