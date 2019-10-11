@@ -20,8 +20,8 @@ type node struct {
 	next   *node
 }
 
-func (doc *document) parse(r io.Reader) error {
-	doc.root = node{tag: "/"}
+func parse(r io.Reader) (*document, error) {
+	doc := document{node{tag: "/"}}
 	decoder := xml.NewDecoder(r)
 
 	var current *node = &doc.root
@@ -31,7 +31,7 @@ func (doc *document) parse(r io.Reader) error {
 		token, err := decoder.Token()
 		if err != nil {
 			if err != io.EOF {
-				return err
+				return nil, err
 			}
 			break
 		}
@@ -82,7 +82,7 @@ func (doc *document) parse(r io.Reader) error {
 		}
 	}
 
-	return nil
+	return &doc, nil
 }
 
 func (doc *document) query(xpath string) (*node, error) {
