@@ -33,8 +33,6 @@ func (d *Decoder) Decode(p interface{}) error {
 		return err
 	}
 
-	doc.print()
-
 	v := reflect.ValueOf(p)
 	s := v.Elem()
 
