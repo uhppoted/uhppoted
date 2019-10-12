@@ -23,9 +23,9 @@ var XML = `<?xml version="1.0" encoding="UTF-8"?>
       <string>--verbose</string>
     </array>
     <key>KeepAlive</key>
-    <true></true>
+    <true/>
     <key>RunAtLoad</key>
-    <false></false>
+    <false/>
     <key>StandardOutPath</key>
     <string>/usr/local/var/log/com.github.twystd.uhppoted.log</string>
     <key>StandardErrorPath</key>

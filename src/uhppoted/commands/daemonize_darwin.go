@@ -1,44 +1,19 @@
 package commands
 
 import (
-	"encoding/xml"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"text/template"
+	"uhppoted/encoding/plist"
 )
 
-var plist = `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-  <dict>
-    <key>Label</key>
-      <string>{{.Label}}</string>
-    <key>Program</key>
-      <string>{{.Program}}</string>
-    <key>WorkingDirectory</key>
-      <string>{{.WorkingDirectory}}</string>
-    <key>ProgramArguments</key>
-      <array></array>
-    <key>KeepAlive</key>
-      <{{.KeepAlive}}/>
-    <key>RunAtLoad</key>
-      <{{.RunAtLoad}}/>
-    <key>StandardOutPath</key>
-      <string>{{.StandardOutPath}}</string>
-    <key>StandardErrorPath</key>
-      <string>{{.StandardErrorPath}}</string>
-  </dict>
-</plist>
-`
-
-type data = struct {
+type info struct {
 	Label             string
 	Program           string
 	WorkingDirectory  string
+	ProgramArguments  []string
 	KeepAlive         bool
 	RunAtLoad         bool
 	StandardOutPath   string
@@ -67,7 +42,7 @@ func (c *Daemonize) Execute(ctx Context) error {
 	fmt.Println()
 	fmt.Println("   The daemon will start automatically on the next system restart - to start it manually, execute the following command:")
 	fmt.Println()
-	fmt.Println("   sudo launchctl load /Libary/LaunchDaemons/com.github.twystd.uhppoted")
+	fmt.Println("   sudo launchctl load /Library/LaunchDaemons/com.github.twystd.uhppoted")
 	fmt.Println()
 
 	return nil
@@ -79,10 +54,20 @@ func (c *Daemonize) launchd() error {
 		return err
 	}
 
-	d := data{
+	plist := struct {
+		Label             string
+		Program           string
+		WorkingDirectory  string
+		ProgramArguments  []string
+		KeepAlive         bool
+		RunAtLoad         bool
+		StandardOutPath   string
+		StandardErrorPath string
+	}{
 		Label:             "com.github.twystd.uhppoted",
 		Program:           executable,
 		WorkingDirectory:  "/usr/local/var/com.github.twystd.uhppoted",
+		ProgramArguments:  []string{},
 		KeepAlive:         true,
 		RunAtLoad:         true,
 		StandardOutPath:   "/usr/local/var/log/com.github.twystd.uhppoted.log",
@@ -96,87 +81,41 @@ func (c *Daemonize) launchd() error {
 	}
 
 	if !os.IsNotExist(err) {
-		dict, err := c.parse(path)
+		current, err := c.parse(path)
 		if err != nil {
 			return err
 		}
 
-		if label, ok := dict["Label"]; ok {
-			d.Label = label
-		}
-
-		if directory, ok := dict["WorkingDirectory"]; ok {
-			d.WorkingDirectory = directory
-		}
-
-		if keepalive, ok := dict["KeepAlive"]; ok && keepalive == "false" {
-			d.KeepAlive = false
-		}
-
-		if runatload, ok := dict["RunAtLoad"]; ok && runatload == "false" {
-			d.RunAtLoad = false
-		}
-
-		if stdout, ok := dict["StandardOutPath"]; ok {
-			d.StandardOutPath = stdout
-		}
-
-		if stderr, ok := dict["StandardErrorPath"]; ok {
-			d.StandardErrorPath = stderr
-		}
+		plist.WorkingDirectory = current.WorkingDirectory
+		plist.ProgramArguments = current.ProgramArguments
+		plist.KeepAlive = current.KeepAlive
+		plist.RunAtLoad = current.RunAtLoad
+		plist.StandardOutPath = current.StandardOutPath
+		plist.StandardErrorPath = current.StandardErrorPath
 	}
 
-	return c.daemonize(path, d)
+	return c.daemonize(path, plist)
 }
 
-// TODO rework this to parse XML plist files more robustly
-func (c *Daemonize) parse(path string) (map[string]string, error) {
-	dict := make(map[string]string)
+func (c *Daemonize) parse(path string) (*info, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		return dict, err
+		return nil, err
 	}
 
 	defer f.Close()
 
-	decoder := xml.NewDecoder(f)
-
-	text := ""
-	key := ""
-	value := ""
-
-	for {
-		token, err := decoder.Token()
-
-		if err != nil {
-			if err != io.EOF {
-				return dict, err
-			}
-			break
-		}
-
-		if _, ok := token.(xml.StartElement); ok {
-		} else if end, ok := token.(xml.EndElement); ok {
-			switch end.Name.Local {
-			case "key":
-				key = text
-			case "string":
-				value = text
-				dict[key] = value
-			case "true":
-				dict[key] = "true"
-			case "false":
-				dict[key] = "false"
-			}
-		} else if char, ok := token.(xml.CharData); ok {
-			text = string(char)
-		}
+	p := info{}
+	decoder := plist.NewDecoder(f)
+	err = decoder.Decode(&p)
+	if err != nil {
+		return nil, err
 	}
 
-	return dict, nil
+	return &p, nil
 }
 
-func (c *Daemonize) daemonize(path string, d data) error {
+func (c *Daemonize) daemonize(path string, p interface{}) error {
 	fmt.Printf("   ... creating '%s'\n", path)
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
@@ -185,9 +124,8 @@ func (c *Daemonize) daemonize(path string, d data) error {
 
 	defer f.Close()
 
-	t := template.Must(template.New("com.github.twystd.uhppoted.plist").Parse(plist))
-	err = t.Execute(f, d)
-	if err != nil {
+	encoder := plist.NewEncoder(f)
+	if err = encoder.Encode(p); err != nil {
 		return err
 	}
 

@@ -10,10 +10,11 @@ import (
 )
 
 type Encoder struct {
-	writer io.Writer
+	writer  io.Writer
+	encoder *xml.Encoder
 }
 
-type encoder func(*xml.Encoder, reflect.Value) error
+type encoder func(*Encoder, reflect.Value) error
 
 var encoders = map[reflect.Type]encoder{
 	reflect.TypeOf(string("")):  encodeString,
@@ -42,8 +43,12 @@ var body = xml.StartElement{
 }
 
 func NewEncoder(w io.Writer) *Encoder {
+	e := xml.NewEncoder(w)
+	e.Indent("", "  ")
+
 	return &Encoder{
-		writer: w,
+		writer:  w,
+		encoder: e,
 	}
 }
 
@@ -58,21 +63,19 @@ func (e *Encoder) Encode(p interface{}) error {
 }
 
 func (e *Encoder) encode(s reflect.Value) error {
-	encoder := xml.NewEncoder(e.writer)
-	encoder.Indent("", "  ")
 
 	for _, token := range header {
-		if err := encoder.EncodeToken(token); err != nil {
+		if err := e.encoder.EncodeToken(token); err != nil {
 			return err
 		}
 	}
 
-	if err := encoder.EncodeToken(body); err != nil {
+	if err := e.encoder.EncodeToken(body); err != nil {
 		return err
 	}
 
 	if s.Kind() == reflect.Struct {
-		if err := encoder.EncodeToken(dict); err != nil {
+		if err := e.encoder.EncodeToken(dict); err != nil {
 			return err
 		}
 
@@ -83,12 +86,12 @@ func (e *Encoder) encode(s reflect.Value) error {
 			t := s.Type().Field(i)
 			k := t.Name
 
-			if err := encoder.EncodeElement(k, key); err != nil {
+			if err := e.encoder.EncodeElement(k, key); err != nil {
 				return err
 			}
 
 			if g, ok := encoders[t.Type]; ok {
-				if err := g(encoder, f); err != nil {
+				if err := g(e, f); err != nil {
 					return err
 				}
 			} else {
@@ -96,7 +99,7 @@ func (e *Encoder) encode(s reflect.Value) error {
 			}
 		}
 
-		if err := encoder.EncodeToken(dict.End()); err != nil {
+		if err := e.encoder.EncodeToken(dict.End()); err != nil {
 			return err
 		}
 
@@ -104,41 +107,43 @@ func (e *Encoder) encode(s reflect.Value) error {
 		panic(errors.New(fmt.Sprintf("Expecting struct, got '%v'", s.Kind())))
 	}
 
-	if err := encoder.EncodeToken(body.End()); err != nil {
+	if err := e.encoder.EncodeToken(body.End()); err != nil {
 		return err
 	}
 
-	encoder.Flush()
+	e.encoder.Flush()
 
 	return nil
 }
 
-func encodeString(e *xml.Encoder, f reflect.Value) error {
+func encodeString(e *Encoder, f reflect.Value) error {
 	value := f.String()
 	element := xml.StartElement{Name: xml.Name{"", "string"}}
 
-	return e.EncodeElement(value, element)
+	return e.encoder.EncodeElement(value, element)
 }
 
-func encodeBool(e *xml.Encoder, f reflect.Value) error {
-	value := xml.CharData("")
-	element := xml.StartElement{Name: xml.Name{"", strconv.FormatBool(f.Bool())}}
+// Aaaaaargh! MacOS requires the <true/> and <false/> form while an unmodified
+// Go XML encoder can only write <true></true>. In 2019!!
+func encodeBool(e *Encoder, f reflect.Value) error {
+	v := fmt.Sprintf("\n    <%v/>", f.Bool())
+	_, err := e.writer.Write([]byte(v))
 
-	return e.EncodeElement(value, element)
+	return err
 }
 
-func encodeInt(e *xml.Encoder, f reflect.Value) error {
+func encodeInt(e *Encoder, f reflect.Value) error {
 	value := xml.CharData(strconv.FormatInt(f.Int(), 10))
 	element := xml.StartElement{Name: xml.Name{"", "integer"}}
 
-	return e.EncodeElement(value, element)
+	return e.encoder.EncodeElement(value, element)
 }
 
-func encodeStringArray(e *xml.Encoder, f reflect.Value) error {
+func encodeStringArray(e *Encoder, f reflect.Value) error {
 	start := xml.StartElement{Name: xml.Name{"", "array"}}
 	end := start.End()
 
-	if err := e.EncodeToken(start); err != nil {
+	if err := e.encoder.EncodeToken(start); err != nil {
 		return err
 	}
 
@@ -148,7 +153,7 @@ func encodeStringArray(e *xml.Encoder, f reflect.Value) error {
 		}
 	}
 
-	if err := e.EncodeToken(end); err != nil {
+	if err := e.encoder.EncodeToken(end); err != nil {
 		return err
 	}
 
