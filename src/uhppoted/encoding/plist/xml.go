@@ -13,73 +13,55 @@ type document struct {
 }
 
 type node struct {
-	tag    string
-	text   string
-	parent *node
-	child  *node
-	next   *node
+	tag      string
+	text     string
+	parent   *node
+	children struct {
+		first *node
+		last  *node
+	}
+	next *node
 }
 
 func parse(r io.Reader) (*document, error) {
 	doc := document{node{tag: "/"}}
 	decoder := xml.NewDecoder(r)
+	p := &doc.root
 
-	var current *node = &doc.root
-	var peer *node = nil
-
-	for {
-		token, err := decoder.Token()
-		if err != nil {
-			if err != io.EOF {
-				return nil, err
-			}
-			break
-		}
-
-		if start, ok := token.(xml.StartElement); ok {
+	token, err := decoder.Token()
+	for err == nil {
+		switch v := token.(type) {
+		case xml.StartElement:
 			n := node{
-				tag:    start.Name.Local,
-				text:   "",
-				parent: nil,
-				child:  nil,
-				next:   nil,
+				tag:    v.Name.Local,
+				parent: p,
 			}
 
-			if current != nil {
-				n.parent = current
-				if current.child == nil {
-					current.child = &n
-				}
-			} else if peer != nil {
-				n.parent = peer.parent
-				peer.next = &n
+			if p.children.first == nil {
+				p.children.first = &n
 			}
 
-			current = &n
-			peer = &n
-			continue
+			if p.children.last != nil {
+				p.children.last.next = &n
+			}
+
+			p.children.last = &n
+			p = &n
+
+		case xml.EndElement:
+			p = p.parent
+
+		case xml.CharData:
+			if text := strings.TrimSpace(string(v)); text != "" {
+				p.text = text
+			}
 		}
 
-		if _, ok := token.(xml.EndElement); ok {
-			if current == nil {
-				if peer != nil {
-					peer = peer.parent
-				} else {
-					peer = nil
-				}
-			}
-			current = nil
-			continue
-		}
+		token, err = decoder.Token()
+	}
 
-		if chardata, ok := token.(xml.CharData); ok {
-			if text := strings.TrimSpace(string(chardata)); text != "" {
-				if current != nil {
-					current.text = text
-				}
-			}
-			continue
-		}
+	if err != nil && err != io.EOF {
+		return nil, err
 	}
 
 	return &doc, nil
@@ -105,7 +87,7 @@ func (doc *document) query(xpath string) (*node, error) {
 		tag := match[1]
 		text := match[2]
 
-		q := p.child
+		q := p.children.first
 		for {
 			if q == nil {
 				return nil, nil
@@ -131,8 +113,8 @@ func print(n *node, depth int) {
 	indent := strings.Repeat(" ", depth)
 	if n != nil {
 		fmt.Printf("%p%s (%v)\n", n, indent, *n)
-		if n.child != nil {
-			print(n.child, depth+1)
+		if n.children.first != nil {
+			print(n.children.first, depth+1)
 		}
 		if n.next != nil {
 			print(n.next, depth)
