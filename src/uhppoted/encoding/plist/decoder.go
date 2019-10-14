@@ -112,12 +112,10 @@ func decodeStringArray(n *node, field string, f reflect.Value) error {
 	}
 
 	strings := []string{}
-	p := n.child
 
-	for {
-		if p == nil {
-			break
-		} else if p.tag != "string" {
+	p := n.children.first
+	for p != nil {
+		if p.tag != "string" {
 			return fmt.Errorf("Invalid plist XML array element '%s' for field '%s': expected 'string'", p.tag, field)
 		}
 

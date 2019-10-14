@@ -35,6 +35,14 @@ var XML = `<?xml version="1.0" encoding="UTF-8"?>
   </dict>
 </plist>`
 
+var XMLX = `<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>com.github.twystd.uhppoted</string>
+  </dict>
+</plist>`
+
 func TestEncode(t *testing.T) {
 	p := struct {
 		Label             string
@@ -91,8 +99,7 @@ func TestDecode(t *testing.T) {
 	err := decoder.Decode(&p)
 
 	if err != nil {
-		t.Errorf("plist.Decode returned unexpected error: %v", err)
-		return
+		t.Fatalf("plist.Decode returned unexpected error: %v", err)
 	}
 
 	if p.Label != "com.github.twystd.uhppoted" {
