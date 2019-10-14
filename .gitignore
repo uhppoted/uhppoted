@@ -6,6 +6,7 @@ bin
 pkg
 dist
 runtime
+docker/linux
 *.exe
 *.exe~
 *.dll

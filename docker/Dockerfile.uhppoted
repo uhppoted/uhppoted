@@ -1,0 +1,10 @@
+FROM ubuntu
+
+EXPOSE 8001
+
+WORKDIR /opt/uhppoted 
+ADD ./docker/linux/uhppoted .
+RUN mkdir -p /etc/uhppoted
+RUN mkdir -p /var/uhppoted
+
+CMD ["./uhppoted"]
