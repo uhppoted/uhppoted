@@ -2,12 +2,7 @@ package commands
 
 import (
 	"errors"
-	"log"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"strings"
-	"text/template"
+	"fmt"
 )
 
 type Undaemonize struct {
@@ -17,7 +12,7 @@ func (c *Undaemonize) Execute(ctx Context) error {
 	return errors.New("uhppoted undaemonize: NOT IMPLEMENTED")
 }
 
-func (c *Undaemonize) CLI() string {
+func (c *Undaemonize) Cmd() string {
 	return "undaemonize"
 }
 

@@ -2,12 +2,7 @@ package commands
 
 import (
 	"errors"
-	"log"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"strings"
-	"text/template"
+	"fmt"
 )
 
 type Daemonize struct {
@@ -17,7 +12,7 @@ func (c *Daemonize) Execute(ctx Context) error {
 	return errors.New("uhppoted daemonize: NOT IMPLEMENTED")
 }
 
-func (c *Daemonize) CLI() string {
+func (c *Daemonize) Cmd() string {
 	return "daemonize"
 }
 

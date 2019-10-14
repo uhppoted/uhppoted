@@ -38,12 +38,15 @@ release: format
 	mkdir -p $(DIST)/windows
 	mkdir -p $(DIST)/macosx
 	mkdir -p $(DIST)/linux
-	env GOOS=windows GOARCH=amd64  go build uhppote-cli;       mv uhppote-cli.exe       $(DIST)/windows
-	env GOOS=darwin  GOARCH=amd64  go build uhppote-cli;       mv uhppote-cli           $(DIST)/macosx
-	env GOOS=linux   GOARCH=amd64  go build uhppote-cli;       mv uhppote-cli           $(DIST)/linux
-	env GOOS=windows GOARCH=amd64  go build uhppote-simulator; mv uhppote-simulator.exe $(DIST)/windows
-	env GOOS=darwin  GOARCH=amd64  go build uhppote-simulator; mv uhppote-simulator     $(DIST)/macosx
-	env GOOS=linux   GOARCH=amd64  go build uhppote-simulator; mv uhppote-simulator     $(DIST)/linux
+	env GOOS=linux   GOARCH=amd64  go build -o $(DIST)/linux/uhppote-cli         uhppote-cli
+	env GOOS=darwin  GOARCH=amd64  go build -o $(DIST)/darwin/uhppote-cli        uhppote-cli
+	env GOOS=windows GOARCH=amd64  go build -o $(DIST)/windows/uhppote-cli       uhppote-cli
+	env GOOS=linux   GOARCH=amd64  go build -o $(DIST)/linux/uhppoted            uhppoted
+	env GOOS=darwin  GOARCH=amd64  go build -o $(DIST)/darwin/uhppoted           uhppoted
+	env GOOS=windows GOARCH=amd64  go build -o $(DIST)/windows/uhppoted          uhppoted
+	env GOOS=linux   GOARCH=amd64  go build -o $(DIST)/linux/uhppote-simulator   uhppote-simulator
+	env GOOS=darwin  GOARCH=amd64  go build -o $(DIST)/darwin/uhppote-simulator  uhppote-simulator
+	env GOOS=windows GOARCH=amd64  go build -o $(DIST)/windows/uhppote-simulator uhppote-simulator
 
 build: format
 	go install uhppote-cli
@@ -189,7 +192,6 @@ uhppoted-daemonize: build
 uhppoted-undaemonize: build
 	sudo ./bin/uhppoted undaemonize
 
-
 uhppoted-version: build
 	./bin/uhppoted version
 
@@ -198,8 +200,14 @@ uhppoted-help: build
 	./bin/uhppoted help commands
 	./bin/uhppoted help version
 
+uhppoted-docker: build
+	mkdir -p ./docker/linux
+	env GOOS=linux GOARCH=amd64 go build -o docker/linux/uhppoted uhppoted
+	docker build -f ./docker/Dockerfile.uhppoted -t uhppoted . 
+	docker run -d -p 8001:8001 -it uhppoted
+
 swagger: 
-	docker run -d -p 80:8080 swaggerapi/swagger-editor
+	docker run -d -p 80:8080 swaggerapi/swagger-editor -rm=true
 
 
 
