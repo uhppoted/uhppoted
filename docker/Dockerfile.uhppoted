@@ -7,4 +7,4 @@ ADD ./docker/linux/uhppoted .
 RUN mkdir -p /etc/uhppoted
 RUN mkdir -p /var/uhppoted
 
-CMD ["./uhppoted"]
+ENTRYPOINT /opt/uhppoted/uhppoted

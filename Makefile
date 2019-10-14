@@ -204,10 +204,10 @@ uhppoted-docker: build
 	mkdir -p ./docker/linux
 	env GOOS=linux GOARCH=amd64 go build -o docker/linux/uhppoted uhppoted
 	docker build -f ./docker/Dockerfile.uhppoted -t uhppoted . 
-	docker run -d -p 8001:8001 -it uhppoted
+	docker run --detach --publish 8001:8001 uhppoted
 
 swagger: 
-	docker run -d -p 80:8080 swaggerapi/swagger-editor -rm=true
+	docker run -d -p 80:8080 swaggerapi/swagger-editor 
 
 
 
