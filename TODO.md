@@ -11,7 +11,9 @@
 - [x] MacOS launchd XML plist file marshalling/unmarshalling
 - [ ] MacOS launchd daemon: socket handoff
 - [ ] MacOS launchd daemon: logrotate
-- [ ] Linux/systemd daemon/service
+- [x] Linux/systemd daemon/service
+- [ ] Linux launchd daemon: logrotate
+- [ ] Linux UDP local broadcast
 - [ ] Windows service: https://github.com/golang/sys/blob/master/windows/svc/example/service.go
 
 - [ ] websocket command interface
