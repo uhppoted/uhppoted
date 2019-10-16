@@ -14,6 +14,7 @@ import (
 	"time"
 	"uhppote"
 	"uhppoted/commands"
+	"uhppoted/config"
 	"uhppoted/eventlog"
 	"uhppoted/rest"
 )
@@ -49,6 +50,11 @@ func main() {
 
 	sysinit()
 
+	config, err := config.LoadConfig(*configuration)
+	if err != nil {
+		fmt.Printf("\n   WARN: Error loading configuration: %v\n", err)
+	}
+
 	if err := os.MkdirAll(*dir, os.ModeDir|os.ModePerm); err != nil {
 		log.Fatal(fmt.Sprintf("Error creating working directory '%v'", *dir), err)
 	}
@@ -74,14 +80,14 @@ func main() {
 		log.SetOutput(logger)
 	}
 
-	run(*logfile, *logfilesize)
+	run(&config, *logfile, *logfilesize)
 }
 
 func cleanup(pid string) {
 	os.Remove(pid)
 }
 
-func run(logfile string, logfilesize int) {
+func run(c *config.Config, logfile string, logfilesize int) {
 	// ... setup logging
 
 	events := eventlog.Ticker{Filename: logfile, MaxSize: logfilesize}
@@ -106,7 +112,7 @@ func run(logfile string, logfilesize int) {
 	// ... listen forever
 
 	for {
-		err := listen(logger, interrupt)
+		err := listen(c, logger, interrupt)
 
 		if err != nil {
 			log.Printf("ERROR: %v", err)
@@ -118,17 +124,22 @@ func run(logfile string, logfilesize int) {
 	}
 }
 
-func listen(logger *log.Logger, interrupt chan os.Signal) error {
+func listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) error {
 	// ... listen
 
 	log.Printf("... listening")
 
-	// address, _ := net.ResolveUDPAddr("udp", "0.0.0.0:60001")
-
 	u := uhppote.UHPPOTE{
-		// BindAddress: address,
-		Devices: make(map[uint32]*net.UDPAddr),
-		Debug:   true,
+		BindAddress:      &c.BindAddress,
+		BroadcastAddress: &c.BroadcastAddress,
+		Devices:          make(map[uint32]*net.UDPAddr),
+		Debug:            true,
+	}
+
+	for id, d := range c.Devices {
+		if d.Address != nil {
+			u.Devices[id] = d.Address
+		}
 	}
 
 	go func() {
