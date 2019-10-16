@@ -13,7 +13,7 @@
 - [ ] MacOS launchd daemon: logrotate
 - [x] Linux/systemd daemon/service
 - [ ] Linux launchd daemon: logrotate
-- [ ] Linux UDP local broadcast
+- [ ] Linux UDP broadcast
 - [ ] Windows service: https://github.com/golang/sys/blob/master/windows/svc/example/service.go
 
 - [ ] websocket command interface
@@ -78,7 +78,7 @@
 
 1.  Rework uhppote to use bidirectional channel to serialize requests
 2.  Consistently include device serial number in output e.g. of get-time
-3.  fuse
+3.  Replace UDP broadcast with multicast    
 4.  Look into ARP for set-address
 5.  Rework error handling to use Wrap/Frame
 6.  Integration tests
@@ -90,7 +90,8 @@
 10. Mojave/HomeKit
 11. Phoenix UI
 12. step-ca (https://smallstep.com/blog/private-acme-server)
-13. PDL
+13. fuse
+14. PDL
     - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)
     - [Diva](http://www.diva-portal.org/smash/get/diva2:407713/FULLTEXT01.pdf)
     - [PADS/ML](https://pads.cs.tufts.edu/papers/tfp07.pdf)

@@ -200,6 +200,11 @@ uhppoted-help: build
 	./bin/uhppoted help commands
 	./bin/uhppoted help version
 
+uhppoted-linux: build
+	mkdir -p ./dist/development/linux
+	env GOOS=linux GOARCH=amd64 go build -o dist/development/linux/uhppoted          uhppoted
+	env GOOS=linux GOARCH=amd64 go build -o dist/development/linux/uhppote-simulator uhppote-simulator
+
 uhppoted-docker: build
 	mkdir -p ./docker/linux
 	env GOOS=linux GOARCH=amd64 go build -o docker/linux/uhppoted uhppoted

@@ -8,6 +8,7 @@ import (
 
 // LINUX
 
+var configuration = flag.String("config", "/uhppoted/uhppoted.config", "Path for the configuration file")
 var dir = flag.String("dir", "/var/uhppoted", "Working directory")
 var logfile = flag.String("logfile", "/var/log/uhppoted.log", "uhppoted log file")
 var logfilesize = flag.Int("logfilesize", 10, "uhppoted log file size")
