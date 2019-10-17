@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"text/template"
 	"uhppoted/encoding/plist"
 )
 
@@ -20,6 +21,10 @@ type info struct {
 	StandardErrorPath string
 }
 
+const newsyslog = `#logfilename                                       [owner:group]  mode  count  size   when  flags [/pid_file]  [sig_num]
+{{range .}}{{.LogFile}}  :              644   30     10000  @T00  J     {{.PID}}
+{{end}}`
+
 type Daemonize struct {
 }
 
@@ -31,6 +36,10 @@ func (c *Daemonize) Execute(ctx Context) error {
 	}
 
 	if err := c.mkdirs(); err != nil {
+		return err
+	}
+
+	if err := c.logrotate(); err != nil {
 		return err
 	}
 
@@ -138,6 +147,38 @@ func (c *Daemonize) mkdirs() error {
 	fmt.Printf("   ... creating '%s'\n", dir)
 
 	return os.MkdirAll(dir, 0644)
+}
+
+func (c *Daemonize) logrotate() error {
+	dir := "/usr/local/var/log"
+	pid := "/usr/local/var/com.github.twystd.uhppoted/uhppoted.pid"
+	logfiles := []struct {
+		LogFile string
+		PID     string
+	}{
+		{
+			LogFile: filepath.Join(dir, "com.github.twystd.uhppoted.log"),
+			PID:     pid,
+		},
+		{
+			LogFile: filepath.Join(dir, "com.github.twystd.uhppoted.err"),
+			PID:     pid,
+		},
+	}
+
+	t := template.Must(template.New("logrotate.conf").Parse(newsyslog))
+	path := filepath.Join("/etc/newsyslog.d", "uhppoted.conf")
+
+	fmt.Printf("   ... creating '%s'\n", path)
+
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	return t.Execute(f, logfiles)
 }
 
 func (c *Daemonize) firewall() error {

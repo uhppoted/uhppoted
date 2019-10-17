@@ -4,15 +4,16 @@
 
 ### uhppoted
 
-- [x] MacOS launchd daemon: SIG_TERM
-- [x] MacOS launchd daemon: --daemonize
-- [x] MacOS launchd daemon reinstall
-- [x] MacOS launchd daemon: --undaemonize
+- [x] MacOS launchd SIG_TERM
+- [x] MacOS launchd --daemonize
+- [x] MacOS launchd reinstall
+- [x] MacOS launchd --undaemonize
 - [x] MacOS launchd XML plist file marshalling/unmarshalling
-- [ ] MacOS launchd daemon: socket handoff
-- [ ] MacOS launchd daemon: logrotate
-- [x] Linux/systemd daemon/service
-- [ ] Linux launchd daemon: logrotate
+- [x] MacOS launchd newsyslog log rotate
+- [ ] MacOS launchd socket handoff
+- [x] Linux systemd service
+- [ ] Linux systemd logrotate
+- [ ] Linux systemd socket handoff
 - [ ] Linux UDP broadcast
 - [ ] Windows service: https://github.com/golang/sys/blob/master/windows/svc/example/service.go
 
@@ -78,7 +79,7 @@
 
 1.  Rework uhppote to use bidirectional channel to serialize requests
 2.  Consistently include device serial number in output e.g. of get-time
-3.  Replace UDP broadcast with multicast    
+3.  Replace UDP broadcast with multicast
 4.  Look into ARP for set-address
 5.  Rework error handling to use Wrap/Frame
 6.  Integration tests
@@ -91,7 +92,9 @@
 11. Phoenix UI
 12. step-ca (https://smallstep.com/blog/private-acme-server)
 13. fuse
-14. PDL
+14. Make bind and broadcast addresses mandatory in UHPPOTE
+15. MacOS: use [system logging](https://developer.apple.com/documentation/os/logging)
+16. PDL
     - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)
     - [Diva](http://www.diva-portal.org/smash/get/diva2:407713/FULLTEXT01.pdf)
     - [PADS/ML](https://pads.cs.tufts.edu/papers/tfp07.pdf)
