@@ -35,6 +35,10 @@ func (c *Undaemonize) Execute(ctx Context) error {
 		return err
 	}
 
+	if err := c.logrotate(); err != nil {
+		return err
+	}
+
 	if err := c.rmdirs(*p); err != nil {
 		return err
 	}
@@ -86,6 +90,14 @@ func (c *Undaemonize) launchd(path string, p info) error {
 	}
 
 	return nil
+}
+
+func (c *Undaemonize) logrotate() error {
+	path := filepath.Join("/etc/newsyslog.d", "uhppoted.conf")
+
+	fmt.Printf("   ... removing '%s'\n", path)
+
+	return os.Remove(path)
 }
 
 func (c *Undaemonize) rmdirs(p info) error {
