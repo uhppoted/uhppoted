@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"text/template"
 )
@@ -10,8 +11,7 @@ import (
 type Daemonize struct {
 }
 
-const service = `
-[Unit]
+const service = `[Unit]
 Description={{.Description}}
 Documentation={{.Documentation}}
 After=syslog.target network.target
@@ -20,15 +20,37 @@ After=syslog.target network.target
 Type=simple
 ExecStart={{.Executable}}
 PIDFile={{.PID}}
+User=uhppoted
+Group=uhppoted
 
 [Install]
 WantedBy=multi-user.target
+`
+
+const rotate = `{{range .}}{{.LogFile}} {
+    daily
+    rotate 30
+    compress
+        compresscmd /bin/bzip2
+        compressext .bz2
+        dateext
+    missingok
+    notifempty
+    su uhppoted uhppoted
+    postrotate
+       /usr/bin/killall -HUP uhppoted
+    endscript
+}{{end}}
 `
 
 func (c *Daemonize) Execute(ctx Context) error {
 	fmt.Println("   ... daemonizing")
 
 	if err := c.systemd(); err != nil {
+		return err
+	}
+
+	if err := c.logrotate(); err != nil {
 		return err
 	}
 
@@ -78,12 +100,56 @@ func (c *Daemonize) systemd() error {
 	return t.Execute(f, data)
 }
 
+func (c *Daemonize) logrotate() error {
+	data := []struct {
+		LogFile string
+	}{
+		{LogFile: "/var/log/uhppoted/uhppoted.log"},
+	}
+
+	path := filepath.Join("/etc/logrotate.d", "uhppoted")
+	t := template.Must(template.New("uhppoted.logrotate").Parse(rotate))
+
+	fmt.Printf("   ... creating '%s'\n", path)
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	err = t.Execute(f, data)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *Daemonize) mkdirs() error {
-	dir := "/var/uhppoted"
+	directories := []string{
+		"/var/uhppoted",
+		"/var/log/uhppoted",
+	}
 
-	fmt.Printf("   ... creating '%s'\n", dir)
+	for _, dir := range directories {
+		fmt.Printf("   ... creating '%s'\n", dir)
 
-	return os.MkdirAll(dir, 0644)
+		err := os.MkdirAll(dir, 0774)
+		if err != nil {
+			return err
+		}
+
+		cmd := exec.Command("chown", "-R", "uhppoted:uhppoted", dir)
+		out, err := cmd.CombinedOutput()
+		fmt.Printf("   > %s", out)
+		if err != nil {
+			fmt.Errorf("ERROR: Failed to set ownership of '%s' to uhppoted:uhppoted (%v)\n", dir, err)
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (c *Daemonize) Cmd() string {

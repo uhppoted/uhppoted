@@ -15,6 +15,8 @@ type device struct {
 }
 
 func getDevices(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	debug(ctx, 0, "get-devices", r)
+
 	devices, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevices()
 
 	if err != nil {
