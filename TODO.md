@@ -12,7 +12,9 @@
 - [x] MacOS launchd newsyslog log rotate
 - [ ] MacOS launchd socket handoff
 - [x] Linux systemd service
-- [ ] Linux systemd logrotate
+- [x] Linux systemd logrotate
+- [ ] Linux use uhppoted:uhppoted user:group
+- [ ] Linux create initial /etc/uhppoted/uhppote.conf file
 - [ ] Linux systemd socket handoff
 - [ ] Linux UDP broadcast
 - [ ] Windows service: https://github.com/golang/sys/blob/master/windows/svc/example/service.go
@@ -94,7 +96,8 @@
 13. fuse
 14. Make bind and broadcast addresses mandatory in UHPPOTE
 15. MacOS: use [system logging](https://developer.apple.com/documentation/os/logging)
-16. PDL
+16. [Streamsheets](https://github.com/cedalo/streamsheets)
+17. PDL
     - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)
     - [Diva](http://www.diva-portal.org/smash/get/diva2:407713/FULLTEXT01.pdf)
     - [PADS/ML](https://pads.cs.tufts.edu/papers/tfp07.pdf)

@@ -52,7 +52,7 @@ func main() {
 
 	config, err := config.LoadConfig(*configuration)
 	if err != nil {
-		fmt.Printf("\n   WARN: Error loading configuration: %v\n", err)
+		fmt.Printf("\n   WARN: Could not load configuration (%v)\n", err)
 	}
 
 	if err := os.MkdirAll(*dir, os.ModeDir|os.ModePerm); err != nil {
@@ -62,7 +62,7 @@ func main() {
 	pid := fmt.Sprintf("%d\n", os.Getpid())
 
 	if err := ioutil.WriteFile(*pidFile, []byte(pid), 0644); err != nil {
-		log.Fatal("Error creating pid file: %v\n", err)
+		log.Fatal(fmt.Sprintf("Error creating pid file: %v\n", err))
 	}
 
 	defer cleanup(*pidFile)

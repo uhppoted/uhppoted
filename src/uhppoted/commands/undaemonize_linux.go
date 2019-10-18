@@ -28,13 +28,17 @@ func (c *Undaemonize) Execute(ctx Context) error {
 		return err
 	}
 
+	if err := c.logrotate(); err != nil {
+		return err
+	}
+
 	if err := c.rmdirs(); err != nil {
 		return err
 	}
 
 	fmt.Println("   ... uhppoted unregistered as a systemd service")
 	fmt.Println()
-	fmt.Println("   Any uhppoted log files can still be found in directory /var/log and should be removed manually")
+	fmt.Println("   Log files in directory /var/uhppoted/log should be removed manually")
 	fmt.Println()
 
 	return nil
@@ -52,6 +56,19 @@ func (c *Undaemonize) systemd(path string) error {
 
 	fmt.Printf("   ... removing '%s'\n", path)
 	err = os.Remove(path)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Undaemonize) logrotate() error {
+	path := filepath.Join("/etc/logrotate.d", "uhppoted")
+
+	fmt.Printf("   ... removing '%s'\n", path)
+
+	err := os.Remove(path)
 	if err != nil {
 		return err
 	}

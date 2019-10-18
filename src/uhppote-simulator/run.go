@@ -15,7 +15,7 @@ import (
 )
 
 func simulate(ctx *simulator.Context) {
-	bind, err := net.ResolveUDPAddr("udp", ":60000")
+	bind, err := net.ResolveUDPAddr("udp4", ":60000")
 	if err != nil {
 		fmt.Printf("%v\n", errors.New(fmt.Sprintf("Failed to resolve UDP bind address [%v]", err)))
 		return
