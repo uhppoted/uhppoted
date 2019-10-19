@@ -4,20 +4,9 @@
 
 #### Linux
 
-1. UDP broadcast on Linux between *uhppoted* and *simulation* only works for the loopback interface. 
-   Binding to INADDR_ANY seems to be sufficient.
-
-2. The *simulation* does not receive any UDP packets when *uhppoted* is bound to the interface IP and 
-   is using the interface broadcast address.
-
-3. Other things to try:
-   - https://groups.google.com/forum/#!topic/golang-nuts/nbmYWwHCgPc
-   - https://developerweb.net/viewtopic.php?id=5722
-   - https://github.com/golang/go/issues/6935
-
-4. Suggestions that didn't work:
-   - DialUDP rather than ListenUDP
-   - Set SO_BROADCAST on listening socket
+1. UDP broadcast on Ubuntu needs the following UFW rules:
+   - ?
+   - ?
 
 #### MacOS
 
