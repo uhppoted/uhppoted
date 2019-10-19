@@ -3,15 +3,29 @@ package commands
 import (
 	"fmt"
 	"os"
-	"os/exec"
+	"os/user"
 	"path/filepath"
+	"strconv"
 	"text/template"
 )
 
 type Daemonize struct {
 }
 
-const service = `[Unit]
+type data struct {
+	Description   string
+	Documentation string
+	Executable    string
+	PID           string
+	User          string
+	Group         string
+	Uid           int
+	Gid           int
+	LogFiles      []string
+}
+
+var templates = map[string]string{
+	"service": `[Unit]
 Description={{.Description}}
 Documentation={{.Documentation}}
 After=syslog.target network.target
@@ -20,14 +34,14 @@ After=syslog.target network.target
 Type=simple
 ExecStart={{.Executable}}
 PIDFile={{.PID}}
-User=uhppoted
-Group=uhppoted
+User={{.User}}
+Group={{.Group}}
 
 [Install]
 WantedBy=multi-user.target
-`
+`,
 
-const rotate = `{{range .}}{{.LogFile}} {
+	"rotate": `{{range .LogFiles}}{{.}} {
     daily
     rotate 30
     compress
@@ -41,20 +55,43 @@ const rotate = `{{range .}}{{.LogFile}} {
        /usr/bin/killall -HUP uhppoted
     endscript
 }{{end}}
-`
+`,
+}
 
 func (c *Daemonize) Execute(ctx Context) error {
 	fmt.Println("   ... daemonizing")
 
-	if err := c.systemd(); err != nil {
+	executable, err := os.Executable()
+	if err != nil {
 		return err
 	}
 
-	if err := c.logrotate(); err != nil {
+	uid, gid, err := c.getUser()
+	if err != nil {
 		return err
 	}
 
-	if err := c.mkdirs(); err != nil {
+	d := data{
+		Description:   "UHPPOTE UTO311-L0x access card controllers service/daemon ",
+		Documentation: "https://github.com/twystd/uhppote-go",
+		Executable:    executable,
+		PID:           "/var/uhppoted/uhppoted.pid",
+		User:          "uhppoted",
+		Group:         "uhppoted",
+		Uid:           uid,
+		Gid:           gid,
+		LogFiles:      []string{"/var/log/uhppoted/uhppoted.log"},
+	}
+
+	if err := c.systemd(&d); err != nil {
+		return err
+	}
+
+	if err := c.logrotate(&d); err != nil {
+		return err
+	}
+
+	if err := c.mkdirs(&d); err != nil {
 		return err
 	}
 
@@ -68,26 +105,33 @@ func (c *Daemonize) Execute(ctx Context) error {
 	return nil
 }
 
-func (c *Daemonize) systemd() error {
-	executable, err := os.Executable()
+func (c *Daemonize) getUser() (int, int, error) {
+	u, err := user.Lookup("uhppoted")
 	if err != nil {
-		return err
+		return 0, 0, err
 	}
 
-	data := struct {
-		Description   string
-		Documentation string
-		Executable    string
-		PID           string
-	}{
-		Description:   "UHPPOTE UTO311-L0x access card controllers service/daemon ",
-		Documentation: "https://github.com/twystd/uhppote-go",
-		Executable:    executable,
-		PID:           "/var/uhppoted/uhppoted.pid",
+	g, err := user.LookupGroup("uhppoted")
+	if err != nil {
+		return 0, 0, err
 	}
 
+	uid, err := strconv.Atoi(u.Uid)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	gid, err := strconv.Atoi(g.Gid)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	return uid, gid, nil
+}
+
+func (c *Daemonize) systemd(d *data) error {
 	path := filepath.Join("/etc/systemd/system", "uhppoted.service")
-	t := template.Must(template.New("uhppoted.service").Parse(service))
+	t := template.Must(template.New("uhppoted.service").Parse(templates["service"]))
 
 	fmt.Printf("   ... creating '%s'\n", path)
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
@@ -97,18 +141,12 @@ func (c *Daemonize) systemd() error {
 
 	defer f.Close()
 
-	return t.Execute(f, data)
+	return t.Execute(f, d)
 }
 
-func (c *Daemonize) logrotate() error {
-	data := []struct {
-		LogFile string
-	}{
-		{LogFile: "/var/log/uhppoted/uhppoted.log"},
-	}
-
+func (c *Daemonize) logrotate(d *data) error {
 	path := filepath.Join("/etc/logrotate.d", "uhppoted")
-	t := template.Must(template.New("uhppoted.logrotate").Parse(rotate))
+	t := template.Must(template.New("uhppoted.logrotate").Parse(templates["rotate"]))
 
 	fmt.Printf("   ... creating '%s'\n", path)
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
@@ -118,15 +156,10 @@ func (c *Daemonize) logrotate() error {
 
 	defer f.Close()
 
-	err = t.Execute(f, data)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return t.Execute(f, d)
 }
 
-func (c *Daemonize) mkdirs() error {
+func (c *Daemonize) mkdirs(d *data) error {
 	directories := []string{
 		"/var/uhppoted",
 		"/var/log/uhppoted",
@@ -135,16 +168,11 @@ func (c *Daemonize) mkdirs() error {
 	for _, dir := range directories {
 		fmt.Printf("   ... creating '%s'\n", dir)
 
-		err := os.MkdirAll(dir, 0774)
-		if err != nil {
+		if err := os.MkdirAll(dir, 0770); err != nil {
 			return err
 		}
 
-		cmd := exec.Command("chown", "-R", "uhppoted:uhppoted", dir)
-		out, err := cmd.CombinedOutput()
-		fmt.Printf("   > %s", out)
-		if err != nil {
-			fmt.Errorf("ERROR: Failed to set ownership of '%s' to uhppoted:uhppoted (%v)\n", dir, err)
+		if err := os.Chown(dir, d.Uid, d.Gid); err != nil {
 			return err
 		}
 	}
