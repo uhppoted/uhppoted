@@ -2,16 +2,20 @@ package commands
 
 import (
 	"encoding/binary"
+	"flag"
 	"fmt"
 	"net"
 	"os"
 	"os/user"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"text/template"
 )
 
 type Daemonize struct {
+	user  string
+	group string
 }
 
 type data struct {
@@ -59,6 +63,7 @@ const logRotateTemplate = `{{range .LogFiles}}{{.}} {
     endscript
 }{{end}}
 `
+
 const confTemplate = `bind.address = {{.BindAddress}}
 broadcast.address = {{.BroadcastAddress}}
 
@@ -69,6 +74,34 @@ broadcast.address = {{.BroadcastAddress}}
 # UT0311-L0x.305419896.door.3 = Garage
 # UT0311-L0x.305419896.door.4 = Workshop
 `
+
+func NewDaemonize() *Daemonize {
+	return &Daemonize{
+		user:  "uhppoted",
+		group: "uhppoted",
+	}
+}
+
+func (c *Daemonize) Parse(args []string) error {
+	flags := flag.NewFlagSet("daemonize", flag.ExitOnError)
+	ug := flags.String("user", "uhppoted:uhppoted", "user:group for uhppoted service. Defaults to uhppoted:uhppoted")
+	err := flags.Parse(args)
+	if err != nil {
+		return err
+	}
+
+	re := regexp.MustCompile(`(\w+?):(\w+)`)
+	match := re.FindStringSubmatch(*ug)
+
+	if match == nil {
+		return fmt.Errorf("Invalid user:group '%s'", *ug)
+	}
+
+	c.user = match[1]
+	c.group = match[2]
+
+	return nil
+}
 
 func (c *Daemonize) Execute(ctx Context) error {
 	fmt.Println("   ... daemonizing")
@@ -205,12 +238,12 @@ func (c *Daemonize) mkdirs(d *data) error {
 }
 
 func (c *Daemonize) getUser() (int, int, error) {
-	u, err := user.Lookup("uhppoted")
+	u, err := user.Lookup(c.user)
 	if err != nil {
 		return 0, 0, err
 	}
 
-	g, err := user.LookupGroup("uhppoted")
+	g, err := user.LookupGroup(c.group)
 	if err != nil {
 		return 0, 0, err
 	}

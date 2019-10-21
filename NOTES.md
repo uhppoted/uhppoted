@@ -4,9 +4,8 @@
 
 #### Linux
 
-1. UDP broadcast on Ubuntu needs the following UFW rules:
-   - ?
-   - ?
+1. UDP broadcast on Ubuntu needs the following UFW rule:
+   - ufw allow from <local address> to any port 60000 proto udp
 
 #### MacOS
 

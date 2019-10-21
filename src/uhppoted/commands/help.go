@@ -9,6 +9,10 @@ type Help struct {
 	commands []Command
 }
 
+func (c *Help) Parse(args []string) error {
+	return nil
+}
+
 func (c *Help) Execute(ctx Context) error {
 	if len(flag.Args()) > 1 {
 		if flag.Arg(1) == "commands" {

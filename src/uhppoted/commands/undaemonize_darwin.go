@@ -12,6 +12,10 @@ import (
 type Undaemonize struct {
 }
 
+func (c *Undaemonize) Parse(args []string) error {
+	return nil
+}
+
 func (c *Undaemonize) Execute(ctx Context) error {
 	fmt.Println("   ... undaemonizing")
 

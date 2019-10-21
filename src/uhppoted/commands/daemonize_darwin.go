@@ -28,6 +28,14 @@ const newsyslog = `#logfilename                                       [owner:gro
 type Daemonize struct {
 }
 
+func NewDaemonize() *Daemonize {
+	return &Daemonize{}
+}
+
+func (c *Daemonize) Parse(args []string) error {
+	return nil
+}
+
 func (c *Daemonize) Execute(ctx Context) error {
 	fmt.Println("   ... daemonizing")
 

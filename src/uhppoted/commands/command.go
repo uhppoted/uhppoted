@@ -9,6 +9,7 @@ type Context struct {
 }
 
 type Command interface {
+	Parse([]string) error
 	Execute(context Context) error
 	Cmd() string
 	Description() string
@@ -19,23 +20,20 @@ type Command interface {
 var VERSION = "v0.04.0"
 
 var cli = []Command{
-	&Daemonize{},
+	NewDaemonize(),
 	&Undaemonize{},
 	&Version{VERSION},
 	&Help{},
 }
 
 func Parse() (Command, error) {
-	var cmd Command = nil
-	var err error = nil
-
 	if len(os.Args) > 1 {
 		for _, c := range cli {
 			if c.Cmd() == flag.Arg(0) {
-				cmd = c
+				return c, c.Parse(flag.Args()[1:])
 			}
 		}
 	}
 
-	return cmd, err
+	return nil, nil
 }

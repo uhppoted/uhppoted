@@ -8,6 +8,10 @@ import (
 type Undaemonize struct {
 }
 
+func (c *Undaemonize) Parse(args []string) error {
+	return nil
+}
+
 func (c *Undaemonize) Execute(ctx Context) error {
 	return errors.New("uhppoted undaemonize: NOT IMPLEMENTED")
 }

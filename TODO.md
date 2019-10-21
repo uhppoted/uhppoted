@@ -15,7 +15,7 @@
 - [x] Linux systemd service
 - [x] Linux systemd logrotate
 - [x] Linux systemd replace chown with uid+gid
-- [ ] Linux systemd uhppoted daemonize --user uhppoted:uhppoted
+- [x] Linux systemd uhppoted daemonize --user uhppoted:uhppoted
 - [x] Linux systemd create initial /etc/uhppoted/uhppote.conf file
 - [x] Linux systemd add note for UDP UFW rules for broadcast
 - [ ] Linux systemd socket handoff
