@@ -6,7 +6,8 @@ CARD = 6154410
 SERIALNO = 423187757
 DOOR = 3
 VERSION = 0.03.0
-DIST = dist/uhppote-v$(VERSION)
+# DIST = dist/uhppote-v$(VERSION)
+DIST = dist/development
 
 all: test      \
 	 benchmark \

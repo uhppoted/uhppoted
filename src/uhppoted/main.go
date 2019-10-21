@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"log/syslog"
 	"net"
 	"os"
 	"os/signal"
@@ -66,19 +65,6 @@ func main() {
 	}
 
 	defer cleanup(*pidFile)
-
-	// ... use syslog for console logging?
-
-	if *useSyslog {
-		logger, err := syslog.New(syslog.LOG_NOTICE, "uhppoted")
-
-		if err != nil {
-			log.Fatal("Error opening syslog: ", err)
-			return
-		}
-
-		log.SetOutput(logger)
-	}
 
 	run(&config, *logfile, *logfilesize)
 }

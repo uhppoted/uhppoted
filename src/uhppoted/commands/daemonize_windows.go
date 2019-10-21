@@ -8,6 +8,14 @@ import (
 type Daemonize struct {
 }
 
+func NewDaemonize() *Daemonize {
+	return &Daemonize{}
+}
+
+func (c *Daemonize) Parse(args []string) error {
+	return nil
+}
+
 func (c *Daemonize) Execute(ctx Context) error {
 	return errors.New("uhppoted daemonize: NOT IMPLEMENTED")
 }
