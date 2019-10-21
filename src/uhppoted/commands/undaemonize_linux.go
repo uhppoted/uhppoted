@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 type Undaemonize struct {
@@ -38,7 +39,8 @@ func (c *Undaemonize) Execute(ctx Context) error {
 
 	fmt.Println("   ... uhppoted unregistered as a systemd service")
 	fmt.Println()
-	fmt.Println("   Log files in directory /var/uhppoted/log should be removed manually")
+	fmt.Println("   Log files in directory /var/uhppoted/log and configuration files in /etc/uhppoted")
+	fmt.Println("   should be removed manually")
 	fmt.Println()
 
 	return nil
@@ -48,7 +50,9 @@ func (c *Undaemonize) systemd(path string) error {
 	fmt.Printf("   ... stopping uhppoted service\n")
 	cmd := exec.Command("systemctl", "stop", "uhppoted")
 	out, err := cmd.CombinedOutput()
-	fmt.Printf("   > %s", out)
+	if strings.TrimSpace(string(out)) != "" {
+		fmt.Printf("   > %s\n", out)
+	}
 	if err != nil {
 		fmt.Errorf("ERROR: Failed to stop '%s' (%v)\n", "uhppoted", err)
 		return err
