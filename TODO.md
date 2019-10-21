@@ -4,6 +4,7 @@
 
 ### uhppoted
 
+- [ ] use FlagSet for commands (https://blog.rapid7.com/2016/08/04/build-a-simple-cli-tool-with-golang)
 - [x] MacOS launchd SIG_TERM
 - [x] MacOS launchd --daemonize
 - [x] MacOS launchd reinstall
@@ -15,7 +16,7 @@
 - [x] Linux systemd logrotate
 - [x] Linux systemd replace chown with uid+gid
 - [ ] Linux systemd uhppoted daemonize --user uhppoted:uhppoted
-- [ ] Linux systemd create initial /etc/uhppoted/uhppote.conf file
+- [X] Linux systemd create initial /etc/uhppoted/uhppote.conf file
 - [ ] Linux systemd add note for UDP UFW rules for broadcast
 - [ ] Linux systemd socket handoff
 - [ ] Windows service: https://github.com/golang/sys/blob/master/windows/svc/example/service.go
