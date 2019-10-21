@@ -16,8 +16,8 @@
 - [x] Linux systemd logrotate
 - [x] Linux systemd replace chown with uid+gid
 - [ ] Linux systemd uhppoted daemonize --user uhppoted:uhppoted
-- [X] Linux systemd create initial /etc/uhppoted/uhppote.conf file
-- [ ] Linux systemd add note for UDP UFW rules for broadcast
+- [x] Linux systemd create initial /etc/uhppoted/uhppote.conf file
+- [x] Linux systemd add note for UDP UFW rules for broadcast
 - [ ] Linux systemd socket handoff
 - [ ] Windows service: https://github.com/golang/sys/blob/master/windows/svc/example/service.go
 

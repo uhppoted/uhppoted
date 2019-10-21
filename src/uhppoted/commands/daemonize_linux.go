@@ -122,7 +122,11 @@ func (c *Daemonize) Execute(ctx Context) error {
 	fmt.Println()
 	fmt.Println("   The daemon will start automatically on the next system restart - to start it manually, execute the following command:")
 	fmt.Println()
-	fmt.Println("   sudo systemctl start uhppoted")
+	fmt.Println("     > sudo systemctl start uhppoted")
+	fmt.Println()
+	fmt.Println("   The firewall may need additional rules to allow UDP broadcast e.g. for UFW:")
+	fmt.Println()
+	fmt.Printf("     > sudo ufw allow from %s to any port 60000 proto udp\n", d.BindAddress.IP)
 	fmt.Println()
 
 	return nil
@@ -170,7 +174,12 @@ func (c *Daemonize) conf(d *data) error {
 
 	defer f.Close()
 
-	return t.Execute(f, d)
+	err = t.Execute(f, d)
+	if err != nil {
+		return err
+	}
+
+	return os.Chown(path, d.Uid, d.Gid)
 }
 
 func (c *Daemonize) mkdirs(d *data) error {
