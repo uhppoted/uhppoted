@@ -83,12 +83,12 @@
 
 1.  Rework uhppote to use bidirectional channel to serialize requests
 2.  Consistently include device serial number in output e.g. of get-time
-3.  Replace UDP broadcast with multicast
+3.  Implement UDP multicast
 4.  Look into ARP for set-address
 5.  Rework error handling to use Wrap/Frame
 6.  Integration tests
-7.  Dig into simulator not receiving broadcast unless listening on 0.0.0.0:60000
-    (Ref. https://groups.google.com/forum/#!topic/golang-nuts/nbmYWwHCgPc)
+7.  ~~Dig into simulator not receiving broadcast unless listening on 0.0.0.0:60000
+    (Ref. https://groups.google.com/forum/#!topic/golang-nuts/nbmYWwHCgPc)~~
 8.  Verify fields in listen events/status replies:
     - battery status can be (at least) 0x00, 0x01 and 0x04
 9.  Update to use modules
@@ -98,6 +98,7 @@
 13. fuse
 14. Make bind and broadcast addresses mandatory in UHPPOTE
 15. MacOS: use [system logging](https://developer.apple.com/documentation/os/logging)
+17. Windows: event logging
 16. [Streamsheets](https://github.com/cedalo/streamsheets)
 17. PDL
     - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)

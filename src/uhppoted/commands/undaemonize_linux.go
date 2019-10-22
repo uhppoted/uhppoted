@@ -11,6 +11,10 @@ import (
 type Undaemonize struct {
 }
 
+func NewUndaemonize() *Undaemonize {
+	return &Undaemonize{}
+}
+
 func (c *Undaemonize) Parse(args []string) error {
 	return nil
 }

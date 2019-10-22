@@ -38,17 +38,17 @@ format:
 
 release: format
 	mkdir -p $(DIST)/windows
-	mkdir -p $(DIST)/macosx
+	mkdir -p $(DIST)/darwin
 	mkdir -p $(DIST)/linux
-	env GOOS=linux   GOARCH=amd64  go build -o $(DIST)/linux/uhppote-cli         uhppote-cli
-	env GOOS=darwin  GOARCH=amd64  go build -o $(DIST)/darwin/uhppote-cli        uhppote-cli
-	env GOOS=windows GOARCH=amd64  go build -o $(DIST)/windows/uhppote-cli       uhppote-cli
-	env GOOS=linux   GOARCH=amd64  go build -o $(DIST)/linux/uhppoted            uhppoted
-	env GOOS=darwin  GOARCH=amd64  go build -o $(DIST)/darwin/uhppoted           uhppoted
-	env GOOS=windows GOARCH=amd64  go build -o $(DIST)/windows/uhppoted          uhppoted
-	env GOOS=linux   GOARCH=amd64  go build -o $(DIST)/linux/uhppote-simulator   uhppote-simulator
-	env GOOS=darwin  GOARCH=amd64  go build -o $(DIST)/darwin/uhppote-simulator  uhppote-simulator
-	env GOOS=windows GOARCH=amd64  go build -o $(DIST)/windows/uhppote-simulator uhppote-simulator
+	env GOOS=linux   GOARCH=amd64  go build -o $(DIST)/linux/uhppote-cli             uhppote-cli
+	env GOOS=darwin  GOARCH=amd64  go build -o $(DIST)/darwin/uhppote-cli            uhppote-cli
+	env GOOS=windows GOARCH=amd64  go build -o $(DIST)/windows/uhppote-cli.exe       uhppote-cli
+	env GOOS=linux   GOARCH=amd64  go build -o $(DIST)/linux/uhppoted                uhppoted
+	env GOOS=darwin  GOARCH=amd64  go build -o $(DIST)/darwin/uhppoted               uhppoted
+	env GOOS=windows GOARCH=amd64  go build -o $(DIST)/windows/uhppoted.exe          uhppoted
+	env GOOS=linux   GOARCH=amd64  go build -o $(DIST)/linux/uhppote-simulator       uhppote-simulator
+	env GOOS=darwin  GOARCH=amd64  go build -o $(DIST)/darwin/uhppote-simulator      uhppote-simulator
+	env GOOS=windows GOARCH=amd64  go build -o $(DIST)/windows/uhppote-simulator.exe uhppote-simulator
 
 build: format
 	go install uhppote-cli
@@ -207,6 +207,12 @@ uhppoted-linux: build
 	env GOOS=linux GOARCH=amd64 go build -o dist/development/linux/uhppoted          uhppoted
 	env GOOS=linux GOARCH=amd64 go build -o dist/development/linux/uhppote-simulator uhppote-simulator
 
+uhppoted-windows: build
+	mkdir -p ./dist/development/windows
+	env GOOS=windows GOARCH=amd64 go build -o dist/development/windows/uhppoted.exe          uhppoted
+	env GOOS=windows GOARCH=amd64 go build -o dist/development/windows/uhppote-cli.exe       uhppote-cli
+	env GOOS=windows GOARCH=amd64 go build -o dist/development/windows/uhppote-simulator.exe uhppote-simulator
+
 uhppoted-docker: build
 	mkdir -p ./docker/linux
 	env GOOS=linux GOARCH=amd64 go build -o docker/linux/uhppoted uhppoted
@@ -215,9 +221,3 @@ uhppoted-docker: build
 
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
-
-
-
-
-
-

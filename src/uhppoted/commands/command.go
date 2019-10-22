@@ -21,7 +21,7 @@ var VERSION = "v0.04.0"
 
 var cli = []Command{
 	NewDaemonize(),
-	&Undaemonize{},
+	NewUndaemonize(),
 	&Version{VERSION},
 	&Help{},
 }
