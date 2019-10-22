@@ -1,6 +1,8 @@
 package config
 
 import (
+"errors"
+	"encoding/binary"
 	"bufio"
 	"fmt"
 	"net"
@@ -32,21 +34,30 @@ var parsers = []struct {
 	{regexp.MustCompile("^UT0311-L0x\\.[0-9]+\\.door\\.[1-4]\\s*=.*"), door},
 }
 
-func LoadConfig(path string) (Config, error) {
+func LoadConfig(path string) (*Config, error) {
+    bind, broadcast, err := DefaultIpAddresses()
+    if err != nil {
+return nil, err
+}
+
+    if bind == nil || broadcast == nil {
+return nil, errors.New("Unable to determine default bind and broadcast IP addresses")
+}
+
 	c := Config{
 		File: path,
-		BindAddress: bindAddr(),
-		BroadcastAddress: broadcastAddr(),
+		BindAddress: *bind,
+		BroadcastAddress: *broadcast,
 		Devices: make(map[uint32]*Device),
 	}
 
 	if path == "" {
-		return c, nil
+		return &c, nil
 	}
 
 	f, err := os.Open(path)
 	if err != nil {
-		return c, err
+		return &c, err
 	}
 
 	defer f.Close()
@@ -61,7 +72,7 @@ func LoadConfig(path string) (Config, error) {
 		}
 	}
 
-	return c, nil
+	return &c, nil
 }
 
 func bind(l string, c *Config) {
@@ -148,18 +159,45 @@ func door(l string, c *Config) {
 	}
 }
 
-func bindAddr() net.UDPAddr {
-	return net.UDPAddr{
-		IP: net.IPv4zero,
+// Ref. https://stackoverflow.com/questions/23529663/how-to-get-all-addresses-and-masks-from-local-interfaces-in-go
+func DefaultIpAddresses() (*net.UDPAddr, *net.UDPAddr, error) {
+	bind := net.UDPAddr{
+		IP: make(net.IP, net.IPv4len),
 		Port: 0,
 		Zone: "",
 		}
-}
 
-func broadcastAddr() net.UDPAddr {
-	return net.UDPAddr{
-		IP: net.IPv4bcast,
+	broadcast := net.UDPAddr{
+		IP: make(net.IP, net.IPv4len),
 		Port: 60000,
 		Zone: "",
 		}
+
+    copy(bind.IP, net.IPv4zero)
+    copy(broadcast.IP, net.IPv4bcast)
+
+	if ifaces, err := net.Interfaces(); err == nil {
+	loop:
+		for _, i := range ifaces {
+			if addrs, err := i.Addrs(); err == nil {
+				for _, a := range addrs {
+					switch v := a.(type) {
+					case *net.IPNet:
+						if v.IP.To4() != nil && i.Flags&net.FlagLoopback == 0 {
+							copy(bind.IP, v.IP.To4())
+							if i.Flags&net.FlagBroadcast != 0 {
+								addr := v.IP.To4()
+								mask := v.Mask
+								binary.BigEndian.PutUint32(broadcast.IP, binary.BigEndian.Uint32(addr)|^binary.BigEndian.Uint32(mask))
+							}
+							break loop
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return &bind, &broadcast, nil
 }
+

@@ -54,19 +54,23 @@ func main() {
 		fmt.Printf("\n   WARN: Could not load configuration (%v)\n", err)
 	}
 
+	if config == nil {
+		log.Fatal("ERROR: Invalid base configuration")
+	}
+
 	if err := os.MkdirAll(*dir, os.ModeDir|os.ModePerm); err != nil {
-		log.Fatal(fmt.Sprintf("Error creating working directory '%v'", *dir), err)
+		log.Fatal(fmt.Sprintf("ERROR: unable to create working directory '%v'", *dir), err)
 	}
 
 	pid := fmt.Sprintf("%d\n", os.Getpid())
 
 	if err := ioutil.WriteFile(*pidFile, []byte(pid), 0644); err != nil {
-		log.Fatal(fmt.Sprintf("Error creating pid file: %v\n", err))
+		log.Fatal(fmt.Sprintf("ERROR: unable to create pid file: %v\n", err))
 	}
 
 	defer cleanup(*pidFile)
 
-	run(&config, *logfile, *logfilesize)
+	run(config, *logfile, *logfilesize)
 }
 
 func cleanup(pid string) {
