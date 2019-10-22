@@ -82,11 +82,11 @@ func main() {
 	}
 
 	if options.bind.address != nil {
-		u.BindAddress = options.bind.address
+		u.BindAddress = *options.bind.address
 	}
 
 	if options.broadcast.address != nil {
-		u.BroadcastAddress = options.broadcast.address
+		u.BroadcastAddress = *options.broadcast.address
 	}
 
 	cmd, err := parse()

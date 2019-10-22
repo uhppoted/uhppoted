@@ -1,9 +1,9 @@
 package config
 
 import (
-"errors"
-	"encoding/binary"
 	"bufio"
+	"encoding/binary"
+	"errors"
 	"fmt"
 	"net"
 	"os"
@@ -35,20 +35,20 @@ var parsers = []struct {
 }
 
 func LoadConfig(path string) (*Config, error) {
-    bind, broadcast, err := DefaultIpAddresses()
-    if err != nil {
-return nil, err
-}
+	bind, broadcast, err := DefaultIpAddresses()
+	if err != nil {
+		return nil, err
+	}
 
-    if bind == nil || broadcast == nil {
-return nil, errors.New("Unable to determine default bind and broadcast IP addresses")
-}
+	if bind == nil || broadcast == nil {
+		return nil, errors.New("Unable to determine default bind and broadcast IP addresses")
+	}
 
 	c := Config{
-		File: path,
-		BindAddress: *bind,
+		File:             path,
+		BindAddress:      *bind,
 		BroadcastAddress: *broadcast,
-		Devices: make(map[uint32]*Device),
+		Devices:          make(map[uint32]*Device),
 	}
 
 	if path == "" {
@@ -89,7 +89,7 @@ func bind(l string, c *Config) {
 	}
 }
 
-func broadcast(l string, c *Config){
+func broadcast(l string, c *Config) {
 	re := regexp.MustCompile("^broadcast\\.address\\s*=(.*)")
 	match := re.FindStringSubmatch(l)
 
@@ -162,19 +162,19 @@ func door(l string, c *Config) {
 // Ref. https://stackoverflow.com/questions/23529663/how-to-get-all-addresses-and-masks-from-local-interfaces-in-go
 func DefaultIpAddresses() (*net.UDPAddr, *net.UDPAddr, error) {
 	bind := net.UDPAddr{
-		IP: make(net.IP, net.IPv4len),
+		IP:   make(net.IP, net.IPv4len),
 		Port: 0,
 		Zone: "",
-		}
+	}
 
 	broadcast := net.UDPAddr{
-		IP: make(net.IP, net.IPv4len),
+		IP:   make(net.IP, net.IPv4len),
 		Port: 60000,
 		Zone: "",
-		}
+	}
 
-    copy(bind.IP, net.IPv4zero)
-    copy(broadcast.IP, net.IPv4bcast)
+	copy(bind.IP, net.IPv4zero)
+	copy(broadcast.IP, net.IPv4bcast)
 
 	if ifaces, err := net.Interfaces(); err == nil {
 	loop:
@@ -200,4 +200,3 @@ func DefaultIpAddresses() (*net.UDPAddr, *net.UDPAddr, error) {
 
 	return &bind, &broadcast, nil
 }
-

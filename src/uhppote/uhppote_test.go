@@ -28,8 +28,8 @@ func TestBroadcastAddressRequest(t *testing.T) {
 	u := uhppote.UHPPOTE{
 		Devices:          make(map[uint32]*net.UDPAddr),
 		Debug:            true,
-		BindAddress:      resolve("127.0.0.1:12345"),
-		BroadcastAddress: resolve("127.0.0.1:60000"),
+		BindAddress:      *resolve("127.0.0.1:12345", t),
+		BroadcastAddress: *resolve("127.0.0.1:60000", t),
 	}
 
 	closed := make(chan int)
@@ -81,11 +81,11 @@ func TestSequentialRequests(t *testing.T) {
 
 	u := uhppote.UHPPOTE{
 		Debug:            true,
-		BindAddress:      resolve("127.0.0.1:12345"),
-		BroadcastAddress: resolve("127.0.0.1:60000"),
+		BindAddress:      *resolve("127.0.0.1:12345", t),
+		BroadcastAddress: *resolve("127.0.0.1:60000", t),
 		Devices: map[uint32]*net.UDPAddr{
-			423187757: resolve("127.0.0.1:60001"),
-			757781324: resolve("127.0.0.1:60002"),
+			423187757: resolve("127.0.0.1:60001", t),
+			757781324: resolve("127.0.0.1:60002", t),
 		},
 	}
 
@@ -148,11 +148,11 @@ func TestConcurrentRequestsWithUnboundPort(t *testing.T) {
 
 	u := uhppote.UHPPOTE{
 		Debug:            true,
-		BindAddress:      resolve("127.0.0.1:0"),
-		BroadcastAddress: resolve("127.0.0.1:60000"),
+		BindAddress:      *resolve("127.0.0.1:0", t),
+		BroadcastAddress: *resolve("127.0.0.1:60000", t),
 		Devices: map[uint32]*net.UDPAddr{
-			423187757: resolve("127.0.0.1:60001"),
-			757781324: resolve("127.0.0.1:60002"),
+			423187757: resolve("127.0.0.1:60001", t),
+			757781324: resolve("127.0.0.1:60002", t),
 		},
 	}
 
@@ -232,11 +232,11 @@ func TestConcurrentRequestsWithBoundPort(t *testing.T) {
 
 	u := uhppote.UHPPOTE{
 		Debug:            true,
-		BindAddress:      resolve("127.0.0.1:12345"),
-		BroadcastAddress: resolve("127.0.0.1:60000"),
+		BindAddress:      *resolve("127.0.0.1:12345", t),
+		BroadcastAddress: *resolve("127.0.0.1:60000", t),
 		Devices: map[uint32]*net.UDPAddr{
-			423187757: resolve("127.0.0.1:60001"),
-			757781324: resolve("127.0.0.1:60002"),
+			423187757: resolve("127.0.0.1:60001", t),
+			757781324: resolve("127.0.0.1:60002", t),
 		},
 	}
 
@@ -340,10 +340,11 @@ func listen(deviceId uint32, address string, delay time.Duration, closed chan in
 	return c
 }
 
-func resolve(address string) *net.UDPAddr {
-	if addr, err := net.ResolveUDPAddr("udp", address); err == nil {
-		return addr
+func resolve(address string, t *testing.T) *net.UDPAddr {
+	addr, err := net.ResolveUDPAddr("udp", address)
+	if err != nil {
+		t.Fatalf("Error resolving UDP address '%s': %v", address, err)
 	}
 
-	return nil
+	return addr
 }

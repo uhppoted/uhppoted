@@ -25,6 +25,7 @@ format:
 	gofmt -w=true src/uhppote-cli/parsers/*.go
 	gofmt -w=true src/uhppoted/*.go
 	gofmt -w=true src/uhppoted/commands/*.go
+	gofmt -w=true src/uhppoted/config/*.go
 	gofmt -w=true src/uhppoted/rest/*.go
 	gofmt -w=true src/uhppoted/eventlog/*.go
 	gofmt -w=true src/uhppoted/encoding/plist/*.go
