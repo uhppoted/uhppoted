@@ -1,11 +1,21 @@
 package commands
 
 import (
-	"errors"
 	"fmt"
+	"golang.org/x/sys/windows/svc/eventlog"
+	"golang.org/x/sys/windows/svc/mgr"
 )
 
 type Undaemonize struct {
+	name        string
+	description string
+}
+
+func NewUndaemonize() *Undaemonize {
+	return &Undaemonize{
+		name:        "uhppoted",
+		description: "uhppoted Service Interface to UTO311-L0x devices",
+	}
 }
 
 func (c *Undaemonize) Parse(args []string) error {
@@ -13,11 +23,35 @@ func (c *Undaemonize) Parse(args []string) error {
 }
 
 func (c *Undaemonize) Execute(ctx Context) error {
-	return errors.New("uhppoted undaemonize: NOT IMPLEMENTED")
+	m, err := mgr.Connect()
+	if err != nil {
+		return err
+	}
+
+	defer m.Disconnect()
+
+	s, err := m.OpenService(c.name)
+	if err != nil {
+		return fmt.Errorf("service %s is not installed", c.name)
+	}
+
+	defer s.Close()
+
+	err = s.Delete()
+	if err != nil {
+		return err
+	}
+
+	err = eventlog.Remove(c.name)
+	if err != nil {
+		return fmt.Errorf("RemoveEventLogSource() failed: %s", err)
+	}
+
+	return nil
 }
 
 func (c *Undaemonize) Cmd() string {
-	return "daemonize"
+	return "undaemonize"
 }
 
 func (c *Undaemonize) Description() string {

@@ -10,7 +10,7 @@ import (
 // WINDOWS (PROVISIONAL - NOT TESTED)
 
 var pwd, _ = filepath.Abs(filepath.Dir(os.Args[0]))
-var configuration = flag.String("config", filepath.Join(pwd, "uhppoted.config"), "Path for the configuration file")
+var configuration = flag.String("config", filepath.Join(pwd, "uhppoted.cfg"), "Path for the configuration file")
 var dir = flag.String("dir", pwd, "Working directory")
 var logfile = flag.String("logfile", filepath.Join(pwd, "logs", "uhppoted.log"), "uhppoted log file")
 var logfilesize = flag.Int("logfilesize", 10, "uhppoted log file size")
