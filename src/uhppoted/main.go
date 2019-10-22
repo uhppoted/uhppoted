@@ -120,8 +120,8 @@ func listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) erro
 	log.Printf("... listening")
 
 	u := uhppote.UHPPOTE{
-		BindAddress:      &c.BindAddress,
-		BroadcastAddress: &c.BroadcastAddress,
+		BindAddress:      c.BindAddress,
+		BroadcastAddress: c.BroadcastAddress,
 		Devices:          make(map[uint32]*net.UDPAddr),
 		Debug:            true,
 	}
