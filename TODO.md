@@ -4,7 +4,7 @@
 
 ### uhppoted
 
-- [ ] use FlagSet for commands (https://blog.rapid7.com/2016/08/04/build-a-simple-cli-tool-with-golang)
+- [ ] use flag.FlagSet for commands
 - [x] MacOS launchd SIG_TERM
 - [x] MacOS launchd --daemonize
 - [x] MacOS launchd reinstall

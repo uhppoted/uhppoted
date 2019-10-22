@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"encoding/binary"
+	"errors"
 	"flag"
 	"fmt"
 	"net"
@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strconv"
 	"text/template"
+	"uhppoted/config"
 )
 
 type Daemonize struct {
@@ -116,9 +117,13 @@ func (c *Daemonize) Execute(ctx Context) error {
 		return err
 	}
 
-	bind, broadcast, err := c.ipAddresses()
+	bind, broadcast, err := config.DefaultIpAddresses()
 	if err != nil {
 		return err
+	}
+
+	if bind == nil || broadcast == nil {
+		return errors.New("Unable to determine default bind and broadcast IP addresses")
 	}
 
 	d := data{
@@ -259,39 +264,6 @@ func (c *Daemonize) getUser() (int, int, error) {
 	}
 
 	return uid, gid, nil
-}
-
-// Ref. https://stackoverflow.com/questions/23529663/how-to-get-all-addresses-and-masks-from-local-interfaces-in-go
-func (c *Daemonize) ipAddresses() (*net.UDPAddr, *net.UDPAddr, error) {
-	bind := make(net.IP, net.IPv4len)
-	broadcast := make(net.IP, net.IPv4len)
-
-	copy(bind, net.IPv4zero)
-	copy(broadcast, net.IPv4bcast)
-
-	if ifaces, err := net.Interfaces(); err == nil {
-	loop:
-		for _, i := range ifaces {
-			if addrs, err := i.Addrs(); err == nil {
-				for _, a := range addrs {
-					switch v := a.(type) {
-					case *net.IPNet:
-						if v.IP.To4() != nil && i.Flags&net.FlagLoopback == 0 {
-							copy(bind, v.IP.To4())
-							if i.Flags&net.FlagBroadcast != 0 {
-								addr := v.IP.To4()
-								mask := v.Mask
-								binary.BigEndian.PutUint32(broadcast, binary.BigEndian.Uint32(addr)|^binary.BigEndian.Uint32(mask))
-							}
-							break loop
-						}
-					}
-				}
-			}
-		}
-	}
-
-	return &net.UDPAddr{bind, 0, ""}, &net.UDPAddr{broadcast, 60000, ""}, nil
 }
 
 func (c *Daemonize) Cmd() string {
