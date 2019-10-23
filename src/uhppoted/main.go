@@ -50,7 +50,7 @@ func main() {
 
 	config, err := config.LoadConfig(*configuration)
 	if err != nil {
-		fmt.Printf("\n   WARN: Could not load configuration (%v)\n", err)
+		fmt.Printf("\n   WARN:  Could not load configuration (%v)\n", err)
 	}
 
 	if config == nil {

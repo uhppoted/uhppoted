@@ -27,6 +27,7 @@ var dir = flag.String("dir", pwd, "Working directory")
 var logfile = flag.String("logfile", filepath.Join(pwd, "logs", "uhppoted.log"), "uhppoted log file")
 var logfilesize = flag.Int("logfilesize", 10, "uhppoted log file size")
 var pidFile = flag.String("pid", filepath.Join(pwd, "uhppoted.pid"), "uhppoted PID file")
+var console = flag.Bool("console", false, "Run as command-line application")
 
 func sysinit() {
 	log.Printf("uhppoted daemon - %s (PID %d)\n", "Microsoft Windows", os.Getpid())
@@ -39,29 +40,25 @@ func start(c *config.Config, logfile string, logfilesize int) {
 
 	logger.Printf("uhppoted daemon - start\n")
 
-	interactive, err := svc.IsAnInteractiveSession()
-	logger.Printf("uhppoted daemon - interactive: %v %v\n", interactive, err)
-	// if err != nil {
-	// 	logger.Printf("Error querying ServiceManager for interactive session status: %v", err)
-	// 	log.Fatalf("Error querying ServiceManager for interactive session status: %v", err)
-	// }
+	if *console {
+		run(c, logger)
+		return
+	}
 
-	// if interactive {
-	// 	run(c, logfile, logfilesize)
-	// 	return
-	// }
-
-	logger.Printf("uhppoted daemon - starting\n")
-	err = svc.Run("uhppoted", &service{
+	uhppoted := service{
 		conf:   c,
 		logger: logger,
-	})
-	logger.Printf("uhppoted daemon - started %v\n", err)
+	}
+	logger.Printf("uhppoted daemon - starting\n")
+	err := svc.Run("uhppoted", &uhppoted)
 
 	if err != nil {
-		logger.Printf("Error executing ServiceManager.Run request: %v", err)
-		log.Fatalf("Error executing ServiceManager.Run request: %v", err)
+		fmt.Printf("   ERROR: Unable to execute ServiceManager.Run request (%v)", err)
+		logger.Fatalf("Error executing ServiceManager.Run request: %v", err)
+		return
 	}
+
+	logger.Printf("uhppoted daemon - started\n")
 }
 
 func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan<- svc.Status) (ssec bool, errno uint32) {
@@ -126,28 +123,3 @@ loop:
 
 	return false, 0
 }
-
-// func runService(name string, isDebug bool) {
-// 	// var err error
-// 	// if isDebug {
-// 	// 	elog = debug.New(name)
-// 	// } else {
-// 	// 	elog, err = eventlog.Open(name)
-// 	// 	if err != nil {
-// 	// 		return
-// 	// 	}
-// 	// }
-// 	// defer elog.Close()
-//     //
-// 	// elog.Info(1, fmt.Sprintf("starting %s service", name))
-// 	// run := svc.Run
-// 	// if isDebug {
-// 	// 	run = debug.Run
-// 	// }
-// 	// err = run(name, &myservice{})
-// 	// if err != nil {
-// 	// 	elog.Error(1, fmt.Sprintf("%s service failed: %v", name, err))
-// 	// 	return
-// 	// }
-// 	// elog.Info(1, fmt.Sprintf("%s service stopped", name))
-// }
