@@ -20,6 +20,8 @@
 - [x] Linux systemd add note for UDP UFW rules for broadcast
 - [ ] Linux systemd socket handoff
 - [ ] Windows service: https://github.com/golang/sys/blob/master/windows/svc/example/service.go
+- [ ] Windows service: use %PROGRAMDATA% folder for conf files
+- [ ] Windows service: log to Event Log
 
 - [ ] websocket command interface
 - [ ] MQTT 

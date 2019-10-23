@@ -4,6 +4,10 @@ import (
 	"flag"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
+	"uhppoted/config"
+	"uhppoted/eventlog"
 )
 
 // LINUX
@@ -16,4 +20,24 @@ var pidFile = flag.String("pid", "/var/uhppoted/uhppoted.pid", "uhppoted PID fil
 
 func sysinit() {
 	log.Printf("uhppoted daemon - %s (PID %d)\n", "linux", os.Getpid())
+}
+
+func start(c *config.Config, logfile string, logfilesize int) {
+	// ... setup logging
+
+	events := eventlog.Ticker{Filename: logfile, MaxSize: logfilesize}
+	logger := log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
+	rotate := make(chan os.Signal, 1)
+
+	signal.Notify(rotate, syscall.SIGHUP)
+
+	go func() {
+		for {
+			<-rotate
+			log.Printf("Rotating uhppoted log file '%s'\n", logfile)
+			events.Rotate()
+		}
+	}()
+
+	run(c, logger)
 }
