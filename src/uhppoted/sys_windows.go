@@ -13,8 +13,6 @@ import (
 	"uhppoted/eventlog"
 )
 
-// WINDOWS (PROVISIONAL - NOT TESTED)
-
 type service struct {
 	conf   *config.Config
 	logger *log.Logger
