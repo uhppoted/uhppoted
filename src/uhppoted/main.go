@@ -14,7 +14,6 @@ import (
 	"uhppote"
 	"uhppoted/commands"
 	"uhppoted/config"
-	"uhppoted/eventlog"
 	"uhppoted/rest"
 )
 
@@ -70,34 +69,19 @@ func main() {
 
 	defer cleanup(*pidFile)
 
-	run(config, *logfile, *logfilesize)
+	start(config, *logfile, *logfilesize)
 }
 
 func cleanup(pid string) {
 	os.Remove(pid)
 }
 
-func run(c *config.Config, logfile string, logfilesize int) {
-	// ... setup logging
-
-	events := eventlog.Ticker{Filename: logfile, MaxSize: logfilesize}
-	logger := log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
-
+func run(c *config.Config, logger *log.Logger) {
 	// ... syscall SIG handlers
 
 	interrupt := make(chan os.Signal, 1)
-	rotate := make(chan os.Signal, 1)
 
 	signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM)
-	signal.Notify(rotate, syscall.SIGHUP)
-
-	go func() {
-		for {
-			<-rotate
-			log.Printf("Rotating uhppoted log file '%s'\n", logfile)
-			events.Rotate()
-		}
-	}()
 
 	// ... listen forever
 
@@ -157,19 +141,19 @@ func listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) erro
 			}
 
 		case <-k.C:
-			log.Printf("... keep-alive")
+			logger.Printf("... keep-alive")
 			keepalive()
 
 		case <-interrupt:
-			log.Printf("... interrupt")
+			logger.Printf("... interrupt")
 			return nil
 
 		case <-closed:
-			log.Printf("... closed")
+			logger.Printf("... closed")
 			return errors.New("Server error")
 		}
 	}
 
-	log.Printf("... exit")
+	logger.Printf("... exit")
 	return nil
 }
