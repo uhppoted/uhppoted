@@ -19,9 +19,10 @@
 - [x] Linux systemd create initial /etc/uhppoted/uhppote.conf file
 - [x] Linux systemd add note for UDP UFW rules for broadcast
 - [ ] Linux systemd socket handoff
-- [ ] Windows service: https://github.com/golang/sys/blob/master/windows/svc/example/service.go
+- [x] Windows service
 - [ ] Windows service: use %PROGRAMDATA% folder for conf files
 - [ ] Windows service: log to Event Log
+- [ ] Windows service: rethink --console option
 
 - [ ] websocket command interface
 - [ ] MQTT 

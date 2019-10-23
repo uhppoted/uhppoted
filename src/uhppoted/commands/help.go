@@ -73,6 +73,7 @@ func usage() {
 	fmt.Println("    --pid         Sets the PID file path")
 	fmt.Println("    --syslog      Writes log information to the syslog")
 	fmt.Println("    --debug       Displays vaguely useful internal information")
+	fmt.Println("    --console     (Windows only) Runs as command-line application")
 	fmt.Println()
 }
 
