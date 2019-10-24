@@ -20,9 +20,9 @@
 - [x] Linux systemd add note for UDP UFW rules for broadcast
 - [ ] Linux systemd socket handoff
 - [x] Windows service
-- [ ] Windows service: use %PROGRAMDATA% folder for conf files
+- [x] Windows service: use %PROGRAMDATA% folder for conf files
 - [x] Windows service: log to Event Log
-- [ ] Windows service: rethink --console option
+- [x] Windows service: rethink --console option
 
 - [ ] websocket command interface
 - [ ] MQTT 

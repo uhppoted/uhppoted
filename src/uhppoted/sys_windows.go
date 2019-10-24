@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/eventlog"
 	"log"
@@ -24,18 +25,26 @@ type EventLog struct {
 	log *eventlog.Log
 }
 
-// var pwd, _ = filepath.Abs(filepath.Dir(os.Args[0]))
-var pwd = `C:\uhppoted`
-var configuration = flag.String("config", filepath.Join(pwd, "uhppoted.cfg"), "Path for the configuration file")
-var dir = flag.String("dir", pwd, "Working directory")
-var logfile = flag.String("logfile", filepath.Join(pwd, "logs", "uhppoted.log"), "uhppoted log file")
+var wd = workdir()
+var configuration = flag.String("config", filepath.Join(wd, "uhppoted.conf"), "Path for the configuration file")
+var dir = flag.String("dir", wd, "Working directory")
+var logfile = flag.String("logfile", filepath.Join(wd, "logs", "uhppoted.log"), "uhppoted log file")
 var logfilesize = flag.Int("logfilesize", 10, "uhppoted log file size")
-var pidFile = flag.String("pid", filepath.Join(pwd, "uhppoted.pid"), "uhppoted PID file")
+var pidFile = flag.String("pid", filepath.Join(wd, "uhppoted.pid"), "uhppoted PID file")
 var console = flag.Bool("console", false, "Run as command-line application")
 
 func sysinit() {
-	log.Printf("uhppoted daemon - %s (PID %d)\n", "Microsoft Windows", os.Getpid())
-	fmt.Printf("uhppoted daemon - %s (PID %d)\n", "Microsoft Windows", os.Getpid())
+	log.Printf("uhppoted service - %s (PID %d)\n", "Microsoft Windows", os.Getpid())
+	fmt.Printf("uhppoted service - %s (PID %d)\n", "Microsoft Windows", os.Getpid())
+}
+
+func workdir() string {
+	programData, err := windows.KnownFolderPath(windows.FOLDERID_ProgramData, windows.KF_FLAG_DEFAULT)
+	if err != nil {
+		return `C:\uhppoted`
+	}
+
+	return filepath.Join(programData, "uhppoted")
 }
 
 func start(c *config.Config, logfile string, logfilesize int) {
@@ -52,7 +61,7 @@ func start(c *config.Config, logfile string, logfilesize int) {
 		logger = log.New(&events, "uhppoted", log.Ldate|log.Ltime|log.LUTC)
 	}
 
-	logger.Printf("uhppoted daemon - start\n")
+	logger.Printf("uhppoted service - start\n")
 
 	if *console {
 		run(c, logger)
@@ -65,11 +74,17 @@ func start(c *config.Config, logfile string, logfilesize int) {
 		logger: logger,
 	}
 
-	logger.Printf("uhppoted daemon - starting\n")
+	logger.Printf("uhppoted service - starting\n")
 	err = svc.Run("uhppoted", &uhppoted)
 
 	if err != nil {
-		fmt.Printf("   ERROR: Unable to execute ServiceManager.Run request (%v)", err)
+		fmt.Printf("   Unable to execute ServiceManager.Run request (%v)\n", err)
+		fmt.Println()
+		fmt.Println("   To run uhppoted as a command line application, type:")
+		fmt.Println()
+		fmt.Println("     > uhppoted --console")
+		fmt.Println()
+
 		logger.Fatalf("Error executing ServiceManager.Run request: %v", err)
 		return
 	}
@@ -78,7 +93,7 @@ func start(c *config.Config, logfile string, logfilesize int) {
 }
 
 func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan<- svc.Status) (ssec bool, errno uint32) {
-	s.logger.Printf("uhppoted daemon - Execute\n")
+	s.logger.Printf("uhppoted service - Execute\n")
 
 	const commands = svc.AcceptStop | svc.AcceptShutdown
 
@@ -109,33 +124,33 @@ loop:
 	for {
 		select {
 		case c := <-r:
-			s.logger.Printf("uhppoted daemon - select: %v  %v\n", c.Cmd, c.CurrentStatus)
+			s.logger.Printf("uhppoted service - select: %v  %v\n", c.Cmd, c.CurrentStatus)
 			switch c.Cmd {
 			case svc.Interrogate:
-				s.logger.Printf("uhppoted daemon - svc.Interrogate %v\n", c.CurrentStatus)
+				s.logger.Printf("uhppoted service - svc.Interrogate %v\n", c.CurrentStatus)
 				status <- c.CurrentStatus
 
 			case svc.Stop:
 				interrupt <- syscall.SIGINT
-				s.logger.Printf("uhppoted daemon - svc.Stop\n")
+				s.logger.Printf("uhppoted service- svc.Stop\n")
 				break loop
 
 			case svc.Shutdown:
 				interrupt <- syscall.SIGTERM
-				s.logger.Printf("uhppoted daemon - svc.Shutdown\n")
+				s.logger.Printf("uhppoted service - svc.Shutdown\n")
 				break loop
 
 			default:
-				s.logger.Printf("uhppoted daemon - svc.????? (%v)\n", c.Cmd)
+				s.logger.Printf("uhppoted service - svc.????? (%v)\n", c.Cmd)
 			}
 		}
 	}
 
-	s.logger.Printf("uhppoted daemon - stopping\n")
+	s.logger.Printf("uhppoted service - stopping\n")
 	status <- svc.Status{State: svc.StopPending}
 	wg.Wait()
 	status <- svc.Status{State: svc.Stopped}
-	s.logger.Printf("uhppoted daemon - stopped\n")
+	s.logger.Printf("uhppoted service - stopped\n")
 
 	return false, 0
 }
