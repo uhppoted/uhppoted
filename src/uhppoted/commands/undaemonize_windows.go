@@ -23,6 +23,22 @@ func (c *Undaemonize) Parse(args []string) error {
 }
 
 func (c *Undaemonize) Execute(ctx Context) error {
+	fmt.Println("   ... undaemonizing")
+
+	dir := workdir()
+	if err := c.unregister(); err != nil {
+		return err
+	}
+
+	fmt.Println("   ... uhppoted unregistered as a Windows system service")
+	fmt.Println()
+	fmt.Printf("   Log files and configuration files in directory %s should be removed manually", dir)
+	fmt.Println()
+
+	return nil
+}
+
+func (c *Undaemonize) unregister() error {
 	m, err := mgr.Connect()
 	if err != nil {
 		return err
