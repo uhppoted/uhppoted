@@ -21,7 +21,7 @@
 - [ ] Linux systemd socket handoff
 - [x] Windows service
 - [ ] Windows service: use %PROGRAMDATA% folder for conf files
-- [ ] Windows service: log to Event Log
+- [x] Windows service: log to Event Log
 - [ ] Windows service: rethink --console option
 
 - [ ] websocket command interface

@@ -4,18 +4,24 @@ import (
 	"flag"
 	"fmt"
 	"golang.org/x/sys/windows/svc"
+	"golang.org/x/sys/windows/svc/eventlog"
 	"log"
 	"os"
 	"path/filepath"
 	"sync"
 	"syscall"
 	"uhppoted/config"
-	"uhppoted/eventlog"
+	filelogger "uhppoted/eventlog"
 )
 
 type service struct {
+	name   string
 	conf   *config.Config
 	logger *log.Logger
+}
+
+type EventLog struct {
+	log *eventlog.Log
 }
 
 // var pwd, _ = filepath.Abs(filepath.Dir(os.Args[0]))
@@ -33,8 +39,18 @@ func sysinit() {
 }
 
 func start(c *config.Config, logfile string, logfilesize int) {
-	events := eventlog.Ticker{Filename: logfile, MaxSize: logfilesize}
-	logger := log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
+	var logger *log.Logger
+
+	eventlogger, err := eventlog.Open("uhppoted")
+	if err != nil {
+		events := filelogger.Ticker{Filename: logfile, MaxSize: logfilesize}
+		logger = log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
+	} else {
+		defer eventlogger.Close()
+
+		events := EventLog{eventlogger}
+		logger = log.New(&events, "uhppoted", log.Ldate|log.Ltime|log.LUTC)
+	}
 
 	logger.Printf("uhppoted daemon - start\n")
 
@@ -44,11 +60,13 @@ func start(c *config.Config, logfile string, logfilesize int) {
 	}
 
 	uhppoted := service{
+		name:   "uhppoted",
 		conf:   c,
 		logger: logger,
 	}
+
 	logger.Printf("uhppoted daemon - starting\n")
-	err := svc.Run("uhppoted", &uhppoted)
+	err = svc.Run("uhppoted", &uhppoted)
 
 	if err != nil {
 		fmt.Printf("   ERROR: Unable to execute ServiceManager.Run request (%v)", err)
@@ -120,4 +138,13 @@ loop:
 	s.logger.Printf("uhppoted daemon - stopped\n")
 
 	return false, 0
+}
+
+func (e *EventLog) Write(p []byte) (int, error) {
+	err := e.log.Info(1, string(p))
+	if err != nil {
+		return 0, err
+	}
+
+	return len(p), nil
 }
