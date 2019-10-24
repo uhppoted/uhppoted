@@ -52,7 +52,7 @@ func (c *Daemonize) Execute(ctx Context) error {
 	err = eventlog.InstallAsEventCreate(c.name, eventlog.Error|eventlog.Warning|eventlog.Info)
 	if err != nil {
 		s.Delete()
-		return fmt.Errorf("SetupEventLogSource() failed: %s", err)
+		return fmt.Errorf("InstallAsEventCreate() failed: %v", err)
 	}
 
 	return nil
