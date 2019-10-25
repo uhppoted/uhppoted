@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"errors"
 	"fmt"
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/svc/eventlog"
@@ -54,22 +53,15 @@ func (c *Daemonize) Execute(ctx Context) error {
 		return err
 	}
 
-	bind, broadcast, err := config.DefaultIpAddresses()
-	if err != nil {
-		return err
-	}
-
-	if bind == nil || broadcast == nil {
-		return errors.New("Unable to determine default bind and broadcast IP addresses")
-	}
+	bind, broadcast := config.DefaultIpAddresses()
 
 	d := data{
 		Name:             c.name,
 		Description:      "UHPPOTE UTO311-L0x access card controllers service/daemon ",
 		Executable:       executable,
 		WorkDir:          workdir(),
-		BindAddress:      bind,
-		BroadcastAddress: broadcast,
+		BindAddress:      &bind,
+		BroadcastAddress: &broadcast,
 	}
 
 	if err := c.register(&d); err != nil {

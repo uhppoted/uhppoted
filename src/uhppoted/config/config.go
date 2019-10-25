@@ -3,7 +3,6 @@ package config
 import (
 	"bufio"
 	"encoding/binary"
-	"errors"
 	"fmt"
 	"net"
 	"os"
@@ -18,9 +17,8 @@ type Device struct {
 }
 
 type Config struct {
-	File             string
-	BindAddress      net.UDPAddr
-	BroadcastAddress net.UDPAddr
+	BindAddress      *net.UDPAddr
+	BroadcastAddress *net.UDPAddr
 	Devices          map[uint32]*Device
 }
 
@@ -34,30 +32,26 @@ var parsers = []struct {
 	{regexp.MustCompile("^UT0311-L0x\\.[0-9]+\\.door\\.[1-4]\\s*=.*"), door},
 }
 
-func LoadConfig(path string) (*Config, error) {
-	bind, broadcast, err := DefaultIpAddresses()
-	if err != nil {
-		return nil, err
-	}
-
-	if bind == nil || broadcast == nil {
-		return nil, errors.New("Unable to determine default bind and broadcast IP addresses")
-	}
+func NewConfig() *Config {
+	bind, broadcast := DefaultIpAddresses()
 
 	c := Config{
-		File:             path,
-		BindAddress:      *bind,
-		BroadcastAddress: *broadcast,
+		BindAddress:      &bind,
+		BroadcastAddress: &broadcast,
 		Devices:          make(map[uint32]*Device),
 	}
 
+	return &c
+}
+
+func (c *Config) Load(path string) error {
 	if path == "" {
-		return &c, nil
+		return nil
 	}
 
 	f, err := os.Open(path)
 	if err != nil {
-		return &c, err
+		return err
 	}
 
 	defer f.Close()
@@ -67,12 +61,12 @@ func LoadConfig(path string) (*Config, error) {
 		l := s.Text()
 		for _, p := range parsers {
 			if p.re.MatchString(l) {
-				p.f(l, &c)
+				p.f(l, c)
 			}
 		}
 	}
 
-	return &c, nil
+	return nil
 }
 
 func bind(l string, c *Config) {
@@ -84,7 +78,7 @@ func bind(l string, c *Config) {
 		if err != nil {
 			fmt.Printf("WARN: configuration error - invalid UDP bind address '%s': %v\n", l, err)
 		} else {
-			c.BindAddress = *address
+			c.BindAddress = address
 		}
 	}
 }
@@ -98,7 +92,7 @@ func broadcast(l string, c *Config) {
 		if err != nil {
 			fmt.Printf("WARN: configuration error - invalid UDP broadcast address '%s': %v\n", l, err)
 		} else {
-			c.BroadcastAddress = *address
+			c.BroadcastAddress = address
 		}
 	}
 }
@@ -160,7 +154,7 @@ func door(l string, c *Config) {
 }
 
 // Ref. https://stackoverflow.com/questions/23529663/how-to-get-all-addresses-and-masks-from-local-interfaces-in-go
-func DefaultIpAddresses() (*net.UDPAddr, *net.UDPAddr, error) {
+func DefaultIpAddresses() (net.UDPAddr, net.UDPAddr) {
 	bind := net.UDPAddr{
 		IP:   make(net.IP, net.IPv4len),
 		Port: 0,
@@ -198,5 +192,5 @@ func DefaultIpAddresses() (*net.UDPAddr, *net.UDPAddr, error) {
 		}
 	}
 
-	return &bind, &broadcast, nil
+	return bind, broadcast
 }

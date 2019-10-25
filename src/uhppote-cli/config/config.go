@@ -19,8 +19,8 @@ type Device struct {
 
 type Config struct {
 	File             string
-	BindAddress      net.UDPAddr
-	BroadcastAddress net.UDPAddr
+	BindAddress      *net.UDPAddr
+	BroadcastAddress *net.UDPAddr
 	Devices          map[uint32]*Device
 }
 
@@ -34,30 +34,26 @@ var parsers = []struct {
 	{regexp.MustCompile("^UT0311-L0x\\.[0-9]+\\.door\\.[1-4]\\s*=.*"), door},
 }
 
-func LoadConfig(path string) (*Config, error) {
-	bind, broadcast, err := DefaultIpAddresses()
-	if err != nil {
-		return nil, err
-	}
+func NewConfig() *Config {
+	bind, broadcast := DefaultIpAddresses()
 
-	if bind == nil || broadcast == nil {
-		return nil, errors.New("Unable to determine default bind and broadcast IP addresses")
-	}
-
-	c := &Config{
-		File:             path,
-		BindAddress:      *bind,
-		BroadcastAddress: *broadcast,
+	c := Config{
+		BindAddress:      bind,
+		BroadcastAddress: broadcast,
 		Devices:          make(map[uint32]*Device),
 	}
 
+	return &c
+}
+
+func (c *Config) Load(path string) error {
 	if path == "" {
-		return c, nil
+		return nil
 	}
 
 	f, err := os.Open(path)
 	if err != nil {
-		return c, err
+		return err
 	}
 
 	defer f.Close()
@@ -73,7 +69,7 @@ func LoadConfig(path string) (*Config, error) {
 		}
 	}
 
-	return c, nil
+	return nil
 }
 
 func (c *Config) Verify() error {
@@ -104,7 +100,7 @@ func bind(l string, c *Config) *Config {
 		} else if address == nil {
 			fmt.Println("WARN: configuration error - invalid UDP bind address")
 		} else {
-			c.BindAddress = *address
+			c.BindAddress = address
 		}
 	}
 
@@ -122,7 +118,7 @@ func broadcast(l string, c *Config) *Config {
 		} else if address == nil {
 			fmt.Println("WARN: configuration error - invalid UDP broadcast address")
 		} else {
-			c.BroadcastAddress = *address
+			c.BroadcastAddress = address
 		}
 	}
 
@@ -190,7 +186,7 @@ func door(l string, c *Config) *Config {
 }
 
 // Ref. https://stackoverflow.com/questions/23529663/how-to-get-all-addresses-and-masks-from-local-interfaces-in-go
-func DefaultIpAddresses() (*net.UDPAddr, *net.UDPAddr, error) {
+func DefaultIpAddresses() (*net.UDPAddr, *net.UDPAddr) {
 	bind := net.UDPAddr{
 		IP:   make(net.IP, net.IPv4len),
 		Port: 0,
@@ -228,5 +224,5 @@ func DefaultIpAddresses() (*net.UDPAddr, *net.UDPAddr, error) {
 		}
 	}
 
-	return &bind, &broadcast, nil
+	return &bind, &broadcast
 }

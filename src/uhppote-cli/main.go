@@ -64,29 +64,27 @@ func main() {
 		Debug:   options.debug,
 	}
 
-	config, err := config.LoadConfig(options.config)
-	if err != nil {
+	conf := config.NewConfig()
+	if err := conf.Load(options.config); err != nil {
 		fmt.Printf("\n   ERROR: %v\n\n", err)
 		os.Exit(1)
 	}
 
-	if config != nil {
-		u.BindAddress = config.BindAddress
-		u.BroadcastAddress = config.BroadcastAddress
+	u.BindAddress = conf.BindAddress
+	u.BroadcastAddress = conf.BroadcastAddress
 
-		for s, d := range config.Devices {
-			if d.Address != nil {
-				u.Devices[s] = d.Address
-			}
+	for s, d := range conf.Devices {
+		if d.Address != nil {
+			u.Devices[s] = d.Address
 		}
 	}
 
 	if options.bind.address != nil {
-		u.BindAddress = *options.bind.address
+		u.BindAddress = options.bind.address
 	}
 
 	if options.broadcast.address != nil {
-		u.BroadcastAddress = *options.broadcast.address
+		u.BroadcastAddress = options.broadcast.address
 	}
 
 	cmd, err := parse()
@@ -100,7 +98,7 @@ func main() {
 		return
 	}
 
-	ctx := commands.NewContext(&u, config)
+	ctx := commands.NewContext(&u, conf)
 
 	err = cmd.Execute(ctx)
 	if err != nil {
