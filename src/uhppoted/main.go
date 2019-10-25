@@ -48,13 +48,9 @@ func main() {
 
 	sysinit()
 
-	config, err := config.LoadConfig(*configuration)
-	if err != nil {
+	conf := config.NewConfig()
+	if err := conf.Load(*configuration); err != nil {
 		fmt.Printf("\n   WARN:  Could not load configuration (%v)\n", err)
-	}
-
-	if config == nil {
-		log.Fatal("ERROR: Invalid base configuration")
 	}
 
 	if err := os.MkdirAll(*dir, os.ModeDir|os.ModePerm); err != nil {
@@ -69,7 +65,7 @@ func main() {
 
 	defer cleanup(*pidFile)
 
-	start(config, *logfile, *logfilesize)
+	start(conf, *logfile, *logfilesize)
 }
 
 func cleanup(pid string) {

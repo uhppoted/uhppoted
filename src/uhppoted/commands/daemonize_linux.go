@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"net"
@@ -117,14 +116,7 @@ func (c *Daemonize) Execute(ctx Context) error {
 		return err
 	}
 
-	bind, broadcast, err := config.DefaultIpAddresses()
-	if err != nil {
-		return err
-	}
-
-	if bind == nil || broadcast == nil {
-		return errors.New("Unable to determine default bind and broadcast IP addresses")
-	}
+	bind, broadcast := config.DefaultIpAddresses()
 
 	d := data{
 		Description:      "UHPPOTE UTO311-L0x access card controllers service/daemon ",
@@ -136,8 +128,8 @@ func (c *Daemonize) Execute(ctx Context) error {
 		Uid:              uid,
 		Gid:              gid,
 		LogFiles:         []string{"/var/log/uhppoted/uhppoted.log"},
-		BindAddress:      bind,
-		BroadcastAddress: broadcast,
+		BindAddress:      &bind,
+		BroadcastAddress: &broadcast,
 	}
 
 	if err := c.systemd(&d); err != nil {

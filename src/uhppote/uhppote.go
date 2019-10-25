@@ -12,18 +12,18 @@ import (
 )
 
 type UHPPOTE struct {
-	BindAddress      net.UDPAddr
-	BroadcastAddress net.UDPAddr
+	BindAddress      *net.UDPAddr
+	BroadcastAddress *net.UDPAddr
 	Devices          map[uint32]*net.UDPAddr
 	Debug            bool
 }
 
 func (u *UHPPOTE) Send(serialNumber uint32, request interface{}) ([]byte, error) {
-	bind := &u.BindAddress
+	bind := u.bindAddress()
 	dest := u.Devices[serialNumber]
 
 	if dest == nil {
-		dest = &u.BroadcastAddress
+		dest = u.broadcastAddress()
 	}
 
 	c, err := u.open(bind)
@@ -59,11 +59,11 @@ func (u *UHPPOTE) Send(serialNumber uint32, request interface{}) ([]byte, error)
 }
 
 func (u *UHPPOTE) Execute(serialNumber uint32, request, reply interface{}) error {
-	bind := &u.BindAddress
+	bind := u.bindAddress()
 	dest := u.Devices[serialNumber]
 
 	if dest == nil {
-		dest = &u.BroadcastAddress
+		dest = u.broadcastAddress()
 	}
 
 	c, err := u.open(bind)
@@ -85,7 +85,7 @@ func (u *UHPPOTE) Execute(serialNumber uint32, request, reply interface{}) error
 }
 
 func (u *UHPPOTE) Broadcast(request interface{}) ([][]byte, error) {
-	return u.broadcast(request, &u.BroadcastAddress)
+	return u.broadcast(request, u.broadcastAddress())
 }
 
 func (u *UHPPOTE) open(addr *net.UDPAddr) (*net.UDPConn, error) {
@@ -130,7 +130,7 @@ func (u *UHPPOTE) broadcast(request interface{}, addr *net.UDPAddr) ([][]byte, e
 		fmt.Printf(" ... request\n%s\n", dump(m, " ...          "))
 	}
 
-	bind := &u.BindAddress
+	bind := u.bindAddress()
 	connection, err := net.ListenUDP("udp", bind)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Failed to open UDP socket [%v]", err))
@@ -197,11 +197,12 @@ func (u *UHPPOTE) receive(c *net.UDPConn, reply interface{}) error {
 }
 
 func (u *UHPPOTE) listen(p chan Event, q chan os.Signal) error {
-	if u.BindAddress.Port == 0 {
+	bind := u.bindAddress()
+	if bind.Port == 0 {
 		return errors.New("Listen requires a non-zero UDP port")
 	}
 
-	c, err := u.open(&u.BindAddress)
+	c, err := u.open(bind)
 	if err != nil {
 		return err
 	}
@@ -252,23 +253,34 @@ func (u *UHPPOTE) listen(p chan Event, q chan os.Signal) error {
 	return nil
 }
 
-func localAddr() (*net.UDPAddr, error) {
-	list, err := net.Interfaces()
-	if err != nil {
-		return nil, err
+func (u *UHPPOTE) bindAddress() *net.UDPAddr {
+	if u.BindAddress != nil {
+		return u.BindAddress
 	}
 
-	for _, iface := range list {
-		addrs, err := iface.Addrs()
-		if err == nil {
-			for _, addr := range addrs {
-				ip, _, err := net.ParseCIDR(addr.String())
-				if err == nil && !ip.IsLoopback() && ip.To4() != nil {
-					return &net.UDPAddr{ip.To4(), 0, ""}, nil
-				}
-			}
-		}
+	addr := net.UDPAddr{
+		IP:   make(net.IP, net.IPv4len),
+		Port: 0,
+		Zone: "",
 	}
 
-	return nil, errors.New("Unable to identify local interface to bind to")
+	copy(addr.IP, net.IPv4zero)
+
+	return &addr
+}
+
+func (u *UHPPOTE) broadcastAddress() *net.UDPAddr {
+	if u.BroadcastAddress != nil {
+		return u.BroadcastAddress
+	}
+
+	addr := net.UDPAddr{
+		IP:   make(net.IP, net.IPv4len),
+		Port: 60000,
+		Zone: "",
+	}
+
+	copy(addr.IP, net.IPv4bcast)
+
+	return &addr
 }
