@@ -25,6 +25,10 @@ The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Acc
 
 ### Building from source
 
+#### Dependencies
+
+- golang.org.x.sys (for uhppoted Windows service)
+
 ### Binaries
 
 ## uhppote
@@ -78,6 +82,17 @@ Supported commands:
 - revoke-all
 - load-acl
 - listen
+
+## uhppoted
+
+Usage: *uhppoted \<command\> \<arguments\>*
+
+Defaults to run unless one of the commands below is specified: 
+
+- daemonize
+- undaemonize
+- help
+- version
 
 ## uhppote-simulator
 

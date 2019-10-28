@@ -59,7 +59,7 @@ func Run(ctx *simulator.Context) {
 	d.Add("^/uhppote/simulator/[0-9]+$", device)
 	d.Add("^/uhppote/simulator/[0-9]+/swipe$", swipe)
 
-	log.Fatal(http.ListenAndServe(":8080", &d))
+	log.Fatal(http.ListenAndServe(":8000", &d))
 }
 
 func (d *dispatcher) Add(path string, h handlerfn) {
