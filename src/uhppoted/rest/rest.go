@@ -45,7 +45,7 @@ func Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	d.Add("^/uhppote/device/[0-9]+/event$", http.MethodGet, getEvents)
 	d.Add("^/uhppote/device/[0-9]+/event/[0-9]+$", http.MethodGet, getEvent)
 
-	log.Fatal(http.ListenAndServe(":8001", &d))
+	log.Fatal(http.ListenAndServe(":8080", &d))
 }
 
 func Close() {
