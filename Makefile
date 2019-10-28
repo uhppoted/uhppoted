@@ -95,7 +95,7 @@ usage: build
 
 debug: build
 	go clean -testcache
-	go test -count=1 src/uhppoted/encoding/plist/*.go
+	go test -count=1 src/uhppote/*.go
 
 help: build
 	$(CLI)       help
@@ -183,7 +183,7 @@ simulator-device: build
 	./bin/uhppote-simulator --debug --devices "runtime/simulation/devices" new-device 666
 
 uhppoted: build
-	./bin/uhppoted 
+	./bin/uhppoted
 
 uhppoted-privileged: build
 	sudo ./bin/uhppoted --modify-application-firewall
