@@ -3,12 +3,23 @@ package rest
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"regexp"
 	"strconv"
+	"sync"
 	"uhppote"
 )
+
+type RestD struct {
+	HttpEnabled        bool
+	HttpPort           uint16
+	HttpsEnabled       bool
+	HttpsPort          uint16
+	TLSKeyFile         string
+	TLSCertificateFile string
+}
 
 type handlerfn func(context.Context, http.ResponseWriter, *http.Request)
 
@@ -24,7 +35,7 @@ type dispatcher struct {
 	handlers []handler
 }
 
-func Run(u *uhppote.UHPPOTE, l *log.Logger) {
+func (r *RestD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	d := dispatcher{
 		u,
 		l,
@@ -45,7 +56,27 @@ func Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	d.Add("^/uhppote/device/[0-9]+/event$", http.MethodGet, getEvents)
 	d.Add("^/uhppote/device/[0-9]+/event/[0-9]+$", http.MethodGet, getEvent)
 
-	log.Fatal(http.ListenAndServe(":8080", &d))
+	var wg sync.WaitGroup
+
+	if r.HttpEnabled {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			log.Printf("... listening on port %d\n", r.HttpPort)
+			log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", r.HttpPort), &d))
+		}()
+	}
+
+	if r.HttpsEnabled {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			log.Printf("... listening on port %d\n", r.HttpsPort)
+			log.Fatal(http.ListenAndServeTLS(fmt.Sprintf(":%d", r.HttpsPort), r.TLSCertificateFile, r.TLSKeyFile, &d))
+		}()
+	}
+
+	wg.Wait()
 }
 
 func Close() {

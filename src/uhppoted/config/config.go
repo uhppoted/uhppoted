@@ -16,20 +16,36 @@ type Device struct {
 	Door    []string
 }
 
+type REST struct {
+	HttpEnabled        bool
+	HttpPort           uint16
+	HttpsEnabled       bool
+	HttpsPort          uint16
+	TLSKeyFile         string
+	TLSCertificateFile string
+}
+
 type Config struct {
 	BindAddress      *net.UDPAddr
 	BroadcastAddress *net.UDPAddr
 	Devices          map[uint32]*Device
+	REST
 }
 
 var parsers = []struct {
 	re *regexp.Regexp
 	f  func(string, *Config)
 }{
-	{regexp.MustCompile("^bind\\.address\\s*=.*"), bind},
-	{regexp.MustCompile("^broadcast\\.address\\s*=.*"), broadcast},
-	{regexp.MustCompile("^UT0311-L0x\\.[0-9]+\\.address\\s*=.*"), address},
-	{regexp.MustCompile("^UT0311-L0x\\.[0-9]+\\.door\\.[1-4]\\s*=.*"), door},
+	{regexp.MustCompile(`^bind\.address\s*=.*`), bind},
+	{regexp.MustCompile(`^broadcast\.address\s*=.*`), broadcast},
+	{regexp.MustCompile(`^UT0311-L0x\.[0-9]+\.address\s*=.*`), address},
+	{regexp.MustCompile(`^UT0311-L0x\.[0-9]+\.door\.[1-4]\s*=.*`), door},
+	{regexp.MustCompile(`^rest\.http\.enabled\s*=.*`), rest},
+	{regexp.MustCompile(`^rest\.http\.port\s*=.*`), rest},
+	{regexp.MustCompile(`^rest\.https\.enabled\s*=.*`), rest},
+	{regexp.MustCompile(`^rest\.https\.port\s*=.*`), rest},
+	{regexp.MustCompile(`^rest\.tls\.key\s*=.*`), rest},
+	{regexp.MustCompile(`^rest\.tls\.certificate\s*=.*`), rest},
 }
 
 func NewConfig() *Config {
@@ -39,6 +55,14 @@ func NewConfig() *Config {
 		BindAddress:      &bind,
 		BroadcastAddress: &broadcast,
 		Devices:          make(map[uint32]*Device),
+		REST: REST{
+			HttpEnabled:        false,
+			HttpPort:           8080,
+			HttpsEnabled:       true,
+			HttpsPort:          8443,
+			TLSKeyFile:         "uhppoted.key",
+			TLSCertificateFile: "uhppoted.cert",
+		},
 	}
 
 	return &c
@@ -126,7 +150,7 @@ func address(l string, c *Config) {
 }
 
 func door(l string, c *Config) {
-	re := regexp.MustCompile("^UT0311-L0x\\.([0-9]+)\\.door\\.([1-4])\\s*=(.*)")
+	re := regexp.MustCompile(`^UT0311-L0x\.([0-9]+)\.door\.([1-4])\s*=(.*)`)
 	match := re.FindStringSubmatch(l)
 
 	if len(match) > 0 {
@@ -150,6 +174,47 @@ func door(l string, c *Config) {
 
 		d.Door[door-1] = strings.TrimSpace(match[3])
 		c.Devices[k] = d
+	}
+}
+
+func rest(l string, c *Config) {
+	re := regexp.MustCompile(`^rest\.(\w+)\.(\w+)\s*=(.*)`)
+	match := re.FindStringSubmatch(l)
+
+	if len(match) > 0 {
+		switch match[1] {
+		case "http":
+			switch match[2] {
+			case "enabled":
+				if enabled, err := strconv.ParseBool(strings.TrimSpace(match[3])); err == nil {
+					c.REST.HttpEnabled = enabled
+				}
+			case "port":
+				if port, err := strconv.ParseUint(strings.TrimSpace(match[3]), 10, 16); err == nil {
+					c.REST.HttpPort = uint16(port)
+				}
+			}
+
+		case "https":
+			switch match[2] {
+			case "enabled":
+				if enabled, err := strconv.ParseBool(strings.TrimSpace(match[3])); err == nil {
+					c.REST.HttpsEnabled = enabled
+				}
+			case "port":
+				if port, err := strconv.ParseUint(strings.TrimSpace(match[3]), 10, 16); err == nil {
+					c.REST.HttpsPort = uint16(port)
+				}
+			}
+
+		case "tls":
+			switch match[2] {
+			case "key":
+				c.REST.TLSKeyFile = strings.TrimSpace(match[3])
+			case "certificate":
+				c.REST.TLSCertificateFile = strings.TrimSpace(match[3])
+			}
+		}
 	}
 }
 

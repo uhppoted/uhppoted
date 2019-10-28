@@ -50,7 +50,7 @@ func main() {
 
 	conf := config.NewConfig()
 	if err := conf.Load(*configuration); err != nil {
-		fmt.Printf("\n   WARN:  Could not load configuration (%v)\n", err)
+		fmt.Printf("\n   WARN:  Could not load configuration (%v)\n\n", err)
 	}
 
 	if err := os.MkdirAll(*dir, os.ModeDir|os.ModePerm); err != nil {
@@ -97,8 +97,6 @@ func run(c *config.Config, logger *log.Logger) {
 func listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) error {
 	// ... listen
 
-	log.Printf("... listening")
-
 	u := uhppote.UHPPOTE{
 		BindAddress:      c.BindAddress,
 		BroadcastAddress: c.BroadcastAddress,
@@ -112,8 +110,17 @@ func listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) erro
 		}
 	}
 
+	restd := rest.RestD{
+		HttpEnabled:        c.REST.HttpEnabled,
+		HttpPort:           c.REST.HttpPort,
+		HttpsEnabled:       c.REST.HttpsEnabled,
+		HttpsPort:          c.REST.HttpsPort,
+		TLSKeyFile:         c.REST.TLSKeyFile,
+		TLSCertificateFile: c.REST.TLSCertificateFile,
+	}
+
 	go func() {
-		rest.Run(&u, logger)
+		restd.Run(&u, logger)
 	}()
 
 	defer rest.Close()
