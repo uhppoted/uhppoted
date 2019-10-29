@@ -12,11 +12,11 @@ import (
 
 // DARWIN
 
-var configuration = flag.String("config", "/usr/local/etc/uhppoted/uhppoted.conf", "Path for the configuration file")
-var dir = flag.String("dir", "/usr/local/var/uhppoted", "Working directory")
-var logfile = flag.String("logfile", "/usr/local/var/uhppoted/logs/uhppoted.log", "uhppoted log file")
+var configuration = flag.String("config", "/usr/local/etc/com.github.twystd.uhppoted/uhppoted.conf", "Path for the configuration file")
+var dir = flag.String("dir", "/usr/local/var/com.github.twystd.uhppoted", "Working directory")
+var logfile = flag.String("logfile", "/usr/local/var/com.github.twystd.uhppoted/logs/uhppoted.log", "uhppoted log file")
 var logfilesize = flag.Int("logfilesize", 10, "uhppoted log file size")
-var pidFile = flag.String("pid", "/usr/local/var/uhppoted/uhppoted.pid", "uhppoted PID file")
+var pidFile = flag.String("pid", "/usr/local/var/com.github.twystd.uhppoted/uhppoted.pid", "uhppoted PID file")
 
 func sysinit() {
 	log.Printf("uhppoted daemon %s - %s (PID %d)\n", VERSION, "MacOS", os.Getpid())

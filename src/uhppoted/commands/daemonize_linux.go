@@ -18,7 +18,7 @@ type Daemonize struct {
 	group string
 }
 
-type data struct {
+type info struct {
 	Description      string
 	Documentation    string
 	Executable       string
@@ -64,9 +64,20 @@ const logRotateTemplate = `{{range .LogFiles}}{{.}} {
 }{{end}}
 `
 
-const confTemplate = `bind.address = {{.BindAddress}}
+const confTemplate = `# UDP
+bind.address = {{.BindAddress}}
 broadcast.address = {{.BroadcastAddress}}
 
+# REST API
+rest.http.enabled = false
+rest.http.port = 8080
+rest.https.enabled = true
+rest.https.port = 8443
+rest.tls.key = /etc/uhppoted/rest/uhppoted.key
+rest.tls.certificate = /etc/uhppoted/rest/uhppoted.cert
+rest.tls.ca = /etc/uhppoted/rest/ca.cert
+
+# DEVICES
 # Example configuration for UTO311-L04 with serial number 305419896
 # UT0311-L0x.305419896.address = 192.168.1.100:60000
 # UT0311-L0x.305419896.door.1 = Front Door
@@ -118,7 +129,7 @@ func (c *Daemonize) Execute(ctx Context) error {
 
 	bind, broadcast := config.DefaultIpAddresses()
 
-	d := data{
+	d := info{
 		Description:      "UHPPOTE UTO311-L0x access card controllers service/daemon ",
 		Documentation:    "https://github.com/twystd/uhppote-go",
 		Executable:       executable,
@@ -162,7 +173,7 @@ func (c *Daemonize) Execute(ctx Context) error {
 	return nil
 }
 
-func (c *Daemonize) systemd(d *data) error {
+func (c *Daemonize) systemd(d *info) error {
 	path := filepath.Join("/etc/systemd/system", "uhppoted.service")
 	t := template.Must(template.New("uhppoted.service").Parse(serviceTemplate))
 
@@ -177,7 +188,7 @@ func (c *Daemonize) systemd(d *data) error {
 	return t.Execute(f, d)
 }
 
-func (c *Daemonize) logrotate(d *data) error {
+func (c *Daemonize) logrotate(d *info) error {
 	path := filepath.Join("/etc/logrotate.d", "uhppoted")
 	t := template.Must(template.New("uhppoted.logrotate").Parse(logRotateTemplate))
 
@@ -192,7 +203,7 @@ func (c *Daemonize) logrotate(d *data) error {
 	return t.Execute(f, d)
 }
 
-func (c *Daemonize) conf(d *data) error {
+func (c *Daemonize) conf(d *info) error {
 	path := filepath.Join("/etc/uhppoted", "uhppoted.conf")
 	t := template.Must(template.New("uhppoted.conf").Parse(confTemplate))
 
@@ -212,7 +223,7 @@ func (c *Daemonize) conf(d *data) error {
 	return os.Chown(path, d.Uid, d.Gid)
 }
 
-func (c *Daemonize) mkdirs(d *data) error {
+func (c *Daemonize) mkdirs(d *info) error {
 	directories := []string{
 		"/var/uhppoted",
 		"/var/log/uhppoted",

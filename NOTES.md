@@ -1,7 +1,5 @@
 ## WORKING NOTES
 
-### UDP broadcast
-
 #### Linux
 
 1. UDP broadcast on Ubuntu needs the following UFW rule:

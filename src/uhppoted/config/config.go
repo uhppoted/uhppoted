@@ -23,6 +23,7 @@ type REST struct {
 	HttpsPort          uint16
 	TLSKeyFile         string
 	TLSCertificateFile string
+	CACertificateFile  string
 }
 
 type Config struct {
@@ -46,6 +47,7 @@ var parsers = []struct {
 	{regexp.MustCompile(`^rest\.https\.port\s*=.*`), rest},
 	{regexp.MustCompile(`^rest\.tls\.key\s*=.*`), rest},
 	{regexp.MustCompile(`^rest\.tls\.certificate\s*=.*`), rest},
+	{regexp.MustCompile(`^rest\.tls\.ca\s*=.*`), rest},
 }
 
 func NewConfig() *Config {
@@ -62,6 +64,7 @@ func NewConfig() *Config {
 			HttpsPort:          8443,
 			TLSKeyFile:         "uhppoted.key",
 			TLSCertificateFile: "uhppoted.cert",
+			CACertificateFile:  "ca.cert",
 		},
 	}
 
@@ -213,6 +216,8 @@ func rest(l string, c *Config) {
 				c.REST.TLSKeyFile = strings.TrimSpace(match[3])
 			case "certificate":
 				c.REST.TLSCertificateFile = strings.TrimSpace(match[3])
+			case "ca":
+				c.REST.CACertificateFile = strings.TrimSpace(match[3])
 			}
 		}
 	}

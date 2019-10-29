@@ -30,7 +30,7 @@
 - [ ] watchdog
 
 #### REST API
-- [ ] TLS with pinned certificates
+- [x] TLS with mutual authentication
 - [ ] Swagger UI
 - [ ] gzip response
 - [x] Add HTTP method to dispatch matching
@@ -90,8 +90,6 @@
 4.  Look into ARP for set-address
 5.  Rework error handling to use Wrap/Frame
 6.  Integration tests
-7.  ~~Dig into simulator not receiving broadcast unless listening on 0.0.0.0:60000
-    (Ref. https://groups.google.com/forum/#!topic/golang-nuts/nbmYWwHCgPc)~~
 8.  Verify fields in listen events/status replies:
     - battery status can be (at least) 0x00, 0x01 and 0x04
 9.  Update to use modules

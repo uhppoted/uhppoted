@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"uhppoted/encoding/plist"
+	xpath "uhppoted/encoding/plist"
 )
 
 type Undaemonize struct {
@@ -72,7 +72,7 @@ func (c *Undaemonize) parse(path string) (*info, error) {
 	defer f.Close()
 
 	p := info{}
-	decoder := plist.NewDecoder(f)
+	decoder := xpath.NewDecoder(f)
 	err = decoder.Decode(&p)
 	if err != nil {
 		return nil, err
@@ -81,13 +81,13 @@ func (c *Undaemonize) parse(path string) (*info, error) {
 	return &p, nil
 }
 
-func (c *Undaemonize) launchd(path string, p info) error {
+func (c *Undaemonize) launchd(path string, d info) error {
 	fmt.Printf("   ... unloading LaunchDaemon\n")
 	cmd := exec.Command("launchctl", "unload", path)
 	out, err := cmd.CombinedOutput()
 	fmt.Printf("   > %s", out)
 	if err != nil {
-		fmt.Errorf("ERROR: Failed to unload '%s' (%v)\n", p.Label, err)
+		fmt.Errorf("ERROR: Failed to unload '%s' (%v)\n", d.Label, err)
 		return err
 	}
 
@@ -108,22 +108,22 @@ func (c *Undaemonize) logrotate() error {
 	return os.Remove(path)
 }
 
-func (c *Undaemonize) rmdirs(p info) error {
-	dir := p.WorkingDirectory
+func (c *Undaemonize) rmdirs(d info) error {
+	dir := d.WorkingDirectory
 
 	fmt.Printf("   ... removing '%s'\n", dir)
 
 	return os.RemoveAll(dir)
 }
 
-func (c *Undaemonize) firewall(p info) error {
+func (c *Undaemonize) firewall(d info) error {
 	fmt.Println()
 	fmt.Println("   ***")
 	fmt.Println("   *** WARNING: removing 'uhppoted' to the application firewall")
 	fmt.Println("   ***")
 	fmt.Println()
 
-	path := p.Program
+	path := d.Executable
 	cmd := exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--getglobalstate")
 	out, err := cmd.CombinedOutput()
 	fmt.Printf("   > %s", out)

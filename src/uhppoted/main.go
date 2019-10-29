@@ -117,6 +117,7 @@ func listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) erro
 		HttpsPort:          c.REST.HttpsPort,
 		TLSKeyFile:         c.REST.TLSKeyFile,
 		TLSCertificateFile: c.REST.TLSCertificateFile,
+		CACertificateFile:  c.REST.CACertificateFile,
 	}
 
 	go func() {
