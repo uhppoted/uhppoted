@@ -17,7 +17,7 @@ type Daemonize struct {
 	description string
 }
 
-type data struct {
+type info struct {
 	Name             string
 	Description      string
 	Executable       string
@@ -26,9 +26,20 @@ type data struct {
 	BroadcastAddress *net.UDPAddr
 }
 
-const confTemplate = `bind.address = {{.BindAddress}}
+const confTemplate = `# UDP
+bind.address = {{.BindAddress}}
 broadcast.address = {{.BroadcastAddress}}
 
+# REST API
+rest.http.enabled = false
+rest.http.port = 8080
+rest.https.enabled = true
+rest.https.port = 8443
+rest.tls.key = {{.WorkDir}}/rest/uhppoted.key
+rest.tls.certificate = {{.WorkDir}}/rest/uhppoted.cert
+rest.tls.ca = {{.WorkDir}}/rest/ca.cert
+
+# DEVICES
 # Example configuration for UTO311-L04 with serial number 305419896
 # UT0311-L0x.305419896.address = 192.168.1.100:60000
 # UT0311-L0x.305419896.door.1 = Front Door
@@ -55,7 +66,7 @@ func (c *Daemonize) Execute(ctx Context) error {
 
 	bind, broadcast := config.DefaultIpAddresses()
 
-	d := data{
+	d := info{
 		Name:             c.name,
 		Description:      "UHPPOTE UTO311-L0x access card controllers service/daemon ",
 		Executable:       executable,
@@ -87,7 +98,7 @@ func (c *Daemonize) Execute(ctx Context) error {
 	return nil
 }
 
-func (c *Daemonize) register(d *data) error {
+func (c *Daemonize) register(d *info) error {
 	config := mgr.Config{
 		DisplayName:      d.Name,
 		Description:      d.Description,
@@ -124,7 +135,7 @@ func (c *Daemonize) register(d *data) error {
 	return nil
 }
 
-func (c *Daemonize) mkdirs(d *data) error {
+func (c *Daemonize) mkdirs(d *info) error {
 	directories := []string{
 		d.WorkDir,
 	}
@@ -140,7 +151,7 @@ func (c *Daemonize) mkdirs(d *data) error {
 	return nil
 }
 
-func (c *Daemonize) conf(d *data) error {
+func (c *Daemonize) conf(d *info) error {
 	path := filepath.Join(d.WorkDir, "uhppoted.conf")
 	t := template.Must(template.New("uhppoted.conf").Parse(confTemplate))
 

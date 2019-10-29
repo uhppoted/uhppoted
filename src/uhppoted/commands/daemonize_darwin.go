@@ -7,10 +7,17 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
-	"uhppoted/encoding/plist"
+	xpath "uhppoted/encoding/plist"
 )
 
 type info struct {
+	Label            string
+	Executable       string
+	ConfigDirectory  string
+	WorkingDirectory string
+}
+
+type plist struct {
 	Label             string
 	Program           string
 	WorkingDirectory  string
@@ -25,6 +32,28 @@ const newsyslog = `#logfilename                                       [owner:gro
 {{range .}}{{.LogFile}}  :              644   30     10000  @T00  J     {{.PID}}
 {{end}}`
 
+const confTemplate = `# UDP
+bind.address = {{.BindAddress}}
+broadcast.address = {{.BroadcastAddress}}
+
+# REST API
+rest.http.enabled = false
+rest.http.port = 8080
+rest.https.enabled = true
+rest.https.port = 8443
+rest.tls.key = {{.ConfigDirectory}}/rest/uhppoted.key
+rest.tls.certificate = {{.ConfigDirectory}}/rest/uhppoted.cert
+rest.tls.ca = {{.ConfigDirectory}}/rest/ca.cert
+
+# DEVICES
+# Example configuration for UTO311-L04 with serial number 305419896
+# UT0311-L0x.305419896.address = 192.168.1.100:60000
+# UT0311-L0x.305419896.door.1 = Front Door
+# UT0311-L0x.305419896.door.2 = Side Door
+# UT0311-L0x.305419896.door.3 = Garage
+# UT0311-L0x.305419896.door.4 = Workshop
+`
+
 type Daemonize struct {
 }
 
@@ -38,8 +67,19 @@ func (c *Daemonize) Parse(args []string) error {
 
 func (c *Daemonize) Execute(ctx Context) error {
 	fmt.Println("   ... daemonizing")
+	executable, err := os.Executable()
+	if err != nil {
+		return err
+	}
 
-	if err := c.launchd(); err != nil {
+	d := info{
+		Label:            "com.github.twystd.uhppoted",
+		Executable:       executable,
+		ConfigDirectory:  "/usr/local/etc/com.github.twystd.uhppoted",
+		WorkingDirectory: "/usr/local/var/com.github.twystd.uhppoted",
+	}
+
+	if err := c.launchd(&d); err != nil {
 		return err
 	}
 
@@ -55,6 +95,10 @@ func (c *Daemonize) Execute(ctx Context) error {
 		return err
 	}
 
+	if err := c.conf(&d); err != nil {
+		return err
+	}
+
 	fmt.Println("   ... com.github.twystd.uhppoted registered as a LaunchDaemon")
 	fmt.Println()
 	fmt.Println("   The daemon will start automatically on the next system restart - to start it manually, execute the following command:")
@@ -65,24 +109,16 @@ func (c *Daemonize) Execute(ctx Context) error {
 	return nil
 }
 
-func (c *Daemonize) launchd() error {
-	executable, err := os.Executable()
-	if err != nil {
+func (c *Daemonize) launchd(d *info) error {
+	path := filepath.Join("/Library/LaunchDaemons", "com.github.twystd.uhppoted.plist")
+	_, err := os.Stat(path)
+	if err != nil && !os.IsNotExist(err) {
 		return err
 	}
 
-	plist := struct {
-		Label             string
-		Program           string
-		WorkingDirectory  string
-		ProgramArguments  []string
-		KeepAlive         bool
-		RunAtLoad         bool
-		StandardOutPath   string
-		StandardErrorPath string
-	}{
-		Label:             "com.github.twystd.uhppoted",
-		Program:           executable,
+	pl := plist{
+		Label:             d.Label,
+		Program:           d.Executable,
 		WorkingDirectory:  "/usr/local/var/com.github.twystd.uhppoted",
 		ProgramArguments:  []string{},
 		KeepAlive:         true,
@@ -91,30 +127,24 @@ func (c *Daemonize) launchd() error {
 		StandardErrorPath: "/usr/local/var/log/com.github.twystd.uhppoted.err",
 	}
 
-	path := filepath.Join("/Library/LaunchDaemons", "com.github.twystd.uhppoted.plist")
-	_, err = os.Stat(path)
-	if err != nil && !os.IsNotExist(err) {
-		return err
-	}
-
 	if !os.IsNotExist(err) {
 		current, err := c.parse(path)
 		if err != nil {
 			return err
 		}
 
-		plist.WorkingDirectory = current.WorkingDirectory
-		plist.ProgramArguments = current.ProgramArguments
-		plist.KeepAlive = current.KeepAlive
-		plist.RunAtLoad = current.RunAtLoad
-		plist.StandardOutPath = current.StandardOutPath
-		plist.StandardErrorPath = current.StandardErrorPath
+		pl.WorkingDirectory = current.WorkingDirectory
+		pl.ProgramArguments = current.ProgramArguments
+		pl.KeepAlive = current.KeepAlive
+		pl.RunAtLoad = current.RunAtLoad
+		pl.StandardOutPath = current.StandardOutPath
+		pl.StandardErrorPath = current.StandardErrorPath
 	}
 
-	return c.daemonize(path, plist)
+	return c.daemonize(path, pl)
 }
 
-func (c *Daemonize) parse(path string) (*info, error) {
+func (c *Daemonize) parse(path string) (*plist, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -122,8 +152,8 @@ func (c *Daemonize) parse(path string) (*info, error) {
 
 	defer f.Close()
 
-	p := info{}
-	decoder := plist.NewDecoder(f)
+	p := plist{}
+	decoder := xpath.NewDecoder(f)
 	err = decoder.Decode(&p)
 	if err != nil {
 		return nil, err
@@ -141,7 +171,7 @@ func (c *Daemonize) daemonize(path string, p interface{}) error {
 
 	defer f.Close()
 
-	encoder := plist.NewEncoder(f)
+	encoder := xpath.NewEncoder(f)
 	if err = encoder.Encode(p); err != nil {
 		return err
 	}
@@ -155,6 +185,21 @@ func (c *Daemonize) mkdirs() error {
 	fmt.Printf("   ... creating '%s'\n", dir)
 
 	return os.MkdirAll(dir, 0644)
+}
+
+func (c *Daemonize) conf(d *info) error {
+	path := filepath.Join(d.ConfigDirectory, "uhppoted.conf")
+	t := template.Must(template.New("uhppoted.conf").Parse(confTemplate))
+
+	fmt.Printf("   ... creating '%s'\n", path)
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	return t.Execute(f, d)
 }
 
 func (c *Daemonize) logrotate() error {

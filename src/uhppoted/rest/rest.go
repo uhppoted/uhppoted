@@ -2,8 +2,11 @@ package rest
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
@@ -19,6 +22,7 @@ type RestD struct {
 	HttpsPort          uint16
 	TLSKeyFile         string
 	TLSCertificateFile string
+	CACertificateFile  string
 }
 
 type handlerfn func(context.Context, http.ResponseWriter, *http.Request)
@@ -72,7 +76,39 @@ func (r *RestD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		go func() {
 			defer wg.Done()
 			log.Printf("... listening on port %d\n", r.HttpsPort)
-			log.Fatal(http.ListenAndServeTLS(fmt.Sprintf(":%d", r.HttpsPort), r.TLSCertificateFile, r.TLSKeyFile, &d))
+
+			ca, err := ioutil.ReadFile(r.CACertificateFile)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			certificates := x509.NewCertPool()
+			if !certificates.AppendCertsFromPEM(ca) {
+				log.Fatal("Unable failed to parse CA certificate")
+			}
+
+			tlsConfig := tls.Config{
+				ClientAuth: tls.RequireAndVerifyClientCert,
+				ClientCAs:  certificates,
+				CipherSuites: []uint16{
+					tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+					tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+					tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+					tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+				},
+				PreferServerCipherSuites: true,
+				MinVersion:               tls.VersionTLS12,
+			}
+
+			tlsConfig.BuildNameToCertificate()
+
+			httpsd := &http.Server{
+				Addr:      fmt.Sprintf(":%d", r.HttpsPort),
+				Handler:   &d,
+				TLSConfig: &tlsConfig,
+			}
+
+			log.Fatal(httpsd.ListenAndServeTLS(r.TLSCertificateFile, r.TLSKeyFile))
 		}()
 	}
 
