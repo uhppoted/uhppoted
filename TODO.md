@@ -90,6 +90,7 @@
 4.  Look into ARP for set-address
 5.  Rework error handling to use Wrap/Frame
 6.  Integration tests
+7.  conf file encoder/decoder with reflection and/or JSON
 8.  Verify fields in listen events/status replies:
     - battery status can be (at least) 0x00, 0x01 and 0x04
 9.  Update to use modules
@@ -101,7 +102,7 @@
 15. MacOS: use [system logging](https://developer.apple.com/documentation/os/logging)
 17. Windows: event logging
 16. [Streamsheets](https://github.com/cedalo/streamsheets)
-17. PDL
+17. PDL + go generate
     - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)
     - [Diva](http://www.diva-portal.org/smash/get/diva2:407713/FULLTEXT01.pdf)
     - [PADS/ML](https://pads.cs.tufts.edu/papers/tfp07.pdf)

@@ -118,6 +118,7 @@ func listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) erro
 		TLSKeyFile:         c.REST.TLSKeyFile,
 		TLSCertificateFile: c.REST.TLSCertificateFile,
 		CACertificateFile:  c.REST.CACertificateFile,
+		CORSEnabled:        c.REST.CORSEnabled,
 	}
 
 	go func() {

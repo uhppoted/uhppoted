@@ -24,6 +24,7 @@ type REST struct {
 	TLSKeyFile         string
 	TLSCertificateFile string
 	CACertificateFile  string
+	CORSEnabled        bool
 }
 
 type Config struct {
@@ -48,6 +49,7 @@ var parsers = []struct {
 	{regexp.MustCompile(`^rest\.tls\.key\s*=.*`), rest},
 	{regexp.MustCompile(`^rest\.tls\.certificate\s*=.*`), rest},
 	{regexp.MustCompile(`^rest\.tls\.ca\s*=.*`), rest},
+	{regexp.MustCompile(`^rest\.CORS\.enabled\s*=.*`), rest},
 }
 
 func NewConfig() *Config {
@@ -65,6 +67,7 @@ func NewConfig() *Config {
 			TLSKeyFile:         "uhppoted.key",
 			TLSCertificateFile: "uhppoted.cert",
 			CACertificateFile:  "ca.cert",
+			CORSEnabled:        false,
 		},
 	}
 
@@ -218,6 +221,14 @@ func rest(l string, c *Config) {
 				c.REST.TLSCertificateFile = strings.TrimSpace(match[3])
 			case "ca":
 				c.REST.CACertificateFile = strings.TrimSpace(match[3])
+			}
+
+		case "CORS":
+			switch match[2] {
+			case "enabled":
+				if enabled, err := strconv.ParseBool(strings.TrimSpace(match[3])); err == nil {
+					c.REST.CORSEnabled = enabled
+				}
 			}
 		}
 	}
