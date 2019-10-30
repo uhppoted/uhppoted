@@ -32,7 +32,7 @@
 #### REST API
 - [x] TLS with mutual authentication
 - [ ] Swagger UI
-- [ ] gzip response
+- [x] gzip response
 - [x] Add HTTP method to dispatch matching
 - [x] Log internal error information
 - [x] Include logging in context
