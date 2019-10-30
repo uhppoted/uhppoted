@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"compress/gzip"
 	"context"
 	"crypto/tls"
 	"crypto/x509"
@@ -11,6 +12,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"strings"
 	"sync"
 	"uhppote"
 )
@@ -43,10 +45,10 @@ type dispatcher struct {
 
 func (r *RestD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	d := dispatcher{
-		r.CORSEnabled,
-		u,
-		l,
-		make([]handler, 0),
+		corsEnabled: r.CORSEnabled,
+		uhppote:     u,
+		log:         l,
+		handlers:    make([]handler, 0),
 	}
 
 	d.Add("^/uhppote/device$", http.MethodGet, getDevices)
@@ -127,6 +129,17 @@ func (d *dispatcher) Add(path string, method string, h handlerfn) {
 }
 
 func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	compression := "none"
+
+	for _, header := range r.Header["Accept-Encoding"] {
+		encodings := strings.Split(header, ",")
+		for _, encoding := range encodings {
+			if strings.TrimSpace(encoding) == "gzip" {
+				compression = "gzip"
+			}
+		}
+	}
+
 	if d.corsEnabled {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
@@ -144,6 +157,7 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if h.re.MatchString(url) && r.Method == h.method {
 			ctx := context.WithValue(context.Background(), "uhppote", d.uhppote)
 			ctx = context.WithValue(ctx, "log", d.log)
+			ctx = context.WithValue(ctx, "compression", compression)
 			ctx = parse(ctx, r)
 			h.fn(ctx, w, r)
 			return
@@ -200,7 +214,15 @@ func reply(ctx context.Context, w http.ResponseWriter, response interface{}) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(b)
+
+	if len(b) > 1024 && ctx.Value("compression") == "gzip" {
+		w.Header().Set("Content-Encoding", "gzip")
+		encoder := gzip.NewWriter(w)
+		encoder.Write(b)
+		encoder.Flush()
+	} else {
+		w.Write(b)
+	}
 }
 
 func debug(ctx context.Context, serialNumber uint32, operation string, r *http.Request) {
