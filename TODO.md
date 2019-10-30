@@ -5,6 +5,7 @@
 ### uhppoted
 
 - [ ] use flag.FlagSet for commands
+- [ ] add --debug to command line flags
 - [x] MacOS launchd SIG_TERM
 - [x] MacOS launchd --daemonize
 - [x] MacOS launchd reinstall
@@ -31,7 +32,7 @@
 
 #### REST API
 - [x] TLS with mutual authentication
-- [ ] Swagger UI
+- [x] Swagger UI
 - [x] gzip response
 - [x] Add HTTP method to dispatch matching
 - [x] Log internal error information

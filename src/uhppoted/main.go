@@ -119,6 +119,10 @@ func listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) erro
 		TLSCertificateFile: c.REST.TLSCertificateFile,
 		CACertificateFile:  c.REST.CACertificateFile,
 		CORSEnabled:        c.REST.CORSEnabled,
+		OpenApi: rest.OpenApi{
+			Enabled:   c.OpenApi.Enabled,
+			Directory: c.OpenApi.Directory,
+		},
 	}
 
 	go func() {

@@ -17,6 +17,11 @@ import (
 	"uhppote"
 )
 
+type OpenApi struct {
+	Enabled   bool
+	Directory string
+}
+
 type RestD struct {
 	HttpEnabled        bool
 	HttpPort           uint16
@@ -26,6 +31,7 @@ type RestD struct {
 	TLSCertificateFile string
 	CACertificateFile  string
 	CORSEnabled        bool
+	OpenApi
 }
 
 type handlerfn func(context.Context, http.ResponseWriter, *http.Request)
@@ -41,29 +47,35 @@ type dispatcher struct {
 	uhppote     *uhppote.UHPPOTE
 	log         *log.Logger
 	handlers    []handler
+	openapi     http.Handler
 }
 
 func (r *RestD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	d := dispatcher{
-		corsEnabled: r.CORSEnabled,
-		uhppote:     u,
+		uhppote: u,
+		handlers: []handler{
+			handler{regexp.MustCompile("^/uhppote/device$"), http.MethodGet, getDevices},
+			handler{regexp.MustCompile("^/uhppote/device/[0-9]+$"), http.MethodGet, getDevice},
+			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/status$"), http.MethodGet, getStatus},
+			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/time$"), http.MethodGet, getTime},
+			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/time$"), http.MethodPut, setTime},
+			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/door/[1-4]/delay$"), http.MethodGet, getDoorDelay},
+			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/door/[1-4]/delay$"), http.MethodPut, setDoorDelay},
+			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/card$"), http.MethodGet, getCards},
+			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/card/[0-9]+$"), http.MethodGet, getCard},
+			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/card$"), http.MethodDelete, deleteCards},
+			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/card/[0-9]+$"), http.MethodDelete, deleteCard},
+			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/event$"), http.MethodGet, getEvents},
+			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/event/[0-9]+$"), http.MethodGet, getEvent},
+		},
 		log:         l,
-		handlers:    make([]handler, 0),
+		corsEnabled: r.CORSEnabled,
+		openapi:     http.NotFoundHandler(),
 	}
 
-	d.Add("^/uhppote/device$", http.MethodGet, getDevices)
-	d.Add("^/uhppote/device/[0-9]+$", http.MethodGet, getDevice)
-	d.Add("^/uhppote/device/[0-9]+/status$", http.MethodGet, getStatus)
-	d.Add("^/uhppote/device/[0-9]+/time$", http.MethodGet, getTime)
-	d.Add("^/uhppote/device/[0-9]+/time$", http.MethodPut, setTime)
-	d.Add("^/uhppote/device/[0-9]+/door/[1-4]/delay$", http.MethodGet, getDoorDelay)
-	d.Add("^/uhppote/device/[0-9]+/door/[1-4]/delay$", http.MethodPut, setDoorDelay)
-	d.Add("^/uhppote/device/[0-9]+/card$", http.MethodGet, getCards)
-	d.Add("^/uhppote/device/[0-9]+/card/[0-9]+$", http.MethodGet, getCard)
-	d.Add("^/uhppote/device/[0-9]+/card$", http.MethodDelete, deleteCards)
-	d.Add("^/uhppote/device/[0-9]+/card/[0-9]+$", http.MethodDelete, deleteCard)
-	d.Add("^/uhppote/device/[0-9]+/event$", http.MethodGet, getEvents)
-	d.Add("^/uhppote/device/[0-9]+/event/[0-9]+$", http.MethodGet, getEvent)
+	if r.OpenApi.Enabled {
+		d.openapi = http.StripPrefix("/openapi", http.FileServer(http.Dir(r.OpenApi.Directory)))
+	}
 
 	var wg sync.WaitGroup
 
@@ -123,19 +135,18 @@ func (r *RestD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 func Close() {
 }
 
-func (d *dispatcher) Add(path string, method string, h handlerfn) {
-	re := regexp.MustCompile(path)
-	d.handlers = append(d.handlers, handler{re, method, h})
-}
-
 func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	compression := "none"
 
-	for _, header := range r.Header["Accept-Encoding"] {
-		encodings := strings.Split(header, ",")
-		for _, encoding := range encodings {
-			if strings.TrimSpace(encoding) == "gzip" {
-				compression = "gzip"
+	for key, headers := range r.Header {
+		if http.CanonicalHeaderKey(key) == "Accept-Encoding" {
+			for _, header := range headers {
+				encodings := strings.Split(header, ",")
+				for _, encoding := range encodings {
+					if strings.TrimSpace(encoding) == "gzip" {
+						compression = "gzip"
+					}
+				}
 			}
 		}
 	}
@@ -149,6 +160,13 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodOptions {
 			return
 		}
+	}
+
+	// OpenAPI ?
+
+	if strings.HasPrefix(r.URL.Path, "/openapi") {
+		d.openapi.ServeHTTP(w, r)
+		return
 	}
 
 	// Dispatch to handler

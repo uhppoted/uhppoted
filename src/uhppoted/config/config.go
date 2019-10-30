@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -27,11 +28,17 @@ type REST struct {
 	CORSEnabled        bool
 }
 
+type OpenApi struct {
+	Enabled   bool
+	Directory string
+}
+
 type Config struct {
 	BindAddress      *net.UDPAddr
 	BroadcastAddress *net.UDPAddr
 	Devices          map[uint32]*Device
 	REST
+	OpenApi
 }
 
 var parsers = []struct {
@@ -50,6 +57,8 @@ var parsers = []struct {
 	{regexp.MustCompile(`^rest\.tls\.certificate\s*=.*`), rest},
 	{regexp.MustCompile(`^rest\.tls\.ca\s*=.*`), rest},
 	{regexp.MustCompile(`^rest\.CORS\.enabled\s*=.*`), rest},
+	{regexp.MustCompile(`^rest\.openapi\.enabled\s*=.*`), openapi},
+	{regexp.MustCompile(`^rest\.openapi\.directory\s*=.*`), openapi},
 }
 
 func NewConfig() *Config {
@@ -59,6 +68,7 @@ func NewConfig() *Config {
 		BindAddress:      &bind,
 		BroadcastAddress: &broadcast,
 		Devices:          make(map[uint32]*Device),
+
 		REST: REST{
 			HttpEnabled:        false,
 			HttpPort:           8080,
@@ -68,6 +78,11 @@ func NewConfig() *Config {
 			TLSCertificateFile: "uhppoted.cert",
 			CACertificateFile:  "ca.cert",
 			CORSEnabled:        false,
+		},
+
+		OpenApi: OpenApi{
+			Enabled:   false,
+			Directory: "./openapi",
 		},
 	}
 
@@ -85,6 +100,8 @@ func (c *Config) Load(path string) error {
 	}
 
 	defer f.Close()
+
+	c.OpenApi.Directory = filepath.Join(filepath.Dir(path), "rest", "openapi")
 
 	s := bufio.NewScanner(f)
 	for s.Scan() {
@@ -230,6 +247,23 @@ func rest(l string, c *Config) {
 					c.REST.CORSEnabled = enabled
 				}
 			}
+		}
+	}
+}
+
+func openapi(l string, c *Config) {
+	re := regexp.MustCompile(`^rest\.openapi\.(\w+)\s*=(.*)`)
+	match := re.FindStringSubmatch(l)
+
+	if len(match) > 0 {
+		switch match[1] {
+		case "enabled":
+			if enabled, err := strconv.ParseBool(strings.TrimSpace(match[2])); err == nil {
+				c.OpenApi.Enabled = enabled
+			}
+
+		case "directory":
+			c.OpenApi.Directory = strings.TrimSpace(match[2])
 		}
 	}
 }
