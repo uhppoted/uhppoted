@@ -24,6 +24,7 @@ const (
 
 var VERSION = "v0.04.0"
 var retries = 0
+var debug = flag.Bool("debug", false, "Displays vaguely useful internal information")
 
 func main() {
 	flag.Parse()
@@ -101,7 +102,7 @@ func listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) erro
 		BindAddress:      c.BindAddress,
 		BroadcastAddress: c.BroadcastAddress,
 		Devices:          make(map[uint32]*net.UDPAddr),
-		Debug:            true,
+		Debug:            *debug,
 	}
 
 	for id, d := range c.Devices {

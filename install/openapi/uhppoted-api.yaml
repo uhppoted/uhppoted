@@ -1,0 +1,762 @@
+openapi: "3.0.2"
+
+info:
+  version: 0.3.0
+  title: "twystd-uhppoted"
+  description: "REST API for the twystd UHPPOTE service"
+  license:
+    name: "MIT"
+    url: "https://github.com/twystd/uhppote-go/blob/master/LICENSE"
+    
+servers:    
+  - url: "http://127.0.0.1:8080/uhppote"
+  - url: "https://127.0.0.1:8443/uhppote"
+  
+tags:
+  - name: "uhppote"
+    description: "UHPPOTE service REST interface"
+
+paths:
+  /device:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves a list of active devices"
+      description: "Retrieves the list of active UHPPOTE devices"
+      operationId: listDevices
+      responses:
+        '200':
+          description: "List of active devices"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DeviceList"        
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+  /device/{device-id}:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves a single device information"
+      description: "Retrieves the basic configuration for a UHPPOTE device"
+      operationId: getDevice
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 305419896
+      responses:
+        '200':
+          description: "Device configuration"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Device"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+          
+  /device/{device-id}/status:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves the device status"
+      description: "Retrieves the current status of a device"
+      operationId: getDeviceStatus
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 305419896
+      responses:
+        '200':
+          description: "Device current status"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DeviceStatus"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+  /device/{device-id}/time:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves the device time"
+      description: "Retrieves the device current date/time"
+      operationId: getDeviceTime
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 305419896
+      responses:
+        '200':
+          description: "Device current date/time"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DeviceTime"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+    put:
+      tags:
+        - uhppote
+      summary: "Sets the device time"
+      description: "Sets the device current date/time"
+      operationId: putDeviceTime
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 305419896
+      requestBody:
+        description: "Date time"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceTime"        
+      responses:
+        '200':
+          description: "Device current date/time"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DeviceTime"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+  /device/{device-id}/door/{door}/delay:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves the door delay"
+      description: "Retrieves the door delay setting in seconds"
+      operationId: getDoorDelay
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 305419896
+        - name: door
+          in: path
+          description: "Door number"
+          required: true
+          schema:
+            type: integer
+            format: uint8
+            example: 3
+      responses:
+        '200':
+          description: "Door delay (in seconds)"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DoorDelay"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+    put:
+      tags:
+        - uhppote
+      summary: "Sets the door delay"
+      description: "Sets the door delay in seconds"
+      operationId: putDoorDelay
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 305419896
+        - name: door
+          in: path
+          description: "Door number"
+          required: true
+          schema:
+            type: integer
+            format: uint8
+            example: 3
+      requestBody:
+        description: "Door delay in seconds"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DoorDelay"        
+      responses:
+        '200':
+          description: "Door delay in seconds"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DoorDelay"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+  /device/{device-id}/card:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves the device card list"
+      description: "Retrieves the list of stored card numbers"
+      operationId: getCards
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 305419896
+      responses:
+        '200':
+          description: "Card list"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/CardList"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+    delete:
+      tags:
+        - uhppote
+      summary: "Deletes the entire device card list"
+      description: "Deletes all stored card numbers"
+      operationId: deleteCards
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 305419896
+      responses:
+        '200':
+          description: "Stored card list cleared"
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+  /device/{device-id}/card/{card-number}:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves card access information"
+      description: "Retrieves the access permissions associated with the card number"
+      operationId: getCard
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 305419896
+        - name: card-number
+          in: path
+          description: "Card number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 192837465
+      responses:
+        '200':
+          description: "Card access information"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Card"        
+        '404':
+          description: "No matching device and/or card"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+          
+    delete:
+      tags:
+        - uhppote
+      summary: "Deletes a card"
+      description: "Removes the card associated with the card number from the stored card list"
+      operationId: deleteCard
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 305419896
+        - name: card-number
+          in: path
+          description: "Card number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 192837465
+      responses:
+        '200':
+          description: "Card deleted"
+        '404':
+          description: "No matching device and/or card"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+  /device/{device-id}/event:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves the device event list"
+      description: "Retrieves the list of stored events"
+      operationId: getEvents
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 305419896
+      responses:
+        '200':
+          description: "Event list"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/EventList"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+  /device/{device-id}/event/{event-id}:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves a single event record"
+      description: "Retrieves the event record for an event ID"
+      operationId: getEvent
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 305419896
+        - name: event-id
+          in: path
+          description: "Event ID"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 31
+      responses:
+        '200':
+          description: "Event record"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Event"        
+        '404':
+          description: "No matching device and/or event"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+        
+components:
+  schemas:
+    DeviceList:
+      required: 
+        - devices
+      properties:
+        devices:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeviceID"        
+          description: "List of simulator devices"
+
+    DeviceID:
+      required: 
+        - device-id
+        - device-type
+      properties:
+        device-id:  
+          type: number
+          format: uint32
+          description: "UHPPOTE device serial number"
+          example: 305419896
+        device-type:  
+          type: string
+          format: string
+          description: "UHPPOTE device type"
+          example: "UT0311-L04"
+
+    Device:
+      required: 
+        - device-type
+        - ip-address
+        - subnet-mask
+        - gateway-address
+        - mac-address
+        - version
+        - date
+      properties:
+        device-type:  
+          type: string
+          format: string
+          description: "UHPPOTE device type"
+          example: "UT0311-L04"
+        ip-address:  
+          type: string
+          format: IPv4 address
+          description: "Device IP address"
+          example: "192.168.1.50"
+        subnet-mask:  
+          type: string
+          format: IPv4 address
+          description: "Device IP subnet mask"
+          example: "255.25.255.0"
+        gateway-address:  
+          type: string
+          format: IPv4 address
+          description: "Device IP gateway address"
+          example: "192.168.1.1"
+        mac-address:  
+          type: string
+          format: 6 byte hexadecimal
+          description: "Device MAC address"
+          example: "00:12:23:34:45:56"
+        version:  
+          type: string
+          format: uint16 hexadecimal
+          description: "Device firmware version"
+          example: "0892"
+        date:  
+          type: string
+          format: yyyy-mm-dd
+          description: "Device current date"
+          example: "2019-08-28"
+
+    DeviceStatus:
+      required: 
+        - last-event-index
+        - event-type
+        - access-granted
+        - door
+        - door-opened
+        - user-id
+        - event-timestamp
+        - event-result
+        - door-state 
+        - door-buttons
+        - system-state
+        - system-datetime
+        - packet-number
+        - backup-state
+        - special-message
+        - battery-status
+        - fire-alarm-status
+      properties:
+        last-event-index:
+          type: number
+          format: uint32
+          description: "Index of last recorded event"
+          example: 37
+        event-type:
+          type: number
+          format: uint8
+          description: "Type of last recorded event"
+          example: 3
+        access-granted:
+          type: boolean
+          format: true/false
+          description: "Access granted/refused"
+          example: true
+        door:
+          type: number
+          format: uint8 (1..4)
+          description: "Door ID for event"
+          example: 3
+        door-opened:
+          type: boolean
+          format: true/false
+          description: "Door opened to request"
+          example: true
+        user-id:
+          type: number
+          format: uint32
+          description: "User ID (card number for swipe events)"
+          example: 1928374646
+        event-timestamp:  
+          type: string
+          format: yyyy-mm-dd HH:mm:ss
+          description: "Event timestamp"
+          example: "2019-08-28 15:32:29"
+        event-result:  
+          type: integer
+          format: event result code
+          description: "Event result code"
+          example: 6
+        door-state:  
+          type: array
+          format: array of 4 boolean values
+          description: "Door open state array"
+          example: [true, false, false, true]
+        door-buttons:  
+          type: array
+          format: array of 4 boolean values
+          description: "Door button state array"
+          example: [false, false, false, true]
+        system-state:  
+          type: integer
+          format: uint8
+          description: "System state flag set"
+          example: 0
+        system-datetime:  
+          type: string
+          format: yyyy-mm-dd HH:mm:ss
+          description: "Current system date and time"
+          example: "2019-08-28 15:32:29"
+        packet-number:  
+          type: integer
+          format: uint8
+          description: "Packet number, whatever that entails"
+          example: 0
+        backup-state:  
+          type: integer
+          format: uint8
+          description: "Backup state code, whatever that entails"
+          example: 0
+        special-message:  
+          type: integer
+          format: uint8
+          description: "Special message code, whatever that entails"
+          example: 0
+        battery-status:  
+          type: integer
+          format: uint8
+          description: "Battery status flag set"
+          example: 0
+        fire-alarm-status:  
+          type: integer
+          format: uint8
+          description: "Fire alarm status flag set"
+          example: 0
+
+    DeviceTime:
+      properties:
+        datetime:
+          type: string
+          format: yyyy-mm-dd HH:mm:ss
+          description: "Current device date/time"
+          example: "2019-08-28 15:32:29"
+
+    DoorDelay:
+      properties:
+        delay:
+          type: number
+          format: uint8
+          description: "Door delay in seconds"
+          example: 5
+          
+    CardList:
+      required: 
+        - cards
+      properties:
+        devices:
+          type: array
+          items:
+             type: number
+             format: uint32
+             description: "Card number"
+             example: 192837465
+          description: "List of card numbers"
+
+    Card:
+      required: 
+        - card-number
+        - start-date
+        - end-date
+        - doors
+      properties:
+        card-number:  
+          type: number
+          format: uint32
+          description: "Card number"
+          example: 192837465
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "First date card is valid"
+          example: "2019-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Last date card is valid"
+          example: "2019-12-31"
+        doors:  
+          type: array
+          items:
+             type: boolean
+             format: true/false
+             description: "Door access granted"
+             example: true, false, false, true
+          description: "List of doors and access"
+        
+    EventList:
+      required: 
+        - events
+      properties:
+        devices:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"        
+          description: "List of events"
+          
+    Event:
+      required: 
+        - event-id
+        - event-type
+        - access-granted
+        - door-id
+        - door-opened
+        - user-id
+        - timestamp
+        - event-result
+      properties:
+        event-id:  
+          type: number
+          format: uint32
+          description: "Event id"
+          example: 13
+        event-type:  
+          type: number
+          format: uint8
+          description: "Event type"
+          example: 1
+        access-granted:  
+          type: boolean
+          format: true/false
+          description: "Access granted"
+          example: true
+        door-id:  
+          type: number
+          format: uint8
+          description: "Door number [1..4]"
+          example: 2
+        user-id:  
+          type: number
+          format: uint32
+          description: "User ID, typically card number"
+          example: 192837465
+        timestamp:  
+          type: string
+          format: yyyy-MM-dd HH:mm:ss
+          description: "Event timestamp"
+          example: "2019-03-27 12:34:56"
+        event-result:  
+          type: number
+          format: uint8
+          description: "Event result"
+          example: 6
