@@ -5,7 +5,7 @@
 ### uhppoted
 
 - [ ] use flag.FlagSet for commands
-- [ ] add --debug to command line flags
+- [x] add --debug to command line flags
 - [x] MacOS launchd SIG_TERM
 - [x] MacOS launchd --daemonize
 - [x] MacOS launchd reinstall
@@ -25,8 +25,8 @@
 - [x] Windows service: log to Event Log
 - [x] Windows service: rethink --console option
 
-- [ ] websocket command interface
 - [ ] MQTT 
+- [ ] websocket command interface
 - [ ] GraphQL
 - [ ] watchdog
 
@@ -99,9 +99,9 @@
 11. Phoenix UI
 12. step-ca (https://smallstep.com/blog/private-acme-server)
 13. fuse
-14. Make bind and broadcast addresses mandatory in UHPPOTE
-15. MacOS: use [system logging](https://developer.apple.com/documentation/os/logging)
-17. Windows: event logging
+14. EventLogger 
+    - MacOS: use [system logging](https://developer.apple.com/documentation/os/logging)
+    - Windows: event logging
 16. [Streamsheets](https://github.com/cedalo/streamsheets)
 17. PDL + go generate
     - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)
