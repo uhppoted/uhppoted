@@ -47,8 +47,7 @@ func (c *Undaemonize) Execute(ctx Context) error {
 
 	fmt.Println("   ... uhppoted unregistered as a systemd service")
 	fmt.Println()
-	fmt.Println("   Log files in directory /var/uhppoted/log and configuration files in /etc/uhppoted")
-	fmt.Println("   should be removed manually")
+	fmt.Println("   Log files in directory /var/uhppoted/log and configuration files in /etc/uhppoted should be removed manually")
 	fmt.Println()
 
 	return nil

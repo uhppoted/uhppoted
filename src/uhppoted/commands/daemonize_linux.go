@@ -228,6 +228,7 @@ func (c *Daemonize) mkdirs(d *info) error {
 		"/var/uhppoted",
 		"/var/log/uhppoted",
 		"/etc/uhppoted",
+		"/etc/uhppoted/rest",
 	}
 
 	for _, dir := range directories {

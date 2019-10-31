@@ -1,9 +1,8 @@
-package main
+package commands
 
 import (
 	"flag"
 	"fmt"
-	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/eventlog"
 	"log"
@@ -33,63 +32,10 @@ var logfilesize = flag.Int("logfilesize", 10, "uhppoted log file size")
 var pidFile = flag.String("pid", filepath.Join(wd, "uhppoted.pid"), "uhppoted PID file")
 var console = flag.Bool("console", false, "Run as command-line application")
 
-func sysinit() {
+func (c *Run) Execute(ctx Context) error {
 	log.Printf("uhppoted service - %s (PID %d)\n", "Microsoft Windows", os.Getpid())
-	fmt.Printf("uhppoted service - %s (PID %d)\n", "Microsoft Windows", os.Getpid())
-}
 
-func workdir() string {
-	programData, err := windows.KnownFolderPath(windows.FOLDERID_ProgramData, windows.KF_FLAG_DEFAULT)
-	if err != nil {
-		return `C:\uhppoted`
-	}
-
-	return filepath.Join(programData, "uhppoted")
-}
-
-func start(c *config.Config, logfile string, logfilesize int) {
-	var logger *log.Logger
-
-	eventlogger, err := eventlog.Open("uhppoted")
-	if err != nil {
-		events := filelogger.Ticker{Filename: logfile, MaxSize: logfilesize}
-		logger = log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
-	} else {
-		defer eventlogger.Close()
-
-		events := EventLog{eventlogger}
-		logger = log.New(&events, "uhppoted", log.Ldate|log.Ltime|log.LUTC)
-	}
-
-	logger.Printf("uhppoted service - start\n")
-
-	if *console {
-		run(c, logger)
-		return
-	}
-
-	uhppoted := service{
-		name:   "uhppoted",
-		conf:   c,
-		logger: logger,
-	}
-
-	logger.Printf("uhppoted service - starting\n")
-	err = svc.Run("uhppoted", &uhppoted)
-
-	if err != nil {
-		fmt.Printf("   Unable to execute ServiceManager.Run request (%v)\n", err)
-		fmt.Println()
-		fmt.Println("   To run uhppoted as a command line application, type:")
-		fmt.Println()
-		fmt.Println("     > uhppoted --console")
-		fmt.Println()
-
-		logger.Fatalf("Error executing ServiceManager.Run request: %v", err)
-		return
-	}
-
-	logger.Printf("uhppoted daemon - started\n")
+	return execute(ctx)
 }
 
 func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan<- svc.Status) (ssec bool, errno uint32) {
@@ -153,6 +99,51 @@ loop:
 	s.logger.Printf("uhppoted service - stopped\n")
 
 	return false, 0
+}
+
+func start(c *config.Config, logfile string, logfilesize int) {
+	var logger *log.Logger
+
+	eventlogger, err := eventlog.Open("uhppoted")
+	if err != nil {
+		events := filelogger.Ticker{Filename: logfile, MaxSize: logfilesize}
+		logger = log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
+	} else {
+		defer eventlogger.Close()
+
+		events := EventLog{eventlogger}
+		logger = log.New(&events, "uhppoted", log.Ldate|log.Ltime|log.LUTC)
+	}
+
+	logger.Printf("uhppoted service - start\n")
+
+	if *console {
+		run(c, logger)
+		return
+	}
+
+	uhppoted := service{
+		name:   "uhppoted",
+		conf:   c,
+		logger: logger,
+	}
+
+	logger.Printf("uhppoted service - starting\n")
+	err = svc.Run("uhppoted", &uhppoted)
+
+	if err != nil {
+		fmt.Printf("   Unable to execute ServiceManager.Run request (%v)\n", err)
+		fmt.Println()
+		fmt.Println("   To run uhppoted as a command line application, type:")
+		fmt.Println()
+		fmt.Println("     > uhppoted --console")
+		fmt.Println()
+
+		logger.Fatalf("Error executing ServiceManager.Run request: %v", err)
+		return
+	}
+
+	logger.Printf("uhppoted daemon - started\n")
 }
 
 func (e *EventLog) Write(p []byte) (int, error) {

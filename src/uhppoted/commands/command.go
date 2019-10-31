@@ -35,5 +35,5 @@ func Parse() (Command, error) {
 		}
 	}
 
-	return nil, nil
+	return &Run{}, nil
 }
