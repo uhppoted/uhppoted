@@ -2,12 +2,12 @@ package commands
 
 import (
 	"fmt"
-	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/svc/eventlog"
 	"golang.org/x/sys/windows/svc/mgr"
 	"net"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 	"uhppoted/config"
 )
@@ -35,9 +35,9 @@ rest.http.enabled = false
 rest.http.port = 8080
 rest.https.enabled = true
 rest.https.port = 8443
-rest.tls.key = {{.WorkDir}}/rest/uhppoted.key
-rest.tls.certificate = {{.WorkDir}}/rest/uhppoted.cert
-rest.tls.ca = {{.WorkDir}}/rest/ca.cert
+rest.tls.key = {{.WorkDir}}\rest\uhppoted.key
+rest.tls.certificate = {{.WorkDir}}\rest\uhppoted.cert
+rest.tls.ca = {{.WorkDir}}\rest\ca.cert
 
 # DEVICES
 # Example configuration for UTO311-L04 with serial number 305419896
@@ -138,6 +138,7 @@ func (c *Daemonize) register(d *info) error {
 func (c *Daemonize) mkdirs(d *info) error {
 	directories := []string{
 		d.WorkDir,
+		filepath.Join(d.WorkDir, "rest"),
 	}
 
 	for _, dir := range directories {
@@ -154,8 +155,14 @@ func (c *Daemonize) mkdirs(d *info) error {
 func (c *Daemonize) conf(d *info) error {
 	path := filepath.Join(d.WorkDir, "uhppoted.conf")
 	t := template.Must(template.New("uhppoted.conf").Parse(confTemplate))
+	var b strings.Builder
 
 	fmt.Printf("   ... creating '%s'\n", path)
+
+	if err := t.Execute(&b, d); err != nil {
+		return err
+	}
+
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
@@ -163,16 +170,17 @@ func (c *Daemonize) conf(d *info) error {
 
 	defer f.Close()
 
-	return t.Execute(f, d)
-}
+	replacer := strings.NewReplacer(
+		"\r\n", "\r\n",
+		"\r", "\r\n",
+		"\n", "\r\n",
+	)
 
-func workdir() string {
-	programData, err := windows.KnownFolderPath(windows.FOLDERID_ProgramData, windows.KF_FLAG_DEFAULT)
-	if err != nil {
-		return `C:\uhppoted`
+	if _, err = f.Write([]byte(replacer.Replace(b.String()))); err != nil {
+		return err
 	}
 
-	return filepath.Join(programData, "uhppoted")
+	return nil
 }
 
 func (c *Daemonize) Cmd() string {

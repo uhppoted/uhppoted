@@ -199,8 +199,8 @@ uhppoted-version: build
 
 uhppoted-help: build
 	./bin/uhppoted help
-#	./bin/uhppoted help commands
-#	./bin/uhppoted help version
+	./bin/uhppoted help commands
+	./bin/uhppoted help version
 
 uhppoted-linux: build
 	mkdir -p ./dist/development/linux
