@@ -3,6 +3,7 @@ package commands
 import (
 	"flag"
 	"fmt"
+	"os"
 )
 
 type Help struct {
@@ -22,14 +23,15 @@ func (c *Help) Parse(args []string) error {
 }
 
 func (c *Help) Execute(ctx Context) error {
-	if len(flag.Args()) > 1 {
-		if flag.Arg(1) == "commands" {
+	if len(os.Args) > 2 {
+		if os.Args[2] == "commands" {
 			helpCommands()
 			return nil
 		}
 
 		for _, c := range cli {
-			if c.Cmd() == flag.Arg(1) {
+			flagset := c.FlagSet()
+			if flagset.Name() == os.Args[2] {
 				c.Help()
 				return nil
 			}
@@ -43,10 +45,6 @@ func (c *Help) Execute(ctx Context) error {
 	return nil
 }
 
-func (c *Help) Cmd() string {
-	return "help"
-}
-
 func (c *Help) Description() string {
 	return "Displays the current version"
 }
@@ -56,42 +54,42 @@ func (c *Help) Usage() string {
 }
 
 func (c *Help) Help() {
+	fmt.Println()
 	fmt.Println("Displays the uhppoted version in the format v<major>.<minor>.<build> e.g. v1.00.10")
 	fmt.Println()
 }
 
 func usage() {
 	fmt.Println()
-	fmt.Println("  Usage: uhppoted [options] <command>")
+	fmt.Println("  Usage: uhppoted <command> [options]")
+	fmt.Println()
+	fmt.Println("  Defaults to 'run'.")
 	fmt.Println()
 	fmt.Println("  Commands:")
 	fmt.Println()
 	fmt.Println("    help          Displays this message. For help on a specific command use 'uhppoted help <command>'")
 
 	for _, c := range cli {
-		fmt.Printf("    %-13s %s\n", c.Cmd(), c.Description())
+		fmt.Printf("    %-13s %s\n", c.FlagSet().Name(), c.Description())
 	}
 
 	fmt.Println()
-	fmt.Println("  Options:")
-	fmt.Println()
-	fmt.Println("    --config      Configuration file path")
-	fmt.Println("    --dir         Work directory")
-	fmt.Println("    --logfile     Sets the log file path")
-	fmt.Println("    --logfilesize Sets the log file size before forcing a log rotate")
-	fmt.Println("    --pid         Sets the PID file path")
-	fmt.Println("    --debug       Displays vaguely useful internal information")
-	fmt.Println("    --console     (Windows only) Runs as command-line application")
+	fmt.Println(" 'run' options:")
+	runCmd.FlagSet().VisitAll(func(f *flag.Flag) {
+		fmt.Printf("    --%-12s %s\n", f.Name, f.Usage)
+	})
 	fmt.Println()
 }
 
 func helpCommands() {
-	fmt.Println("Supported commands:")
 	fmt.Println()
+	fmt.Println("  Supported commands:")
 
 	for _, c := range cli {
-		fmt.Printf(" %-16s %s\n", c.Cmd(), c.Usage())
+		fmt.Printf("     %-16s %s\n", c.FlagSet().Name(), c.Usage())
 	}
 
+	fmt.Println()
+	fmt.Println("     Defaults to 'run'.")
 	fmt.Println()
 }

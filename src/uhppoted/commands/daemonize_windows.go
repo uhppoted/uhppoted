@@ -194,10 +194,6 @@ func (c *Daemonize) conf(d *info) error {
 	return nil
 }
 
-func (c *Daemonize) Cmd() string {
-	return "daemonize"
-}
-
 func (c *Daemonize) Description() string {
 	return "Registers uhppoted as a Windows service"
 }
@@ -207,8 +203,9 @@ func (c *Daemonize) Usage() string {
 }
 
 func (c *Daemonize) Help() {
-	fmt.Println("Usage: uhppoted daemonize")
 	fmt.Println()
-	fmt.Println(" Registers uhppoted as a windows Service that runs on startup")
+	fmt.Println("  Usage: uhppoted daemonize")
+	fmt.Println()
+	fmt.Println("    Registers uhppoted as a windows Service that runs on startup")
 	fmt.Println()
 }

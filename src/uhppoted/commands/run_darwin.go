@@ -31,11 +31,11 @@ var runCmd = Run{
 func (r *Run) FlagSet() *flag.FlagSet {
 	flagset := flag.NewFlagSet("", flag.ExitOnError)
 
-	flagset.StringVar(&r.configuration, "config", r.configuration, "Path for the configuration file")
-	flagset.StringVar(&r.dir, "dir", r.dir, "Working directory")
-	flagset.StringVar(&r.pidFile, "pid", r.pidFile, "uhppoted PID file")
-	flagset.StringVar(&r.logFile, "logfile", r.logFile, "uhppoted log file")
-	flagset.IntVar(&r.logFileSize, "logfilesize", r.logFileSize, "uhppoted log file size")
+	flagset.StringVar(&r.configuration, "config", r.configuration, "Sets the configuration file path")
+	flagset.StringVar(&r.dir, "dir", r.dir, "Work directory")
+	flagset.StringVar(&r.pidFile, "pid", r.pidFile, "Sets the service PID file path")
+	flagset.StringVar(&r.logFile, "logfile", r.logFile, "Sets the log file path")
+	flagset.IntVar(&r.logFileSize, "logfilesize", r.logFileSize, "Sets the log file size before forcing a log rotate")
 	flagset.BoolVar(&r.debug, "debug", r.debug, "Displays vaguely useful internal information")
 
 	return flagset

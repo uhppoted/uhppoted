@@ -4,7 +4,8 @@
 
 ### uhppoted
 
-- [ ] use flag.FlagSet for commands
+- [x] use flag.FlagSet for commands
+- [ ] linux.Daemonize: implement custom flag for uid:gid and commonalize Parse across all commands
 - [ ] keep-alive
 - [ ] watchdog
 - [x] add --debug to command line flags
