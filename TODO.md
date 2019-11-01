@@ -5,6 +5,8 @@
 ### uhppoted
 
 - [ ] use flag.FlagSet for commands
+- [ ] keep-alive
+- [ ] watchdog
 - [x] add --debug to command line flags
 - [x] MacOS launchd SIG_TERM
 - [x] MacOS launchd --daemonize

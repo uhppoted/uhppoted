@@ -1,19 +1,35 @@
 package commands
 
 import (
+	"flag"
 	"fmt"
 )
 
 type Version struct {
-	Version string
+	version string
+	flagset *flag.FlagSet
+}
+
+var version = Version{
+	version: VERSION,
+	flagset: flag.NewFlagSet("version", flag.ExitOnError),
+}
+
+func (c *Version) FlagSet() *flag.FlagSet {
+	return c.flagset
 }
 
 func (c *Version) Parse(args []string) error {
-	return nil
+	flagset := c.FlagSet()
+	if flagset == nil {
+		panic(fmt.Sprintf("'version' command implementation without a flagset: %#v", c))
+	}
+
+	return flagset.Parse(args)
 }
 
 func (c *Version) Execute(ctx Context) error {
-	fmt.Printf("%v\n", c.Version)
+	fmt.Printf("%v\n", c.version)
 
 	return nil
 }

@@ -2,6 +2,7 @@ package commands
 
 import (
 	"flag"
+	"fmt"
 	"os"
 )
 
@@ -9,6 +10,7 @@ type Context struct {
 }
 
 type Command interface {
+	FlagSet() *flag.FlagSet
 	Parse([]string) error
 	Execute(context Context) error
 	Cmd() string
@@ -22,18 +24,30 @@ var VERSION = "v0.04.0"
 var cli = []Command{
 	NewDaemonize(),
 	NewUndaemonize(),
-	&Version{VERSION},
+	&version,
 	&Help{},
 }
 
+// Can't invoke flag.Parse() because the 'run' is the default command and only want to parse the flags
+// if the other commands are not being invoked
 func Parse() (Command, error) {
+	var cmd Command = &runCmd
+	var args []string = os.Args[1:]
+
 	if len(os.Args) > 1 {
 		for _, c := range cli {
-			if c.Cmd() == flag.Arg(0) {
-				return c, c.Parse(flag.Args()[1:])
+			flagset := c.FlagSet()
+			if flagset == nil {
+				panic(fmt.Sprintf("command without a flagset: %#v", c))
+			}
+
+			if flagset.Name() == os.Args[1] {
+				cmd = c
+				args = os.Args[1:]
+				break
 			}
 		}
 	}
 
-	return &Run{}, nil
+	return cmd, cmd.Parse(args)
 }

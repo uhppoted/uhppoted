@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"flag"
 	"fmt"
 	"golang.org/x/sys/windows/svc/eventlog"
 	"golang.org/x/sys/windows/svc/mgr"
@@ -18,8 +19,17 @@ func NewUndaemonize() *Undaemonize {
 	}
 }
 
+func (c *Undaemonize) FlagSet() *flag.FlagSet {
+	return flag.NewFlagSet("undaemonize", flag.ExitOnError)
+}
+
 func (c *Undaemonize) Parse(args []string) error {
-	return nil
+	flagset := c.FlagSet()
+	if flagset == nil {
+		panic(fmt.Sprintf("'undaemonize' command implementation without a flagset: %#v", c))
+	}
+
+	return flagset.Parse(args)
 }
 
 func (c *Undaemonize) Execute(ctx Context) error {

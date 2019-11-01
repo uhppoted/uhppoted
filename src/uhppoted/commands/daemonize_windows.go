@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"flag"
 	"fmt"
 	"golang.org/x/sys/windows/svc/eventlog"
 	"golang.org/x/sys/windows/svc/mgr"
@@ -50,12 +51,22 @@ rest.tls.ca = {{.WorkDir}}\rest\ca.cert
 
 func NewDaemonize() *Daemonize {
 	return &Daemonize{
-		name: "uhppoted",
+		name:        "uhppoted",
+		description: "UHPPOTE UTO311-L0x access card controllers service/daemon",
 	}
 }
 
+func (c *Daemonize) FlagSet() *flag.FlagSet {
+	return flag.NewFlagSet("daemonize", flag.ExitOnError)
+}
+
 func (c *Daemonize) Parse(args []string) error {
-	return nil
+	flagset := c.FlagSet()
+	if flagset == nil {
+		panic(fmt.Sprintf("'daemonize' command implementation without a flagset: %#v", c))
+	}
+
+	return flagset.Parse(args)
 }
 
 func (c *Daemonize) Execute(ctx Context) error {
@@ -68,7 +79,7 @@ func (c *Daemonize) Execute(ctx Context) error {
 
 	d := info{
 		Name:             c.name,
-		Description:      "UHPPOTE UTO311-L0x access card controllers service/daemon ",
+		Description:      c.description,
 		Executable:       executable,
 		WorkDir:          workdir(),
 		BindAddress:      &bind,

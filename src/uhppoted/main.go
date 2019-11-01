@@ -1,15 +1,12 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"uhppoted/commands"
 )
 
 func main() {
-	flag.Parse()
-
 	cmd, err := commands.Parse()
 	if err != nil {
 		fmt.Printf("\nError parsing command line: %v\n\n", err)
