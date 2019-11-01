@@ -2,7 +2,6 @@ package commands
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -16,14 +15,13 @@ import (
 	"uhppoted/rest"
 )
 
-var debug = flag.Bool("debug", false, "Displays vaguely useful internal information")
-
-type Run struct {
-	commands []Command
-}
-
 func (c *Run) Parse(args []string) error {
-	return nil
+	flagset := c.FlagSet()
+	if flagset == nil {
+		panic(fmt.Sprintf("'run' command implementation without a flagset: %#v", c))
+	}
+
+	return flagset.Parse(args)
 }
 
 func (c *Run) Cmd() string {
@@ -53,32 +51,32 @@ func (c *Run) Help() {
 	fmt.Println()
 }
 
-func execute(ctx Context) error {
+func (r *Run) execute(ctx Context) error {
 	conf := config.NewConfig()
-	if err := conf.Load(*configuration); err != nil {
+	if err := conf.Load(r.configuration); err != nil {
 		log.Printf("\n   WARN:  Could not load configuration (%v)\n\n", err)
 	}
 
-	if err := os.MkdirAll(*dir, os.ModeDir|os.ModePerm); err != nil {
-		return fmt.Errorf("Unable to create working directory '%v': %v", *dir, err)
+	if err := os.MkdirAll(r.dir, os.ModeDir|os.ModePerm); err != nil {
+		return fmt.Errorf("Unable to create working directory '%v': %v", r.dir, err)
 	}
 
 	pid := fmt.Sprintf("%d\n", os.Getpid())
 
-	if err := ioutil.WriteFile(*pidFile, []byte(pid), 0644); err != nil {
+	if err := ioutil.WriteFile(r.pidFile, []byte(pid), 0644); err != nil {
 		return fmt.Errorf("Unable to create pid file: %v\n", err)
 	}
 
 	defer func() {
-		os.Remove(*pidFile)
+		os.Remove(r.pidFile)
 	}()
 
-	start(conf, *logfile, *logfilesize)
+	r.start(conf, r.logFile, r.logFileSize)
 
 	return nil
 }
 
-func run(c *config.Config, logger *log.Logger) {
+func (r *Run) run(c *config.Config, logger *log.Logger) {
 	// ... syscall SIG handlers
 
 	interrupt := make(chan os.Signal, 1)
@@ -88,7 +86,7 @@ func run(c *config.Config, logger *log.Logger) {
 	// ... listen forever
 
 	for {
-		err := listen(c, logger, interrupt)
+		err := r.listen(c, logger, interrupt)
 
 		if err != nil {
 			log.Printf("ERROR: %v", err)
@@ -100,14 +98,14 @@ func run(c *config.Config, logger *log.Logger) {
 	}
 }
 
-func listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) error {
+func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) error {
 	// ... listen
 
 	u := uhppote.UHPPOTE{
 		BindAddress:      c.BindAddress,
 		BroadcastAddress: c.BroadcastAddress,
 		Devices:          make(map[uint32]*net.UDPAddr),
-		Debug:            *debug,
+		Debug:            r.debug,
 	}
 
 	for id, d := range c.Devices {

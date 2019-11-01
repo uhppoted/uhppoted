@@ -10,19 +10,44 @@ import (
 	"uhppoted/eventlog"
 )
 
-var configuration = flag.String("config", "/etc/uhppoted/uhppoted.conf", "Path for the configuration file")
-var dir = flag.String("dir", "/var/uhppoted", "Working directory")
-var logfile = flag.String("logfile", "/var/log/uhppoted/uhppoted.log", "uhppoted log file")
-var logfilesize = flag.Int("logfilesize", 10, "uhppoted log file size")
-var pidFile = flag.String("pid", "/var/uhppoted/uhppoted.pid", "uhppoted PID file")
-
-func (c *Run) Execute(ctx Context) error {
-	log.Printf("uhppoted daemon - %s (PID %d)\n", "Linux", os.Getpid())
-
-	return execute(ctx)
+type Run struct {
+	configuration string
+	dir           string
+	pidFile       string
+	logFile       string
+	logFileSize   int
+	debug         bool
 }
 
-func start(c *config.Config, logfile string, logfilesize int) {
+var runCmd = Run{
+	configuration: "/etc/uhppoted/uhppoted.conf",
+	dir:           "/var/uhppoted",
+	pidFile:       "/var/uhppoted/uhppoted.pid",
+	logFile:       "/var/log/uhppoted/uhppoted.log",
+	logFileSize:   10,
+	debug:         false,
+}
+
+func (r *Run) FlagSet() *flag.FlagSet {
+	flagset := flag.NewFlagSet("", flag.ExitOnError)
+
+	flagset.StringVar(&r.configuration, "config", r.configuration, "Path for the configuration file")
+	flagset.StringVar(&r.dir, "dir", r.dir, "Working directory")
+	flagset.StringVar(&r.pidFile, "pid", r.pidFile, "uhppoted PID file")
+	flagset.StringVar(&r.logFile, "logfile", r.logFile, "uhppoted log file")
+	flagset.IntVar(&r.logFileSize, "logfilesize", r.logFileSize, "uhppoted log file size")
+	flagset.BoolVar(&r.debug, "debug", r.debug, "Displays vaguely useful internal information")
+
+	return flagset
+}
+
+func (r *Run) Execute(ctx Context) error {
+	log.Printf("uhppoted daemon - %s (PID %d)\n", "Linux", os.Getpid())
+
+	return r.execute(ctx)
+}
+
+func (r *Run) start(c *config.Config, logfile string, logfilesize int) {
 	// ... setup logging
 
 	events := eventlog.Ticker{Filename: logfile, MaxSize: logfilesize}
@@ -39,5 +64,5 @@ func start(c *config.Config, logfile string, logfilesize int) {
 		}
 	}()
 
-	run(c, logger)
+	r.run(c, logger)
 }

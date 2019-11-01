@@ -6,11 +6,19 @@ import (
 )
 
 type Help struct {
-	commands []Command
+}
+
+func (c *Help) FlagSet() *flag.FlagSet {
+	return flag.NewFlagSet("help", flag.ExitOnError)
 }
 
 func (c *Help) Parse(args []string) error {
-	return nil
+	flagset := c.FlagSet()
+	if flagset == nil {
+		panic(fmt.Sprintf("'help' command implementation without a flagset: %#v", c))
+	}
+
+	return flagset.Parse(args)
 }
 
 func (c *Help) Execute(ctx Context) error {
@@ -75,30 +83,6 @@ func usage() {
 	fmt.Println("    --debug       Displays vaguely useful internal information")
 	fmt.Println("    --console     (Windows only) Runs as command-line application")
 	fmt.Println()
-}
-
-func help() {
-	if len(flag.Args()) > 0 && flag.Arg(0) == "help" {
-		if len(flag.Args()) > 1 {
-
-			if flag.Arg(1) == "commands" {
-				helpCommands()
-				return
-			}
-
-			for _, c := range cli {
-				if c.Cmd() == flag.Arg(1) {
-					c.Help()
-					return
-				}
-			}
-
-			fmt.Printf("Invalid command: %v. Type 'help commands' to get a list of supported commands\n", flag.Arg(1))
-			return
-		}
-	}
-
-	usage()
 }
 
 func helpCommands() {

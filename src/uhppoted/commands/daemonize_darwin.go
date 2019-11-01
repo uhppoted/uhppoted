@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -61,8 +62,17 @@ func NewDaemonize() *Daemonize {
 	return &Daemonize{}
 }
 
+func (c *Daemonize) FlagSet() *flag.FlagSet {
+	return flag.NewFlagSet("daemonize", flag.ExitOnError)
+}
+
 func (c *Daemonize) Parse(args []string) error {
-	return nil
+	flagset := c.FlagSet()
+	if flagset == nil {
+		panic(fmt.Sprintf("'daemonize' command implementation without a flagset: %#v", c))
+	}
+
+	return flagset.Parse(args)
 }
 
 func (c *Daemonize) Execute(ctx Context) error {

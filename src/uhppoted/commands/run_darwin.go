@@ -10,19 +10,44 @@ import (
 	"uhppoted/eventlog"
 )
 
-var configuration = flag.String("config", "/usr/local/etc/com.github.twystd.uhppoted/uhppoted.conf", "Path for the configuration file")
-var dir = flag.String("dir", "/usr/local/var/com.github.twystd.uhppoted", "Working directory")
-var pidFile = flag.String("pid", "/usr/local/var/com.github.twystd.uhppoted/uhppoted.pid", "uhppoted PID file")
-var logfile = flag.String("logfile", "/usr/local/var/com.github.twystd.uhppoted/logs/uhppoted.log", "uhppoted log file")
-var logfilesize = flag.Int("logfilesize", 10, "uhppoted log file size")
-
-func (c *Run) Execute(ctx Context) error {
-	log.Printf("uhppoted daemon %s - %s (PID %d)\n", VERSION, "MacOS", os.Getpid())
-
-	return execute(ctx)
+type Run struct {
+	configuration string
+	dir           string
+	pidFile       string
+	logFile       string
+	logFileSize   int
+	debug         bool
 }
 
-func start(c *config.Config, logfile string, logfilesize int) {
+var runCmd = Run{
+	configuration: "/usr/local/etc/com.github.twystd.uhppoted/uhppoted.conf",
+	dir:           "/usr/local/var/com.github.twystd.uhppoted",
+	pidFile:       "/usr/local/var/com.github.twystd.uhppoted/uhppoted.pid",
+	logFile:       "/usr/local/var/com.github.twystd.uhppoted/logs/uhppoted.log",
+	logFileSize:   10,
+	debug:         false,
+}
+
+func (r *Run) FlagSet() *flag.FlagSet {
+	flagset := flag.NewFlagSet("", flag.ExitOnError)
+
+	flagset.StringVar(&r.configuration, "config", r.configuration, "Path for the configuration file")
+	flagset.StringVar(&r.dir, "dir", r.dir, "Working directory")
+	flagset.StringVar(&r.pidFile, "pid", r.pidFile, "uhppoted PID file")
+	flagset.StringVar(&r.logFile, "logfile", r.logFile, "uhppoted log file")
+	flagset.IntVar(&r.logFileSize, "logfilesize", r.logFileSize, "uhppoted log file size")
+	flagset.BoolVar(&r.debug, "debug", r.debug, "Displays vaguely useful internal information")
+
+	return flagset
+}
+
+func (r *Run) Execute(ctx Context) error {
+	log.Printf("uhppoted daemon %s - %s (PID %d)\n", VERSION, "MacOS", os.Getpid())
+
+	return r.execute(ctx)
+}
+
+func (r *Run) start(c *config.Config, logfile string, logfilesize int) {
 	// ... setup logging
 
 	events := eventlog.Ticker{Filename: logfile, MaxSize: logfilesize}
@@ -39,5 +64,5 @@ func start(c *config.Config, logfile string, logfilesize int) {
 		}
 	}()
 
-	run(c, logger)
+	r.run(c, logger)
 }

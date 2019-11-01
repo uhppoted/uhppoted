@@ -14,28 +14,55 @@ import (
 	filelogger "uhppoted/eventlog"
 )
 
+type Run struct {
+	configuration string
+	dir           string
+	pidFile       string
+	logFile       string
+	logFileSize   int
+	console       bool
+	debug         bool
+}
+
 type service struct {
 	name   string
 	conf   *config.Config
 	logger *log.Logger
+	cmd    *Run
 }
 
 type EventLog struct {
 	log *eventlog.Log
 }
 
-var wd = workdir()
-var configuration = flag.String("config", filepath.Join(wd, "uhppoted.conf"), "Path for the configuration file")
-var dir = flag.String("dir", wd, "Working directory")
-var logfile = flag.String("logfile", filepath.Join(wd, "logs", "uhppoted.log"), "uhppoted log file")
-var logfilesize = flag.Int("logfilesize", 10, "uhppoted log file size")
-var pidFile = flag.String("pid", filepath.Join(wd, "uhppoted.pid"), "uhppoted PID file")
-var console = flag.Bool("console", false, "Run as command-line application")
+var runCmd = Run{
+	configuration: filepath.Join(workdir(), "uhppoted.conf"),
+	dir:           workdir(),
+	pidFile:       filepath.Join(workdir(), "uhppoted.pid"),
+	logFile:       filepath.Join(workdir(), "logs", "uhppoted.log"),
+	logFileSize:   10,
+	console:       false,
+	debug:         false,
+}
 
-func (c *Run) Execute(ctx Context) error {
+func (r *Run) FlagSet() *flag.FlagSet {
+	flagset := flag.NewFlagSet("", flag.ExitOnError)
+
+	flagset.StringVar(&r.configuration, "config", r.configuration, "Path for the configuration file")
+	flagset.StringVar(&r.dir, "dir", r.dir, "Working directory")
+	flagset.StringVar(&r.pidFile, "pid", r.pidFile, "uhppoted PID file")
+	flagset.StringVar(&r.logFile, "logfile", r.logFile, "uhppoted log file")
+	flagset.IntVar(&r.logFileSize, "logfilesize", r.logFileSize, "uhppoted log file size")
+	flagset.BoolVar(&r.console, "console", r.console, "Run as command-line application")
+	flagset.BoolVar(&r.debug, "debug", r.debug, "Displays vaguely useful internal information")
+
+	return flagset
+}
+
+func (r *Run) Execute(ctx Context) error {
 	log.Printf("uhppoted service - %s (PID %d)\n", "Microsoft Windows", os.Getpid())
 
-	return execute(ctx)
+	return r.execute(ctx)
 }
 
 func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan<- svc.Status) (ssec bool, errno uint32) {
@@ -52,7 +79,7 @@ func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan
 	go func() {
 		defer wg.Done()
 		for {
-			err := listen(s.conf, s.logger, interrupt)
+			err := s.cmd.listen(s.conf, s.logger, interrupt)
 
 			if err != nil {
 				s.logger.Printf("ERROR: %v", err)
@@ -101,7 +128,7 @@ loop:
 	return false, 0
 }
 
-func start(c *config.Config, logfile string, logfilesize int) {
+func (r *Run) start(c *config.Config, logfile string, logfilesize int) {
 	var logger *log.Logger
 
 	eventlogger, err := eventlog.Open("uhppoted")
@@ -117,8 +144,8 @@ func start(c *config.Config, logfile string, logfilesize int) {
 
 	logger.Printf("uhppoted service - start\n")
 
-	if *console {
-		run(c, logger)
+	if r.console {
+		r.run(c, logger)
 		return
 	}
 
@@ -126,6 +153,7 @@ func start(c *config.Config, logfile string, logfilesize int) {
 		name:   "uhppoted",
 		conf:   c,
 		logger: logger,
+		cmd:    r,
 	}
 
 	logger.Printf("uhppoted service - starting\n")

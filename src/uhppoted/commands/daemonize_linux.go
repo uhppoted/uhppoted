@@ -14,8 +14,9 @@ import (
 )
 
 type Daemonize struct {
-	user  string
-	group string
+	usergroup string
+	uid       int
+	gid       int
 }
 
 type info struct {
@@ -88,41 +89,48 @@ rest.tls.ca = /etc/uhppoted/rest/ca.cert
 
 func NewDaemonize() *Daemonize {
 	return &Daemonize{
-		user:  "uhppoted",
-		group: "uhppoted",
+		usergroup: "uhppoted:uhppoted",
+		uid:       0,
+		gid:       0,
 	}
 }
 
+func (c *Daemonize) FlagSet() *flag.FlagSet {
+	flagset := flag.NewFlagSet("daemonize", flag.ExitOnError)
+	flagset.StringVar(&c.usergroup, "user", "uhppoted:uhppoted", "user:group for uhppoted service. Defaults to uhppoted:uhppoted")
+
+	return flagset
+}
+
 func (c *Daemonize) Parse(args []string) error {
-	flags := flag.NewFlagSet("daemonize", flag.ExitOnError)
-	ug := flags.String("user", "uhppoted:uhppoted", "user:group for uhppoted service. Defaults to uhppoted:uhppoted")
-	err := flags.Parse(args)
+	flagset := c.FlagSet()
+	if flagset == nil {
+		panic(fmt.Sprintf("'daemonize' command implementation without a flagset: %#v", c))
+	}
+
+	err := flagset.Parse(args)
 	if err != nil {
 		return err
 	}
 
 	re := regexp.MustCompile(`(\w+?):(\w+)`)
-	match := re.FindStringSubmatch(*ug)
+	match := re.FindStringSubmatch(c.usergroup)
 
 	if match == nil {
-		return fmt.Errorf("Invalid user:group '%s'", *ug)
+		return fmt.Errorf("Invalid user:group '%s'", c.usergroup)
 	}
 
-	c.user = match[1]
-	c.group = match[2]
+	uid, gid, err := getUser(match[1], match[2])
+	c.uid = uid
+	c.gid = gid
 
-	return nil
+	return err
 }
 
 func (c *Daemonize) Execute(ctx Context) error {
 	fmt.Println("   ... daemonizing")
 
 	executable, err := os.Executable()
-	if err != nil {
-		return err
-	}
-
-	uid, gid, err := c.getUser()
 	if err != nil {
 		return err
 	}
@@ -136,8 +144,8 @@ func (c *Daemonize) Execute(ctx Context) error {
 		PID:              "/var/uhppoted/uhppoted.pid",
 		User:             "uhppoted",
 		Group:            "uhppoted",
-		Uid:              uid,
-		Gid:              gid,
+		Uid:              c.uid,
+		Gid:              c.gid,
 		LogFiles:         []string{"/var/log/uhppoted/uhppoted.log"},
 		BindAddress:      &bind,
 		BroadcastAddress: &broadcast,
@@ -246,13 +254,13 @@ func (c *Daemonize) mkdirs(d *info) error {
 	return nil
 }
 
-func (c *Daemonize) getUser() (int, int, error) {
-	u, err := user.Lookup(c.user)
+func getUser(username string, group string) (int, int, error) {
+	u, err := user.Lookup(username)
 	if err != nil {
 		return 0, 0, err
 	}
 
-	g, err := user.LookupGroup(c.group)
+	g, err := user.LookupGroup(group)
 	if err != nil {
 		return 0, 0, err
 	}
