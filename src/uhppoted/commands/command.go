@@ -13,7 +13,6 @@ type Command interface {
 	FlagSet() *flag.FlagSet
 	Parse([]string) error
 	Execute(context Context) error
-	Cmd() string
 	Description() string
 	Usage() string
 	Help()

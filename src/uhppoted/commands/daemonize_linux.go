@@ -278,10 +278,6 @@ func getUser(username string, group string) (int, int, error) {
 	return uid, gid, nil
 }
 
-func (c *Daemonize) Cmd() string {
-	return "daemonize"
-}
-
 func (c *Daemonize) Description() string {
 	return "Registers uhppoted as a service/daemon"
 }
@@ -291,10 +287,11 @@ func (c *Daemonize) Usage() string {
 }
 
 func (c *Daemonize) Help() {
-	fmt.Println("Usage: uhppoted daemonize [--user <user:group>]")
 	fmt.Println()
-	fmt.Println(" Registers uhppoted as a systemd service/daemon that runs on startup.")
-	fmt.Println("    Defaults to the user:group uhppoted:uhppoted unless otherwise specified")
-	fmt.Println("    :!with the --user option")
+	fmt.Println("  Usage: uhppoted daemonize [--user <user:group>]")
+	fmt.Println()
+	fmt.Println("    Registers uhppoted as a systemd service/daemon that runs on startup.")
+	fmt.Println("      Defaults to the user:group uhppoted:uhppoted unless otherwise specified")
+	fmt.Println("      :!with the --user option")
 	fmt.Println()
 }

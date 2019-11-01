@@ -186,8 +186,9 @@ func (c *Undaemonize) Usage() string {
 }
 
 func (c *Undaemonize) Help() {
-	fmt.Println("Usage: uhppoted undaemonize")
 	fmt.Println()
-	fmt.Println(" Deregisters uhppoted from launchd as a service/daemon")
+	fmt.Println("  Usage: uhppoted undaemonize")
+	fmt.Println()
+	fmt.Println("    Deregisters uhppoted from launchd as a service/daemon")
 	fmt.Println()
 }

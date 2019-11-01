@@ -304,10 +304,6 @@ func (c *Daemonize) firewall() error {
 	return nil
 }
 
-func (c *Daemonize) Cmd() string {
-	return "daemonize"
-}
-
 func (c *Daemonize) Description() string {
 	return "Daemonizes uhppoted as a service/daemon"
 }
@@ -317,8 +313,9 @@ func (c *Daemonize) Usage() string {
 }
 
 func (c *Daemonize) Help() {
-	fmt.Println("Usage: uhppoted daemonize")
 	fmt.Println()
-	fmt.Println(" Daemonizes uhppoted as a service/daemon that runs on startup")
+	fmt.Println("  Usage: uhppoted daemonize")
+	fmt.Println()
+	fmt.Println("    Daemonizes uhppoted as a service/daemon that runs on startup")
 	fmt.Println()
 }

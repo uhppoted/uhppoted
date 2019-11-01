@@ -34,10 +34,6 @@ func (c *Version) Execute(ctx Context) error {
 	return nil
 }
 
-func (c *Version) Cmd() string {
-	return "version"
-}
-
 func (c *Version) Description() string {
 	return "Displays the current version"
 }
@@ -47,6 +43,7 @@ func (c *Version) Usage() string {
 }
 
 func (c *Version) Help() {
-	fmt.Println("Displays the uhppoted version in the format v<major>.<minor>.<build> e.g. v1.00.10")
+	fmt.Println()
+	fmt.Println("  Displays the uhppoted version in the format v<major>.<minor>.<build> e.g. v1.00.10")
 	fmt.Println()
 }

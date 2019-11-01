@@ -76,10 +76,6 @@ func (c *Undaemonize) unregister() error {
 	return nil
 }
 
-func (c *Undaemonize) Cmd() string {
-	return "undaemonize"
-}
-
 func (c *Undaemonize) Description() string {
 	return "Deregisters the uhppoted service"
 }
@@ -89,8 +85,9 @@ func (c *Undaemonize) Usage() string {
 }
 
 func (c *Undaemonize) Help() {
-	fmt.Println("Usage: uhppoted undaemonize")
 	fmt.Println()
-	fmt.Println(" Deregisters uhppoted as a Windows service")
+	fmt.Println("  Usage: uhppoted undaemonize")
+	fmt.Println()
+	fmt.Println("    Deregisters uhppoted as a Windows service")
 	fmt.Println()
 }

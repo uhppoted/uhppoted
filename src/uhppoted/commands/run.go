@@ -24,10 +24,6 @@ func (c *Run) Parse(args []string) error {
 	return flagset.Parse(args)
 }
 
-func (c *Run) Cmd() string {
-	return "run"
-}
-
 func (c *Run) Description() string {
 	return "Runs the uhppoted daemon/service until terminated by the system service manager"
 }
@@ -37,7 +33,8 @@ func (c *Run) Usage() string {
 }
 
 func (c *Run) Help() {
-	fmt.Println("Usage: uhppoted <options>")
+	fmt.Println()
+	fmt.Println("  Usage: uhppoted <options>")
 	fmt.Println()
 	fmt.Println("  Options:")
 	fmt.Println()
