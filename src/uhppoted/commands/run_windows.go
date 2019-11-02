@@ -62,7 +62,58 @@ func (r *Run) FlagSet() *flag.FlagSet {
 func (r *Run) Execute(ctx Context) error {
 	log.Printf("uhppoted service - %s (PID %d)\n", "Microsoft Windows", os.Getpid())
 
-	return r.execute(ctx)
+	f := func(c *config.Config) error {
+		return r.start(c)
+	}
+
+	return r.execute(ctx, f)
+}
+
+func (r *Run) start(c *config.Config) error {
+	var logger *log.Logger
+
+	eventlogger, err := eventlog.Open("uhppoted")
+	if err != nil {
+		events := filelogger.Ticker{Filename: r.logFile, MaxSize: r.logFileSize}
+		logger = log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
+	} else {
+		defer eventlogger.Close()
+
+		events := EventLog{eventlogger}
+		logger = log.New(&events, "uhppoted", log.Ldate|log.Ltime|log.LUTC)
+	}
+
+	logger.Printf("uhppoted service - start\n")
+
+	if r.console {
+		r.run(c, logger)
+		return nil
+	}
+
+	uhppoted := service{
+		name:   "uhppoted",
+		conf:   c,
+		logger: logger,
+		cmd:    r,
+	}
+
+	logger.Printf("uhppoted service - starting\n")
+	err = svc.Run("uhppoted", &uhppoted)
+
+	if err != nil {
+		fmt.Printf("   Unable to execute ServiceManager.Run request (%v)\n", err)
+		fmt.Println()
+		fmt.Println("   To run uhppoted as a command line application, type:")
+		fmt.Println()
+		fmt.Println("     > uhppoted --console")
+		fmt.Println()
+
+		logger.Fatalf("Error executing ServiceManager.Run request: %v", err)
+		return err
+	}
+
+	logger.Printf("uhppoted daemon - started\n")
+	return nil
 }
 
 func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan<- svc.Status) (ssec bool, errno uint32) {
@@ -126,52 +177,6 @@ loop:
 	s.logger.Printf("uhppoted service - stopped\n")
 
 	return false, 0
-}
-
-func (r *Run) start(c *config.Config, logfile string, logfilesize int) {
-	var logger *log.Logger
-
-	eventlogger, err := eventlog.Open("uhppoted")
-	if err != nil {
-		events := filelogger.Ticker{Filename: logfile, MaxSize: logfilesize}
-		logger = log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
-	} else {
-		defer eventlogger.Close()
-
-		events := EventLog{eventlogger}
-		logger = log.New(&events, "uhppoted", log.Ldate|log.Ltime|log.LUTC)
-	}
-
-	logger.Printf("uhppoted service - start\n")
-
-	if r.console {
-		r.run(c, logger)
-		return
-	}
-
-	uhppoted := service{
-		name:   "uhppoted",
-		conf:   c,
-		logger: logger,
-		cmd:    r,
-	}
-
-	logger.Printf("uhppoted service - starting\n")
-	err = svc.Run("uhppoted", &uhppoted)
-
-	if err != nil {
-		fmt.Printf("   Unable to execute ServiceManager.Run request (%v)\n", err)
-		fmt.Println()
-		fmt.Println("   To run uhppoted as a command line application, type:")
-		fmt.Println()
-		fmt.Println("     > uhppoted --console")
-		fmt.Println()
-
-		logger.Fatalf("Error executing ServiceManager.Run request: %v", err)
-		return
-	}
-
-	logger.Printf("uhppoted daemon - started\n")
 }
 
 func (e *EventLog) Write(p []byte) (int, error) {

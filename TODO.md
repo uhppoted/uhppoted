@@ -1,4 +1,4 @@
-## v0.04
+## v0.40
 
 ## IN PROGRESS
 
@@ -6,7 +6,8 @@
 
 - [x] use flag.FlagSet for commands
 - [ ] linux.Daemonize: implement custom flag for uid:gid and commonalize Parse across all commands
-- [ ] keep-alive
+- [x] restructure 'run' command
+- [ ] keep-alive/health-check
 - [ ] watchdog
 - [x] add --debug to command line flags
 - [x] MacOS launchd SIG_TERM

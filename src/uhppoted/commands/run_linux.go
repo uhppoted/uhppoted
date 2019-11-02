@@ -44,13 +44,17 @@ func (r *Run) FlagSet() *flag.FlagSet {
 func (r *Run) Execute(ctx Context) error {
 	log.Printf("uhppoted daemon - %s (PID %d)\n", "Linux", os.Getpid())
 
-	return r.execute(ctx)
+	f := func(c *config.Config) error {
+		return r.exec(c)
+	}
+
+	return r.execute(ctx, f)
 }
 
-func (r *Run) start(c *config.Config, logfile string, logfilesize int) {
+func (r *Run) exec(c *config.Config) error {
 	// ... setup logging
 
-	events := eventlog.Ticker{Filename: logfile, MaxSize: logfilesize}
+	events := eventlog.Ticker{Filename: r.logFile, MaxSize: r.logFileSize}
 	logger := log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
 	rotate := make(chan os.Signal, 1)
 
@@ -59,10 +63,12 @@ func (r *Run) start(c *config.Config, logfile string, logfilesize int) {
 	go func() {
 		for {
 			<-rotate
-			log.Printf("Rotating uhppoted log file '%s'\n", logfile)
+			log.Printf("Rotating uhppoted log file '%s'\n", r.logFile)
 			events.Rotate()
 		}
 	}()
 
 	r.run(c, logger)
+
+	return nil
 }

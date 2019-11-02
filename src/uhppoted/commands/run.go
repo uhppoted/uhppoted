@@ -38,17 +38,13 @@ func (c *Run) Help() {
 	fmt.Println()
 	fmt.Println("  Options:")
 	fmt.Println()
-	fmt.Println("    --config      Configuration file path")
-	fmt.Println("    --dir         Work directory")
-	fmt.Println("    --logfile     Sets the log file path")
-	fmt.Println("    --logfilesize Sets the log file size before forcing a log rotate")
-	fmt.Println("    --pid         Sets the PID file path")
-	fmt.Println("    --debug       Displays vaguely useful internal information")
-	fmt.Println("    --console     (Windows only) Runs as command-line application")
+	runCmd.FlagSet().VisitAll(func(f *flag.Flag) {
+		fmt.Printf("    --%-12s %s\n", f.Name, f.Usage)
+	})
 	fmt.Println()
 }
 
-func (r *Run) execute(ctx Context) error {
+func (r *Run) execute(ctx Context, f func(*config.Config) error) error {
 	conf := config.NewConfig()
 	if err := conf.Load(r.configuration); err != nil {
 		log.Printf("\n   WARN:  Could not load configuration (%v)\n\n", err)
@@ -68,9 +64,7 @@ func (r *Run) execute(ctx Context) error {
 		os.Remove(r.pidFile)
 	}()
 
-	r.start(conf, r.logFile, r.logFileSize)
-
-	return nil
+	return f(conf)
 }
 
 func (r *Run) run(c *config.Config, logger *log.Logger) {
@@ -84,7 +78,6 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 
 	for {
 		err := r.listen(c, logger, interrupt)
-
 		if err != nil {
 			log.Printf("ERROR: %v", err)
 			continue
