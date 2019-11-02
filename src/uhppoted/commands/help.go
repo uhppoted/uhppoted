@@ -75,9 +75,11 @@ func usage() {
 
 	fmt.Println()
 	fmt.Println(" 'run' options:")
+
 	runCmd.FlagSet().VisitAll(func(f *flag.Flag) {
 		fmt.Printf("    --%-12s %s\n", f.Name, f.Usage)
 	})
+
 	fmt.Println()
 }
 
