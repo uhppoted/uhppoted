@@ -19,11 +19,15 @@ import (
 	"uhppoted/rest"
 )
 
+type status struct {
+	touched time.Time
+	status  types.Status
+}
+
 type state struct {
 	devices struct {
-		touched sync.Map
-		status  sync.Map
-		errors  sync.Map
+		status sync.Map
+		errors sync.Map
 	}
 }
 
@@ -90,6 +94,8 @@ func (r *Run) execute(ctx Context, f func(*config.Config) error) error {
 }
 
 func (r *Run) run(c *config.Config, logger *log.Logger) {
+	logger.Printf("START")
+
 	// ... syscall SIG handlers
 
 	interrupt := make(chan os.Signal, 1)
@@ -108,19 +114,19 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 		log.Printf("exit\n")
 		break
 	}
+
+	logger.Printf("STOP")
 }
 
 func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) error {
 
 	s := state{
 		devices: struct {
-			touched sync.Map
-			status  sync.Map
-			errors  sync.Map
+			status sync.Map
+			errors sync.Map
 		}{
-			touched: sync.Map{},
-			status:  sync.Map{},
-			errors:  sync.Map{},
+			status: sync.Map{},
+			errors: sync.Map{},
 		},
 	}
 
@@ -183,7 +189,7 @@ func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Sig
 	for {
 		select {
 		case <-w.C:
-			if err := watchdog(&s, logger); err != nil {
+			if err := watchdog(&u, &s, logger); err != nil {
 				return err
 			}
 
@@ -201,29 +207,22 @@ func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Sig
 	return nil
 }
 
-func healthcheck(u *uhppote.UHPPOTE, s *state, l *log.Logger) {
+func healthcheck(u *uhppote.UHPPOTE, st *state, l *log.Logger) {
 	l.Printf("health-check")
 	now := time.Now()
-	devices, err := u.FindDevices()
 
-	if err != nil {
-		l.Printf("WARN  'keep-alive' error: %v", err)
-		return
-	}
-
-	for _, device := range devices {
-		s.devices.touched.Store(device.SerialNumber, now)
-	}
-
-	for _, device := range devices {
-		status, err := u.GetStatus(uint32(device.SerialNumber))
+	for id, _ := range u.Devices {
+		s, err := u.GetStatus(id)
 		if err == nil {
-			s.devices.status.Store(device.SerialNumber, *status)
+			st.devices.status.Store(id, status{
+				touched: now,
+				status:  *s,
+			})
 		}
 	}
 }
 
-func watchdog(s *state, l *log.Logger) error {
+func watchdog(u *uhppote.UHPPOTE, s *state, l *log.Logger) error {
 	ok := true
 	now := time.Now()
 	seconds, _ := time.ParseDuration("1s")
@@ -232,60 +231,49 @@ func watchdog(s *state, l *log.Logger) error {
 		synchronized: false,
 	}
 
-	s.devices.touched.Range(func(key, value interface{}) bool {
-		touched := value.(time.Time)
-		timeout := touched.Add(IDLE)
-
-		if v, found := s.devices.errors.Load(key); found {
+	for id, _ := range u.Devices {
+		if v, found := s.devices.errors.Load(id); found {
 			alerted.touched = v.(alerts).touched
 			alerted.synchronized = v.(alerts).synchronized
 		}
 
-		if now.After(timeout) {
-			ok = false
-			if !alerted.touched {
-				l.Printf("ERROR UTC0311-L0x %s no response for %s", key, time.Since(touched).Round(seconds))
-				alerted.touched = true
+		if v, found := s.devices.status.Load(id); found {
+			touched := v.(status).touched
+			t := time.Time(v.(status).status.SystemDateTime)
+			dt := time.Since(t).Round(seconds)
+			dtt := int64(math.Abs(time.Since(touched).Seconds()))
+
+			timeout := touched.Add(IDLE)
+
+			if now.After(timeout) {
+				ok = false
+				if !alerted.touched {
+					l.Printf("ERROR UTC0311-L0x %s no response for %s", types.SerialNumber(id), time.Since(touched).Round(seconds))
+					alerted.touched = true
+				}
+			} else {
+				if alerted.touched {
+					l.Printf("INFO  UTC0311-L0x %s connected", types.SerialNumber(id))
+					alerted.touched = false
+				}
 			}
-		} else {
-			if alerted.touched {
-				l.Printf("INFO  UTC0311-L0x %s reconnected", key)
-				alerted.touched = false
-			}
-		}
 
-		s.devices.errors.Store(key, alerted)
-
-		return true
-	})
-
-	s.devices.status.Range(func(key, value interface{}) bool {
-		status := value.(types.Status)
-		t := time.Time(status.SystemDateTime)
-		dt := time.Since(t).Round(seconds)
-
-		if v, found := s.devices.errors.Load(key); found {
-			alerted.touched = v.(alerts).touched
-			alerted.synchronized = v.(alerts).synchronized
-		}
-
-		if int64(math.Abs(dt.Seconds())) > DELTA {
-			ok = false
-			if !alerted.synchronized {
-				l.Printf("ERROR UTC0311-L0x %s system time not synchronized: %s (%s)", key, status.SystemDateTime, dt)
-				alerted.synchronized = true
-			}
-		} else {
-			if alerted.synchronized {
-				l.Printf("INFO   UTC0311-L0x %s system time synchronized: %s (%s)", key, status.SystemDateTime, dt)
-				alerted.synchronized = false
+			if dtt < DELTA/2 && int64(math.Abs(dt.Seconds())) > DELTA {
+				ok = false
+				if !alerted.synchronized {
+					l.Printf("ERROR UTC0311-L0x %s system time not synchronized: %s (%s)", types.SerialNumber(id), types.DateTime(t), dt)
+					alerted.synchronized = true
+				}
+			} else {
+				if alerted.synchronized {
+					l.Printf("INFO   UTC0311-L0x %s system time synchronized: %s (%s)", types.SerialNumber(id), types.DateTime(t), dt)
+					alerted.synchronized = false
+				}
 			}
 		}
 
-		s.devices.errors.Store(key, alerted)
-
-		return true
-	})
+		s.devices.errors.Store(id, alerted)
+	}
 
 	if ok {
 		l.Printf("watchdog: OK")

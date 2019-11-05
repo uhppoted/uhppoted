@@ -8,9 +8,9 @@ The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Acc
 
 ## Releases
 
-- v0.03: functional simulator with minimal command API
-- v0.02: load access control list from TSV file
-- v0.01: bare-bones but functional CLI
+- v0.30: functional simulator with minimal command API
+- v0.20: load access control list from TSV file
+- v0.10: bare-bones but functional CLI
 
 ## Modules
 

@@ -7,6 +7,7 @@
 - [x] use flag.FlagSet for commands
 - [ ] linux.Daemonize: implement custom flag for uid:gid and commonalize Parse across all commands
 - [ ] include missing/unexpected devices in monitoring
+- [ ] rename to uhppoted-rest
 - [x] restructure 'run' command
 - [x] keep-alive/health-check
 - [x] watchdog
