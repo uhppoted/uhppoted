@@ -87,13 +87,13 @@ open: build
 	$(CLI) $(DEBUG) open $(SERIALNO) 1
 
 list-devices:
-	curl -X GET "http://127.0.0.1:8080/uhppote/simulator" -H "accept: application/json"
+	curl -X GET "http://127.0.0.1:8000/uhppote/simulator" -H "accept: application/json"
 
 create-device:
-	curl -X POST "http://127.0.0.1:8080/uhppote/simulator" -H "accept: */*" -H "Content-Type: application/json" -d "{\"device-id\":753186420,\"device-type\":\"UT0311-L04\",\"compressed\":false}"
+	curl -X POST "http://127.0.0.1:8000/uhppote/simulator" -H "accept: */*" -H "Content-Type: application/json" -d "{\"device-id\":753186420,\"device-type\":\"UT0311-L04\",\"compressed\":false}"
 
 delete-device:
-	curl -X DELETE "http://127.0.0.1:8080/uhppote/simulator/753186420" -H "accept: */*"
+	curl -X DELETE "http://127.0.0.1:8000/uhppote/simulator/753186420" -H "accept: */*"
 
 swipe:
-	curl -X POST "http://127.0.0.1:8080/uhppote/simulator/305419896/swipe" -H "accept: application/json" -H "Content-Type: application/json" -d "{\"door\":4,\"card-number\":65538}"
+	curl -X POST "http://127.0.0.1:8000/uhppote/simulator/305419896/swipe" -H "accept: application/json" -H "Content-Type: application/json" -d "{\"door\":4,\"card-number\":65538}"
