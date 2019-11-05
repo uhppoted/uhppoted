@@ -46,9 +46,10 @@ type state struct {
 }
 
 const (
-	IDLE  = time.Duration(60 * time.Second)
-	DELTA = 60
-	DELAY = 30
+	IDLE   = time.Duration(60 * time.Second)
+	IGNORE = time.Duration(5 * time.Minute)
+	DELTA  = 60
+	DELAY  = 30
 )
 
 func (c *Run) Parse(args []string) error {
@@ -339,16 +340,18 @@ func watchdog(u *uhppote.UHPPOTE, st *state, l *log.Logger) error {
 					}
 				}
 
-				if dtt < DELTA/2 && int64(math.Abs(dt.Seconds())) > DELTA {
-					errors += 1
-					if !alerted.synchronized {
-						l.Printf("ERROR UTC0311-L0x %s system time not synchronized: %s (%s)", types.SerialNumber(id), types.DateTime(t), dt)
-						alerted.synchronized = true
-					}
-				} else {
-					if alerted.synchronized {
-						l.Printf("INFO   UTC0311-L0x %s system time synchronized: %s (%s)", types.SerialNumber(id), types.DateTime(t), dt)
-						alerted.synchronized = false
+				if dtt < DELTA/2 {
+					if int64(math.Abs(dt.Seconds())) > DELTA {
+						errors += 1
+						if !alerted.synchronized {
+							l.Printf("ERROR UTC0311-L0x %s system time not synchronized: %s (%s)", types.SerialNumber(id), types.DateTime(t), dt)
+							alerted.synchronized = true
+						}
+					} else {
+						if alerted.synchronized {
+							l.Printf("INFO   UTC0311-L0x %s system time synchronized: %s (%s)", types.SerialNumber(id), types.DateTime(t), dt)
+							alerted.synchronized = false
+						}
 					}
 				}
 			}
@@ -386,44 +389,55 @@ func watchdog(u *uhppote.UHPPOTE, st *state, l *log.Logger) error {
 			}
 		}
 
-		warnings += 1
-		if !alerted.unexpected {
-			l.Printf("WARN  UTC0311-L0x %s unexpected device", types.SerialNumber(key.(uint32)))
-			alerted.unexpected = true
-		}
-
 		touched := value.(status).touched
 		t := time.Time(value.(status).status.SystemDateTime)
 		dt := time.Since(t).Round(seconds)
 		dtt := int64(math.Abs(time.Since(touched).Seconds()))
 
-		if now.After(touched.Add(IDLE)) {
-			warnings += 1
-			if !alerted.touched {
-				l.Printf("WARN  UTC0311-L0x %s no response for %s", types.SerialNumber(key.(uint32)), time.Since(touched).Round(seconds))
-				alerted.touched = true
+		if now.After(touched.Add(IGNORE)) {
+			st.devices.status.Delete(key)
+			st.devices.errors.Delete(key)
+
+			if alerted.unexpected {
+				l.Printf("WARN  UTC0311-L0x %s disappeared", types.SerialNumber(key.(uint32)))
 			}
 		} else {
-			if alerted.touched {
-				l.Printf("INFO  UTC0311-L0x %s connected", types.SerialNumber(key.(uint32)))
-				alerted.touched = false
-			}
-		}
-
-		if dtt < DELTA/2 && int64(math.Abs(dt.Seconds())) > DELTA {
 			warnings += 1
-			if !alerted.synchronized {
-				l.Printf("WARN  UTC0311-L0x %s system time not synchronized: %s (%s)", types.SerialNumber(key.(uint32)), types.DateTime(t), dt)
-				alerted.synchronized = true
+			if !alerted.unexpected {
+				l.Printf("WARN  UTC0311-L0x %s unexpected device", types.SerialNumber(key.(uint32)))
+				alerted.unexpected = true
 			}
-		} else {
-			if alerted.synchronized {
-				l.Printf("INFO   UTC0311-L0x %s system time synchronized: %s (%s)", types.SerialNumber(key.(uint32)), types.DateTime(t), dt)
-				alerted.synchronized = false
-			}
-		}
 
-		st.devices.errors.Store(key, alerted)
+			if now.After(touched.Add(IDLE)) {
+				warnings += 1
+				if !alerted.touched {
+					l.Printf("WARN  UTC0311-L0x %s no response for %s", types.SerialNumber(key.(uint32)), time.Since(touched).Round(seconds))
+					alerted.touched = true
+				}
+			} else {
+				if alerted.touched {
+					l.Printf("INFO  UTC0311-L0x %s connected", types.SerialNumber(key.(uint32)))
+					alerted.touched = false
+				}
+			}
+
+			if dtt < DELTA/2 {
+				if int64(math.Abs(dt.Seconds())) > DELTA {
+					warnings += 1
+					if !alerted.synchronized {
+						l.Printf("WARN  UTC0311-L0x %s system time not synchronized: %s (%s)", types.SerialNumber(key.(uint32)), types.DateTime(t), dt)
+						alerted.synchronized = true
+					}
+				} else {
+					if alerted.synchronized {
+						l.Printf("INFO   UTC0311-L0x %s system time synchronized: %s (%s)", types.SerialNumber(key.(uint32)), types.DateTime(t), dt)
+						alerted.synchronized = false
+					}
+				}
+			}
+
+			st.devices.errors.Store(key, alerted)
+		}
 
 		return true
 	})
