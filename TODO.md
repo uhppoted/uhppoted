@@ -6,9 +6,10 @@
 
 - [x] use flag.FlagSet for commands
 - [ ] linux.Daemonize: implement custom flag for uid:gid and commonalize Parse across all commands
+- [ ] include missing/unexpected devices in monitoring
 - [x] restructure 'run' command
-- [ ] keep-alive/health-check
-- [ ] watchdog
+- [x] keep-alive/health-check
+- [x] watchdog
 - [x] add --debug to command line flags
 - [x] MacOS launchd SIG_TERM
 - [x] MacOS launchd --daemonize
@@ -91,7 +92,7 @@
 
 1.  Rework uhppote to use bidirectional channel to serialize requests
 2.  Consistently include device serial number in output e.g. of get-time
-3.  Implement UDP multicast
+3.  Look into UDP multicast
 4.  Look into ARP for set-address
 5.  Rework error handling to use Wrap/Frame
 6.  Integration tests
