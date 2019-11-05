@@ -24,21 +24,30 @@ type status struct {
 	status  types.Status
 }
 
+type alerts struct {
+	missing      bool
+	touched      bool
+	synchronized bool
+}
+
 type state struct {
+	started time.Time
+
+	healthcheck struct {
+		touched *time.Time
+		alerted bool
+	}
+
 	devices struct {
 		status sync.Map
 		errors sync.Map
 	}
 }
 
-type alerts struct {
-	touched      bool
-	synchronized bool
-}
-
 const (
 	IDLE  = time.Duration(60 * time.Second)
 	DELTA = 60
+	DELAY = 30
 )
 
 func (c *Run) Parse(args []string) error {
@@ -119,8 +128,16 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 }
 
 func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) error {
-
 	s := state{
+		started: time.Now(),
+
+		healthcheck: struct {
+			touched *time.Time
+			alerted bool
+		}{
+			touched: nil,
+			alerted: false,
+		},
 		devices: struct {
 			status sync.Map
 			errors sync.Map
@@ -209,6 +226,7 @@ func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Sig
 
 func healthcheck(u *uhppote.UHPPOTE, st *state, l *log.Logger) {
 	l.Printf("health-check")
+
 	now := time.Now()
 
 	for id, _ := range u.Devices {
@@ -220,59 +238,103 @@ func healthcheck(u *uhppote.UHPPOTE, st *state, l *log.Logger) {
 			})
 		}
 	}
+
+	st.healthcheck.touched = &now
 }
 
-func watchdog(u *uhppote.UHPPOTE, s *state, l *log.Logger) error {
+func watchdog(u *uhppote.UHPPOTE, st *state, l *log.Logger) error {
 	ok := true
+	healthCheckRunning := false
 	now := time.Now()
 	seconds, _ := time.ParseDuration("1s")
-	alerted := alerts{
-		touched:      false,
-		synchronized: false,
+
+	// ... verify health-check
+
+	dt := time.Since(st.started).Round(seconds)
+	if st.healthcheck.touched != nil {
+		dt = time.Since(*st.healthcheck.touched)
+		if int64(math.Abs(dt.Seconds())) < DELAY {
+			healthCheckRunning = true
+		}
 	}
 
-	for id, _ := range u.Devices {
-		if v, found := s.devices.errors.Load(id); found {
-			alerted.touched = v.(alerts).touched
-			alerted.synchronized = v.(alerts).synchronized
+	if int64(math.Abs(dt.Seconds())) > DELAY {
+		ok = false
+		if !st.healthcheck.alerted {
+			l.Printf("ERROR 'health-check' subsystem has not run since %s (%s)", types.DateTime(st.started), dt)
+			st.healthcheck.alerted = true
 		}
+	} else {
+		if st.healthcheck.alerted {
+			l.Printf("INFO  'health-check' subsystem is running")
+			st.healthcheck.alerted = false
+		}
+	}
 
-		if v, found := s.devices.status.Load(id); found {
-			touched := v.(status).touched
-			t := time.Time(v.(status).status.SystemDateTime)
-			dt := time.Since(t).Round(seconds)
-			dtt := int64(math.Abs(time.Since(touched).Seconds()))
+	// verify devices
 
-			timeout := touched.Add(IDLE)
+	if healthCheckRunning {
+		for id, _ := range u.Devices {
+			alerted := alerts{
+				missing:      false,
+				touched:      false,
+				synchronized: false,
+			}
 
-			if now.After(timeout) {
+			if v, found := st.devices.errors.Load(id); found {
+				alerted.missing = v.(alerts).missing
+				alerted.touched = v.(alerts).touched
+				alerted.synchronized = v.(alerts).synchronized
+			}
+
+			if _, found := st.devices.status.Load(id); !found {
 				ok = false
-				if !alerted.touched {
-					l.Printf("ERROR UTC0311-L0x %s no response for %s", types.SerialNumber(id), time.Since(touched).Round(seconds))
-					alerted.touched = true
-				}
-			} else {
-				if alerted.touched {
-					l.Printf("INFO  UTC0311-L0x %s connected", types.SerialNumber(id))
-					alerted.touched = false
+				if !alerted.missing {
+					l.Printf("ERROR UTC0311-L0x %s missing", types.SerialNumber(id))
+					alerted.missing = true
 				}
 			}
 
-			if dtt < DELTA/2 && int64(math.Abs(dt.Seconds())) > DELTA {
-				ok = false
-				if !alerted.synchronized {
-					l.Printf("ERROR UTC0311-L0x %s system time not synchronized: %s (%s)", types.SerialNumber(id), types.DateTime(t), dt)
-					alerted.synchronized = true
+			if v, found := st.devices.status.Load(id); found {
+				touched := v.(status).touched
+				t := time.Time(v.(status).status.SystemDateTime)
+				dt := time.Since(t).Round(seconds)
+				dtt := int64(math.Abs(time.Since(touched).Seconds()))
+
+				if alerted.missing {
+					l.Printf("ERROR UTC0311-L0x %s present", types.SerialNumber(id))
+					alerted.missing = false
 				}
-			} else {
-				if alerted.synchronized {
-					l.Printf("INFO   UTC0311-L0x %s system time synchronized: %s (%s)", types.SerialNumber(id), types.DateTime(t), dt)
-					alerted.synchronized = false
+
+				if now.After(touched.Add(IDLE)) {
+					ok = false
+					if !alerted.touched {
+						l.Printf("ERROR UTC0311-L0x %s no response for %s", types.SerialNumber(id), time.Since(touched).Round(seconds))
+						alerted.touched = true
+					}
+				} else {
+					if alerted.touched {
+						l.Printf("INFO  UTC0311-L0x %s connected", types.SerialNumber(id))
+						alerted.touched = false
+					}
+				}
+
+				if dtt < DELTA/2 && int64(math.Abs(dt.Seconds())) > DELTA {
+					ok = false
+					if !alerted.synchronized {
+						l.Printf("ERROR UTC0311-L0x %s system time not synchronized: %s (%s)", types.SerialNumber(id), types.DateTime(t), dt)
+						alerted.synchronized = true
+					}
+				} else {
+					if alerted.synchronized {
+						l.Printf("INFO   UTC0311-L0x %s system time synchronized: %s (%s)", types.SerialNumber(id), types.DateTime(t), dt)
+						alerted.synchronized = false
+					}
 				}
 			}
-		}
 
-		s.devices.errors.Store(id, alerted)
+			st.devices.errors.Store(id, alerted)
+		}
 	}
 
 	if ok {
