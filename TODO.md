@@ -109,7 +109,10 @@
     - MacOS: use [system logging](https://developer.apple.com/documentation/os/logging)
     - Windows: event logging
 16. [Streamsheets](https://github.com/cedalo/streamsheets)
-17. PDL + go generate
+17. TLA+ models:
+    - watchdog/health-check
+    - concurrent connections
+18. PDL + go generate
     - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)
     - [Diva](http://www.diva-portal.org/smash/get/diva2:407713/FULLTEXT01.pdf)
     - [PADS/ML](https://pads.cs.tufts.edu/papers/tfp07.pdf)
