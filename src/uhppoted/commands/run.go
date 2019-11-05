@@ -2,17 +2,39 @@ package commands
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"net"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 	"uhppote"
+	"uhppote/types"
 	"uhppoted/config"
 	"uhppoted/rest"
+)
+
+type state struct {
+	devices struct {
+		touched sync.Map
+		status  sync.Map
+		errors  sync.Map
+	}
+}
+
+type alerts struct {
+	touched      bool
+	synchronized bool
+}
+
+const (
+	IDLE  = time.Duration(60 * time.Second)
+	DELTA = 60
 )
 
 func (c *Run) Parse(args []string) error {
@@ -89,7 +111,18 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 }
 
 func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) error {
-	// ... listen
+
+	s := state{
+		devices: struct {
+			touched sync.Map
+			status  sync.Map
+			errors  sync.Map
+		}{
+			touched: sync.Map{},
+			status:  sync.Map{},
+			errors:  sync.Map{},
+		},
+	}
 
 	u := uhppote.UHPPOTE{
 		BindAddress:      c.BindAddress,
@@ -103,6 +136,8 @@ func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Sig
 			u.Devices[id] = d.Address
 		}
 	}
+
+	// ... REST task
 
 	restd := rest.RestD{
 		HttpEnabled:        c.REST.HttpEnabled,
@@ -125,27 +160,32 @@ func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Sig
 
 	defer rest.Close()
 
-	touched := time.Now()
-	closed := make(chan struct{})
+	// ... health-check task
+
+	k := time.NewTicker(15 * time.Second)
+
+	defer k.Stop()
+
+	go func() {
+		for {
+			<-k.C
+			healthcheck(&u, &s, logger)
+		}
+	}()
 
 	// ... wait until interrupted/closed
 
-	k := time.NewTicker(15 * time.Second)
-	tick := time.NewTicker(5 * time.Second)
+	closed := make(chan struct{})
+	w := time.NewTicker(5 * time.Second)
 
-	defer k.Stop()
-	defer tick.Stop()
+	defer w.Stop()
 
 	for {
 		select {
-		case <-tick.C:
-			if err := watchdog(touched); err != nil {
+		case <-w.C:
+			if err := watchdog(&s, logger); err != nil {
 				return err
 			}
-
-		case <-k.C:
-			logger.Printf("... keep-alive")
-			keepalive()
 
 		case <-interrupt:
 			logger.Printf("... interrupt")
@@ -161,18 +201,97 @@ func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Sig
 	return nil
 }
 
-func keepalive() {
-	log.Printf("keep-alive")
+func healthcheck(u *uhppote.UHPPOTE, s *state, l *log.Logger) {
+	l.Printf("health-check")
+	now := time.Now()
+	devices, err := u.FindDevices()
+
+	if err != nil {
+		l.Printf("WARN  'keep-alive' error: %v", err)
+		return
+	}
+
+	for _, device := range devices {
+		s.devices.touched.Store(device.SerialNumber, now)
+	}
+
+	for _, device := range devices {
+		status, err := u.GetStatus(uint32(device.SerialNumber))
+		if err == nil {
+			s.devices.status.Store(device.SerialNumber, *status)
+		}
+	}
 }
 
-func watchdog(touched time.Time) error {
-	// dt := time.Since(touched)
-	// now := time.Now()
-	// timeout := touched.Add(IDLE)
+func watchdog(s *state, l *log.Logger) error {
+	ok := true
+	now := time.Now()
+	seconds, _ := time.ParseDuration("1s")
+	alerted := alerts{
+		touched:      false,
+		synchronized: false,
+	}
 
-	// if now.After(timeout) {
-	// 	return errors.New(fmt.Sprintf("Channel idle for %v", dt))
-	// }
+	s.devices.touched.Range(func(key, value interface{}) bool {
+		touched := value.(time.Time)
+		timeout := touched.Add(IDLE)
+
+		if v, found := s.devices.errors.Load(key); found {
+			alerted.touched = v.(alerts).touched
+			alerted.synchronized = v.(alerts).synchronized
+		}
+
+		if now.After(timeout) {
+			ok = false
+			if !alerted.touched {
+				l.Printf("ERROR UTC0311-L0x %s no response for %s", key, time.Since(touched).Round(seconds))
+				alerted.touched = true
+			}
+		} else {
+			if alerted.touched {
+				l.Printf("INFO  UTC0311-L0x %s reconnected", key)
+				alerted.touched = false
+			}
+		}
+
+		s.devices.errors.Store(key, alerted)
+
+		return true
+	})
+
+	s.devices.status.Range(func(key, value interface{}) bool {
+		status := value.(types.Status)
+		t := time.Time(status.SystemDateTime)
+		dt := time.Since(t).Round(seconds)
+
+		if v, found := s.devices.errors.Load(key); found {
+			alerted.touched = v.(alerts).touched
+			alerted.synchronized = v.(alerts).synchronized
+		}
+
+		if int64(math.Abs(dt.Seconds())) > DELTA {
+			ok = false
+			if !alerted.synchronized {
+				l.Printf("ERROR UTC0311-L0x %s system time not synchronized: %s (%s)", key, status.SystemDateTime, dt)
+				alerted.synchronized = true
+			}
+		} else {
+			if alerted.synchronized {
+				l.Printf("INFO   UTC0311-L0x %s system time synchronized: %s (%s)", key, status.SystemDateTime, dt)
+				alerted.synchronized = false
+			}
+		}
+
+		s.devices.errors.Store(key, alerted)
+
+		return true
+	})
+
+	if ok {
+		l.Printf("watchdog: OK")
+	} else {
+		l.Printf("watchdog: ERROR")
+	}
 
 	return nil
 }
