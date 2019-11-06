@@ -6,8 +6,7 @@ CARD = 6154410
 SERIALNO = 423187757
 DOOR = 3
 VERSION = 0.03.0
-# DIST = dist/uhppote-v$(VERSION)
-DIST = dist/development
+DIST ?= development
 
 all: test      \
 	 benchmark \
@@ -37,18 +36,18 @@ format:
 	gofmt -w=true src/integration-tests/*.go
 
 release: format
-	mkdir -p $(DIST)/windows
-	mkdir -p $(DIST)/darwin
-	mkdir -p $(DIST)/linux
-	env GOOS=linux   GOARCH=amd64  go build -o $(DIST)/linux/uhppote-cli             uhppote-cli
-	env GOOS=darwin  GOARCH=amd64  go build -o $(DIST)/darwin/uhppote-cli            uhppote-cli
-	env GOOS=windows GOARCH=amd64  go build -o $(DIST)/windows/uhppote-cli.exe       uhppote-cli
-	env GOOS=linux   GOARCH=amd64  go build -o $(DIST)/linux/uhppoted                uhppoted
-	env GOOS=darwin  GOARCH=amd64  go build -o $(DIST)/darwin/uhppoted               uhppoted
-	env GOOS=windows GOARCH=amd64  go build -o $(DIST)/windows/uhppoted.exe          uhppoted
-	env GOOS=linux   GOARCH=amd64  go build -o $(DIST)/linux/uhppote-simulator       uhppote-simulator
-	env GOOS=darwin  GOARCH=amd64  go build -o $(DIST)/darwin/uhppote-simulator      uhppote-simulator
-	env GOOS=windows GOARCH=amd64  go build -o $(DIST)/windows/uhppote-simulator.exe uhppote-simulator
+	mkdir -p dist/$(DIST)/windows
+	mkdir -p dist/$(DIST)/darwin
+	mkdir -p dist/$(DIST)/linux
+	env GOOS=linux   GOARCH=amd64  go build -o dist/$(DIST)/linux/uhppote-cli             uhppote-cli
+	env GOOS=darwin  GOARCH=amd64  go build -o dist/$(DIST)/darwin/uhppote-cli            uhppote-cli
+	env GOOS=windows GOARCH=amd64  go build -o dist/$(DIST)/windows/uhppote-cli.exe       uhppote-cli
+	env GOOS=linux   GOARCH=amd64  go build -o dist/$(DIST)/linux/uhppoted                uhppoted
+	env GOOS=darwin  GOARCH=amd64  go build -o dist/$(DIST)/darwin/uhppoted               uhppoted
+	env GOOS=windows GOARCH=amd64  go build -o dist/$(DIST)/windows/uhppoted.exe          uhppoted
+	env GOOS=linux   GOARCH=amd64  go build -o dist/$(DIST)/linux/uhppote-simulator       uhppote-simulator
+	env GOOS=darwin  GOARCH=amd64  go build -o dist/$(DIST)/darwin/uhppote-simulator      uhppote-simulator
+	env GOOS=windows GOARCH=amd64  go build -o dist/$(DIST)/windows/uhppote-simulator.exe uhppote-simulator
 
 build: format
 	go install uhppote-cli
