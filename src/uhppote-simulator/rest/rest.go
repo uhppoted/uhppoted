@@ -68,6 +68,7 @@ func (d *dispatcher) Add(path string, h handlerfn) {
 }
 
 func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// CORS header
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
@@ -77,7 +78,6 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Dispatch to handler
 	url := r.URL.Path
 	for _, h := range d.handlers {
 		if h.re.MatchString(url) {
@@ -86,7 +86,6 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Fall-through handler
 	http.Error(w, "Unsupported API", http.StatusBadRequest)
 }
 

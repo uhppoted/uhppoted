@@ -62,6 +62,12 @@ func NewUT0311L04(deviceId uint32, dir string, compressed bool) *UT0311L04 {
 		Gateway:      net.IPv4(0, 0, 0, 0),
 		MacAddress:   types.MacAddress(mac),
 		Version:      0x0892,
+		Doors: map[uint8]*entities.Door{
+			1: entities.NewDoor(1),
+			2: entities.NewDoor(2),
+			3: entities.NewDoor(3),
+			4: entities.NewDoor(4),
+		},
 	}
 
 	return &device
