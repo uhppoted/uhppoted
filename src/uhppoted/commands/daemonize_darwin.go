@@ -45,6 +45,8 @@ rest.https.port = 8443
 rest.tls.key = {{.ConfigDirectory}}/rest/uhppoted.key
 rest.tls.certificate = {{.ConfigDirectory}}/rest/uhppoted.cert
 rest.tls.ca = {{.ConfigDirectory}}/rest/ca.cert
+# rest.openapi.enabled = false
+# rest.openapi.directory = {{.ConfigDirectory}}/rest/openapi
 
 # DEVICES
 # Example configuration for UTO311-L04 with serial number 305419896
@@ -62,17 +64,28 @@ func NewDaemonize() *Daemonize {
 	return &Daemonize{}
 }
 
+func (c *Daemonize) Name() string {
+	return "daemonize"
+}
+
 func (c *Daemonize) FlagSet() *flag.FlagSet {
 	return flag.NewFlagSet("daemonize", flag.ExitOnError)
 }
 
-func (c *Daemonize) Parse(args []string) error {
-	flagset := c.FlagSet()
-	if flagset == nil {
-		panic(fmt.Sprintf("'daemonize' command implementation without a flagset: %#v", c))
-	}
+func (c *Daemonize) Description() string {
+	return "Daemonizes uhppoted as a service/daemon"
+}
 
-	return flagset.Parse(args)
+func (c *Daemonize) Usage() string {
+	return ""
+}
+
+func (c *Daemonize) Help() {
+	fmt.Println()
+	fmt.Println("  Usage: uhppoted daemonize")
+	fmt.Println()
+	fmt.Println("    Daemonizes uhppoted as a service/daemon that runs on startup")
+	fmt.Println()
 }
 
 func (c *Daemonize) Execute(ctx Context) error {
@@ -302,20 +315,4 @@ func (c *Daemonize) firewall() error {
 	}
 
 	return nil
-}
-
-func (c *Daemonize) Description() string {
-	return "Daemonizes uhppoted as a service/daemon"
-}
-
-func (c *Daemonize) Usage() string {
-	return ""
-}
-
-func (c *Daemonize) Help() {
-	fmt.Println()
-	fmt.Println("  Usage: uhppoted daemonize")
-	fmt.Println()
-	fmt.Println("    Daemonizes uhppoted as a service/daemon that runs on startup")
-	fmt.Println()
 }

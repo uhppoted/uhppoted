@@ -16,17 +16,28 @@ func NewUndaemonize() *Undaemonize {
 	return &Undaemonize{}
 }
 
+func (c *Undaemonize) Name() string {
+	return "undaemonize"
+}
+
 func (c *Undaemonize) FlagSet() *flag.FlagSet {
 	return flag.NewFlagSet("undaemonize", flag.ExitOnError)
 }
 
-func (c *Undaemonize) Parse(args []string) error {
-	flagset := c.FlagSet()
-	if flagset == nil {
-		panic(fmt.Sprintf("'undaemonize' command implementation without a flagset: %#v", c))
-	}
+func (c *Undaemonize) Description() string {
+	return "Undaemonizes uhppoted as a service/daemon"
+}
 
-	return flagset.Parse(args)
+func (c *Undaemonize) Usage() string {
+	return ""
+}
+
+func (c *Undaemonize) Help() {
+	fmt.Println()
+	fmt.Println("  Usage: uhppoted daemonize")
+	fmt.Println()
+	fmt.Println("    Deregisters uhppoted as a systed service/daemon")
+	fmt.Println()
 }
 
 func (c *Undaemonize) Execute(ctx Context) error {
@@ -103,20 +114,4 @@ func (c *Undaemonize) rmdirs() error {
 	fmt.Printf("   ... removing '%s'\n", dir)
 
 	return os.RemoveAll(dir)
-}
-
-func (c *Undaemonize) Description() string {
-	return "Undaemonizes uhppoted as a service/daemon"
-}
-
-func (c *Undaemonize) Usage() string {
-	return ""
-}
-
-func (c *Undaemonize) Help() {
-	fmt.Println()
-	fmt.Println("  Usage: uhppoted daemonize")
-	fmt.Println()
-	fmt.Println("    Deregisters uhppoted as a systed service/daemon")
-	fmt.Println()
 }

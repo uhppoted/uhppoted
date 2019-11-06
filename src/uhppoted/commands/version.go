@@ -7,25 +7,18 @@ import (
 
 type Version struct {
 	version string
-	flagset *flag.FlagSet
 }
 
 var version = Version{
 	version: VERSION,
-	flagset: flag.NewFlagSet("version", flag.ExitOnError),
+}
+
+func (c *Version) Name() string {
+	return "version"
 }
 
 func (c *Version) FlagSet() *flag.FlagSet {
-	return c.flagset
-}
-
-func (c *Version) Parse(args []string) error {
-	flagset := c.FlagSet()
-	if flagset == nil {
-		panic(fmt.Sprintf("'version' command implementation without a flagset: %#v", c))
-	}
-
-	return flagset.Parse(args)
+	return flag.NewFlagSet("version", flag.ExitOnError)
 }
 
 func (c *Version) Execute(ctx Context) error {

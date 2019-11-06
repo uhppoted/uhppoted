@@ -5,8 +5,9 @@
 ### uhppoted
 
 - [x] use flag.FlagSet for commands
-- [ ] linux.Daemonize: implement custom flag for uid:gid and commonalize Parse across all commands
-- [ ] Fix simulator panic on add device
+- [x] linux.Daemonize: implement custom flag for uid:gid and commonalize Parse across all commands
+- [ ] Fix simulator panic on create device
+- [ ] MacOS/Linux: implement --console to log to stdout
 - [x] include missing/unexpected devices in monitoring
 - [ ] rename to uhppoted-rest
 - [x] restructure 'run' command
@@ -19,23 +20,16 @@
 - [x] MacOS launchd --undaemonize
 - [x] MacOS launchd XML plist file marshalling/unmarshalling
 - [x] MacOS launchd newsyslog log rotate
-- [ ] MacOS launchd socket handoff
 - [x] Linux systemd service
 - [x] Linux systemd logrotate
 - [x] Linux systemd replace chown with uid+gid
 - [x] Linux systemd uhppoted daemonize --user uhppoted:uhppoted
 - [x] Linux systemd create initial /etc/uhppoted/uhppote.conf file
 - [x] Linux systemd add note for UDP UFW rules for broadcast
-- [ ] Linux systemd socket handoff
 - [x] Windows service
 - [x] Windows service: use %PROGRAMDATA% folder for conf files
 - [x] Windows service: log to Event Log
 - [x] Windows service: rethink --console option
-
-- [ ] MQTT 
-- [ ] websocket command interface
-- [ ] GraphQL
-- [ ] watchdog
 
 #### REST API
 - [x] TLS with mutual authentication
@@ -65,12 +59,20 @@
 - [ ] update tests with Errorf + return to Fatalf
 - [ ] commonalise ACL implementation
 
+### uhppoted
+- [ ] MQTT 
+- [ ] GraphQL
+- [ ] MacOS launchd socket handoff
+- [ ] Linux systemd socket handoff
+- [ ] websocket command interface (?)
+
 ### CLI
 - [ ] Rework grant/revoke for individual doors (labelled)
 - [ ] get-acl
 - [ ] Human readable output for e.g. get-status
 - [ ] JSON formatted output for e.g. get-status
 - [ ] Interactive shell (https://drewdevault.com/2019/09/02/Interactive-SSH-programs.html)
+- [ ] use flag.FlagSet for commands
 
 ### simulator
 - [ ] concurrent requests

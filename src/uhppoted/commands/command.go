@@ -10,8 +10,8 @@ type Context struct {
 }
 
 type Command interface {
+	Name() string
 	FlagSet() *flag.FlagSet
-	Parse([]string) error
 	Execute(context Context) error
 	Description() string
 	Usage() string
@@ -35,18 +35,18 @@ func Parse() (Command, error) {
 
 	if len(os.Args) > 1 {
 		for _, c := range cli {
-			flagset := c.FlagSet()
-			if flagset == nil {
-				panic(fmt.Sprintf("command without a flagset: %#v", c))
-			}
-
-			if flagset.Name() == os.Args[1] {
+			if os.Args[1] == c.Name() {
 				cmd = c
-				args = os.Args[1:]
+				args = os.Args[2:]
 				break
 			}
 		}
 	}
 
-	return cmd, cmd.Parse(args)
+	flagset := cmd.FlagSet()
+	if flagset == nil {
+		panic(fmt.Sprintf("'%s' command implementation without a flagset: %#v", cmd.Name, cmd))
+	}
+
+	return cmd, flagset.Parse(args)
 }
