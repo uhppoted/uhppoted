@@ -7,7 +7,7 @@
 - [x] use flag.FlagSet for commands
 - [x] linux.Daemonize: implement custom flag for uid:gid and commonalize Parse across all commands
 - [ ] Fix simulator panic on create device
-- [ ] MacOS/Linux: implement --console to log to stdout
+- [x] MacOS/Linux: implement --console to log to stdout
 - [x] include missing/unexpected devices in monitoring
 - [ ] rename to uhppoted-rest
 - [x] restructure 'run' command
