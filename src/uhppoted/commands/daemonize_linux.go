@@ -9,14 +9,15 @@ import (
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
 	"text/template"
 	"uhppoted/config"
 )
 
+type usergroup string
+
 type Daemonize struct {
-	usergroup string
-	uid       int
-	gid       int
+	usergroup usergroup
 }
 
 type info struct {
@@ -77,6 +78,8 @@ rest.https.port = 8443
 rest.tls.key = /etc/uhppoted/rest/uhppoted.key
 rest.tls.certificate = /etc/uhppoted/rest/uhppoted.cert
 rest.tls.ca = /etc/uhppoted/rest/ca.cert
+# rest.openapi.enabled = false
+# rest.openapi.directory = /etc/uhppoted/rest/openapi
 
 # DEVICES
 # Example configuration for UTO311-L04 with serial number 305419896
@@ -90,47 +93,47 @@ rest.tls.ca = /etc/uhppoted/rest/ca.cert
 func NewDaemonize() *Daemonize {
 	return &Daemonize{
 		usergroup: "uhppoted:uhppoted",
-		uid:       0,
-		gid:       0,
 	}
+}
+
+func (c *Daemonize) Name() string {
+	return "daemonize"
 }
 
 func (c *Daemonize) FlagSet() *flag.FlagSet {
 	flagset := flag.NewFlagSet("daemonize", flag.ExitOnError)
-	flagset.StringVar(&c.usergroup, "user", "uhppoted:uhppoted", "user:group for uhppoted service. Defaults to uhppoted:uhppoted")
+	flagset.Var(&c.usergroup, "user", "user:group for uhppoted service")
 
 	return flagset
 }
 
-func (c *Daemonize) Parse(args []string) error {
-	flagset := c.FlagSet()
-	if flagset == nil {
-		panic(fmt.Sprintf("'daemonize' command implementation without a flagset: %#v", c))
-	}
+func (c *Daemonize) Description() string {
+	return "Registers uhppoted as a service/daemon"
+}
 
-	err := flagset.Parse(args)
-	if err != nil {
-		return err
-	}
+func (c *Daemonize) Usage() string {
+	return "daemonize [--user <user:group>]"
+}
 
-	re := regexp.MustCompile(`(\w+?):(\w+)`)
-	match := re.FindStringSubmatch(c.usergroup)
-
-	if match == nil {
-		return fmt.Errorf("Invalid user:group '%s'", c.usergroup)
-	}
-
-	uid, gid, err := getUser(match[1], match[2])
-	c.uid = uid
-	c.gid = gid
-
-	return err
+func (c *Daemonize) Help() {
+	fmt.Println()
+	fmt.Println("  Usage: uhppoted daemonize [--user <user:group>]")
+	fmt.Println()
+	fmt.Println("    Registers uhppoted as a systemd service/daemon that runs on startup.")
+	fmt.Println("      Defaults to the user:group uhppoted:uhppoted unless otherwise specified")
+	fmt.Println("      with the --user option")
+	fmt.Println()
 }
 
 func (c *Daemonize) Execute(ctx Context) error {
 	fmt.Println("   ... daemonizing")
 
 	executable, err := os.Executable()
+	if err != nil {
+		return err
+	}
+
+	uid, gid, err := getUserGroup(string(c.usergroup))
 	if err != nil {
 		return err
 	}
@@ -144,8 +147,8 @@ func (c *Daemonize) Execute(ctx Context) error {
 		PID:              "/var/uhppoted/uhppoted.pid",
 		User:             "uhppoted",
 		Group:            "uhppoted",
-		Uid:              c.uid,
-		Gid:              c.gid,
+		Uid:              uid,
+		Gid:              gid,
 		LogFiles:         []string{"/var/log/uhppoted/uhppoted.log"},
 		BindAddress:      &bind,
 		BroadcastAddress: &broadcast,
@@ -254,13 +257,18 @@ func (c *Daemonize) mkdirs(d *info) error {
 	return nil
 }
 
-func getUser(username string, group string) (int, int, error) {
-	u, err := user.Lookup(username)
+func getUserGroup(s string) (int, int, error) {
+	match := regexp.MustCompile(`(\w+?):(\w+)`).FindStringSubmatch(s)
+	if match == nil {
+		return 0, 0, fmt.Errorf("Invalid user:group '%s'", s)
+	}
+
+	u, err := user.Lookup(match[1])
 	if err != nil {
 		return 0, 0, err
 	}
 
-	g, err := user.LookupGroup(group)
+	g, err := user.LookupGroup(match[2])
 	if err != nil {
 		return 0, 0, err
 	}
@@ -278,20 +286,23 @@ func getUser(username string, group string) (int, int, error) {
 	return uid, gid, nil
 }
 
-func (c *Daemonize) Description() string {
-	return "Registers uhppoted as a service/daemon"
+// usergroup::flag.Value
+
+func (f *usergroup) String() string {
+	if f == nil {
+		return "uhppoted:uhppoted"
+	}
+
+	return string(*f)
 }
 
-func (c *Daemonize) Usage() string {
-	return "daemonize [--user <user:group>]"
-}
+func (f *usergroup) Set(s string) error {
+	_, _, err := getUserGroup(s)
+	if err != nil {
+		return err
+	}
 
-func (c *Daemonize) Help() {
-	fmt.Println()
-	fmt.Println("  Usage: uhppoted daemonize [--user <user:group>]")
-	fmt.Println()
-	fmt.Println("    Registers uhppoted as a systemd service/daemon that runs on startup.")
-	fmt.Println("      Defaults to the user:group uhppoted:uhppoted unless otherwise specified")
-	fmt.Println("      :!with the --user option")
-	fmt.Println()
+	*f = usergroup(strings.TrimSpace(s))
+
+	return nil
 }

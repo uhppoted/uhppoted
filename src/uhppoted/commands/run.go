@@ -52,13 +52,8 @@ const (
 	DELAY  = 30
 )
 
-func (c *Run) Parse(args []string) error {
-	flagset := c.FlagSet()
-	if flagset == nil {
-		panic(fmt.Sprintf("'run' command implementation without a flagset: %#v", c))
-	}
-
-	return flagset.Parse(args)
+func (c *Run) Name() string {
+	return "run"
 }
 
 func (c *Run) Description() string {

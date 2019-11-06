@@ -9,17 +9,26 @@ import (
 type Help struct {
 }
 
+func (c *Help) Name() string {
+	return "help"
+}
+
 func (c *Help) FlagSet() *flag.FlagSet {
 	return flag.NewFlagSet("help", flag.ExitOnError)
 }
 
-func (c *Help) Parse(args []string) error {
-	flagset := c.FlagSet()
-	if flagset == nil {
-		panic(fmt.Sprintf("'help' command implementation without a flagset: %#v", c))
-	}
+func (c *Help) Description() string {
+	return "Displays the current version"
+}
 
-	return flagset.Parse(args)
+func (c *Help) Usage() string {
+	return ""
+}
+
+func (c *Help) Help() {
+	fmt.Println()
+	fmt.Println("Displays the uhppoted version in the format v<major>.<minor>.<build> e.g. v1.00.10")
+	fmt.Println()
 }
 
 func (c *Help) Execute(ctx Context) error {
@@ -43,20 +52,6 @@ func (c *Help) Execute(ctx Context) error {
 	}
 
 	return nil
-}
-
-func (c *Help) Description() string {
-	return "Displays the current version"
-}
-
-func (c *Help) Usage() string {
-	return ""
-}
-
-func (c *Help) Help() {
-	fmt.Println()
-	fmt.Println("Displays the uhppoted version in the format v<major>.<minor>.<build> e.g. v1.00.10")
-	fmt.Println()
 }
 
 func usage() {
