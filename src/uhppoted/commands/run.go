@@ -306,7 +306,7 @@ func watchdog(u *uhppote.UHPPOTE, st *state, l *log.Logger) error {
 			if _, found := st.devices.status.Load(id); !found {
 				errors += 1
 				if !alerted.missing {
-					l.Printf("ERROR UTC0311-L0x %s missing", types.SerialNumber(id))
+					l.Printf("ERROR UTC0311-L0x %s device not found", types.SerialNumber(id))
 					alerted.missing = true
 				}
 			}

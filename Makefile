@@ -183,7 +183,7 @@ simulator-device: build
 	./bin/uhppote-simulator --debug --devices "runtime/simulation/devices" new-device 666
 
 uhppoted: build
-	./bin/uhppoted
+	./bin/uhppoted --console
 
 uhppoted-privileged: build
 	sudo ./bin/uhppoted --modify-application-firewall
