@@ -94,8 +94,7 @@ usage: build
 	$(CLI)
 
 debug: build
-	go clean -testcache
-	go test -count=1 src/uhppote/*.go
+	./bin/uhppote-simulator --debug --devices "./runtime/simulation/debug"
 
 help: build
 	$(CLI)       help

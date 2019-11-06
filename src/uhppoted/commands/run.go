@@ -327,6 +327,7 @@ func watchdog(u *uhppote.UHPPOTE, st *state, l *log.Logger) error {
 					if !alerted.touched {
 						l.Printf("ERROR UTC0311-L0x %s no response for %s", types.SerialNumber(id), time.Since(touched).Round(seconds))
 						alerted.touched = true
+						alerted.synchronized = false
 					}
 				} else {
 					if alerted.touched {
@@ -408,6 +409,7 @@ func watchdog(u *uhppote.UHPPOTE, st *state, l *log.Logger) error {
 				if !alerted.touched {
 					l.Printf("WARN  UTC0311-L0x %s no response for %s", types.SerialNumber(key.(uint32)), time.Since(touched).Round(seconds))
 					alerted.touched = true
+					alerted.synchronized = false
 				}
 			} else {
 				if alerted.touched {
