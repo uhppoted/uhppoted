@@ -4,7 +4,7 @@
 
 ### uhppoted
 
-- [ ] release
+- [x] release
 - [x] use flag.FlagSet for commands
 - [x] linux.Daemonize: implement custom flag for uid:gid and commonalize Parse across all commands
 - [x] Fix simulator panic on create device
