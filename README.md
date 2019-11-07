@@ -8,18 +8,19 @@ The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Acc
 
 ## Releases
 
+- v0.40: REST API service
 - v0.30: functional simulator with minimal command API
 - v0.20: load access control list from TSV file
 - v0.10: bare-bones but functional CLI
 
 ## Modules
 
-| Module            | Description                                                           |
-| ----------------- | --------------------------------------------------------------------- |
-| uhppote           | core library, implements the UDP interface to UT0311-L0x controllers |
-| uhppote-cli       | command line interface                                                |
-| uhppoted          | daemon/service for remote access to UT0311-L0x controllers           |
-| uhppote-simulator | UT0311-L04 simulator for development use                              |
+| Module            | Description                                                              |
+| ----------------- | ------------------------------------------------------------------------ |
+| uhppote           | core library, implements the UDP interface to UT0311-L0x controllers     |
+| uhppote-cli       | command line interface                                                   |
+| uhppoted-rest     | daemon/service with REST API for remote access to UT0311-L0x controllers |
+| uhppote-simulator | UT0311-L04 simulator for development use                                 |
 
 ## Installation
 
@@ -83,11 +84,11 @@ Supported commands:
 - load-acl
 - listen
 
-## uhppoted
+## uhppoted-rest
 
-Usage: *uhppoted \<command\> \<arguments\>*
+Usage: *uhppoted-rest \<command\> \<options\>*
 
-Defaults to run unless one of the commands below is specified: 
+Defaults to 'run' unless one of the commands below is specified: 
 
 - daemonize
 - undaemonize
