@@ -1,57 +1,12 @@
-## v0.4.0
+## v0.50
 
 ## IN PROGRESS
 
-### uhppoted
+### uhppoted-mqtt
 
-- [x] release
-- [x] use flag.FlagSet for commands
-- [x] linux.Daemonize: implement custom flag for uid:gid and commonalize Parse across all commands
-- [x] Fix simulator panic on create device
-- [x] MacOS/Linux: implement --console to log to stdout
-- [x] include missing/unexpected devices in monitoring
-- [x] rename to uhppoted-rest
-- [x] restructure 'run' command
-- [x] keep-alive/health-check
-- [x] watchdog
-- [x] add --debug to command line flags
-- [x] MacOS launchd SIG_TERM
-- [x] MacOS launchd --daemonize
-- [x] MacOS launchd reinstall
-- [x] MacOS launchd --undaemonize
-- [x] MacOS launchd XML plist file marshalling/unmarshalling
-- [x] MacOS launchd newsyslog log rotate
-- [x] Linux systemd service
-- [x] Linux systemd logrotate
-- [x] Linux systemd replace chown with uid+gid
-- [x] Linux systemd uhppoted daemonize --user uhppoted:uhppoted
-- [x] Linux systemd create initial /etc/uhppoted/uhppote.conf file
-- [x] Linux systemd add note for UDP UFW rules for broadcast
-- [x] Windows service
-- [x] Windows service: use %PROGRAMDATA% folder for conf files
-- [x] Windows service: log to Event Log
-- [x] Windows service: rethink --console option
-
-#### REST API
-- [x] TLS with mutual authentication
-- [x] Swagger UI
-- [x] gzip response
-- [x] Add HTTP method to dispatch matching
-- [x] Log internal error information
-- [x] Include logging in context
-- [x] Get devices
-- [x] Get device
-- [x] Get device status
-- [x] Get device time
-- [x] Set device time
-- [x] Get door delay
-- [x] Set door delay
-- [x] Get cards
-- [x] Get card
-- [x] Delete cards
-- [x] Delete card
-- [x] Get events
-- [x] Get event
+- [ ] conf file encoder/decoder with reflection and/or JSON
+- [ ] rework UHPPOTE response messages to use factory
+- [ ] rework plist encoder
 
 ## TODO
 
@@ -61,7 +16,6 @@
 - [ ] commonalise ACL implementation
 
 ### uhppoted
-- [ ] MQTT 
 - [ ] GraphQL
 - [ ] MacOS launchd socket handoff
 - [ ] Linux systemd socket handoff
@@ -101,7 +55,6 @@
 4.  Look into ARP for set-address
 5.  Rework error handling to use Wrap/Frame
 6.  Integration tests
-7.  conf file encoder/decoder with reflection and/or JSON
 8.  Verify fields in listen events/status replies:
     - battery status can be (at least) 0x00, 0x01 and 0x04
 9.  Update to use modules
