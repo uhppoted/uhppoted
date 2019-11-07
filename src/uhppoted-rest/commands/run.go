@@ -15,8 +15,8 @@ import (
 	"time"
 	"uhppote"
 	"uhppote/types"
-	"uhppoted/config"
-	"uhppoted/rest"
+	"uhppoted-rest/config"
+	"uhppoted-rest/rest"
 )
 
 type status struct {
@@ -57,16 +57,16 @@ func (c *Run) Name() string {
 }
 
 func (c *Run) Description() string {
-	return "Runs the uhppoted daemon/service until terminated by the system service manager"
+	return "Runs the uhppoted-rest daemon/service until terminated by the system service manager"
 }
 
 func (c *Run) Usage() string {
-	return "uhppoted [--debug] [--config <file>] [--logfile <file>] [--logfilesize <bytes>] [--pid <file>]"
+	return "uhppoted-rest [--debug] [--config <file>] [--logfile <file>] [--logfilesize <bytes>] [--pid <file>]"
 }
 
 func (c *Run) Help() {
 	fmt.Println()
-	fmt.Println("  Usage: uhppoted <options>")
+	fmt.Println("  Usage: uhppoted-rest <options>")
 	fmt.Println()
 	fmt.Println("  Options:")
 	fmt.Println()

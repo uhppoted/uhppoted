@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
-	xpath "uhppoted/encoding/plist"
+	xpath "uhppoted-rest/encoding/plist"
 )
 
 type info struct {
@@ -96,7 +96,7 @@ func (c *Daemonize) Execute(ctx Context) error {
 	}
 
 	d := info{
-		Label:            "com.github.twystd.uhppoted",
+		Label:            "com.github.twystd.uhppoted-rest",
 		Executable:       executable,
 		ConfigDirectory:  "/usr/local/etc/com.github.twystd.uhppoted",
 		WorkingDirectory: "/usr/local/var/com.github.twystd.uhppoted",
@@ -122,18 +122,18 @@ func (c *Daemonize) Execute(ctx Context) error {
 		return err
 	}
 
-	fmt.Println("   ... com.github.twystd.uhppoted registered as a LaunchDaemon")
+	fmt.Println("   ... com.github.twystd.uhppoted-rest registered as a LaunchDaemon")
 	fmt.Println()
 	fmt.Println("   The daemon will start automatically on the next system restart - to start it manually, execute the following command:")
 	fmt.Println()
-	fmt.Println("   sudo launchctl load /Library/LaunchDaemons/com.github.twystd.uhppoted")
+	fmt.Println("   sudo launchctl load /Library/LaunchDaemons/com.github.twystd.uhppoted-rest")
 	fmt.Println()
 
 	return nil
 }
 
 func (c *Daemonize) launchd(d *info) error {
-	path := filepath.Join("/Library/LaunchDaemons", "com.github.twystd.uhppoted.plist")
+	path := filepath.Join("/Library/LaunchDaemons", "com.github.twystd.uhppoted-rest.plist")
 	_, err := os.Stat(path)
 	if err != nil && !os.IsNotExist(err) {
 		return err
@@ -227,23 +227,23 @@ func (c *Daemonize) conf(d *info) error {
 
 func (c *Daemonize) logrotate() error {
 	dir := "/usr/local/var/log"
-	pid := "/usr/local/var/com.github.twystd.uhppoted/uhppoted.pid"
+	pid := "/usr/local/var/com.github.twystd.uhppoted/uhppoted-rest.pid"
 	logfiles := []struct {
 		LogFile string
 		PID     string
 	}{
 		{
-			LogFile: filepath.Join(dir, "com.github.twystd.uhppoted.log"),
+			LogFile: filepath.Join(dir, "com.github.twystd.uhppoted-rest.log"),
 			PID:     pid,
 		},
 		{
-			LogFile: filepath.Join(dir, "com.github.twystd.uhppoted.err"),
+			LogFile: filepath.Join(dir, "com.github.twystd.uhppoted-rest.err"),
 			PID:     pid,
 		},
 	}
 
 	t := template.Must(template.New("logrotate.conf").Parse(newsyslog))
-	path := filepath.Join("/etc/newsyslog.d", "uhppoted.conf")
+	path := filepath.Join("/etc/newsyslog.d", "uhppoted-rest.conf")
 
 	fmt.Printf("   ... creating '%s'\n", path)
 
@@ -260,7 +260,7 @@ func (c *Daemonize) logrotate() error {
 func (c *Daemonize) firewall() error {
 	fmt.Println()
 	fmt.Println("   ***")
-	fmt.Println("   *** WARNING: adding 'uhppoted' to the application firewall and unblocking incoming connections")
+	fmt.Println("   *** WARNING: adding 'uhppoted-rest' to the application firewall and unblocking incoming connections")
 	fmt.Println("   ***")
 	fmt.Println()
 
@@ -291,7 +291,7 @@ func (c *Daemonize) firewall() error {
 		out, err = cmd.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			fmt.Errorf("ERROR: Failed to add 'uhppoted' to the application firewall (%v)\n", err)
+			fmt.Errorf("ERROR: Failed to add 'uhppoted-rest' to the application firewall (%v)\n", err)
 			return err
 		}
 
@@ -299,7 +299,7 @@ func (c *Daemonize) firewall() error {
 		out, err = cmd.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			fmt.Errorf("ERROR: Failed to unblock 'uhppoted' on the application firewall (%v)\n", err)
+			fmt.Errorf("ERROR: Failed to unblock 'uhppoted-rest' on the application firewall (%v)\n", err)
 			return err
 		}
 

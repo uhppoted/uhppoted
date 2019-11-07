@@ -6,8 +6,8 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"uhppoted/config"
-	"uhppoted/eventlog"
+	"uhppoted-rest/config"
+	"uhppoted-rest/eventlog"
 )
 
 type Run struct {
@@ -21,10 +21,10 @@ type Run struct {
 }
 
 var runCmd = Run{
-	configuration: "/etc/uhppoted/uhppoted.conf",
-	dir:           "/var/uhppoted",
-	pidFile:       "/var/uhppoted/uhppoted.pid",
-	logFile:       "/var/log/uhppoted/uhppoted.log",
+	configuration: "/usr/local/etc/com.github.twystd.uhppoted/uhppoted.conf",
+	dir:           "/usr/local/var/com.github.twystd.uhppoted",
+	pidFile:       "/usr/local/var/com.github.twystd.uhppoted/uhppoted-rest.pid",
+	logFile:       "/usr/local/var/com.github.twystd.uhppoted/logs/uhppoted-rest.log",
 	logFileSize:   10,
 	console:       false,
 	debug:         false,
@@ -45,7 +45,7 @@ func (r *Run) FlagSet() *flag.FlagSet {
 }
 
 func (r *Run) Execute(ctx Context) error {
-	log.Printf("uhppoted daemon - %s (PID %d)\n", "Linux", os.Getpid())
+	log.Printf("uhppoted-rest daemon %s - %s (PID %d)\n", VERSION, "MacOS", os.Getpid())
 
 	f := func(c *config.Config) error {
 		return r.exec(c)
@@ -67,7 +67,7 @@ func (r *Run) exec(c *config.Config) error {
 		go func() {
 			for {
 				<-rotate
-				log.Printf("Rotating uhppoted log file '%s'\n", r.logFile)
+				log.Printf("Rotating uhppoted-rest log file '%s'\n", r.logFile)
 				events.Rotate()
 			}
 		}()

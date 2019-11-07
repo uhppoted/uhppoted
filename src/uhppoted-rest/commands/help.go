@@ -27,7 +27,7 @@ func (c *Help) Usage() string {
 
 func (c *Help) Help() {
 	fmt.Println()
-	fmt.Println("Displays the uhppoted version in the format v<major>.<minor>.<build> e.g. v1.00.10")
+	fmt.Println("Displays the uhppoted-rest version in the format v<major>.<minor>.<build> e.g. v1.00.10")
 	fmt.Println()
 }
 
@@ -56,13 +56,13 @@ func (c *Help) Execute(ctx Context) error {
 
 func usage() {
 	fmt.Println()
-	fmt.Println("  Usage: uhppoted <command> [options]")
+	fmt.Println("  Usage: uhppoted-rest <command> [options]")
 	fmt.Println()
 	fmt.Println("  Defaults to 'run'.")
 	fmt.Println()
 	fmt.Println("  Commands:")
 	fmt.Println()
-	fmt.Println("    help          Displays this message. For help on a specific command use 'uhppoted help <command>'")
+	fmt.Println("    help          Displays this message. For help on a specific command use 'uhppoted-rest help <command>'")
 
 	for _, c := range cli {
 		fmt.Printf("    %-13s %s\n", c.FlagSet().Name(), c.Description())

@@ -22,12 +22,12 @@ format:
 	gofmt -w=true src/uhppote-cli/commands/*.go
 	gofmt -w=true src/uhppote-cli/config/*.go
 	gofmt -w=true src/uhppote-cli/parsers/*.go
-	gofmt -w=true src/uhppoted/*.go
-	gofmt -w=true src/uhppoted/commands/*.go
-	gofmt -w=true src/uhppoted/config/*.go
-	gofmt -w=true src/uhppoted/rest/*.go
-	gofmt -w=true src/uhppoted/eventlog/*.go
-	gofmt -w=true src/uhppoted/encoding/plist/*.go
+	gofmt -w=true src/uhppoted-rest/*.go
+	gofmt -w=true src/uhppoted-rest/commands/*.go
+	gofmt -w=true src/uhppoted-rest/config/*.go
+	gofmt -w=true src/uhppoted-rest/rest/*.go
+	gofmt -w=true src/uhppoted-rest/eventlog/*.go
+	gofmt -w=true src/uhppoted-rest/encoding/plist/*.go
 	gofmt -w=true src/uhppote-simulator/*.go
 	gofmt -w=true src/uhppote-simulator/simulator/*.go
 	gofmt -w=true src/uhppote-simulator/rest/*.go
@@ -42,9 +42,9 @@ release: format
 	env GOOS=linux   GOARCH=amd64  go build -o dist/$(DIST)/linux/uhppote-cli             uhppote-cli
 	env GOOS=darwin  GOARCH=amd64  go build -o dist/$(DIST)/darwin/uhppote-cli            uhppote-cli
 	env GOOS=windows GOARCH=amd64  go build -o dist/$(DIST)/windows/uhppote-cli.exe       uhppote-cli
-	env GOOS=linux   GOARCH=amd64  go build -o dist/$(DIST)/linux/uhppoted                uhppoted
-	env GOOS=darwin  GOARCH=amd64  go build -o dist/$(DIST)/darwin/uhppoted               uhppoted
-	env GOOS=windows GOARCH=amd64  go build -o dist/$(DIST)/windows/uhppoted.exe          uhppoted
+	env GOOS=linux   GOARCH=amd64  go build -o dist/$(DIST)/linux/uhppoted-rest           uhppoted-rest
+	env GOOS=darwin  GOARCH=amd64  go build -o dist/$(DIST)/darwin/uhppoted-rest          uhppoted-rest
+	env GOOS=windows GOARCH=amd64  go build -o dist/$(DIST)/windows/uhppoted-rest.exe     uhppoted-rest
 	env GOOS=linux   GOARCH=amd64  go build -o dist/$(DIST)/linux/uhppote-simulator       uhppote-simulator
 	env GOOS=darwin  GOARCH=amd64  go build -o dist/$(DIST)/darwin/uhppote-simulator      uhppote-simulator
 	env GOOS=windows GOARCH=amd64  go build -o dist/$(DIST)/windows/uhppote-simulator.exe uhppote-simulator
@@ -52,7 +52,7 @@ release: format
 build: format
 	go install uhppote-cli
 	go install uhppote-simulator
-	go install uhppoted
+	go install uhppoted-rest
 
 test: build
 	go clean -testcache
@@ -61,7 +61,7 @@ test: build
 	go test -count=1 src/uhppote/encoding/bcd/*.go
 	go test -count=1 src/uhppote/encoding/UTO311-L0x/*.go
 	go test -count=1 src/uhppote-simulator/simulator/*.go
-	go test -count=1 src/uhppoted/encoding/plist/*.go
+	go test -count=1 src/uhppoted-rest/encoding/plist/*.go
 
 test-simulator: build
 	go clean -testcache
@@ -69,7 +69,7 @@ test-simulator: build
 
 test-uhppoted: build
 	go clean -testcache
-	go test -count=1 src/uhppoted/encoding/plist/*.go 
+	go test -count=1 src/uhppoted-rest/encoding/plist/*.go 
 
 integration-tests: build
 	go clean -testcache
@@ -83,7 +83,7 @@ coverage: build
 	go test -cover src/uhppote/*.go
 	go test -cover src/uhppote/encoding/bcd/*.go
 	go test -cover src/uhppote/encoding/UTO311-L0x/*.go
-	go test -cover src/uhppoted/encoding/plist/*.go
+	go test -cover src/uhppoted-rest/encoding/plist/*.go
 
 clean:
 	go clean
@@ -181,39 +181,33 @@ simulator-device: build
 	./bin/uhppote-simulator --debug --devices "runtime/simulation/devices" new-device 666
 
 uhppoted: build
-	./bin/uhppoted --console
-
-uhppoted-privileged: build
-	sudo ./bin/uhppoted --modify-application-firewall
+	./bin/uhppoted-rest --console
 
 uhppoted-daemonize: build
-	sudo ./bin/uhppoted daemonize
+	sudo ./bin/uhppoted-rest daemonize
 
 uhppoted-undaemonize: build
-	sudo ./bin/uhppoted undaemonize
+	sudo ./bin/uhppoted-rest undaemonize
 
 uhppoted-version: build
-	./bin/uhppoted version
+	./bin/uhppoted-rest version
 
 uhppoted-help: build
-	./bin/uhppoted help
-	./bin/uhppoted help commands
-	./bin/uhppoted help version
+	./bin/uhppoted-rest help
+	./bin/uhppoted-rest help commands
+	./bin/uhppoted-rest help version
 
 uhppoted-linux: build
 	mkdir -p ./dist/development/linux
-	env GOOS=linux GOARCH=amd64 go build -o dist/development/linux/uhppoted          uhppoted
-	env GOOS=linux GOARCH=amd64 go build -o dist/development/linux/uhppote-simulator uhppote-simulator
+	env GOOS=linux GOARCH=amd64 go build -o dist/development/linux/uhppoted-rest uhppoted-rest
 
 uhppoted-windows: build
 	mkdir -p ./dist/development/windows
-	env GOOS=windows GOARCH=amd64 go build -o dist/development/windows/uhppoted.exe          uhppoted
-	env GOOS=windows GOARCH=amd64 go build -o dist/development/windows/uhppote-cli.exe       uhppote-cli
-	env GOOS=windows GOARCH=amd64 go build -o dist/development/windows/uhppote-simulator.exe uhppote-simulator
+	env GOOS=windows GOARCH=amd64 go build -o dist/development/windows/uhppoted-rest.exe uhppoted-rest
 
 uhppoted-docker: build
 	mkdir -p ./docker/linux
-	env GOOS=linux GOARCH=amd64 go build -o docker/linux/uhppoted uhppoted
+	env GOOS=linux GOARCH=amd64 go build -o docker/linux/uhppoted-rest uhppoted-rest
 	docker build -f ./docker/Dockerfile.uhppoted -t uhppoted . 
 	docker run --detach --publish 8001:8001 --rm uhppoted
 
