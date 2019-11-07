@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
-	"uhppoted/config"
+	"uhppoted-rest/config"
 )
 
 type usergroup string
@@ -108,7 +108,7 @@ func (c *Daemonize) FlagSet() *flag.FlagSet {
 }
 
 func (c *Daemonize) Description() string {
-	return "Registers uhppoted as a service/daemon"
+	return "Registers uhppoted-rest as a service/daemon"
 }
 
 func (c *Daemonize) Usage() string {
@@ -119,7 +119,7 @@ func (c *Daemonize) Help() {
 	fmt.Println()
 	fmt.Println("  Usage: uhppoted daemonize [--user <user:group>]")
 	fmt.Println()
-	fmt.Println("    Registers uhppoted as a systemd service/daemon that runs on startup.")
+	fmt.Println("    Registers uhppoted-rest as a systemd service/daemon that runs on startup.")
 	fmt.Println("      Defaults to the user:group uhppoted:uhppoted unless otherwise specified")
 	fmt.Println("      with the --user option")
 	fmt.Println()
@@ -144,12 +144,12 @@ func (c *Daemonize) Execute(ctx Context) error {
 		Description:      "UHPPOTE UTO311-L0x access card controllers service/daemon ",
 		Documentation:    "https://github.com/twystd/uhppote-go",
 		Executable:       executable,
-		PID:              "/var/uhppoted/uhppoted.pid",
+		PID:              "/var/uhppoted/uhppoted-rest.pid",
 		User:             "uhppoted",
 		Group:            "uhppoted",
 		Uid:              uid,
 		Gid:              gid,
-		LogFiles:         []string{"/var/log/uhppoted/uhppoted.log"},
+		LogFiles:         []string{"/var/log/uhppoted/uhppoted-rest.log"},
 		BindAddress:      &bind,
 		BroadcastAddress: &broadcast,
 	}
@@ -170,11 +170,11 @@ func (c *Daemonize) Execute(ctx Context) error {
 		return err
 	}
 
-	fmt.Println("   ... uhppoted registered as a systemd service")
+	fmt.Println("   ... uhppoted-rest registered as a systemd service")
 	fmt.Println()
 	fmt.Println("   The daemon will start automatically on the next system restart - to start it manually, execute the following command:")
 	fmt.Println()
-	fmt.Println("     > sudo systemctl start uhppoted")
+	fmt.Println("     > sudo systemctl start uhppoted-rest")
 	fmt.Println()
 	fmt.Println("   The firewall may need additional rules to allow UDP broadcast e.g. for UFW:")
 	fmt.Println()
@@ -185,8 +185,8 @@ func (c *Daemonize) Execute(ctx Context) error {
 }
 
 func (c *Daemonize) systemd(d *info) error {
-	path := filepath.Join("/etc/systemd/system", "uhppoted.service")
-	t := template.Must(template.New("uhppoted.service").Parse(serviceTemplate))
+	path := filepath.Join("/etc/systemd/system", "uhppoted-rest.service")
+	t := template.Must(template.New("uhppoted-rest.service").Parse(serviceTemplate))
 
 	fmt.Printf("   ... creating '%s'\n", path)
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
@@ -200,8 +200,8 @@ func (c *Daemonize) systemd(d *info) error {
 }
 
 func (c *Daemonize) logrotate(d *info) error {
-	path := filepath.Join("/etc/logrotate.d", "uhppoted")
-	t := template.Must(template.New("uhppoted.logrotate").Parse(logRotateTemplate))
+	path := filepath.Join("/etc/logrotate.d", "uhppoted-rest")
+	t := template.Must(template.New("uhppoted-rest.logrotate").Parse(logRotateTemplate))
 
 	fmt.Printf("   ... creating '%s'\n", path)
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)

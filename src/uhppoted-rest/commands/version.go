@@ -37,6 +37,6 @@ func (c *Version) Usage() string {
 
 func (c *Version) Help() {
 	fmt.Println()
-	fmt.Println("  Displays the uhppoted version in the format v<major>.<minor>.<build> e.g. v1.00.10")
+	fmt.Println("  Displays the uhppoted-rest version in the format v<major>.<minor>.<build> e.g. v1.00.10")
 	fmt.Println()
 }

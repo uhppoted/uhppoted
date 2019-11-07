@@ -14,8 +14,8 @@ type Undaemonize struct {
 
 func NewUndaemonize() *Undaemonize {
 	return &Undaemonize{
-		name:        "uhppoted",
-		description: "uhppoted Service Interface to UTO311-L0x devices",
+		name:        "uhppoted-rest",
+		description: "uhppoted-rest Service Interface to UTO311-L0x devices",
 	}
 }
 
@@ -35,7 +35,7 @@ func (c *Undaemonize) Execute(ctx Context) error {
 		return err
 	}
 
-	fmt.Println("   ... uhppoted unregistered as a Windows system service")
+	fmt.Println("   ... uhppoted-rest unregistered as a Windows system service")
 	fmt.Println()
 	fmt.Printf("   Log files and configuration files in directory %s should be removed manually", dir)
 	fmt.Println()
@@ -72,7 +72,7 @@ func (c *Undaemonize) unregister() error {
 }
 
 func (c *Undaemonize) Description() string {
-	return "Deregisters the uhppoted service"
+	return "Deregisters the uhppoted-rest service"
 }
 
 func (c *Undaemonize) Usage() string {
@@ -81,8 +81,8 @@ func (c *Undaemonize) Usage() string {
 
 func (c *Undaemonize) Help() {
 	fmt.Println()
-	fmt.Println("  Usage: uhppoted undaemonize")
+	fmt.Println("  Usage: uhppoted-rest undaemonize")
 	fmt.Println()
-	fmt.Println("    Deregisters uhppoted as a Windows service")
+	fmt.Println("    Deregisters uhppoted-rest as a Windows service")
 	fmt.Println()
 }

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"uhppoted/commands"
+	"uhppoted-rest/commands"
 )
 
 func main() {

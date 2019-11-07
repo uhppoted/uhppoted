@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	xpath "uhppoted/encoding/plist"
+	xml "uhppoted-rest/encoding/plist"
 )
 
 type Undaemonize struct {
@@ -26,7 +26,7 @@ func (c *Undaemonize) FlagSet() *flag.FlagSet {
 }
 
 func (c *Undaemonize) Description() string {
-	return "Deregisters uhppoted as a service/daemon"
+	return "Deregisters uhppoted-rest as a service/daemon"
 }
 
 func (c *Undaemonize) Usage() string {
@@ -35,16 +35,16 @@ func (c *Undaemonize) Usage() string {
 
 func (c *Undaemonize) Help() {
 	fmt.Println()
-	fmt.Println("  Usage: uhppoted undaemonize")
+	fmt.Println("  Usage: uhppoted-rest undaemonize")
 	fmt.Println()
-	fmt.Println("    Deregisters uhppoted from launchd as a service/daemon")
+	fmt.Println("    Deregisters uhppoted-rest from launchd as a service/daemon")
 	fmt.Println()
 }
 
 func (c *Undaemonize) Execute(ctx Context) error {
 	fmt.Println("   ... undaemonizing")
 
-	path := filepath.Join("/Library/LaunchDaemons", "com.github.twystd.uhppoted.plist")
+	path := filepath.Join("/Library/LaunchDaemons", "com.github.twystd.uhppoted-rest.plist")
 	_, err := os.Stat(path)
 	if err != nil && !os.IsNotExist(err) {
 		return err
@@ -76,9 +76,9 @@ func (c *Undaemonize) Execute(ctx Context) error {
 		return err
 	}
 
-	fmt.Println("   ... com.github.twystd.uhppoted unregistered as a LaunchDaemon")
+	fmt.Println("   ... com.github.twystd.uhppoted-rest unregistered as a LaunchDaemon")
 	fmt.Println()
-	fmt.Println("   Any uhppoted log files can still be found in directory /usr/local/var/log and should be removed manually")
+	fmt.Println("   Any uhppoted-rest log files can still be found in directory /usr/local/var/log and should be removed manually")
 	fmt.Println()
 
 	return nil
@@ -93,7 +93,7 @@ func (c *Undaemonize) parse(path string) (*info, error) {
 	defer f.Close()
 
 	p := info{}
-	decoder := xpath.NewDecoder(f)
+	decoder := xml.NewDecoder(f)
 	err = decoder.Decode(&p)
 	if err != nil {
 		return nil, err
@@ -122,7 +122,7 @@ func (c *Undaemonize) launchd(path string, d info) error {
 }
 
 func (c *Undaemonize) logrotate() error {
-	path := filepath.Join("/etc/newsyslog.d", "uhppoted.conf")
+	path := filepath.Join("/etc/newsyslog.d", "uhppoted-rest.conf")
 
 	fmt.Printf("   ... removing '%s'\n", path)
 
@@ -140,7 +140,7 @@ func (c *Undaemonize) rmdirs(d info) error {
 func (c *Undaemonize) firewall(d info) error {
 	fmt.Println()
 	fmt.Println("   ***")
-	fmt.Println("   *** WARNING: removing 'uhppoted' to the application firewall")
+	fmt.Println("   *** WARNING: removing 'uhppoted-rest' to the application firewall")
 	fmt.Println("   ***")
 	fmt.Println()
 
@@ -166,7 +166,7 @@ func (c *Undaemonize) firewall(d info) error {
 		out, err = cmd.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			fmt.Errorf("ERROR: Failed to remove 'uhppoted' from the application firewall (%v)\n", err)
+			fmt.Errorf("ERROR: Failed to remove 'uhppoted-rest' from the application firewall (%v)\n", err)
 			return err
 		}
 

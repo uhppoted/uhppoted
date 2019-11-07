@@ -25,7 +25,7 @@ func (c *Undaemonize) FlagSet() *flag.FlagSet {
 }
 
 func (c *Undaemonize) Description() string {
-	return "Undaemonizes uhppoted as a service/daemon"
+	return "Undaemonizes uhppoted-rest as a service/daemon"
 }
 
 func (c *Undaemonize) Usage() string {
@@ -34,16 +34,16 @@ func (c *Undaemonize) Usage() string {
 
 func (c *Undaemonize) Help() {
 	fmt.Println()
-	fmt.Println("  Usage: uhppoted daemonize")
+	fmt.Println("  Usage: uhppoted-rest daemonize")
 	fmt.Println()
-	fmt.Println("    Deregisters uhppoted as a systed service/daemon")
+	fmt.Println("    Deregisters uhppoted-rest as a systed service/daemon")
 	fmt.Println()
 }
 
 func (c *Undaemonize) Execute(ctx Context) error {
 	fmt.Println("   ... undaemonizing")
 
-	path := filepath.Join("/etc/systemd/system", "uhppoted.service")
+	path := filepath.Join("/etc/systemd/system", "uhppoted-rest.service")
 	_, err := os.Stat(path)
 	if err != nil && !os.IsNotExist(err) {
 		return err
@@ -66,7 +66,7 @@ func (c *Undaemonize) Execute(ctx Context) error {
 		return err
 	}
 
-	fmt.Println("   ... uhppoted unregistered as a systemd service")
+	fmt.Println("   ... uhppoted-rest unregistered as a systemd service")
 	fmt.Println()
 	fmt.Println("   Log files in directory /var/uhppoted/log and configuration files in /etc/uhppoted should be removed manually")
 	fmt.Println()
@@ -75,14 +75,14 @@ func (c *Undaemonize) Execute(ctx Context) error {
 }
 
 func (c *Undaemonize) systemd(path string) error {
-	fmt.Printf("   ... stopping uhppoted service\n")
-	cmd := exec.Command("systemctl", "stop", "uhppoted")
+	fmt.Printf("   ... stopping uhppoted-rest service\n")
+	cmd := exec.Command("systemctl", "stop", "uhppoted-rest")
 	out, err := cmd.CombinedOutput()
 	if strings.TrimSpace(string(out)) != "" {
 		fmt.Printf("   > %s\n", out)
 	}
 	if err != nil {
-		fmt.Errorf("ERROR: Failed to stop '%s' (%v)\n", "uhppoted", err)
+		fmt.Errorf("ERROR: Failed to stop '%s' (%v)\n", "uhppoted-rest", err)
 		return err
 	}
 
@@ -96,7 +96,7 @@ func (c *Undaemonize) systemd(path string) error {
 }
 
 func (c *Undaemonize) logrotate() error {
-	path := filepath.Join("/etc/logrotate.d", "uhppoted")
+	path := filepath.Join("/etc/logrotate.d", "uhppoted-rest")
 
 	fmt.Printf("   ... removing '%s'\n", path)
 
@@ -109,7 +109,7 @@ func (c *Undaemonize) logrotate() error {
 }
 
 func (c *Undaemonize) rmdirs() error {
-	dir := "/var/uhppoted"
+	dir := "/var/uhppoted/rest"
 
 	fmt.Printf("   ... removing '%s'\n", dir)
 

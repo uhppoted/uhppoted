@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"sync"
 	"syscall"
-	"uhppoted/config"
-	filelogger "uhppoted/eventlog"
+	"uhppoted-rest/config"
+	filelogger "uhppoted-rest/eventlog"
 )
 
 type Run struct {
@@ -38,8 +38,8 @@ type EventLog struct {
 var runCmd = Run{
 	configuration: filepath.Join(workdir(), "uhppoted.conf"),
 	dir:           workdir(),
-	pidFile:       filepath.Join(workdir(), "uhppoted.pid"),
-	logFile:       filepath.Join(workdir(), "logs", "uhppoted.log"),
+	pidFile:       filepath.Join(workdir(), "uhppoted-rest.pid"),
+	logFile:       filepath.Join(workdir(), "logs", "uhppoted-rest.log"),
 	logFileSize:   10,
 	console:       false,
 	debug:         false,
@@ -60,7 +60,7 @@ func (r *Run) FlagSet() *flag.FlagSet {
 }
 
 func (r *Run) Execute(ctx Context) error {
-	log.Printf("uhppoted service - %s (PID %d)\n", "Microsoft Windows", os.Getpid())
+	log.Printf("uhppoted-rest service - %s (PID %d)\n", "Microsoft Windows", os.Getpid())
 
 	f := func(c *config.Config) error {
 		return r.start(c)
@@ -72,7 +72,7 @@ func (r *Run) Execute(ctx Context) error {
 func (r *Run) start(c *config.Config) error {
 	var logger *log.Logger
 
-	eventlogger, err := eventlog.Open("uhppoted")
+	eventlogger, err := eventlog.Open("uhppoted-rest")
 	if err != nil {
 		events := filelogger.Ticker{Filename: r.logFile, MaxSize: r.logFileSize}
 		logger = log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
@@ -80,10 +80,10 @@ func (r *Run) start(c *config.Config) error {
 		defer eventlogger.Close()
 
 		events := EventLog{eventlogger}
-		logger = log.New(&events, "uhppoted", log.Ldate|log.Ltime|log.LUTC)
+		logger = log.New(&events, "uhppoted-rest", log.Ldate|log.Ltime|log.LUTC)
 	}
 
-	logger.Printf("uhppoted service - start\n")
+	logger.Printf("uhppoted-rest service - start\n")
 
 	if r.console {
 		r.run(c, logger)
@@ -91,33 +91,33 @@ func (r *Run) start(c *config.Config) error {
 	}
 
 	uhppoted := service{
-		name:   "uhppoted",
+		name:   "uhppoted-rest",
 		conf:   c,
 		logger: logger,
 		cmd:    r,
 	}
 
-	logger.Printf("uhppoted service - starting\n")
-	err = svc.Run("uhppoted", &uhppoted)
+	logger.Printf("uhppoted-rest service - starting\n")
+	err = svc.Run("uhppoted-rest", &uhppoted)
 
 	if err != nil {
 		fmt.Printf("   Unable to execute ServiceManager.Run request (%v)\n", err)
 		fmt.Println()
-		fmt.Println("   To run uhppoted as a command line application, type:")
+		fmt.Println("   To run uhppoted-rest as a command line application, type:")
 		fmt.Println()
-		fmt.Println("     > uhppoted --console")
+		fmt.Println("     > uhppoted-rest --console")
 		fmt.Println()
 
 		logger.Fatalf("Error executing ServiceManager.Run request: %v", err)
 		return err
 	}
 
-	logger.Printf("uhppoted daemon - started\n")
+	logger.Printf("uhppoted-rest daemon - started\n")
 	return nil
 }
 
 func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan<- svc.Status) (ssec bool, errno uint32) {
-	s.logger.Printf("uhppoted service - Execute\n")
+	s.logger.Printf("uhppoted-rest service - Execute\n")
 
 	const commands = svc.AcceptStop | svc.AcceptShutdown
 
@@ -148,33 +148,33 @@ loop:
 	for {
 		select {
 		case c := <-r:
-			s.logger.Printf("uhppoted service - select: %v  %v\n", c.Cmd, c.CurrentStatus)
+			s.logger.Printf("uhppoted-rest service - select: %v  %v\n", c.Cmd, c.CurrentStatus)
 			switch c.Cmd {
 			case svc.Interrogate:
-				s.logger.Printf("uhppoted service - svc.Interrogate %v\n", c.CurrentStatus)
+				s.logger.Printf("uhppoted-rest service - svc.Interrogate %v\n", c.CurrentStatus)
 				status <- c.CurrentStatus
 
 			case svc.Stop:
 				interrupt <- syscall.SIGINT
-				s.logger.Printf("uhppoted service- svc.Stop\n")
+				s.logger.Printf("uhppoted-rest service- svc.Stop\n")
 				break loop
 
 			case svc.Shutdown:
 				interrupt <- syscall.SIGTERM
-				s.logger.Printf("uhppoted service - svc.Shutdown\n")
+				s.logger.Printf("uhppoted-rest service - svc.Shutdown\n")
 				break loop
 
 			default:
-				s.logger.Printf("uhppoted service - svc.????? (%v)\n", c.Cmd)
+				s.logger.Printf("uhppoted-rest service - svc.????? (%v)\n", c.Cmd)
 			}
 		}
 	}
 
-	s.logger.Printf("uhppoted service - stopping\n")
+	s.logger.Printf("uhppoted-rest service - stopping\n")
 	status <- svc.Status{State: svc.StopPending}
 	wg.Wait()
 	status <- svc.Status{State: svc.Stopped}
-	s.logger.Printf("uhppoted service - stopped\n")
+	s.logger.Printf("uhppoted-rest service - stopped\n")
 
 	return false, 0
 }

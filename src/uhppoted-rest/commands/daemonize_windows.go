@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
-	"uhppoted/config"
+	"uhppoted-rest/config"
 )
 
 type Daemonize struct {
@@ -53,7 +53,7 @@ rest.tls.ca = {{.WorkDir}}\rest\ca.cert
 
 func NewDaemonize() *Daemonize {
 	return &Daemonize{
-		name:        "uhppoted",
+		name:        "uhppoted-rest",
 		description: "UHPPOTE UTO311-L0x access card controllers service/daemon",
 	}
 }
@@ -67,7 +67,7 @@ func (c *Daemonize) FlagSet() *flag.FlagSet {
 }
 
 func (c *Daemonize) Description() string {
-	return "Registers uhppoted as a Windows service"
+	return "Registers uhppoted-rest as a Windows service"
 }
 
 func (c *Daemonize) Usage() string {
@@ -76,9 +76,9 @@ func (c *Daemonize) Usage() string {
 
 func (c *Daemonize) Help() {
 	fmt.Println()
-	fmt.Println("  Usage: uhppoted daemonize")
+	fmt.Println("  Usage: uhppoted-rest daemonize")
 	fmt.Println()
-	fmt.Println("    Registers uhppoted as a windows Service that runs on startup")
+	fmt.Println("    Registers uhppoted-rest as a windows Service that runs on startup")
 	fmt.Println()
 }
 func (c *Daemonize) Execute(ctx Context) error {
@@ -110,12 +110,12 @@ func (c *Daemonize) Execute(ctx Context) error {
 		return err
 	}
 
-	fmt.Println("   ... uhppoted registered as a Windows system service")
+	fmt.Println("   ... uhppoted-rest registered as a Windows system service")
 	fmt.Println()
 	fmt.Println("   The service will start automatically on the next system restart. Start it manually from the")
 	fmt.Println("   'Services' application or from the command line by executing the following command:")
 	fmt.Println()
-	fmt.Println("     > net start uhppoted")
+	fmt.Println("     > net start uhppoted-rest")
 	fmt.Println()
 
 	return nil
