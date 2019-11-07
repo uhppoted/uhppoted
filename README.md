@@ -8,10 +8,10 @@ The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Acc
 
 ## Releases
 
-- v0.40: REST API service
-- v0.30: functional simulator with minimal command API
-- v0.20: load access control list from TSV file
-- v0.10: bare-bones but functional CLI
+- v0.4.0: REST API service
+- v0.3.1: functional simulator with minimal command API
+- v0.2.0: load access control list from TSV file
+- v0.1.0: bare-bones but functional CLI
 
 ## Modules
 
