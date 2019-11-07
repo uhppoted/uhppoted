@@ -16,8 +16,8 @@
     <key>RunAtLoad</key>
     <true/>
     <key>StandardOutPath</key>
-    <string>/usr/local/var/log/com.github.twystd.uhppoted.log</string>
+    <string>/usr/local/var/log/com.github.twystd.uhppoted-rest.log</string>
     <key>StandardErrorPath</key>
-    <string>/usr/local/var/log/com.github.twystd.uhppoted.err</string>
+    <string>/usr/local/var/log/com.github.twystd.uhppoted-rest.err</string>
 </dict>
 </plist>

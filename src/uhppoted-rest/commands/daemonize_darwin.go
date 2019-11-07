@@ -3,11 +3,13 @@ package commands
 import (
 	"flag"
 	"fmt"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"text/template"
+	"uhppoted-rest/config"
 	xpath "uhppoted-rest/encoding/plist"
 )
 
@@ -16,6 +18,8 @@ type info struct {
 	Executable       string
 	ConfigDirectory  string
 	WorkingDirectory string
+	BindAddress      *net.UDPAddr
+	BroadcastAddress *net.UDPAddr
 }
 
 type plist struct {
@@ -95,11 +99,15 @@ func (c *Daemonize) Execute(ctx Context) error {
 		return err
 	}
 
+	bind, broadcast := config.DefaultIpAddresses()
+
 	d := info{
 		Label:            "com.github.twystd.uhppoted-rest",
 		Executable:       executable,
 		ConfigDirectory:  "/usr/local/etc/com.github.twystd.uhppoted",
 		WorkingDirectory: "/usr/local/var/com.github.twystd.uhppoted",
+		BindAddress:      &bind,
+		BroadcastAddress: &broadcast,
 	}
 
 	if err := c.launchd(&d); err != nil {
@@ -126,7 +134,7 @@ func (c *Daemonize) Execute(ctx Context) error {
 	fmt.Println()
 	fmt.Println("   The daemon will start automatically on the next system restart - to start it manually, execute the following command:")
 	fmt.Println()
-	fmt.Println("   sudo launchctl load /Library/LaunchDaemons/com.github.twystd.uhppoted-rest")
+	fmt.Println("   sudo launchctl load /Library/LaunchDaemons/com.github.twystd.uhppoted-rest.plist")
 	fmt.Println()
 
 	return nil
@@ -146,8 +154,8 @@ func (c *Daemonize) launchd(d *info) error {
 		ProgramArguments:  []string{},
 		KeepAlive:         true,
 		RunAtLoad:         true,
-		StandardOutPath:   "/usr/local/var/log/com.github.twystd.uhppoted.log",
-		StandardErrorPath: "/usr/local/var/log/com.github.twystd.uhppoted.err",
+		StandardOutPath:   "/usr/local/var/log/com.github.twystd.uhppoted-rest.log",
+		StandardErrorPath: "/usr/local/var/log/com.github.twystd.uhppoted-rest.err",
 	}
 
 	if !os.IsNotExist(err) {
