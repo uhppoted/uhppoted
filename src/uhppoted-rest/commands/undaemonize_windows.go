@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"golang.org/x/sys/windows/svc/eventlog"
@@ -27,7 +28,7 @@ func (c *Undaemonize) FlagSet() *flag.FlagSet {
 	return flag.NewFlagSet("undaemonize", flag.ExitOnError)
 }
 
-func (c *Undaemonize) Execute(ctx Context) error {
+func (c *Undaemonize) Execute(ctx context.Context) error {
 	fmt.Println("   ... undaemonizing")
 
 	dir := workdir()

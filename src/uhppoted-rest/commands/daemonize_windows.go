@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"golang.org/x/sys/windows/svc/eventlog"
@@ -81,7 +82,7 @@ func (c *Daemonize) Help() {
 	fmt.Println("    Registers uhppoted-rest as a windows Service that runs on startup")
 	fmt.Println()
 }
-func (c *Daemonize) Execute(ctx Context) error {
+func (c *Daemonize) Execute(ctx context.Context) error {
 	executable, err := os.Executable()
 	if err != nil {
 		return err

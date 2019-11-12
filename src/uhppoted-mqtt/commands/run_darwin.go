@@ -5,11 +5,8 @@ import (
 	"flag"
 	"log"
 	"os"
-	"os/signal"
-	"syscall"
 	"uhppote"
-	"uhppoted-rest/config"
-	"uhppoted-rest/eventlog"
+	"uhppoted-mqtt/config"
 )
 
 type Run struct {
@@ -23,10 +20,10 @@ type Run struct {
 }
 
 var RUN = Run{
-	configuration: "/etc/uhppoted/uhppoted.conf",
-	dir:           "/var/uhppoted",
-	pidFile:       "/var/uhppoted/uhppoted-rest.pid",
-	logFile:       "/var/log/uhppoted/uhppoted-rest.log",
+	configuration: "/usr/local/etc/com.github.twystd.uhppoted/uhppoted.conf",
+	dir:           "/usr/local/var/com.github.twystd.uhppoted",
+	pidFile:       "/usr/local/var/com.github.twystd.uhppoted/uhppoted-mqtt.pid",
+	logFile:       "/usr/local/var/com.github.twystd.uhppoted/logs/uhppoted-mqtt.log",
 	logFileSize:   10,
 	console:       false,
 	debug:         false,
@@ -47,7 +44,7 @@ func (r *Run) FlagSet() *flag.FlagSet {
 }
 
 func (r *Run) Execute(ctx context.Context) error {
-	log.Printf("uhppoted-rest daemon %s - %s (PID %d)\n", uhppote.VERSION, "Linux", os.Getpid())
+	log.Printf("%s service %s - %s (PID %d)\n", SERVICE, uhppote.VERSION, "MacOS", os.Getpid())
 
 	f := func(c *config.Config) error {
 		return r.exec(c)
@@ -57,25 +54,25 @@ func (r *Run) Execute(ctx context.Context) error {
 }
 
 func (r *Run) exec(c *config.Config) error {
-	logger := log.New(os.Stdout, "", log.LstdFlags)
+	// logger := log.New(os.Stdout, "", log.LstdFlags)
 
-	if !r.console {
-		events := eventlog.Ticker{Filename: r.logFile, MaxSize: r.logFileSize}
-		logger = log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
-		rotate := make(chan os.Signal, 1)
+	// if !r.console {
+	// 	events := eventlog.Ticker{Filename: r.logFile, MaxSize: r.logFileSize}
+	// 	logger = log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
+	// 	rotate := make(chan os.Signal, 1)
 
-		signal.Notify(rotate, syscall.SIGHUP)
+	// 	signal.Notify(rotate, syscall.SIGHUP)
 
-		go func() {
-			for {
-				<-rotate
-				log.Printf("Rotating uhppoted-rest log file '%s'\n", r.logFile)
-				events.Rotate()
-			}
-		}()
-	}
+	// 	go func() {
+	// 		for {
+	// 			<-rotate
+	// 			log.Printf("Rotating uhppoted-rest log file '%s'\n", r.logFile)
+	// 			events.Rotate()
+	// 		}
+	// 	}()
+	// }
 
-	r.run(c, logger)
+	// r.run(c, logger)
 
 	return nil
 }

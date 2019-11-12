@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"net"
@@ -92,7 +93,7 @@ func (c *Daemonize) Help() {
 	fmt.Println()
 }
 
-func (c *Daemonize) Execute(ctx Context) error {
+func (c *Daemonize) Execute(ctx context.Context) error {
 	fmt.Println("   ... daemonizing")
 	executable, err := os.Executable()
 	if err != nil {

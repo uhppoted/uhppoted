@@ -5,19 +5,7 @@ SERIALNO = 423187757
 DOOR = 3
 
 format:
-	gofmt -w=true src/uhppote/*.go
-	gofmt -w=true src/uhppote/types/*.go
-	gofmt -w=true src/uhppote/encoding/bcd/*.go
-	gofmt -w=true src/uhppote/encoding/UTO311-L0x/*.go
-	gofmt -w=true src/uhppote-cli/*.go
-	gofmt -w=true src/uhppote-cli/commands/*.go
-	gofmt -w=true src/uhppote-cli/config/*.go
-	gofmt -w=true src/uhppote-cli/parsers/*.go
-	gofmt -w=true src/uhppote-simulator/*.go
-	gofmt -w=true src/uhppote-simulator/simulator/*.go
-	gofmt -w=true src/uhppote-simulator/entities/*.go
-	gofmt -w=true src/uhppote-simulator/simulator/UT0311L04/*.go
-	gofmt -w=true src/integration-tests/*.go
+	go fmt ./...
 
 build: format
 	go install uhppote-cli

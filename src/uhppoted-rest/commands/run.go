@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -46,10 +47,11 @@ type state struct {
 }
 
 const (
-	IDLE   = time.Duration(60 * time.Second)
-	IGNORE = time.Duration(5 * time.Minute)
-	DELTA  = 60
-	DELAY  = 30
+	SERVICE = `uhppoted-rest`
+	IDLE    = time.Duration(60 * time.Second)
+	IGNORE  = time.Duration(5 * time.Minute)
+	DELTA   = 60
+	DELAY   = 30
 )
 
 func (c *Run) Name() string {
@@ -70,13 +72,13 @@ func (c *Run) Help() {
 	fmt.Println()
 	fmt.Println("  Options:")
 	fmt.Println()
-	runCmd.FlagSet().VisitAll(func(f *flag.Flag) {
+	c.FlagSet().VisitAll(func(f *flag.Flag) {
 		fmt.Printf("    --%-12s %s\n", f.Name, f.Usage)
 	})
 	fmt.Println()
 }
 
-func (r *Run) execute(ctx Context, f func(*config.Config) error) error {
+func (r *Run) execute(ctx context.Context, f func(*config.Config) error) error {
 	conf := config.NewConfig()
 	if err := conf.Load(r.configuration); err != nil {
 		log.Printf("\n   WARN:  Could not load configuration (%v)\n\n", err)

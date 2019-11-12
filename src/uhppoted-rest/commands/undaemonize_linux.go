@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -40,7 +41,7 @@ func (c *Undaemonize) Help() {
 	fmt.Println()
 }
 
-func (c *Undaemonize) Execute(ctx Context) error {
+func (c *Undaemonize) Execute(ctx context.Context) error {
 	fmt.Println("   ... undaemonizing")
 
 	path := filepath.Join("/etc/systemd/system", "uhppoted-rest.service")

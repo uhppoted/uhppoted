@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"os"
 	"uhppoted"
-	"uhppoted-rest/commands"
+	"uhppoted-mqtt/commands"
 )
 
 var cli = []uhppoted.Command{
-	commands.NewDaemonize(),
-	commands.NewUndaemonize(),
 	&uhppoted.VERSION,
 }
 

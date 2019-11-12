@@ -1,16 +1,18 @@
-package commands
+package uhppoted
 
 import (
+	"context"
 	"flag"
 	"fmt"
+	"uhppote"
 )
+
+var VERSION = Version{
+	version: uhppote.VERSION,
+}
 
 type Version struct {
 	version string
-}
-
-var version = Version{
-	version: VERSION,
 }
 
 func (c *Version) Name() string {
@@ -21,7 +23,7 @@ func (c *Version) FlagSet() *flag.FlagSet {
 	return flag.NewFlagSet("version", flag.ExitOnError)
 }
 
-func (c *Version) Execute(ctx Context) error {
+func (c *Version) Execute(ctx context.Context) error {
 	fmt.Printf("%v\n", c.version)
 
 	return nil

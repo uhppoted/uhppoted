@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"flag"
-	"fmt"
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/eventlog"
 	"log"
@@ -12,8 +11,7 @@ import (
 	"sync"
 	"syscall"
 	"uhppote"
-	"uhppoted-rest/config"
-	filelogger "uhppoted-rest/eventlog"
+	"uhppoted-mqtt/config"
 )
 
 type Run struct {
@@ -40,8 +38,8 @@ type EventLog struct {
 var RUN = Run{
 	configuration: filepath.Join(workdir(), "uhppoted.conf"),
 	dir:           workdir(),
-	pidFile:       filepath.Join(workdir(), "uhppoted-rest.pid"),
-	logFile:       filepath.Join(workdir(), "logs", "uhppoted-rest.log"),
+	pidFile:       filepath.Join(workdir(), "uhppoted-mqtt.pid"),
+	logFile:       filepath.Join(workdir(), "logs", "uhppoted-mqtt.log"),
 	logFileSize:   10,
 	console:       false,
 	debug:         false,
@@ -62,7 +60,7 @@ func (r *Run) FlagSet() *flag.FlagSet {
 }
 
 func (r *Run) Execute(ctx context.Context) error {
-	log.Printf("uhppoted-rest daemon %s - %s (PID %d)\n", uhppote.VERSION, "Microsoft Windows", os.Getpid())
+	log.Printf("%s service %s - %s (PID %d)\n", SERVICE, uhppote.VERSION, "Microsoft Windows", os.Getpid())
 
 	f := func(c *config.Config) error {
 		return r.start(c)
@@ -72,49 +70,49 @@ func (r *Run) Execute(ctx context.Context) error {
 }
 
 func (r *Run) start(c *config.Config) error {
-	var logger *log.Logger
+	// var logger *log.Logger
 
-	eventlogger, err := eventlog.Open("uhppoted-rest")
-	if err != nil {
-		events := filelogger.Ticker{Filename: r.logFile, MaxSize: r.logFileSize}
-		logger = log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
-	} else {
-		defer eventlogger.Close()
+	// eventlogger, err := eventlog.Open("uhppoted-rest")
+	// if err != nil {
+	// 	events := filelogger.Ticker{Filename: r.logFile, MaxSize: r.logFileSize}
+	// 	logger = log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
+	// } else {
+	// 	defer eventlogger.Close()
 
-		events := EventLog{eventlogger}
-		logger = log.New(&events, "uhppoted-rest", log.Ldate|log.Ltime|log.LUTC)
-	}
+	// 	events := EventLog{eventlogger}
+	// 	logger = log.New(&events, "uhppoted-rest", log.Ldate|log.Ltime|log.LUTC)
+	// }
 
-	logger.Printf("uhppoted-rest service - start\n")
+	// logger.Printf("uhppoted-rest service - start\n")
 
-	if r.console {
-		r.run(c, logger)
-		return nil
-	}
+	// if r.console {
+	// 	r.run(c, logger)
+	// 	return nil
+	// }
 
-	uhppoted := service{
-		name:   "uhppoted-rest",
-		conf:   c,
-		logger: logger,
-		cmd:    r,
-	}
+	// uhppoted := service{
+	// 	name:   "uhppoted-rest",
+	// 	conf:   c,
+	// 	logger: logger,
+	// 	cmd:    r,
+	// }
 
-	logger.Printf("uhppoted-rest service - starting\n")
-	err = svc.Run("uhppoted-rest", &uhppoted)
+	// logger.Printf("uhppoted-rest service - starting\n")
+	// err = svc.Run("uhppoted-rest", &uhppoted)
 
-	if err != nil {
-		fmt.Printf("   Unable to execute ServiceManager.Run request (%v)\n", err)
-		fmt.Println()
-		fmt.Println("   To run uhppoted-rest as a command line application, type:")
-		fmt.Println()
-		fmt.Println("     > uhppoted-rest --console")
-		fmt.Println()
+	// if err != nil {
+	// 	fmt.Printf("   Unable to execute ServiceManager.Run request (%v)\n", err)
+	// 	fmt.Println()
+	// 	fmt.Println("   To run uhppoted-rest as a command line application, type:")
+	// 	fmt.Println()
+	// 	fmt.Println("     > uhppoted-rest --console")
+	// 	fmt.Println()
 
-		logger.Fatalf("Error executing ServiceManager.Run request: %v", err)
-		return err
-	}
+	// 	logger.Fatalf("Error executing ServiceManager.Run request: %v", err)
+	// 	return err
+	// }
 
-	logger.Printf("uhppoted-rest daemon - started\n")
+	// logger.Printf("uhppoted-rest daemon - started\n")
 	return nil
 }
 
@@ -131,17 +129,17 @@ func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		for {
-			err := s.cmd.listen(s.conf, s.logger, interrupt)
+		// for {
+		// 	err := s.cmd.listen(s.conf, s.logger, interrupt)
 
-			if err != nil {
-				s.logger.Printf("ERROR: %v", err)
-				continue
-			}
+		// 	if err != nil {
+		// 		s.logger.Printf("ERROR: %v", err)
+		// 		continue
+		// 	}
 
-			s.logger.Printf("exit\n")
-			break
-		}
+		// 	s.logger.Printf("exit\n")
+		// 	break
+		// }
 	}()
 
 	status <- svc.Status{State: svc.Running, Accepts: commands}
@@ -150,33 +148,33 @@ loop:
 	for {
 		select {
 		case c := <-r:
-			s.logger.Printf("uhppoted-rest service - select: %v  %v\n", c.Cmd, c.CurrentStatus)
+			s.logger.Printf("%s service - select: %v  %v\n", SERVICE, c.Cmd, c.CurrentStatus)
 			switch c.Cmd {
 			case svc.Interrogate:
-				s.logger.Printf("uhppoted-rest service - svc.Interrogate %v\n", c.CurrentStatus)
+				s.logger.Printf("%s service - svc.Interrogate %v\n", SERVICE, c.CurrentStatus)
 				status <- c.CurrentStatus
 
 			case svc.Stop:
 				interrupt <- syscall.SIGINT
-				s.logger.Printf("uhppoted-rest service- svc.Stop\n")
+				s.logger.Printf("%s service- svc.Stop\n", SERVICE)
 				break loop
 
 			case svc.Shutdown:
 				interrupt <- syscall.SIGTERM
-				s.logger.Printf("uhppoted-rest service - svc.Shutdown\n")
+				s.logger.Printf("%s service - svc.Shutdown\n", SERVICE)
 				break loop
 
 			default:
-				s.logger.Printf("uhppoted-rest service - svc.????? (%v)\n", c.Cmd)
+				s.logger.Printf("%s service - svc.????? (%v)\n", SERVICE, c.Cmd)
 			}
 		}
 	}
 
-	s.logger.Printf("uhppoted-rest service - stopping\n")
+	s.logger.Printf("%s service - stopping\n", SERVICE)
 	status <- svc.Status{State: svc.StopPending}
 	wg.Wait()
 	status <- svc.Status{State: svc.Stopped}
-	s.logger.Printf("uhppoted-rest service - stopped\n")
+	s.logger.Printf("%s service - stopped\n", SERVICE)
 
 	return false, 0
 }

@@ -11,6 +11,8 @@ import (
 	codec "uhppote/encoding/UTO311-L0x"
 )
 
+var VERSION = "v0.05.0"
+
 type UHPPOTE struct {
 	BindAddress      *net.UDPAddr
 	BroadcastAddress *net.UDPAddr
