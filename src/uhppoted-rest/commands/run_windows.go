@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"golang.org/x/sys/windows/svc"
@@ -10,6 +11,7 @@ import (
 	"path/filepath"
 	"sync"
 	"syscall"
+	"uhppote"
 	"uhppoted-rest/config"
 	filelogger "uhppoted-rest/eventlog"
 )
@@ -35,7 +37,7 @@ type EventLog struct {
 	log *eventlog.Log
 }
 
-var runCmd = Run{
+var RUN = Run{
 	configuration: filepath.Join(workdir(), "uhppoted.conf"),
 	dir:           workdir(),
 	pidFile:       filepath.Join(workdir(), "uhppoted-rest.pid"),
@@ -59,8 +61,8 @@ func (r *Run) FlagSet() *flag.FlagSet {
 	return flagset
 }
 
-func (r *Run) Execute(ctx Context) error {
-	log.Printf("uhppoted-rest service - %s (PID %d)\n", "Microsoft Windows", os.Getpid())
+func (r *Run) Execute(ctx context.Context) error {
+	log.Printf("uhppoted-rest daemon %s - %s (PID %d)\n", uhppote.VERSION, "Microsoft Windows", os.Getpid())
 
 	f := func(c *config.Config) error {
 		return r.start(c)

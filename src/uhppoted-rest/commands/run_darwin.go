@@ -1,11 +1,13 @@
 package commands
 
 import (
+	"context"
 	"flag"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
+	"uhppote"
 	"uhppoted-rest/config"
 	"uhppoted-rest/eventlog"
 )
@@ -20,7 +22,7 @@ type Run struct {
 	debug         bool
 }
 
-var runCmd = Run{
+var RUN = Run{
 	configuration: "/usr/local/etc/com.github.twystd.uhppoted/uhppoted.conf",
 	dir:           "/usr/local/var/com.github.twystd.uhppoted",
 	pidFile:       "/usr/local/var/com.github.twystd.uhppoted/uhppoted-rest.pid",
@@ -44,8 +46,8 @@ func (r *Run) FlagSet() *flag.FlagSet {
 	return flagset
 }
 
-func (r *Run) Execute(ctx Context) error {
-	log.Printf("uhppoted-rest daemon %s - %s (PID %d)\n", VERSION, "MacOS", os.Getpid())
+func (r *Run) Execute(ctx context.Context) error {
+	log.Printf("uhppoted-rest daemon %s - %s (PID %d)\n", uhppote.VERSION, "MacOS", os.Getpid())
 
 	f := func(c *config.Config) error {
 		return r.exec(c)

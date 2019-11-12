@@ -13,27 +13,7 @@ all: test      \
      coverage
 
 format: 
-	gofmt -w=true src/uhppote/*.go
-	gofmt -w=true src/uhppote/types/*.go
-	gofmt -w=true src/uhppote/messages/*.go
-	gofmt -w=true src/uhppote/encoding/bcd/*.go
-	gofmt -w=true src/uhppote/encoding/UTO311-L0x/*.go
-	gofmt -w=true src/uhppote-cli/*.go
-	gofmt -w=true src/uhppote-cli/commands/*.go
-	gofmt -w=true src/uhppote-cli/config/*.go
-	gofmt -w=true src/uhppote-cli/parsers/*.go
-	gofmt -w=true src/uhppoted-rest/*.go
-	gofmt -w=true src/uhppoted-rest/commands/*.go
-	gofmt -w=true src/uhppoted-rest/config/*.go
-	gofmt -w=true src/uhppoted-rest/rest/*.go
-	gofmt -w=true src/uhppoted-rest/eventlog/*.go
-	gofmt -w=true src/uhppoted-rest/encoding/plist/*.go
-	gofmt -w=true src/uhppote-simulator/*.go
-	gofmt -w=true src/uhppote-simulator/simulator/*.go
-	gofmt -w=true src/uhppote-simulator/rest/*.go
-	gofmt -w=true src/uhppote-simulator/entities/*.go
-	gofmt -w=true src/uhppote-simulator/simulator/UT0311L04/*.go
-	gofmt -w=true src/integration-tests/*.go
+	go fmt ./...
 
 release: format
 	mkdir -p dist/$(DIST)/windows
@@ -46,6 +26,9 @@ release: format
 	env GOOS=linux   GOARCH=amd64  go build -o dist/$(DIST)/linux/uhppoted-rest           uhppoted-rest
 	env GOOS=darwin  GOARCH=amd64  go build -o dist/$(DIST)/darwin/uhppoted-rest          uhppoted-rest
 	env GOOS=windows GOARCH=amd64  go build -o dist/$(DIST)/windows/uhppoted-rest.exe     uhppoted-rest
+	env GOOS=linux   GOARCH=amd64  go build -o dist/$(DIST)/linux/uhppoted-mqtt           uhppoted-mqtt
+	env GOOS=darwin  GOARCH=amd64  go build -o dist/$(DIST)/darwin/uhppoted-mqtt          uhppoted-mqtt
+	env GOOS=windows GOARCH=amd64  go build -o dist/$(DIST)/windows/uhppoted-mqtt.exe     uhppoted-mqtt
 	env GOOS=linux   GOARCH=amd64  go build -o dist/$(DIST)/linux/uhppote-simulator       uhppote-simulator
 	env GOOS=darwin  GOARCH=amd64  go build -o dist/$(DIST)/darwin/uhppote-simulator      uhppote-simulator
 	env GOOS=windows GOARCH=amd64  go build -o dist/$(DIST)/windows/uhppote-simulator.exe uhppote-simulator
@@ -55,6 +38,7 @@ build: format
 	go install uhppote-cli
 	go install uhppote-simulator
 	go install uhppoted-rest
+	go install uhppoted-mqtt
 
 test: build
 	go clean -testcache
@@ -182,36 +166,49 @@ simulator: build
 simulator-device: build
 	./bin/uhppote-simulator --debug --devices "runtime/simulation/devices" new-device 666
 
-uhppoted: build
+uhppoted-rest: build
 	./bin/uhppoted-rest --console
 
-uhppoted-daemonize: build
+uhppoted-rest-daemonize: build
 	sudo ./bin/uhppoted-rest daemonize
 
-uhppoted-undaemonize: build
+uhppoted-rest-undaemonize: build
 	sudo ./bin/uhppoted-rest undaemonize
 
-uhppoted-version: build
+uhppoted-rest-version: build
 	./bin/uhppoted-rest version
 
-uhppoted-help: build
+uhppoted-rest-help: build
 	./bin/uhppoted-rest help
 	./bin/uhppoted-rest help commands
 	./bin/uhppoted-rest help version
+	./bin/uhppoted-rest help help
 
-uhppoted-linux: build
+uhppoted-rest-linux: build
 	mkdir -p ./dist/development/linux
 	env GOOS=linux GOARCH=amd64 go build -o dist/development/linux/uhppoted-rest uhppoted-rest
 
-uhppoted-windows: build
+uhppoted-rest-windows: build
 	mkdir -p ./dist/development/windows
 	env GOOS=windows GOARCH=amd64 go build -o dist/development/windows/uhppoted-rest.exe uhppoted-rest
 
-uhppoted-docker: build
+uhppoted-rest-docker: build
 	env GOOS=linux GOARCH=amd64 go build -o docker/linux/uhppote-simulator uhppote-simulator
 	env GOOS=linux GOARCH=amd64 go build -o docker/linux/uhppoted-rest     uhppoted-rest
 	docker build -f ./docker/Dockerfile.uhppoted -t uhppoted . 
 	docker run --detach --publish 8080:8080 --rm uhppoted
+
+uhppoted-mqtt: build
+	./bin/uhppoted-mqtt --console
+
+uhppoted-mqtt-help: build
+	./bin/uhppoted-mqtt help
+	./bin/uhppoted-mqtt help commands
+	./bin/uhppoted-mqtt help version
+	./bin/uhppoted-mqtt help help
+
+uhppoted-mqtt-version: build
+	./bin/uhppoted-mqtt version
 
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
