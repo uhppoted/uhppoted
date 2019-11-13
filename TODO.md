@@ -4,6 +4,7 @@
 
 ### uhppoted-mqtt
 
+- [ ] MQTT subscribe
 - [ ] conf file encoder/decoder with reflection and/or JSON
 - [ ] rework UHPPOTE response messages to use factory
 - [ ] rework plist encoder
@@ -19,7 +20,6 @@
 - [ ] GraphQL
 - [ ] MacOS launchd socket handoff
 - [ ] Linux systemd socket handoff
-- [ ] websocket command interface (?)
 
 ### CLI
 - [ ] Rework grant/revoke for individual doors (labelled)

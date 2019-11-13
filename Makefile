@@ -212,3 +212,6 @@ uhppoted-mqtt-version: build
 
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
+
+hivemq:
+	docker run --detach --publish 8080:8080 --publish 1883:1883 --rm hivemq/hivemq4

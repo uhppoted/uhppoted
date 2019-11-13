@@ -2,12 +2,21 @@ package commands
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net"
+	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
+	"uhppote"
 	"uhppote/types"
 	"uhppoted-mqtt/config"
+	"uhppoted-mqtt/mqtt"
 )
 
 type status struct {
@@ -69,150 +78,138 @@ func (c *Run) Help() {
 }
 
 func (r *Run) execute(ctx context.Context, f func(*config.Config) error) error {
-	// conf := config.NewConfig()
-	// if err := conf.Load(r.configuration); err != nil {
-	// 	log.Printf("\n   WARN:  Could not load configuration (%v)\n\n", err)
-	// }
+	conf := config.NewConfig()
+	if err := conf.Load(r.configuration); err != nil {
+		log.Printf("\n   WARN:  Could not load configuration (%v)\n\n", err)
+	}
 
-	// if err := os.MkdirAll(r.dir, os.ModeDir|os.ModePerm); err != nil {
-	// 	return fmt.Errorf("Unable to create working directory '%v': %v", r.dir, err)
-	// }
+	if err := os.MkdirAll(r.dir, os.ModeDir|os.ModePerm); err != nil {
+		return fmt.Errorf("Unable to create working directory '%v': %v", r.dir, err)
+	}
 
-	// pid := fmt.Sprintf("%d\n", os.Getpid())
+	pid := fmt.Sprintf("%d\n", os.Getpid())
 
-	// if err := ioutil.WriteFile(r.pidFile, []byte(pid), 0644); err != nil {
-	// 	return fmt.Errorf("Unable to create pid file: %v\n", err)
-	// }
+	if err := ioutil.WriteFile(r.pidFile, []byte(pid), 0644); err != nil {
+		return fmt.Errorf("Unable to create pid file: %v\n", err)
+	}
 
-	// defer func() {
-	// 	os.Remove(r.pidFile)
-	// }()
+	defer func() {
+		os.Remove(r.pidFile)
+	}()
 
-	// return f(conf)
-	return nil
+	return f(conf)
 }
 
-// func (r *Run) run(c *config.Config, logger *log.Logger) {
-// 	logger.Printf("START")
+func (r *Run) run(c *config.Config, logger *log.Logger) {
+	logger.Printf("START")
 
-// 	// ... syscall SIG handlers
+	// ... syscall SIG handlers
 
-// 	interrupt := make(chan os.Signal, 1)
+	interrupt := make(chan os.Signal, 1)
 
-// 	signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM)
 
-// 	// ... listen forever
+	// ... listen forever
 
-// 	for {
-// 		err := r.listen(c, logger, interrupt)
-// 		if err != nil {
-// 			log.Printf("ERROR: %v", err)
-// 			continue
-// 		}
+	for {
+		err := r.listen(c, logger, interrupt)
+		if err != nil {
+			log.Printf("ERROR: %v", err)
+			continue
+		}
 
-// 		log.Printf("exit\n")
-// 		break
-// 	}
+		log.Printf("exit\n")
+		break
+	}
 
-// 	logger.Printf("STOP")
-// }
+	logger.Printf("STOP")
+}
 
-// func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) error {
-// 	s := state{
-// 		started: time.Now(),
+func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) error {
+	// 	s := state{
+	// 		started: time.Now(),
 
-// 		healthcheck: struct {
-// 			touched *time.Time
-// 			alerted bool
-// 		}{
-// 			touched: nil,
-// 			alerted: false,
-// 		},
-// 		devices: struct {
-// 			status sync.Map
-// 			errors sync.Map
-// 		}{
-// 			status: sync.Map{},
-// 			errors: sync.Map{},
-// 		},
-// 	}
+	// 		healthcheck: struct {
+	// 			touched *time.Time
+	// 			alerted bool
+	// 		}{
+	// 			touched: nil,
+	// 			alerted: false,
+	// 		},
+	// 		devices: struct {
+	// 			status sync.Map
+	// 			errors sync.Map
+	// 		}{
+	// 			status: sync.Map{},
+	// 			errors: sync.Map{},
+	// 		},
+	// 	}
 
-// 	u := uhppote.UHPPOTE{
-// 		BindAddress:      c.BindAddress,
-// 		BroadcastAddress: c.BroadcastAddress,
-// 		Devices:          make(map[uint32]*net.UDPAddr),
-// 		Debug:            r.debug,
-// 	}
+	u := uhppote.UHPPOTE{
+		BindAddress:      c.BindAddress,
+		BroadcastAddress: c.BroadcastAddress,
+		Devices:          make(map[uint32]*net.UDPAddr),
+		Debug:            r.debug,
+	}
 
-// 	for id, d := range c.Devices {
-// 		if d.Address != nil {
-// 			u.Devices[id] = d.Address
-// 		}
-// 	}
+	for id, d := range c.Devices {
+		if d.Address != nil {
+			u.Devices[id] = d.Address
+		}
+	}
 
-// 	// ... REST task
+	// ... MQTT task
 
-// 	restd := rest.RestD{
-// 		HttpEnabled:        c.REST.HttpEnabled,
-// 		HttpPort:           c.REST.HttpPort,
-// 		HttpsEnabled:       c.REST.HttpsEnabled,
-// 		HttpsPort:          c.REST.HttpsPort,
-// 		TLSKeyFile:         c.REST.TLSKeyFile,
-// 		TLSCertificateFile: c.REST.TLSCertificateFile,
-// 		CACertificateFile:  c.REST.CACertificateFile,
-// 		CORSEnabled:        c.REST.CORSEnabled,
-// 		OpenApi: rest.OpenApi{
-// 			Enabled:   c.OpenApi.Enabled,
-// 			Directory: c.OpenApi.Directory,
-// 		},
-// 	}
+	mqttd := mqtt.MQTTD{
+		Server: "tcp://127.0.0.1:1883",
+	}
 
-// 	go func() {
-// 		restd.Run(&u, logger)
-// 	}()
+	go func() {
+		mqttd.Run(&u, logger)
+	}()
 
-// 	defer rest.Close()
+	defer mqttd.Close(logger)
 
-// 	// ... health-check task
+	// 	// ... health-check task
+	//
+	// 	k := time.NewTicker(15 * time.Second)
+	//
+	// 	defer k.Stop()
+	//
+	// 	go func() {
+	// 		for {
+	// 			<-k.C
+	// 			healthcheck(&u, &s, logger)
+	// 		}
+	// 	}()
 
-// 	k := time.NewTicker(15 * time.Second)
+	// ... wait until interrupted/closed
 
-// 	defer k.Stop()
+	closed := make(chan struct{})
+	// 	w := time.NewTicker(5 * time.Second)
 
-// 	go func() {
-// 		for {
-// 			<-k.C
-// 			healthcheck(&u, &s, logger)
-// 		}
-// 	}()
+	// 	defer w.Stop()
 
-// 	// ... wait until interrupted/closed
+	for {
+		select {
+		// 		case <-w.C:
+		// 			if err := watchdog(&u, &s, logger); err != nil {
+		// 				return err
+		// 			}
 
-// 	closed := make(chan struct{})
-// 	w := time.NewTicker(5 * time.Second)
+		case <-interrupt:
+			logger.Printf("... interrupt")
+			return nil
 
-// 	defer w.Stop()
+		case <-closed:
+			logger.Printf("... closed")
+			return errors.New("MQTT client error")
+		}
+	}
 
-// 	for {
-// 		select {
-// 		case <-w.C:
-// 			if err := watchdog(&u, &s, logger); err != nil {
-// 				return err
-// 			}
-
-// 		case <-interrupt:
-// 			logger.Printf("... interrupt")
-// 			return nil
-
-// 		case <-closed:
-// 			logger.Printf("... closed")
-// 			return errors.New("Server error")
-// 		}
-// 	}
-
-// 	logger.Printf("... exit")
-// 	return nil
-// }
+	logger.Printf("... exit")
+	return nil
+}
 
 // func healthcheck(u *uhppote.UHPPOTE, st *state, l *log.Logger) {
 // 	l.Printf("health-check")
