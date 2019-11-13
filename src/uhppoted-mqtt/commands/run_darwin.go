@@ -3,10 +3,14 @@ package commands
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 	"uhppote"
 	"uhppoted-mqtt/config"
+	"uhppoted/eventlog"
 )
 
 type Run struct {
@@ -22,8 +26,8 @@ type Run struct {
 var RUN = Run{
 	configuration: "/usr/local/etc/com.github.twystd.uhppoted/uhppoted.conf",
 	dir:           "/usr/local/var/com.github.twystd.uhppoted",
-	pidFile:       "/usr/local/var/com.github.twystd.uhppoted/uhppoted-mqtt.pid",
-	logFile:       "/usr/local/var/com.github.twystd.uhppoted/logs/uhppoted-mqtt.log",
+	pidFile:       fmt.Sprintf("/usr/local/var/com.github.twystd.uhppoted/%s.pid", SERVICE),
+	logFile:       fmt.Sprintf("/usr/local/var/com.github.twystd.uhppoted/logs/%s.log", SERVICE),
 	logFileSize:   10,
 	console:       false,
 	debug:         false,
@@ -54,25 +58,25 @@ func (r *Run) Execute(ctx context.Context) error {
 }
 
 func (r *Run) exec(c *config.Config) error {
-	// logger := log.New(os.Stdout, "", log.LstdFlags)
+	logger := log.New(os.Stdout, "", log.LstdFlags)
 
-	// if !r.console {
-	// 	events := eventlog.Ticker{Filename: r.logFile, MaxSize: r.logFileSize}
-	// 	logger = log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
-	// 	rotate := make(chan os.Signal, 1)
+	if !r.console {
+		events := eventlog.Ticker{Filename: r.logFile, MaxSize: r.logFileSize}
+		logger = log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
+		rotate := make(chan os.Signal, 1)
 
-	// 	signal.Notify(rotate, syscall.SIGHUP)
+		signal.Notify(rotate, syscall.SIGHUP)
 
-	// 	go func() {
-	// 		for {
-	// 			<-rotate
-	// 			log.Printf("Rotating uhppoted-rest log file '%s'\n", r.logFile)
-	// 			events.Rotate()
-	// 		}
-	// 	}()
-	// }
+		go func() {
+			for {
+				<-rotate
+				log.Printf("Rotating %s log file '%s'\n", SERVICE, r.logFile)
+				events.Rotate()
+			}
+		}()
+	}
 
-	// r.run(c, logger)
+	r.run(c, logger)
 
 	return nil
 }
