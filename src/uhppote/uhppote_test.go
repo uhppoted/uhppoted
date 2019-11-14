@@ -6,7 +6,6 @@ import (
 	"sync"
 	"testing"
 	"time"
-	"uhppote"
 	codec "uhppote/encoding/UTO311-L0x"
 	"uhppote/messages"
 	"uhppote/types"
@@ -25,7 +24,7 @@ func TestBroadcastAddressRequest(t *testing.T) {
 		CardNumber:   6154412,
 	}
 
-	u := uhppote.UHPPOTE{
+	u := UHPPOTE{
 		Devices:          make(map[uint32]*net.UDPAddr),
 		Debug:            true,
 		BindAddress:      resolve("127.0.0.1:12345", t),
@@ -52,7 +51,7 @@ func TestBroadcastAddressRequest(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(reply, expected) {
-		t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", uhppote.Dump(expected, ""), uhppote.Dump(reply, ""))
+		t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", dump(expected, ""), dump(reply, ""))
 	}
 
 	c.Close()
@@ -79,7 +78,7 @@ func TestSequentialRequests(t *testing.T) {
 		CardNumber:   6154412,
 	}
 
-	u := uhppote.UHPPOTE{
+	u := UHPPOTE{
 		Debug:            true,
 		BindAddress:      resolve("127.0.0.1:12345", t),
 		BroadcastAddress: resolve("127.0.0.1:60000", t),
@@ -108,7 +107,7 @@ func TestSequentialRequests(t *testing.T) {
 	} else if reply == nil {
 		t.Fatalf("Invalid reply: %v", reply)
 	} else if !reflect.DeepEqual(reply, expected[0]) {
-		t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", uhppote.Dump(expected[0], ""), uhppote.Dump(reply, ""))
+		t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", dump(expected[0], ""), dump(reply, ""))
 	}
 
 	if reply, err := u.Send(757781324, request); err != nil {
@@ -116,7 +115,7 @@ func TestSequentialRequests(t *testing.T) {
 	} else if reply == nil {
 		t.Fatalf("Invalid reply: %v", reply)
 	} else if !reflect.DeepEqual(reply, expected[1]) {
-		t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", uhppote.Dump(expected[1], ""), uhppote.Dump(reply, ""))
+		t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", dump(expected[1], ""), dump(reply, ""))
 	}
 
 	for _, c := range listening {
@@ -146,7 +145,7 @@ func TestConcurrentRequestsWithUnboundPort(t *testing.T) {
 		CardNumber:   6154412,
 	}
 
-	u := uhppote.UHPPOTE{
+	u := UHPPOTE{
 		Debug:            true,
 		BindAddress:      resolve("127.0.0.1:0", t),
 		BroadcastAddress: resolve("127.0.0.1:60000", t),
@@ -181,7 +180,7 @@ func TestConcurrentRequestsWithUnboundPort(t *testing.T) {
 		} else if reply == nil {
 			t.Fatalf("Invalid reply: %v", reply)
 		} else if !reflect.DeepEqual(reply, expected[0]) {
-			t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", uhppote.Dump(expected[0], ""), uhppote.Dump(reply, ""))
+			t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", dump(expected[0], ""), dump(reply, ""))
 		}
 	}()
 
@@ -195,7 +194,7 @@ func TestConcurrentRequestsWithUnboundPort(t *testing.T) {
 		} else if reply == nil {
 			t.Fatalf("Invalid reply: %v", reply)
 		} else if !reflect.DeepEqual(reply, expected[1]) {
-			t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", uhppote.Dump(expected[1], ""), uhppote.Dump(reply, ""))
+			t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", dump(expected[1], ""), dump(reply, ""))
 		}
 	}()
 
@@ -230,7 +229,7 @@ func TestConcurrentRequestsWithBoundPort(t *testing.T) {
 		CardNumber:   6154412,
 	}
 
-	u := uhppote.UHPPOTE{
+	u := UHPPOTE{
 		Debug:            true,
 		BindAddress:      resolve("127.0.0.1:12345", t),
 		BroadcastAddress: resolve("127.0.0.1:60000", t),
@@ -265,7 +264,7 @@ func TestConcurrentRequestsWithBoundPort(t *testing.T) {
 		} else if reply == nil {
 			t.Fatalf("Invalid reply: %v", reply)
 		} else if !reflect.DeepEqual(reply, expected[0]) {
-			t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", uhppote.Dump(expected[0], ""), uhppote.Dump(reply, ""))
+			t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", dump(expected[0], ""), dump(reply, ""))
 		}
 	}()
 
@@ -279,7 +278,7 @@ func TestConcurrentRequestsWithBoundPort(t *testing.T) {
 		} else if reply == nil {
 			t.Fatalf("Invalid reply: %v", reply)
 		} else if !reflect.DeepEqual(reply, expected[1]) {
-			t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", uhppote.Dump(expected[1], ""), uhppote.Dump(reply, ""))
+			t.Fatalf("Incorrect reply:\nExpected:\n%s\nReturned:\n%s", dump(expected[1], ""), dump(reply, ""))
 		}
 	}()
 
