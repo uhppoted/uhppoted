@@ -1,11 +1,23 @@
 package conf
 
 import (
+	"net"
+	"reflect"
 	"testing"
 )
 
-const config = `# UDP
-bind.address = 192.168.1.100:54321
+type testType struct {
+	value string
+}
+
+func (t *testType) UnmarshalConf(s string) (interface{}, error) {
+	return &testType{s}, nil
+}
+
+var configuration = []byte(`# UDP
+udp.address = 192.168.1.100:54321
+interface.value = qwerty
+interface.pointer = uiop
 
 # REST API
 rest.enabled = false
@@ -18,33 +30,32 @@ UT0311-L0x.305419896.door.1 = Front Door
 UT0311-L0x.305419896.door.2 = Side Door
 UT0311-L0x.305419896.door.3 = Garage
 UT0311-L0x.305419896.door.4 = Workshop
-`
+`)
 
 func TestUnmarshal(t *testing.T) {
-	// message := []byte{
-	// 	0x17, 0x94, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	// 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	// 	0x00, 0x20, 0x18, 0x08, 0x16, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	// 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	// }
+	config := struct {
+		UdpAddress *net.UDPAddr `conf:"udp.address"`
+		Interface  testType     `conf:"interface.value"`
+		InterfaceP *testType    `conf:"interface.pointer"`
+	}{}
 
-	// reply := struct {
-	// 	MsgType   types.MsgType `uhppote:"value:0x94"`
-	// 	Interface testType      `uhppote:"offset:33"`
-	// }{}
+	err := Unmarshal(configuration, &config)
 
-	// err := Unmarshal(message, &reply)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+		return
+	}
 
-	// if err != nil {
-	// 	t.Errorf("Unexpected error: %v", err)
-	// 	return
-	// }
+	address, _ := net.ResolveUDPAddr("udp", "192.168.1.100:54321")
+	if !reflect.DeepEqual(config.UdpAddress, address) {
+		t.Errorf("Expected 'udp.address' %s, got: %s\n", address, config.UdpAddress)
+	}
 
-	// if reply.MsgType != 0x94 {
-	// 	t.Errorf("Expected 'byte':0x%02X, got: 0x%02X\n", 0x94, reply.MsgType)
-	// }
+	if config.Interface.value != "qwerty" {
+		t.Errorf("Expected interface value '%s', got: '%v'\n", "qwerty", config.Interface)
+	}
 
-	// if !reflect.DeepEqual(reply.Interface.bytes, []byte{0x20, 0x19, 0x0a, 0x19}) {
-	// 	t.Errorf("Expected interface value '%v', got: '%v'\n", []byte{0x20, 0x19, 0x0a, 0x19}, reply.Interface)
-	// }
+	if config.InterfaceP == nil || config.InterfaceP.value != "uiop" {
+		t.Errorf("Expected interface pointer value '%s', got: '%v'\n", "uiop", config.InterfaceP)
+	}
 }
