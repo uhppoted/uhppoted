@@ -8,6 +8,7 @@ import (
 	"net"
 	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -16,6 +17,10 @@ type Unmarshaler interface {
 }
 
 var (
+	tBoolean = reflect.TypeOf(bool(false))
+	tInt     = reflect.TypeOf(int(0))
+	tUint    = reflect.TypeOf(uint(0))
+	tString  = reflect.TypeOf(string(""))
 	pUDPAddr = reflect.TypeOf(&net.UDPAddr{})
 )
 
@@ -69,6 +74,32 @@ func Unmarshal(b []byte, m interface{}) error {
 
 		// Unmarshal built-in types
 		switch t.Type {
+		case tBoolean:
+			if value == "true" {
+				f.SetBool(true)
+			} else if value == "false" {
+				f.SetBool(false)
+			} else {
+				return fmt.Errorf("Invalid boolean value: %s:", value)
+			}
+
+		case tInt:
+			i, err := strconv.ParseInt(value, 10, 0)
+			if err != nil {
+				return err
+			}
+			f.SetInt(i)
+
+		case tUint:
+			i, err := strconv.ParseUint(value, 10, 0)
+			if err != nil {
+				return err
+			}
+			f.SetUint(i)
+
+		case tString:
+			f.SetString(value)
+
 		case pUDPAddr:
 			address, err := net.ResolveUDPAddr("udp", value)
 			if err != nil {
