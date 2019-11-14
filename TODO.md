@@ -4,10 +4,15 @@
 
 ### uhppoted-mqtt
 
-- [ ] MQTT subscribe
+- [ ] subscribe
+- [ ] ping
+- [ ] listen/events
+
+
 - [ ] conf file encoder/decoder with reflection and/or JSON
 - [ ] rework UHPPOTE response messages to use factory
 - [ ] rework plist encoder
+- [ ] convert to 1.13 error handling
 
 ## TODO
 

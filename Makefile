@@ -13,7 +13,7 @@ all: test      \
      coverage
 
 format: 
-	go fmt ./...
+	go fmt uhppote...
 
 release: format
 	mkdir -p dist/$(DIST)/windows
@@ -42,20 +42,7 @@ build: format
 
 test: build
 	go clean -testcache
-	go test -count=1 src/uhppote/*.go
-	go test -count=1 src/uhppote/messages/*.go
-	go test -count=1 src/uhppote/encoding/bcd/*.go
-	go test -count=1 src/uhppote/encoding/UTO311-L0x/*.go
-	go test -count=1 src/uhppote-simulator/simulator/*.go
-	go test -count=1 src/uhppoted-rest/encoding/plist/*.go
-
-test-simulator: build
-	go clean -testcache
-	go test -count=1 src/uhppote-simulator/simulator/*.go 
-
-test-uhppoted: build
-	go clean -testcache
-	go test -count=1 src/uhppoted-rest/encoding/plist/*.go 
+	go test uhppote...
 
 integration-tests: build
 	go clean -testcache
@@ -79,7 +66,8 @@ usage: build
 	$(CLI)
 
 debug: build
-	./bin/uhppote-simulator --debug --devices "./runtime/simulation/debug"
+	go clean -testcache
+	go test -count=1 src/uhppote/encoding/conf/*.go
 
 help: build
 	$(CLI)       help

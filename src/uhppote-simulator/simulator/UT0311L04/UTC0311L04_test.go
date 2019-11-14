@@ -283,7 +283,7 @@ func TestHandleGetEvent(t *testing.T) {
 		DoorOpened:   false,
 		UserId:       555444321,
 		Timestamp:    types.DateTime(timestamp),
-		RecordType:   9,
+		Result:       9,
 	}
 
 	testHandle(&request, &response, t)
@@ -348,7 +348,7 @@ func testHandle(request messages.Request, expected messages.Response, t *testing
 				DoorOpened:   false,
 				UserId:       1234567890,
 				Timestamp:    types.DateTime(timestamp),
-				RecordType:   1,
+				Result:       1,
 			},
 			entities.Event{
 				RecordNumber: 2,
@@ -358,7 +358,7 @@ func testHandle(request messages.Request, expected messages.Response, t *testing
 				DoorOpened:   false,
 				UserId:       555444321,
 				Timestamp:    types.DateTime(timestamp),
-				RecordType:   9,
+				Result:       9,
 			},
 			entities.Event{
 				RecordNumber: 3,
@@ -368,7 +368,7 @@ func testHandle(request messages.Request, expected messages.Response, t *testing
 				DoorOpened:   false,
 				UserId:       1234567890,
 				Timestamp:    types.DateTime(timestamp),
-				RecordType:   1,
+				Result:       1,
 			},
 		},
 	}
@@ -376,7 +376,7 @@ func testHandle(request messages.Request, expected messages.Response, t *testing
 	txq := make(chan entities.Message, 8)
 	src := net.UDPAddr{IP: net.IPv4(10, 0, 0, 1), Port: 12345}
 
-	s := Simulator{
+	s := UT0311L04{
 		SerialNumber: 12345,
 		IpAddress:    net.IPv4(10, 0, 0, 100),
 		SubnetMask:   net.IPv4(255, 255, 255, 0),
@@ -388,7 +388,7 @@ func testHandle(request messages.Request, expected messages.Response, t *testing
 		Events:       events,
 		Doors:        doors,
 
-		TxQ: txq,
+		txq: txq,
 	}
 
 	s.Handle(&src, request)
