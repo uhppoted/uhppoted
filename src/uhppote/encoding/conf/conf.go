@@ -113,7 +113,15 @@ func Unmarshal(b []byte, m interface{}) error {
 					return err
 				}
 
-				f.Set(reflect.ValueOf(address))
+				addr := net.UDPAddr{
+					IP:   make(net.IP, net.IPv4len),
+					Port: address.Port,
+					Zone: "",
+				}
+
+				copy(addr.IP, address.IP.To4())
+
+				f.Set(reflect.ValueOf(&addr))
 			}
 		}
 	}
