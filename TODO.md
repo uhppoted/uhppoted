@@ -9,7 +9,9 @@
 - [ ] listen/events
 
 
-- [ ] conf file encoder/decoder with reflection and/or JSON
+- [x] conf file decoder with reflection
+- [ ] conf file decoder: embedded structs
+- [ ] conf file decoder: JSON
 - [ ] Rework UHPPOTE response messages to use factory
 - [ ] Rework plist encoder
 - [ ] Convert to 1.13 error handling
