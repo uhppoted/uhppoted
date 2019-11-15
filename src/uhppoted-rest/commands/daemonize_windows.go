@@ -40,8 +40,10 @@ rest.https.port = 8443
 rest.tls.key = {{.WorkDir}}\rest\uhppoted.key
 rest.tls.certificate = {{.WorkDir}}\rest\uhppoted.cert
 rest.tls.ca = {{.WorkDir}}\rest\ca.cert
-# rest.openapi.enabled = false
-# rest.openapi.directory = {{.WorkDir}}\rest\openapi
+
+# OPEN API
+# openapi.enabled = false
+# openapi.directory = {{.WorkDir}}\rest\openapi
 
 # DEVICES
 # Example configuration for UTO311-L04 with serial number 305419896

@@ -67,7 +67,9 @@ usage: build
 
 debug: build
 	go clean -testcache
-	go test -count=1 src/uhppoted-mqtt/config/*.go
+#	go test -count=1 src/uhppote/encoding/conf/*.go
+	go test -count=1 src/uhppoted-rest/config/*.go
+#	go test -count=1 src/uhppoted-mqtt/config/*.go
 
 help: build
 	$(CLI)       help
