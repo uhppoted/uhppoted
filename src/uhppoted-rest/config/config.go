@@ -1,16 +1,18 @@
 package config
 
 import (
-	"bufio"
 	"encoding/binary"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
-	"strings"
+	"uhppote/encoding/conf"
 )
+
+type DeviceMap map[uint32]*Device
 
 type Device struct {
 	Address *net.UDPAddr
@@ -34,31 +36,11 @@ type OpenApi struct {
 }
 
 type Config struct {
-	BindAddress      *net.UDPAddr
-	BroadcastAddress *net.UDPAddr
-	Devices          map[uint32]*Device
-	REST
-	OpenApi
-}
-
-var parsers = []struct {
-	re *regexp.Regexp
-	f  func(string, *Config)
-}{
-	{regexp.MustCompile(`^bind\.address\s*=.*`), bind},
-	{regexp.MustCompile(`^broadcast\.address\s*=.*`), broadcast},
-	{regexp.MustCompile(`^UT0311-L0x\.[0-9]+\.address\s*=.*`), address},
-	{regexp.MustCompile(`^UT0311-L0x\.[0-9]+\.door\.[1-4]\s*=.*`), door},
-	{regexp.MustCompile(`^rest\.http\.enabled\s*=.*`), rest},
-	{regexp.MustCompile(`^rest\.http\.port\s*=.*`), rest},
-	{regexp.MustCompile(`^rest\.https\.enabled\s*=.*`), rest},
-	{regexp.MustCompile(`^rest\.https\.port\s*=.*`), rest},
-	{regexp.MustCompile(`^rest\.tls\.key\s*=.*`), rest},
-	{regexp.MustCompile(`^rest\.tls\.certificate\s*=.*`), rest},
-	{regexp.MustCompile(`^rest\.tls\.ca\s*=.*`), rest},
-	{regexp.MustCompile(`^rest\.CORS\.enabled\s*=.*`), rest},
-	{regexp.MustCompile(`^rest\.openapi\.enabled\s*=.*`), openapi},
-	{regexp.MustCompile(`^rest\.openapi\.directory\s*=.*`), openapi},
+	BindAddress      *net.UDPAddr `conf:"bind.address"`
+	BroadcastAddress *net.UDPAddr `conf:"broadcast.address"`
+	Devices          DeviceMap    `conf:"/^UT0311-L0x\\.([0-9]+)\\.(.*)/"`
+	REST             `conf:"/^rest\\.(.*)/"`
+	OpenApi          `conf:"/^openapi\\.(.*)/"`
 }
 
 func NewConfig() *Config {
@@ -103,169 +85,12 @@ func (c *Config) Load(path string) error {
 
 	c.OpenApi.Directory = filepath.Join(filepath.Dir(path), "rest", "openapi")
 
-	s := bufio.NewScanner(f)
-	for s.Scan() {
-		l := s.Text()
-		for _, p := range parsers {
-			if p.re.MatchString(l) {
-				p.f(l, c)
-			}
-		}
+	bytes, err := ioutil.ReadAll(f)
+	if err != nil {
+		return err
 	}
 
-	return nil
-}
-
-func bind(l string, c *Config) {
-	re := regexp.MustCompile("^bind\\.address\\s*=(.*)")
-	match := re.FindStringSubmatch(l)
-
-	if len(match) > 0 {
-		address, err := net.ResolveUDPAddr("udp", strings.TrimSpace(match[1]))
-		if err != nil {
-			fmt.Printf("WARN: configuration error - invalid UDP bind address '%s': %v\n", l, err)
-		} else {
-			c.BindAddress = address
-		}
-	}
-}
-
-func broadcast(l string, c *Config) {
-	re := regexp.MustCompile("^broadcast\\.address\\s*=(.*)")
-	match := re.FindStringSubmatch(l)
-
-	if len(match) > 0 {
-		address, err := net.ResolveUDPAddr("udp", strings.TrimSpace(match[1]))
-		if err != nil {
-			fmt.Printf("WARN: configuration error - invalid UDP broadcast address '%s': %v\n", l, err)
-		} else {
-			c.BroadcastAddress = address
-		}
-	}
-}
-
-func address(l string, c *Config) {
-	re := regexp.MustCompile("^UT0311-L0x\\.([0-9]+)\\.address\\s*=(.*)")
-	match := re.FindStringSubmatch(l)
-
-	if len(match) > 0 {
-		serialNo, err := strconv.ParseUint(match[1], 10, 32)
-		if err != nil {
-			fmt.Printf("WARN: configuration error - invalid serial number '%s': %v\n", l, err)
-			return
-		}
-
-		address, err := net.ResolveUDPAddr("udp", strings.TrimSpace(match[2]))
-		if err != nil {
-			fmt.Printf("WARN: configuration error - invalid device UDP address '%s': %v\n", l, err)
-			return
-		}
-
-		k := uint32(serialNo)
-		d := c.Devices[k]
-		if d == nil {
-			d = &Device{Door: make([]string, 4)}
-		}
-
-		d.Address = address
-		c.Devices[k] = d
-	}
-}
-
-func door(l string, c *Config) {
-	re := regexp.MustCompile(`^UT0311-L0x\.([0-9]+)\.door\.([1-4])\s*=(.*)`)
-	match := re.FindStringSubmatch(l)
-
-	if len(match) > 0 {
-		serialNo, err := strconv.ParseUint(match[1], 10, 32)
-		if err != nil {
-			fmt.Printf("WARN: configuration error - invalid serial number '%s': %v\n", l, err)
-			return
-		}
-
-		door, err := strconv.ParseUint(match[2], 10, 8)
-		if err != nil || door < 1 || door > 4 {
-			fmt.Printf("WARN: configuration error - invalid device door number '%s': %v\n", l, err)
-			return
-		}
-
-		k := uint32(serialNo)
-		d := c.Devices[k]
-		if d == nil {
-			d = &Device{Door: make([]string, 4)}
-		}
-
-		d.Door[door-1] = strings.TrimSpace(match[3])
-		c.Devices[k] = d
-	}
-}
-
-func rest(l string, c *Config) {
-	re := regexp.MustCompile(`^rest\.(\w+)\.(\w+)\s*=(.*)`)
-	match := re.FindStringSubmatch(l)
-
-	if len(match) > 0 {
-		switch match[1] {
-		case "http":
-			switch match[2] {
-			case "enabled":
-				if enabled, err := strconv.ParseBool(strings.TrimSpace(match[3])); err == nil {
-					c.REST.HttpEnabled = enabled
-				}
-			case "port":
-				if port, err := strconv.ParseUint(strings.TrimSpace(match[3]), 10, 16); err == nil {
-					c.REST.HttpPort = uint16(port)
-				}
-			}
-
-		case "https":
-			switch match[2] {
-			case "enabled":
-				if enabled, err := strconv.ParseBool(strings.TrimSpace(match[3])); err == nil {
-					c.REST.HttpsEnabled = enabled
-				}
-			case "port":
-				if port, err := strconv.ParseUint(strings.TrimSpace(match[3]), 10, 16); err == nil {
-					c.REST.HttpsPort = uint16(port)
-				}
-			}
-
-		case "tls":
-			switch match[2] {
-			case "key":
-				c.REST.TLSKeyFile = strings.TrimSpace(match[3])
-			case "certificate":
-				c.REST.TLSCertificateFile = strings.TrimSpace(match[3])
-			case "ca":
-				c.REST.CACertificateFile = strings.TrimSpace(match[3])
-			}
-
-		case "CORS":
-			switch match[2] {
-			case "enabled":
-				if enabled, err := strconv.ParseBool(strings.TrimSpace(match[3])); err == nil {
-					c.REST.CORSEnabled = enabled
-				}
-			}
-		}
-	}
-}
-
-func openapi(l string, c *Config) {
-	re := regexp.MustCompile(`^rest\.openapi\.(\w+)\s*=(.*)`)
-	match := re.FindStringSubmatch(l)
-
-	if len(match) > 0 {
-		switch match[1] {
-		case "enabled":
-			if enabled, err := strconv.ParseBool(strings.TrimSpace(match[2])); err == nil {
-				c.OpenApi.Enabled = enabled
-			}
-
-		case "directory":
-			c.OpenApi.Directory = strings.TrimSpace(match[2])
-		}
-	}
+	return conf.Unmarshal(bytes, c)
 }
 
 // Ref. https://stackoverflow.com/questions/23529663/how-to-get-all-addresses-and-masks-from-local-interfaces-in-go
@@ -308,4 +133,173 @@ func DefaultIpAddresses() (net.UDPAddr, net.UDPAddr) {
 	}
 
 	return bind, broadcast
+}
+
+func (f *DeviceMap) UnmarshalConf(tag string, values map[string]string) (interface{}, error) {
+	re := regexp.MustCompile(`^/(.*?)/$`)
+	match := re.FindStringSubmatch(tag)
+	if len(match) < 2 {
+		return f, fmt.Errorf("Invalid 'conf' regular expression tag: %s", tag)
+	}
+
+	re, err := regexp.Compile(match[1])
+	if err != nil {
+		return f, err
+	}
+
+	for key, value := range values {
+		match := re.FindStringSubmatch(key)
+		if len(match) > 1 {
+			id, err := strconv.ParseUint(match[1], 10, 32)
+			if err != nil {
+				return f, fmt.Errorf("Invalid 'testMap' key %s: %v", key, err)
+			}
+
+			d, ok := (*f)[uint32(id)]
+			if !ok || d == nil {
+				d = &Device{
+					Door: make([]string, 4),
+				}
+
+				(*f)[uint32(id)] = d
+			}
+
+			switch match[2] {
+			case "address":
+				address, err := net.ResolveUDPAddr("udp", value)
+				if err != nil {
+					return f, fmt.Errorf("Device %v, invalid address '%s': %v", id, value, err)
+				} else {
+					d.Address = &net.UDPAddr{
+						IP:   make(net.IP, net.IPv4len),
+						Port: address.Port,
+						Zone: "",
+					}
+
+					copy(d.Address.IP, address.IP.To4())
+				}
+
+			case "door.1":
+				d.Door[0] = value
+
+			case "door.2":
+				d.Door[1] = value
+
+			case "door.3":
+				d.Door[2] = value
+
+			case "door.4":
+				d.Door[3] = value
+			}
+		}
+	}
+
+	return f, nil
+}
+
+func (f *REST) UnmarshalConf(tag string, values map[string]string) (interface{}, error) {
+	re := regexp.MustCompile(`^/(.*?)/$`)
+	match := re.FindStringSubmatch(tag)
+	if len(match) < 2 {
+		return f, fmt.Errorf("Invalid 'conf' regular expression tag: %s", tag)
+	}
+
+	re, err := regexp.Compile(match[1])
+	if err != nil {
+		return f, err
+	}
+
+	for key, value := range values {
+		match := re.FindStringSubmatch(key)
+		if len(match) > 1 {
+			switch match[1] {
+			case "CORS.enabled":
+				if value == "true" {
+					f.CORSEnabled = true
+				} else if value == "false" {
+					f.CORSEnabled = false
+				} else {
+					return f, fmt.Errorf("Invalid rest.CORS.enabled value: %s:", value)
+				}
+
+			case "http.enabled":
+				if value == "true" {
+					f.HttpEnabled = true
+				} else if value == "false" {
+					f.HttpEnabled = false
+				} else {
+					return f, fmt.Errorf("Invalid rest.http.enabled value: %s:", value)
+				}
+
+			case "http.port":
+				i, err := strconv.ParseUint(value, 10, 16)
+				if err != nil {
+					return f, err
+				}
+				f.HttpPort = uint16(i)
+
+			case "https.enabled":
+				if value == "true" {
+					f.HttpsEnabled = true
+				} else if value == "false" {
+					f.HttpsEnabled = false
+				} else {
+					return f, fmt.Errorf("Invalid rest.https.enabled value: %s:", value)
+				}
+
+			case "https.port":
+				i, err := strconv.ParseUint(value, 10, 16)
+				if err != nil {
+					return f, err
+				}
+				f.HttpsPort = uint16(i)
+
+			case "tls.key":
+				f.TLSKeyFile = value
+
+			case "tls.certificate":
+				f.TLSCertificateFile = value
+
+			case "tls.ca":
+				f.CACertificateFile = value
+			}
+		}
+	}
+
+	return f, nil
+}
+
+func (f *OpenApi) UnmarshalConf(tag string, values map[string]string) (interface{}, error) {
+	re := regexp.MustCompile(`^/(.*?)/$`)
+	match := re.FindStringSubmatch(tag)
+	if len(match) < 2 {
+		return f, fmt.Errorf("Invalid 'conf' regular expression tag: %s", tag)
+	}
+
+	re, err := regexp.Compile(match[1])
+	if err != nil {
+		return f, err
+	}
+
+	for key, value := range values {
+		match := re.FindStringSubmatch(key)
+		if len(match) > 1 {
+			switch match[1] {
+			case "enabled":
+				if value == "true" {
+					f.Enabled = true
+				} else if value == "false" {
+					f.Enabled = false
+				} else {
+					return f, fmt.Errorf("Invalid rest.openapi.enabled value: %s:", value)
+				}
+
+			case "directory":
+				f.Directory = value
+
+			}
+		}
+	}
+
+	return f, nil
 }
