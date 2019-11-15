@@ -13,7 +13,7 @@ import (
 )
 
 type Unmarshaler interface {
-	UnmarshalConf(string) (interface{}, error)
+	UnmarshalConf(tag string, values map[string]string) (interface{}, error)
 }
 
 var (
@@ -42,71 +42,79 @@ func Unmarshal(b []byte, m interface{}) error {
 		f := s.Field(i)
 		t := s.Type().Field(i)
 		tag := strings.TrimSpace(t.Tag.Get("conf"))
-		value, found := values[tag]
 
-		if tag == "" || !found || !f.CanSet() {
+		if tag == "" || !f.CanSet() {
 			continue
 		}
 
 		// Unmarshall value fields with UnmarshalConf{} interface
 		if u, ok := f.Addr().Interface().(Unmarshaler); ok {
-			p, err := u.UnmarshalConf(value)
+			p, err := u.UnmarshalConf(tag, values)
 			if err != nil {
 				return err
 			}
 
 			f.Set(reflect.Indirect(reflect.ValueOf(p)))
-
 			continue
 		}
 
 		// Unmarshall pointer fields with UnmarshalConf{} interface
 		if u, ok := f.Interface().(Unmarshaler); ok {
-			p, err := u.UnmarshalConf(value)
+			p, err := u.UnmarshalConf(tag, values)
 			if err != nil {
 				return err
 			}
 
 			f.Set(reflect.ValueOf(p))
-
 			continue
 		}
 
 		// Unmarshal built-in types
+
 		switch t.Type {
 		case tBoolean:
-			if value == "true" {
-				f.SetBool(true)
-			} else if value == "false" {
-				f.SetBool(false)
-			} else {
-				return fmt.Errorf("Invalid boolean value: %s:", value)
+			if value, ok := values[tag]; ok {
+				if value == "true" {
+					f.SetBool(true)
+				} else if value == "false" {
+					f.SetBool(false)
+				} else {
+					return fmt.Errorf("Invalid boolean value: %s:", value)
+				}
 			}
 
 		case tInt:
-			i, err := strconv.ParseInt(value, 10, 0)
-			if err != nil {
-				return err
+			if value, ok := values[tag]; ok {
+				i, err := strconv.ParseInt(value, 10, 0)
+				if err != nil {
+					return err
+				}
+				f.SetInt(i)
 			}
-			f.SetInt(i)
 
 		case tUint:
-			i, err := strconv.ParseUint(value, 10, 0)
-			if err != nil {
-				return err
+			if value, ok := values[tag]; ok {
+				i, err := strconv.ParseUint(value, 10, 0)
+				if err != nil {
+					return err
+				}
+				f.SetUint(i)
 			}
-			f.SetUint(i)
 
 		case tString:
-			f.SetString(value)
-
-		case pUDPAddr:
-			address, err := net.ResolveUDPAddr("udp", value)
-			if err != nil {
-				return err
+			if value, ok := values[tag]; ok {
+				f.SetString(value)
 			}
 
-			f.Set(reflect.ValueOf(address))
+		case pUDPAddr:
+			if value, ok := values[tag]; ok {
+				address, err := net.ResolveUDPAddr("udp", value)
+				if err != nil {
+					return err
+				}
+
+				f.Set(reflect.ValueOf(address))
+			}
 		}
 	}
 
