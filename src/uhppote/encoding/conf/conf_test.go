@@ -53,9 +53,14 @@ func TestUnmarshal(t *testing.T) {
 		return
 	}
 
-	address, _ := net.ResolveUDPAddr("udp", "192.168.1.100:54321")
-	if !reflect.DeepEqual(config.UdpAddress, address) {
-		t.Errorf("Expected 'udp.address' %s, got: %s", address, config.UdpAddress)
+	address := net.UDPAddr{
+		IP:   []byte{192, 168, 1, 100},
+		Port: 54321,
+		Zone: "",
+	}
+
+	if !reflect.DeepEqual(config.UdpAddress, &address) {
+		t.Errorf("Expected 'udp.address' %s, got: %s", &address, config.UdpAddress)
 	}
 
 	if config.Interface.value != "qwerty" {
