@@ -10,9 +10,10 @@
 
 
 - [ ] conf file encoder/decoder with reflection and/or JSON
-- [ ] rework UHPPOTE response messages to use factory
-- [ ] rework plist encoder
-- [ ] convert to 1.13 error handling
+- [ ] Rework UHPPOTE response messages to use factory
+- [ ] Rework plist encoder
+- [ ] Convert to 1.13 error handling
+- [ ] Update to use modules
 
 ## TODO
 
@@ -62,7 +63,6 @@
 6.  Integration tests
 8.  Verify fields in listen events/status replies:
     - battery status can be (at least) 0x00, 0x01 and 0x04
-9.  Update to use modules
 10. Mojave/HomeKit
 11. Phoenix UI
 12. step-ca (https://smallstep.com/blog/private-acme-server)
