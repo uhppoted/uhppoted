@@ -13,13 +13,6 @@ type testType struct {
 	value string
 }
 
-type testMap map[uint32]*device
-
-type device struct {
-	name    string
-	address string
-}
-
 var configuration = []byte(
 	`udp.address = 192.168.1.100:54321
 interface.value = qwerty
@@ -28,9 +21,6 @@ sys.enabled = true
 sys.integer = -13579
 sys.unsigned = 8081
 sys.string = asdfghjkl
-
-UT0311-L0x.305419896.name = DEVICE1
-UT0311-L0x.305419896.address = 192.168.1.100:60000
 `)
 
 func TestUnmarshal(t *testing.T) {
@@ -42,8 +32,6 @@ func TestUnmarshal(t *testing.T) {
 		Integer    int          `conf:"sys.integer"`
 		Unsigned   uint         `conf:"sys.unsigned"`
 		String     string       `conf:"sys.string"`
-		Devices    testMap      `conf:"/UT0311-L0x\\.([0-9]+)\\.(\\w+)/"`
-		DevicesP   *testMap     `conf:"/UT0311-L0x\\.([0-9]+)\\.(\\w+)/"`
 	}{}
 
 	err := Unmarshal(configuration, &config)
@@ -86,34 +74,6 @@ func TestUnmarshal(t *testing.T) {
 	if config.String != "asdfghjkl" {
 		t.Errorf("Expected 'string' value '%v', got: '%v'", "asdfghjkl", config.String)
 	}
-
-	if d, _ := config.Devices[305419896]; d == nil {
-		t.Errorf("Expected 'device' for ID '%v', got: '%v'", 305419896, d)
-	} else {
-		if d.name != "DEVICE1" {
-			t.Errorf("Expected 'device.name' for ID '%v', got: '%v'", "DEVICE1", d.name)
-		}
-
-		if d.address != "192.168.1.100:60000" {
-			t.Errorf("Expected 'device.address' for ID '%v', got: '%v'", "192.168.1.100:60000", d.address)
-		}
-	}
-
-	if devices := config.DevicesP; devices == nil {
-		t.Errorf("Expected 'testMap' for DevicesP, got: '%v'", devices)
-	} else {
-		if d, _ := (*devices)[305419896]; d == nil {
-			t.Errorf("Expected 'device' for ID '%v', got: '%v'", 305419896, d)
-		} else {
-			if d.name != "DEVICE1" {
-				t.Errorf("Expected 'device.name' for ID '%v', got: '%v'", "DEVICE1", d.name)
-			}
-
-			if d.address != "192.168.1.100:60000" {
-				t.Errorf("Expected 'device.address' for ID '%v', got: '%v'", "192.168.1.100:60000", d.address)
-			}
-		}
-	}
 }
 
 func (f *testType) UnmarshalConf(tag string, values map[string]string) (interface{}, error) {
@@ -124,7 +84,47 @@ func (f *testType) UnmarshalConf(tag string, values map[string]string) (interfac
 	return f, nil
 }
 
-func (f *testMap) UnmarshalConf(tag string, values map[string]string) (interface{}, error) {
+// Unmarshal example for map[id]device using Unmarshaler interface
+
+type deviceMap map[uint32]*device
+
+type device struct {
+	name    string
+	address string
+}
+
+func (d device) String() string {
+	return fmt.Sprintf("%-7s %s", d.name, d.address)
+}
+
+func ExampleUnmarshal() {
+	configuration := `# DEVICES
+UT0311-L0x.305419896.name = BOARD1
+UT0311-L0x.305419896.address = 192.168.1.100:60000
+UT0311-L0x.54321.name = BOARD2
+UT0311-L0x.54321.address = 192.168.1.101:60000
+`
+
+	config := struct {
+		Devices deviceMap `conf:"/UT0311-L0x\\.([0-9]+)\\.(\\w+)/"`
+	}{}
+
+	err := Unmarshal([]byte(configuration), &config)
+	if err != nil {
+		fmt.Printf("ERROR: %v", err)
+		return
+	}
+
+	for id, d := range config.Devices {
+		fmt.Printf("DEVICE: %-10d %s\n", id, d)
+	}
+
+	// Unordered output:
+	// DEVICE: 305419896  BOARD1  192.168.1.100:60000
+	// DEVICE: 54321      BOARD2  192.168.1.101:60000
+}
+
+func (f *deviceMap) UnmarshalConf(tag string, values map[string]string) (interface{}, error) {
 	re := regexp.MustCompile(`^/(.*?)/$`)
 	match := re.FindStringSubmatch(tag)
 	if len(match) < 2 {
@@ -136,14 +136,14 @@ func (f *testMap) UnmarshalConf(tag string, values map[string]string) (interface
 		return f, err
 	}
 
-	var m testMap
+	var m deviceMap
 
 	if f != nil {
 		m = *f
 	}
 
 	if m == nil {
-		m = make(testMap, 0)
+		m = make(deviceMap, 0)
 	}
 
 	for key, value := range values {
@@ -151,7 +151,7 @@ func (f *testMap) UnmarshalConf(tag string, values map[string]string) (interface
 		if len(match) == 3 {
 			id, err := strconv.ParseUint(match[1], 10, 32)
 			if err != nil {
-				return f, fmt.Errorf("Invalid 'testMap' key %s: %v", key, err)
+				return f, fmt.Errorf("Invalid 'deviceMap' key %s: %v", key, err)
 			}
 
 			d, ok := m[uint32(id)]
