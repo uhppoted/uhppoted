@@ -27,7 +27,6 @@ var (
 func Unmarshal(b []byte, m interface{}) error {
 	v := reflect.ValueOf(m)
 	s := v.Elem()
-
 	if s.Kind() != reflect.Struct {
 		return fmt.Errorf("Cannot unmarshal %s: expected 'struct'", s.Kind())
 	}
@@ -35,6 +34,29 @@ func Unmarshal(b []byte, m interface{}) error {
 	values, err := parse(bytes.NewBuffer(b))
 	if err != nil {
 		return err
+	}
+
+	return unmarshal(s, "", values)
+}
+
+func parse(r io.Reader) (map[string]string, error) {
+	re := regexp.MustCompile(`^\s*(.*?)\s*=\s*(.*)\s*$`)
+	m := make(map[string]string)
+	s := bufio.NewScanner(r)
+
+	for s.Scan() {
+		match := re.FindStringSubmatch(s.Text())
+		if len(match) > 0 {
+			m[match[1]] = match[2]
+		}
+	}
+
+	return m, s.Err()
+}
+
+func unmarshal(s reflect.Value, prefix string, values map[string]string) error {
+	if s.Kind() != reflect.Struct {
+		return fmt.Errorf("Cannot unmarshal %s: expected 'struct'", s.Kind())
 	}
 
 	N := s.NumField()
@@ -47,7 +69,7 @@ func Unmarshal(b []byte, m interface{}) error {
 			continue
 		}
 
-		// Unmarshall value fields with UnmarshalConf{} interface
+		// Unmarshal value fields with UnmarshalConf{} interface
 		if u, ok := f.Addr().Interface().(Unmarshaler); ok {
 			p, err := u.UnmarshalConf(tag, values)
 			if err != nil {
@@ -58,7 +80,7 @@ func Unmarshal(b []byte, m interface{}) error {
 			continue
 		}
 
-		// Unmarshall pointer fields with UnmarshalConf{} interface
+		// Unmarshal pointer fields with UnmarshalConf{} interface
 		if u, ok := f.Interface().(Unmarshaler); ok {
 			p, err := u.UnmarshalConf(tag, values)
 			if err != nil {
@@ -66,6 +88,13 @@ func Unmarshal(b []byte, m interface{}) error {
 			}
 
 			f.Set(reflect.ValueOf(p))
+			continue
+		}
+
+		// Unmarshal embedded structs
+
+		if f.Kind() == reflect.Struct {
+			unmarshal(f, prefix+tag+".", values)
 			continue
 		}
 
@@ -93,7 +122,7 @@ func Unmarshal(b []byte, m interface{}) error {
 			}
 
 		case tUint:
-			if value, ok := values[tag]; ok {
+			if value, ok := values[prefix+tag]; ok {
 				i, err := strconv.ParseUint(value, 10, 0)
 				if err != nil {
 					return err
@@ -102,7 +131,7 @@ func Unmarshal(b []byte, m interface{}) error {
 			}
 
 		case tString:
-			if value, ok := values[tag]; ok {
+			if value, ok := values[prefix+tag]; ok {
 				f.SetString(value)
 			}
 
@@ -127,19 +156,4 @@ func Unmarshal(b []byte, m interface{}) error {
 	}
 
 	return nil
-}
-
-func parse(r io.Reader) (map[string]string, error) {
-	re := regexp.MustCompile(`^\s*(.*?)\s*=\s*(.*)\s*$`)
-	m := make(map[string]string)
-	s := bufio.NewScanner(r)
-
-	for s.Scan() {
-		match := re.FindStringSubmatch(s.Text())
-		if len(match) > 0 {
-			m[match[1]] = match[2]
-		}
-	}
-
-	return m, s.Err()
 }

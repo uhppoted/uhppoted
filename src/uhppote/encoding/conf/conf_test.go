@@ -13,6 +13,11 @@ type testType struct {
 	value string
 }
 
+type Embedded struct {
+	Name string `conf:"name"`
+	Id   uint   `conf:"id"`
+}
+
 var configuration = []byte(
 	`udp.address = 192.168.1.100:54321
 interface.value = qwerty
@@ -21,6 +26,8 @@ sys.enabled = true
 sys.integer = -13579
 sys.unsigned = 8081
 sys.string = asdfghjkl
+embedded.name = zxcvb
+embedded.id = 67890
 `)
 
 func TestUnmarshal(t *testing.T) {
@@ -32,6 +39,7 @@ func TestUnmarshal(t *testing.T) {
 		Integer    int          `conf:"sys.integer"`
 		Unsigned   uint         `conf:"sys.unsigned"`
 		String     string       `conf:"sys.string"`
+		Embedded   `conf:"embedded"`
 	}{}
 
 	err := Unmarshal(configuration, &config)
@@ -73,6 +81,14 @@ func TestUnmarshal(t *testing.T) {
 
 	if config.String != "asdfghjkl" {
 		t.Errorf("Expected 'string' value '%v', got: '%v'", "asdfghjkl", config.String)
+	}
+
+	if config.Name != "zxcvb" {
+		t.Errorf("Expected 'embedded.name' value '%v', got: '%v'", "zxcvb", config.Name)
+	}
+
+	if config.Id != 67890 {
+		t.Errorf("Expected 'embedded.id' value '%v', got: '%v'", 67890, config.Id)
 	}
 }
 
