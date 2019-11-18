@@ -20,6 +20,7 @@ var (
 	tBoolean = reflect.TypeOf(bool(false))
 	tInt     = reflect.TypeOf(int(0))
 	tUint    = reflect.TypeOf(uint(0))
+	tUint16  = reflect.TypeOf(uint16(0))
 	tString  = reflect.TypeOf(string(""))
 	pUDPAddr = reflect.TypeOf(&net.UDPAddr{})
 )
@@ -69,6 +70,8 @@ func unmarshal(s reflect.Value, prefix string, values map[string]string) error {
 			continue
 		}
 
+		tag = prefix + tag
+
 		// Unmarshal value fields with UnmarshalConf{} interface
 		if u, ok := f.Addr().Interface().(Unmarshaler); ok {
 			p, err := u.UnmarshalConf(tag, values)
@@ -94,7 +97,7 @@ func unmarshal(s reflect.Value, prefix string, values map[string]string) error {
 		// Unmarshal embedded structs
 
 		if f.Kind() == reflect.Struct {
-			unmarshal(f, prefix+tag+".", values)
+			unmarshal(f, tag+".", values)
 			continue
 		}
 
@@ -122,7 +125,7 @@ func unmarshal(s reflect.Value, prefix string, values map[string]string) error {
 			}
 
 		case tUint:
-			if value, ok := values[prefix+tag]; ok {
+			if value, ok := values[tag]; ok {
 				i, err := strconv.ParseUint(value, 10, 0)
 				if err != nil {
 					return err
@@ -130,8 +133,17 @@ func unmarshal(s reflect.Value, prefix string, values map[string]string) error {
 				f.SetUint(i)
 			}
 
+		case tUint16:
+			if value, ok := values[tag]; ok {
+				i, err := strconv.ParseUint(value, 10, 16)
+				if err != nil {
+					return err
+				}
+				f.SetUint(i)
+			}
+
 		case tString:
-			if value, ok := values[prefix+tag]; ok {
+			if value, ok := values[tag]; ok {
 				f.SetString(value)
 			}
 

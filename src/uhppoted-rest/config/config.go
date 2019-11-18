@@ -20,27 +20,27 @@ type Device struct {
 }
 
 type REST struct {
-	HttpEnabled        bool
-	HttpPort           uint16
-	HttpsEnabled       bool
-	HttpsPort          uint16
-	TLSKeyFile         string
-	TLSCertificateFile string
-	CACertificateFile  string
-	CORSEnabled        bool
+	HttpEnabled        bool   `conf:"http.enabled"`
+	HttpPort           uint16 `conf:"http.port"`
+	HttpsEnabled       bool   `conf:"https.enabled"`
+	HttpsPort          uint16 `conf:"https.port"`
+	TLSKeyFile         string `conf:"tls.key"`
+	TLSCertificateFile string `conf:"tls.certificate"`
+	CACertificateFile  string `conf:"tls.ca"`
+	CORSEnabled        bool   `conf:"CORS.enabled"`
 }
 
 type OpenApi struct {
-	Enabled   bool
-	Directory string
+	Enabled   bool   `conf:"enabled"`
+	Directory string `conf:"directory"`
 }
 
 type Config struct {
 	BindAddress      *net.UDPAddr `conf:"bind.address"`
 	BroadcastAddress *net.UDPAddr `conf:"broadcast.address"`
 	Devices          DeviceMap    `conf:"/^UT0311-L0x\\.([0-9]+)\\.(.*)/"`
-	REST             `conf:"/^rest\\.(.*)/"`
-	OpenApi          `conf:"/^openapi\\.(.*)/"`
+	REST             `conf:"rest"`
+	OpenApi          `conf:"openapi"`
 }
 
 func NewConfig() *Config {
@@ -190,113 +190,6 @@ func (f *DeviceMap) UnmarshalConf(tag string, values map[string]string) (interfa
 
 			case "door.4":
 				d.Door[3] = value
-			}
-		}
-	}
-
-	return f, nil
-}
-
-func (f *REST) UnmarshalConf(tag string, values map[string]string) (interface{}, error) {
-	re := regexp.MustCompile(`^/(.*?)/$`)
-	match := re.FindStringSubmatch(tag)
-	if len(match) < 2 {
-		return f, fmt.Errorf("Invalid 'conf' regular expression tag: %s", tag)
-	}
-
-	re, err := regexp.Compile(match[1])
-	if err != nil {
-		return f, err
-	}
-
-	for key, value := range values {
-		match := re.FindStringSubmatch(key)
-		if len(match) > 1 {
-			switch match[1] {
-			case "CORS.enabled":
-				if value == "true" {
-					f.CORSEnabled = true
-				} else if value == "false" {
-					f.CORSEnabled = false
-				} else {
-					return f, fmt.Errorf("Invalid rest.CORS.enabled value: %s:", value)
-				}
-
-			case "http.enabled":
-				if value == "true" {
-					f.HttpEnabled = true
-				} else if value == "false" {
-					f.HttpEnabled = false
-				} else {
-					return f, fmt.Errorf("Invalid rest.http.enabled value: %s:", value)
-				}
-
-			case "http.port":
-				i, err := strconv.ParseUint(value, 10, 16)
-				if err != nil {
-					return f, err
-				}
-				f.HttpPort = uint16(i)
-
-			case "https.enabled":
-				if value == "true" {
-					f.HttpsEnabled = true
-				} else if value == "false" {
-					f.HttpsEnabled = false
-				} else {
-					return f, fmt.Errorf("Invalid rest.https.enabled value: %s:", value)
-				}
-
-			case "https.port":
-				i, err := strconv.ParseUint(value, 10, 16)
-				if err != nil {
-					return f, err
-				}
-				f.HttpsPort = uint16(i)
-
-			case "tls.key":
-				f.TLSKeyFile = value
-
-			case "tls.certificate":
-				f.TLSCertificateFile = value
-
-			case "tls.ca":
-				f.CACertificateFile = value
-			}
-		}
-	}
-
-	return f, nil
-}
-
-func (f *OpenApi) UnmarshalConf(tag string, values map[string]string) (interface{}, error) {
-	re := regexp.MustCompile(`^/(.*?)/$`)
-	match := re.FindStringSubmatch(tag)
-	if len(match) < 2 {
-		return f, fmt.Errorf("Invalid 'conf' regular expression tag: %s", tag)
-	}
-
-	re, err := regexp.Compile(match[1])
-	if err != nil {
-		return f, err
-	}
-
-	for key, value := range values {
-		match := re.FindStringSubmatch(key)
-		if len(match) > 1 {
-			switch match[1] {
-			case "enabled":
-				if value == "true" {
-					f.Enabled = true
-				} else if value == "false" {
-					f.Enabled = false
-				} else {
-					return f, fmt.Errorf("Invalid rest.openapi.enabled value: %s:", value)
-				}
-
-			case "directory":
-				f.Directory = value
-
 			}
 		}
 	}
