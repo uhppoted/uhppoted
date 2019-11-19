@@ -11,6 +11,10 @@ var configuration = []byte(`# UDP
 bind.address = 192.168.1.100:54321
 broadcast.address = 192.168.1.255:60001
 
+# MQTT
+mqtt.broker = 127.0.0.63:1887
+mqtt.topic = twystd-qwerty
+
 # DEVICES
 UT0311-L0x.305419896.address = 192.168.1.100:60000
 UT0311-L0x.305419896.door.1 = Front Door
@@ -47,6 +51,20 @@ func TestUnmarshal(t *testing.T) {
 
 	if !reflect.DeepEqual(config.BroadcastAddress, &address) {
 		t.Errorf("Expected 'broadcast.address' %s, got:%s", &address, config.BroadcastAddress)
+	}
+
+	address = net.UDPAddr{
+		IP:   []byte{127, 0, 0, 63},
+		Port: 1887,
+		Zone: "",
+	}
+
+	if !reflect.DeepEqual(config.Broker, &address) {
+		t.Errorf("Expected 'mqtt.broker' %s, got:%v", &address, config.Broker)
+	}
+
+	if config.Topic != "twystd-qwerty" {
+		t.Errorf("Expected 'mqtt::topic' %v, got:%v", "twystd-qwerty", config.Topic)
 	}
 
 	if d, _ := config.Devices[305419896]; d == nil {

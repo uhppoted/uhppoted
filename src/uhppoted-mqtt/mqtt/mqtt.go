@@ -25,7 +25,7 @@ const (
 )
 
 type MQTTD struct {
-	Server     string
+	Broker     string
 	Topic      string
 	connection MQTT.Client
 }
@@ -44,17 +44,17 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	}
 
 	if err := m.listenAndServe(&d); err != nil {
-		l.Printf("ERROR: Error connecting to '%s': %v", m.Server, err)
+		l.Printf("ERROR: Error connecting to '%s': %v", m.Broker, err)
 		m.Close(l)
 		return
 	}
 
-	log.Printf("... connected to %s\n", m.Server)
+	log.Printf("... connected to %s\n", m.Broker)
 }
 
 func (m *MQTTD) Close(l *log.Logger) {
 	if m.connection != nil {
-		log.Printf("... closing connection to %s", m.Server)
+		log.Printf("... closing connection to %s", m.Broker)
 		token := m.connection.Unsubscribe(m.Topic + "/#")
 		if token.Wait() && token.Error() != nil {
 			l.Printf("WARN: Error unsubscribing from topic' %s': %v", "twystd-uhppote", token.Error())
@@ -76,7 +76,7 @@ func (m *MQTTD) listenAndServe(d *dispatcher) error {
 		d.dispatch(client, msg)
 	}
 
-	options := MQTT.NewClientOptions().AddBroker(m.Server)
+	options := MQTT.NewClientOptions().AddBroker(m.Broker)
 	options.SetClientID("twystd-uhppoted-mqttd")
 	options.SetDefaultPublishHandler(f)
 
