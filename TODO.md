@@ -4,13 +4,15 @@
 
 ### uhppoted-mqtt
 
-- [ ] subscribe
-- [ ] ping
+- [x] subscribe
+- [x] error handling
+- [ ] reply
 - [ ] listen/events
 
+- [x] ping
 
 - [x] conf file decoder with reflection
-- [ ] conf file decoder: embedded structs
+- [x] conf file decoder: embedded structs
 - [ ] conf file decoder: JSON
 - [ ] Rework UHPPOTE response messages to use factory
 - [ ] Rework plist encoder

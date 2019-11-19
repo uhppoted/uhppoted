@@ -1,24 +1,49 @@
 package mqtt
 
 import (
-	"fmt"
+	"context"
+	"encoding/json"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"log"
 	"uhppote"
 )
 
+const (
+	StatusOK              = 200
+	StatusBadRequest      = 400
+	StatusUnauthorized    = 401
+	StatusForbidden       = 403
+	StatusNotFound        = 404
+	StatusRequestTimeout  = 408
+	StatusTooManyRequests = 429
+
+	StatusInternalServerError = 500
+	StatusNotImplemented      = 501
+	StatusBadGateway          = 502
+	StatusServiceUnavailable  = 503
+	StatusGatewayTimeout      = 504
+)
+
 type MQTTD struct {
 	Server     string
+	Topic      string
 	connection MQTT.Client
 }
 
-var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
-	fmt.Printf("TOPIC: %s\n", msg.Topic())
-	fmt.Printf("MSG: %s\n", msg.Payload())
+type dispatcher struct {
+	uhppote *uhppote.UHPPOTE
+	log     *log.Logger
+	topic   string
 }
 
 func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
-	if err := m.listenAndServe(); err != nil {
+	d := dispatcher{
+		uhppote: u,
+		log:     l,
+		topic:   m.Topic,
+	}
+
+	if err := m.listenAndServe(&d); err != nil {
 		l.Printf("ERROR: Error connecting to '%s': %v", m.Server, err)
 		m.Close(l)
 		return
@@ -30,20 +55,26 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 func (m *MQTTD) Close(l *log.Logger) {
 	if m.connection != nil {
 		log.Printf("... closing connection to %s", m.Server)
-		token := m.connection.Unsubscribe("twystd-uhppote")
+		token := m.connection.Unsubscribe(m.Topic + "/#")
 		if token.Wait() && token.Error() != nil {
 			l.Printf("WARN: Error unsubscribing from topic' %s': %v", "twystd-uhppote", token.Error())
 		}
 
 		m.connection.Disconnect(250)
 	}
+
+	m.connection = nil
 }
 
-func (m *MQTTD) listenAndServe() error {
+func (m *MQTTD) listenAndServe(d *dispatcher) error {
 	//	MQTT.DEBUG = log.New(os.Stdout, "", 0)
 	//	MQTT.WARN = log.New(os.Stdout, "", 0)
 	//	MQTT.ERROR = log.New(os.Stdout, "", 0)
 	//	MQTT.CRITICAL = log.New(os.Stdout, "", 0)
+
+	var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
+		d.dispatch(client, msg)
+	}
 
 	options := MQTT.NewClientOptions().AddBroker(m.Server)
 	options.SetClientID("twystd-uhppoted-mqttd")
@@ -55,10 +86,88 @@ func (m *MQTTD) listenAndServe() error {
 		return token.Error()
 	}
 
-	token = m.connection.Subscribe("twystd-uhppote", 0, nil)
+	token = m.connection.Subscribe(m.Topic+"/gateway/#", 0, nil)
 	if token.Wait() && token.Error() != nil {
 		return token.Error()
 	}
 
 	return nil
+}
+
+func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
+	ctx := context.WithValue(context.Background(), "uhppote", d.uhppote)
+	ctx = context.WithValue(ctx, "client", client)
+	ctx = context.WithValue(ctx, "log", d.log)
+	ctx = context.WithValue(ctx, "topic", d.topic)
+
+	if msg.Topic() == d.topic+"/gateway/ping" {
+		getDevices(ctx, msg)
+	}
+}
+
+func reply(ctx context.Context, response interface{}) {
+	b, err := json.Marshal(response)
+	if err != nil {
+		//http.Error(w, "Error generating response", http.StatusInternalServerError)
+		return
+	}
+
+	client, ok := ctx.Value("client").(MQTT.Client)
+	if !ok {
+		panic("MQTT client not included in context")
+	}
+
+	topic, ok := ctx.Value("topic").(string)
+	if !ok {
+		panic("MQTT root topic not included in context")
+	}
+
+	token := client.Publish(topic+"/devices/ping", 0, false, string(b))
+	token.Wait()
+}
+
+func oops(ctx context.Context, operation string, message string, errorCode int) {
+	response := struct {
+		Operation string `json:"operation"`
+		Error     struct {
+			Message   string `json:"message"`
+			ErrorCode int    `json:"error-code"`
+		} `json:"error"`
+	}{
+		Operation: operation,
+		Error: struct {
+			Message   string `json:"message"`
+			ErrorCode int    `json:"error-code"`
+		}{
+			Message:   message,
+			ErrorCode: errorCode,
+		},
+	}
+
+	b, err := json.Marshal(response)
+	if err != nil {
+		ctx.Value("log").(*log.Logger).Printf("ERROR: Error generating JSON response (%v)", err)
+		return
+	}
+
+	client, ok := ctx.Value("client").(MQTT.Client)
+	if !ok {
+		panic("MQTT client not included in context")
+	}
+
+	topic, ok := ctx.Value("topic").(string)
+	if !ok {
+		panic("MQTT root topic not included in context")
+	}
+
+	token := client.Publish(topic+"/gateway/errors", 0, false, string(b))
+	token.Wait()
+}
+
+func debug(ctx context.Context, serialNumber uint32, operation string, msg MQTT.Message) {
+	ctx.Value("log").(*log.Logger).Printf("DEBUG %-12d %-20s %#v\n", serialNumber, operation, msg)
+}
+
+func warn(ctx context.Context, serialNumber uint32, operation string, err error) {
+	ctx.Value("log").(*log.Logger).Printf("WARN  %-12d %-20s %v\n", serialNumber, operation, err)
 }

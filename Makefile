@@ -36,9 +36,9 @@ release: format
 
 build: format
 	go install uhppote-cli
-	go install uhppote-simulator
 	go install uhppoted-rest
-	go install uhppoted-mqtt
+	go install uhppoted/uhppoted-mqtt
+	go install uhppote-simulator
 
 test: build
 	go clean -testcache
@@ -200,8 +200,11 @@ uhppoted-mqtt-help: build
 uhppoted-mqtt-version: build
 	./bin/uhppoted-mqtt version
 
+uhppoted-mqtt-ping:
+	mqtt publish --topic twystd-uhppoted/gateway/ping --message '{}'
+
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
 
 hivemq:
-	docker run --detach --publish 8080:8080 --publish 1883:1883 --rm hivemq/hivemq4
+	docker run --publish 8080:8080 --publish 1883:1883 --rm hivemq/hivemq4
