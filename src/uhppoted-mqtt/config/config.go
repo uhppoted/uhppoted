@@ -18,19 +18,35 @@ type Device struct {
 	Door    []string
 }
 
+type MQTT struct {
+	Broker *net.UDPAddr `conf:"broker"`
+	Topic  string       `conf:"topic"`
+}
+
 type Config struct {
 	BindAddress      *net.UDPAddr `conf:"bind.address"`
 	BroadcastAddress *net.UDPAddr `conf:"broadcast.address"`
 	Devices          DeviceMap    `conf:"/^UT0311-L0x\\.([0-9]+)\\.(.*)/"`
+	MQTT             `conf:"mqtt"`
 }
 
 func NewConfig() *Config {
 	bind, broadcast := DefaultIpAddresses()
 
+	broker := net.UDPAddr{
+		IP:   []byte{127, 0, 0, 1},
+		Port: 1883,
+		Zone: "",
+	}
+
 	c := Config{
 		BindAddress:      &bind,
 		BroadcastAddress: &broadcast,
-		Devices:          make(DeviceMap, 0),
+		MQTT: MQTT{
+			Broker: &broker,
+			Topic:  "twystd-uhppoted",
+		},
+		Devices: make(DeviceMap, 0),
 	}
 
 	return &c

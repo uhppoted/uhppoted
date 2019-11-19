@@ -6,10 +6,17 @@
 
 - [x] subscribe
 - [x] error handling
-- [ ] reply
+- [x] 'reply'
 - [ ] listen/events
+- [ ] TLS connection
+- [ ] Encrypt & sign
+- [ ] MQTT v5.0
+- [ ] health check
+- [ ] watchdog
 
-- [x] ping
+- [x] ping/all
+- [ ] ping/device
+- [ ] commonalise functionality with uhppoted-rest
 
 - [x] conf file decoder with reflection
 - [x] conf file decoder: embedded structs
