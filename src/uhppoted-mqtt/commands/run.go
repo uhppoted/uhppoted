@@ -162,6 +162,7 @@ func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Sig
 
 	mqttd := mqtt.MQTTD{
 		Server: "tcp://127.0.0.1:1883",
+		Topic:  "twystd-uhppoted",
 	}
 
 	go func() {
