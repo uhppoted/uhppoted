@@ -1,11 +1,10 @@
 CLI = ./bin/uhppote-cli
 SIMULATOR = ./bin/uhppote-simulator
-DEBUG = --debug
-LOCAL = 192.168.1.100:51234
-CARD = 6154410
-SERIALNO = 423187757
-DOOR = 3
-VERSION = 0.03.0
+DEBUG ?= --debug
+LOCAL ?= 192.168.1.100:51234
+CARD ?= 6154410
+SERIALNO ?= 423187757
+DOOR ?= 3
 DIST ?= development
 
 all: test      \
@@ -180,12 +179,6 @@ uhppoted-rest-windows: build
 	mkdir -p ./dist/development/windows
 	env GOOS=windows GOARCH=amd64 go build -o dist/development/windows/uhppoted-rest.exe uhppoted-rest
 
-uhppoted-rest-docker: build
-	env GOOS=linux GOARCH=amd64 go build -o docker/linux/uhppote-simulator uhppote-simulator
-	env GOOS=linux GOARCH=amd64 go build -o docker/linux/uhppoted-rest     uhppoted-rest
-	docker build -f ./docker/Dockerfile.uhppoted -t uhppoted . 
-	docker run --detach --publish 8080:8080 --rm uhppoted
-
 uhppoted-mqtt: build
 	./bin/uhppoted-mqtt --console
 
@@ -198,11 +191,28 @@ uhppoted-mqtt-help: build
 uhppoted-mqtt-version: build
 	./bin/uhppoted-mqtt version
 
+uhppoted-mqtt-listen:
+	mqtt subscribe --topic 'twystd-uhppoted/#'
+
 uhppoted-mqtt-ping:
-	mqtt publish --topic twystd-uhppoted/gateway/ping --message '{}'
+	mqtt publish --topic 'twystd-uhppoted/gateway/ping' --message '{}'
 
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
 
 hivemq:
-	docker run --publish 8080:8080 --publish 1883:1883 --rm hivemq/hivemq4
+	docker run -t -i --publish 8080:8080 --publish 1883:1883 --rm hivemq/hivemq4
+
+docker: build
+	env GOOS=linux GOARCH=amd64 go build -o docker/simulator/uhppote-simulator     uhppote-simulator
+	env GOOS=linux GOARCH=amd64 go build -o docker/uhppoted-rest/uhppote-simulator uhppote-simulator
+	env GOOS=linux GOARCH=amd64 go build -o docker/uhppoted-rest/uhppoted-rest     uhppoted-rest
+	docker build -f ./docker/simulator/Dockerfile     -t simulator . 
+	docker build -f ./docker/uhppoted-rest/Dockerfile -t uhppoted . 
+
+docker-simulator:
+	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --rm simulator
+
+docker-rest:
+	docker run --detach --publish 8080:8080 --rm uhppoted
+
