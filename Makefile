@@ -202,7 +202,7 @@ swagger:
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
 
 hivemq:
-	docker run -t -i --publish 8080:8080 --publish 1883:1883 --rm hivemq/hivemq4
+	docker run --detach --tty --interactive --publish 8080:8080 --publish 1883:1883 --rm hivemq/hivemq4
 
 docker: build
 	env GOOS=linux GOARCH=amd64 go build -o docker/simulator/uhppote-simulator     uhppote-simulator
