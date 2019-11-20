@@ -8,19 +8,16 @@ import (
 
 const (
 	//	StatusOK              = http.StatusOK
-	//	StatusBadRequest      = http.StatusBadRequest
+	StatusBadRequest = http.StatusBadRequest
 	//	StatusUnauthorized    = http.StatusUnauthorized
 	//	StatusForbidden       = http.StatusForbidden
-	//	StatusNotFound        = http.StatusNotFound
+	StatusNotFound = http.StatusNotFound
 	//	StatusRequestTimeout  = http.StatusRequestTimeout
 	//	StatusTooManyRequests = http.StatusTooManyRequests
 
 	StatusInternalServerError = http.StatusInternalServerError
 
-//	StatusNotImplemented      = http.StatusNotImplemented
-//	StatusBadGateway          = http.StatusBadGateway
-//	StatusServiceUnavailable  = http.StatusServiceUnavailable
-//	StatusGatewayTimeout      = http.StatusGatewayTimeout
+	//	StatusNotImplemented  = http.StatusNotImplemented
 )
 
 type Service interface {
@@ -29,6 +26,7 @@ type Service interface {
 }
 
 type Request interface {
+	DeviceId() (uint32, error)
 }
 
 type UHPPOTED struct {

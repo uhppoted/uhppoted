@@ -18,7 +18,7 @@
 
 - [ ] command protocol (embed auth, reply topic and request id)
 - [x] ping/all
-- [ ] ping/device
+- [x] ping/device
 - [ ] commonalise functionality with uhppoted-rest
 
 - [x] conf file decoder with reflection
@@ -30,7 +30,7 @@
 - [ ] Convert to 1.13 error handling
 - [ ] Update to use modules
 - [ ] Rework (?) to use [method expressions](https://talks.golang.org/2012/10things.slide#9)
-- [x] simulator Docker
+- [x] docker: simulator
 
 ## TODO
 

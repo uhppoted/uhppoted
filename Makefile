@@ -196,6 +196,7 @@ uhppoted-mqtt-listen:
 
 uhppoted-mqtt-ping:
 	mqtt publish --topic 'twystd-uhppoted/gateway/ping' --message '{}'
+	mqtt publish --topic 'twystd-uhppoted/gateway/ping' --message '{ "device": { "id": 305419896 } }'
 
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
