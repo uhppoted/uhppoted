@@ -3,6 +3,7 @@ package mqtt
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"log"
 	"uhppote"
@@ -13,6 +14,13 @@ type MQTTD struct {
 	Broker     string
 	Topic      string
 	connection MQTT.Client
+}
+
+type Request struct {
+	Message MQTT.Message
+	Device  struct {
+		ID uint32 `json:"id"`
+	} `json:"device"`
 }
 
 type dispatcher struct {
@@ -88,16 +96,26 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 	ctx = context.WithValue(ctx, "client", client)
 	ctx = context.WithValue(ctx, "log", d.log)
 	ctx = context.WithValue(ctx, "topic", d.topic)
+	request := Request{Message: msg}
+
+	if err := json.Unmarshal(msg.Payload(), &request); err != nil {
+		oops(ctx, "get-device", "Invalid message format", uhppoted.StatusBadRequest)
+		return
+	}
 
 	if msg.Topic() == d.topic+"/gateway/ping" {
-		d.uhppoted.GetDevices(ctx, msg)
+		if request.Device.ID != 0 {
+			d.uhppoted.GetDevice(ctx, &request)
+		} else {
+			d.uhppoted.GetDevices(ctx, &request)
+		}
 	}
 }
 
 func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 	b, err := json.Marshal(response)
 	if err != nil {
-		m.Oops(ctx, "encoding/json", "Error generating response", uhppoted.StatusInternalServerError)
+		oops(ctx, "encoding/json", "Error generating response", uhppoted.StatusInternalServerError)
 		return
 	}
 
@@ -116,6 +134,10 @@ func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 }
 
 func (m *MQTTD) Oops(ctx context.Context, operation string, message string, errorCode int) {
+	oops(ctx, operation, message, errorCode)
+}
+
+func oops(ctx context.Context, operation string, message string, errorCode int) {
 	response := struct {
 		Operation string `json:"operation"`
 		Error     struct {
@@ -151,4 +173,12 @@ func (m *MQTTD) Oops(ctx context.Context, operation string, message string, erro
 
 	token := client.Publish(topic+"/gateway/errors", 0, false, string(b))
 	token.Wait()
+}
+
+func (rq *Request) DeviceId() (uint32, error) {
+	if rq.Device.ID == 0 {
+		return 0, errors.New("Missing device ID")
+	}
+
+	return rq.Device.ID, nil
 }
