@@ -1,8 +1,7 @@
-package mqtt
+package uhppoted
 
 import (
 	"context"
-	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"uhppote"
 	"uhppote/types"
 )
@@ -12,13 +11,13 @@ type device struct {
 	DeviceType   string             `json:"device-type"`
 }
 
-func getDevices(ctx context.Context, msg MQTT.Message) {
-	debug(ctx, 0, "get-devices", msg)
+func (u *UHPPOTED) GetDevices(ctx context.Context, request Request) {
+	u.debug(ctx, 0, "get-devices", request)
 
 	devices, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevices()
 	if err != nil {
-		warn(ctx, 0, "get-devices", err)
-		oops(ctx, "get-devices", "Error retrieving device list", StatusInternalServerError)
+		u.warn(ctx, 0, "get-devices", err)
+		u.oops(ctx, "get-devices", "Error retrieving device list", StatusInternalServerError)
 		return
 	}
 
@@ -36,7 +35,7 @@ func getDevices(ctx context.Context, msg MQTT.Message) {
 		Devices: list,
 	}
 
-	reply(ctx, response)
+	u.reply(ctx, response)
 }
 
 //func getDevice(ctx context.Context, w http.ResponseWriter, r *http.Request) {

@@ -7,13 +7,16 @@
 - [x] subscribe
 - [x] error handling
 - [x] 'reply'
+- [ ] wrap request handling in go routine
 - [ ] listen/events
 - [ ] TLS connection
 - [ ] Encrypt & sign
+- [ ] HOTP
 - [ ] MQTT v5.0
 - [ ] health check
 - [ ] watchdog
 
+- [ ] command protocol (embed auth, reply topic and request id)
 - [x] ping/all
 - [ ] ping/device
 - [ ] commonalise functionality with uhppoted-rest
@@ -21,10 +24,13 @@
 - [x] conf file decoder with reflection
 - [x] conf file decoder: embedded structs
 - [ ] conf file decoder: JSON
+- [ ] conf file encoder
 - [ ] Rework UHPPOTE response messages to use factory
 - [ ] Rework plist encoder
 - [ ] Convert to 1.13 error handling
 - [ ] Update to use modules
+- [ ] Rework (?) to use [method expressions](https://talks.golang.org/2012/10things.slide#9)
+- [x] simulator Docker
 
 ## TODO
 

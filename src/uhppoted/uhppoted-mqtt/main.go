@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"uhppoted"
 	"uhppoted-mqtt/commands"
+	"uhppoted/command"
 )
 
 var cli = []uhppoted.Command{

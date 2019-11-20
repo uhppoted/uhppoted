@@ -6,22 +6,7 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"log"
 	"uhppote"
-)
-
-const (
-	StatusOK              = 200
-	StatusBadRequest      = 400
-	StatusUnauthorized    = 401
-	StatusForbidden       = 403
-	StatusNotFound        = 404
-	StatusRequestTimeout  = 408
-	StatusTooManyRequests = 429
-
-	StatusInternalServerError = 500
-	StatusNotImplemented      = 501
-	StatusBadGateway          = 502
-	StatusServiceUnavailable  = 503
-	StatusGatewayTimeout      = 504
+	"uhppoted"
 )
 
 type MQTTD struct {
@@ -31,13 +16,17 @@ type MQTTD struct {
 }
 
 type dispatcher struct {
-	uhppote *uhppote.UHPPOTE
-	log     *log.Logger
-	topic   string
+	uhppoted *uhppoted.UHPPOTED
+	uhppote  *uhppote.UHPPOTE
+	log      *log.Logger
+	topic    string
 }
 
 func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	d := dispatcher{
+		uhppoted: &uhppoted.UHPPOTED{
+			Service: m,
+		},
 		uhppote: u,
 		log:     l,
 		topic:   m.Topic,
@@ -101,14 +90,14 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 	ctx = context.WithValue(ctx, "topic", d.topic)
 
 	if msg.Topic() == d.topic+"/gateway/ping" {
-		getDevices(ctx, msg)
+		d.uhppoted.GetDevices(ctx, msg)
 	}
 }
 
-func reply(ctx context.Context, response interface{}) {
+func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 	b, err := json.Marshal(response)
 	if err != nil {
-		//http.Error(w, "Error generating response", http.StatusInternalServerError)
+		m.Oops(ctx, "encoding/json", "Error generating response", uhppoted.StatusInternalServerError)
 		return
 	}
 
@@ -126,7 +115,7 @@ func reply(ctx context.Context, response interface{}) {
 	token.Wait()
 }
 
-func oops(ctx context.Context, operation string, message string, errorCode int) {
+func (m *MQTTD) Oops(ctx context.Context, operation string, message string, errorCode int) {
 	response := struct {
 		Operation string `json:"operation"`
 		Error     struct {
@@ -162,12 +151,4 @@ func oops(ctx context.Context, operation string, message string, errorCode int) 
 
 	token := client.Publish(topic+"/gateway/errors", 0, false, string(b))
 	token.Wait()
-}
-
-func debug(ctx context.Context, serialNumber uint32, operation string, msg MQTT.Message) {
-	ctx.Value("log").(*log.Logger).Printf("DEBUG %-12d %-20s %#v\n", serialNumber, operation, msg)
-}
-
-func warn(ctx context.Context, serialNumber uint32, operation string, err error) {
-	ctx.Value("log").(*log.Logger).Printf("WARN  %-12d %-20s %v\n", serialNumber, operation, err)
 }
