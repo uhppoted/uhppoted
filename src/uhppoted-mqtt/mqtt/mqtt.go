@@ -103,12 +103,15 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		return
 	}
 
-	if msg.Topic() == d.topic+"/gateway/ping" {
-		if request.Device.ID != 0 {
-			d.uhppoted.GetDevice(ctx, &request)
-		} else {
-			d.uhppoted.GetDevices(ctx, &request)
-		}
+	switch msg.Topic() {
+	case d.topic + "/gateway/ping":
+		d.uhppoted.GetDevices(ctx, &request)
+
+	case d.topic + "/gateway/device/ping":
+		d.uhppoted.GetDevice(ctx, &request)
+
+	case d.topic + "/gateway/device/status":
+		d.uhppoted.GetStatus(ctx, &request)
 	}
 }
 
