@@ -17,8 +17,11 @@
 - [ ] watchdog
 
 - [ ] command protocol (embed auth, reply topic and request id)
-- [x] ping/all
-- [x] ping/device
+- [x] ping
+- [x] device/ping
+- [x] device/status
+
+- [ ] uhppoted-rest: PUT card
 - [ ] commonalise functionality with uhppoted-rest
 
 - [x] conf file decoder with reflection
@@ -29,7 +32,7 @@
 - [ ] Rework plist encoder
 - [ ] Convert to 1.13 error handling
 - [ ] Update to use modules
-- [ ] Rework (?) to use [method expressions](https://talks.golang.org/2012/10things.slide#9)
+- [ ] Rework uhppoted-xxx Run, etc to use [method expressions](https://talks.golang.org/2012/10things.slide#9)
 - [x] docker: simulator
 
 ## TODO

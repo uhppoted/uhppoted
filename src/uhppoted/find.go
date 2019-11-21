@@ -46,7 +46,7 @@ func (u *UHPPOTED) GetDevice(ctx context.Context, rq Request) {
 	deviceId, err := rq.DeviceId()
 	if err != nil {
 		u.warn(ctx, deviceId, "get-device", err)
-		u.oops(ctx, "get-device", "Error retrieving device list", StatusBadRequest)
+		u.oops(ctx, "get-device", "Error retrieving device list (invalid device ID)", StatusBadRequest)
 		return
 	}
 
