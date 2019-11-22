@@ -4,10 +4,10 @@ import (
 	"fmt"
 )
 
-type GetDoorControlStateCommand struct {
+type GetDoorControlCommand struct {
 }
 
-func (c *GetDoorControlStateCommand) Execute(ctx Context) error {
+func (c *GetDoorControlCommand) Execute(ctx Context) error {
 	lookup := map[uint8]string{
 		1: "normally open",
 		2: "normally closed",
@@ -34,28 +34,28 @@ func (c *GetDoorControlStateCommand) Execute(ctx Context) error {
 	return nil
 }
 
-func (c *GetDoorControlStateCommand) CLI() string {
-	return "get-door-control-state"
+func (c *GetDoorControlCommand) CLI() string {
+	return "get-door-control"
 }
 
-func (c *GetDoorControlStateCommand) Description() string {
+func (c *GetDoorControlCommand) Description() string {
 	return "Gets the control state (normally open, normally closed or controlled) for a door"
 }
 
-func (c *GetDoorControlStateCommand) Usage() string {
+func (c *GetDoorControlCommand) Usage() string {
 	return "<serial number> <door>"
 }
 
-func (c *GetDoorControlStateCommand) Help() {
-	fmt.Println("Usage: uhppote-cli [options] get-door-control-state <serial number> <door>")
+func (c *GetDoorControlCommand) Help() {
+	fmt.Println("Usage: uhppote-cli [options] get-door-control <serial number> <door>")
 	fmt.Println()
-	fmt.Println(" Retrieves the door open delay (in seconds)")
+	fmt.Println(" Retrieves the door control state ('normally open', 'normally closed' or 'controlled')")
 	fmt.Println()
 	fmt.Println("  serial-number  (required) controller serial number")
 	fmt.Println("  door           (required) door (1,2,3 or 4")
 	fmt.Println()
 	fmt.Println("  Examples:")
 	fmt.Println()
-	fmt.Println("    uhppote-cli get-door-control-state 12345678 3")
+	fmt.Println("    uhppote-cli get-door-control 12345678 3")
 	fmt.Println()
 }

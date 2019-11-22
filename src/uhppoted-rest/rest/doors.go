@@ -74,7 +74,7 @@ func setDoorDelay(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	reply(ctx, w, response)
 }
 
-func getDoorControlState(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+func getDoorControl(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	lookup := map[uint8]string{
 		1: "normally open",
 		2: "normally closed",
@@ -86,13 +86,13 @@ func getDoorControlState(ctx context.Context, w http.ResponseWriter, r *http.Req
 
 	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(deviceId, door)
 	if err != nil {
-		warn(ctx, deviceId, "get-door-control-state", err)
-		http.Error(w, "Error retrieving door control state", http.StatusInternalServerError)
+		warn(ctx, deviceId, "get-door-control", err)
+		http.Error(w, "Error retrieving door control", http.StatusInternalServerError)
 		return
 	}
 
 	response := struct {
-		ControlState string `json:"control-state"`
+		ControlState string `json:"control"`
 	}{
 		ControlState: lookup[result.ControlState],
 	}
@@ -100,7 +100,7 @@ func getDoorControlState(ctx context.Context, w http.ResponseWriter, r *http.Req
 	reply(ctx, w, response)
 }
 
-func setDoorControlState(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+func setDoorControl(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	states := map[string]uint8{
 		"normally open":   1,
 		"normally closed": 2,
@@ -118,42 +118,42 @@ func setDoorControlState(ctx context.Context, w http.ResponseWriter, r *http.Req
 
 	blob, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		warn(ctx, deviceId, "set-door-control-state", err)
+		warn(ctx, deviceId, "set-door-control", err)
 		http.Error(w, "Error reading request", http.StatusInternalServerError)
 		return
 	}
 
 	body := struct {
-		ControlState string `json:"control-state"`
+		ControlState string `json:"control"`
 	}{}
 
 	err = json.Unmarshal(blob, &body)
 	if err != nil {
-		warn(ctx, deviceId, "set-door-control-state", err)
+		warn(ctx, deviceId, "set-door-control", err)
 		http.Error(w, "Invalid request format", http.StatusBadRequest)
 		return
 	} else if _, ok := states[body.ControlState]; !ok {
-		warn(ctx, deviceId, "set-door-control-state", fmt.Errorf("Invalid request control state value: '%s'", body.ControlState))
+		warn(ctx, deviceId, "set-door-control", fmt.Errorf("Invalid request control value: '%s'", body.ControlState))
 		http.Error(w, fmt.Sprintf("Invalid request value: '%s'", body.ControlState), http.StatusBadRequest)
 		return
 	}
 
 	state, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(deviceId, door)
 	if err != nil {
-		warn(ctx, deviceId, "set-door-control-state", err)
-		http.Error(w, "Error setting door control-state", http.StatusInternalServerError)
+		warn(ctx, deviceId, "set-door-control", err)
+		http.Error(w, "Error setting door control", http.StatusInternalServerError)
 		return
 	}
 
 	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).SetDoorControlState(deviceId, door, states[body.ControlState], state.Delay)
 	if err != nil {
-		warn(ctx, deviceId, "set-door-control-state", err)
-		http.Error(w, "Error setting door control-state", http.StatusInternalServerError)
+		warn(ctx, deviceId, "set-door-control", err)
+		http.Error(w, "Error setting door control", http.StatusInternalServerError)
 		return
 	}
 
 	response := struct {
-		ControlState string `json:"control-state"`
+		ControlState string `json:"control"`
 	}{
 		ControlState: lookup[result.ControlState],
 	}

@@ -8,7 +8,7 @@ import (
 type Delay time.Duration
 
 type Door struct {
-	ControlState uint8      `json:"control-state"`
+	ControlState uint8      `json:"control"`
 	Delay        Delay      `json:"delay"`
 	open         bool       `json:"-"`
 	openUntil    *time.Time `json:"-"`

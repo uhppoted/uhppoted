@@ -4,10 +4,10 @@ import (
 	"fmt"
 )
 
-type SetDoorControlStateCommand struct {
+type SetDoorControlCommand struct {
 }
 
-func (c *SetDoorControlStateCommand) Execute(ctx Context) error {
+func (c *SetDoorControlCommand) Execute(ctx Context) error {
 	states := map[string]uint8{
 		"normally open":   1,
 		"normally closed": 2,
@@ -30,12 +30,12 @@ func (c *SetDoorControlStateCommand) Execute(ctx Context) error {
 		return err
 	}
 
-	control, err := getString(3, "Missing control state", "Invalid control state: %v")
+	control, err := getString(3, "Missing control value", "Invalid control value: %v")
 	if err != nil {
 		return err
 	}
 	if _, ok := states[control]; !ok {
-		return fmt.Errorf("Invalid door control state: %s (expected 'normally open', 'normally closed' or 'controlled'", control)
+		return fmt.Errorf("Invalid door control value: %s (expected 'normally open', 'normally closed' or 'controlled'", control)
 	}
 
 	state, err := ctx.uhppote.GetDoorControlState(serialNumber, door)
@@ -53,20 +53,20 @@ func (c *SetDoorControlStateCommand) Execute(ctx Context) error {
 	return nil
 }
 
-func (c *SetDoorControlStateCommand) CLI() string {
-	return "set-door-control-state"
+func (c *SetDoorControlCommand) CLI() string {
+	return "set-door-control"
 }
 
-func (c *SetDoorControlStateCommand) Description() string {
+func (c *SetDoorControlCommand) Description() string {
 	return "Sets the control state (normally open, normally close or controlled) for a door"
 }
 
-func (c *SetDoorControlStateCommand) Usage() string {
+func (c *SetDoorControlCommand) Usage() string {
 	return "<serial number> <door> <state>"
 }
 
-func (c *SetDoorControlStateCommand) Help() {
-	fmt.Println("Usage: uhppote-cli [options] set-door-control-state <serial number> <door> <state>")
+func (c *SetDoorControlCommand) Help() {
+	fmt.Println("Usage: uhppote-cli [options] set-door-control <serial number> <door> <state>")
 	fmt.Println()
 	fmt.Println(" Sets the door control state")
 	fmt.Println()
@@ -76,6 +76,6 @@ func (c *SetDoorControlStateCommand) Help() {
 	fmt.Println()
 	fmt.Println("  Examples:")
 	fmt.Println()
-	fmt.Println("    uhppote-cli set-door-control-state 12345678 3 'normally open'")
+	fmt.Println("    uhppote-cli set-door-control 12345678 3 'normally open'")
 	fmt.Println()
 }

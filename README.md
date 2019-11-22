@@ -71,8 +71,8 @@ Supported commands:
 - set-time
 - get-door-delay
 - set-door-delay
-- get-door-control-state
-- set-door-control-state
+- get-door-control
+- set-door-control
 - get-listener
 - set-listener
 - get-cards
