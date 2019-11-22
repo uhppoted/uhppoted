@@ -5,14 +5,14 @@ import (
 	"uhppote/messages"
 )
 
-func (s *UT0311L04) getDoorDelay(addr *net.UDPAddr, request *messages.GetDoorControlStateRequest) {
+func (s *UT0311L04) getDoorControlState(addr *net.UDPAddr, request *messages.GetDoorControlStateRequest) {
 	if request.SerialNumber == s.SerialNumber {
 
 		if !(request.Door < 1 || request.Door > 4) {
 			response := messages.GetDoorControlStateResponse{
 				SerialNumber: s.SerialNumber,
 				Door:         request.Door,
-				ControlState: 0x03,
+				ControlState: s.Doors[request.Door].ControlState,
 				Delay:        s.Doors[request.Door].Delay.Seconds(),
 			}
 

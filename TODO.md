@@ -10,7 +10,7 @@
 - [x] Rename Unit field to ControlState
 
 ### uhppote-simulator
-- [ ] Add door control state to simulator
+- [x] Add door control state to simulator
 
 ### uhppote-cli
 - [ ] Reimplement set-door-delay with read-before-write
@@ -50,6 +50,7 @@
 - [ ] HTML
 - [ ] Rework simulator.run to use rx channels
 - [ ] Reload simulator on device file change
+- [ ] Implement JSON unmarshal to initialise default values
 - [ ] Swagger UI
 - [ ] Autodetect gzipped files (https://stackoverflow.com/questions/28309988/how-to-read-from-either-gzip-or-plain-text-reader-in-golang)
 

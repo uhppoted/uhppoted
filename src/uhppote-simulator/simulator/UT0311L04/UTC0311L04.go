@@ -122,10 +122,10 @@ func (s *UT0311L04) Handle(src *net.UDPAddr, rq messages.Request) {
 		s.getCardByIndex(src, rq.(*messages.GetCardByIndexRequest))
 
 	case *messages.SetDoorControlStateRequest:
-		s.setDoorDelay(src, rq.(*messages.SetDoorControlStateRequest))
+		s.setDoorControlState(src, rq.(*messages.SetDoorControlStateRequest))
 
 	case *messages.GetDoorControlStateRequest:
-		s.getDoorDelay(src, rq.(*messages.GetDoorControlStateRequest))
+		s.getDoorControlState(src, rq.(*messages.GetDoorControlStateRequest))
 
 	case *messages.SetListenerRequest:
 		s.setListener(src, rq.(*messages.SetListenerRequest))
@@ -211,6 +211,10 @@ func load(filepath string) (*UT0311L04, error) {
 	for i := uint8(1); i <= 4; i++ {
 		if simulator.Doors[i] == nil {
 			simulator.Doors[i] = entities.NewDoor(i)
+		}
+
+		if simulator.Doors[i].ControlState < 1 || simulator.Doors[i].ControlState > 3 {
+			simulator.Doors[i].ControlState = 3
 		}
 	}
 
