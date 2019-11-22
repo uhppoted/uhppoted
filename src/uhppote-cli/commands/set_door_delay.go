@@ -23,12 +23,12 @@ func (c *SetDoorDelayCommand) Execute(ctx Context) error {
 		return err
 	}
 
-	record, err := ctx.uhppote.SetDoorDelay(serialNumber, door, delay)
+	record, err := ctx.uhppote.SetDoorControlState(serialNumber, door, 3, delay)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("%v\n", record)
+	fmt.Printf("%s %v %v\n", record.SerialNumber, record.Door, record.Delay)
 
 	return nil
 }

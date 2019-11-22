@@ -5,11 +5,11 @@ import (
 	"uhppote/types"
 )
 
-func (u *UHPPOTE) SetDoorDelay(serialNumber uint32, door uint8, delay uint8) (*types.DoorDelay, error) {
+func (u *UHPPOTE) SetDoorControlState(serialNumber uint32, door uint8, state uint8, delay uint8) (*types.DoorControlState, error) {
 	request := messages.SetDoorControlStateRequest{
 		SerialNumber: types.SerialNumber(serialNumber),
 		Door:         door,
-		ControlState: 3,
+		ControlState: state,
 		Delay:        delay,
 	}
 
@@ -20,7 +20,7 @@ func (u *UHPPOTE) SetDoorDelay(serialNumber uint32, door uint8, delay uint8) (*t
 		return nil, err
 	}
 
-	return &types.DoorDelay{
+	return &types.DoorControlState{
 		SerialNumber: reply.SerialNumber,
 		Door:         reply.Door,
 		ControlState: reply.ControlState,

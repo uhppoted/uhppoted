@@ -5,9 +5,9 @@
 ### uhppote
 - [x] Rename message from GetDoorDelay to GetDoorControlState
 - [x] Rename message from SetDoorDelay to SetDoorControlState
-- [ ] Rename functions from ...DoorDelay to DoorControlState
-- [ ] Add control state to uhppote.SetDoorControlState
-- [ ] Rename Unit field to ControlState
+- [x] Rename functions from ...DoorDelay to DoorControlState
+- [x] Add control state to uhppote.SetDoorControlState
+- [x] Rename Unit field to ControlState
 
 ### uhppote-simulator
 - [ ] Add door control state to simulator
