@@ -4,10 +4,11 @@ Go CLI and daemon/service implementation for the UHPPOTE UT0311-L04 TCP/IP Wiega
 
 ## Raison d'être
 
-Provide a cross-platform base for access control systems based on the UHPPOTE UT0311-L04 TCP/IP Wiegand Access Control Board. The manufacturer supplied software is a 'Windows only' application which is not ideal for server use or integration with other systems.
+Provide a cross-platform base library and system for access control systems based on the UHPPOTE UT0311-L04 TCP/IP Wiegand Access Control Board. The out-of-the-box application supplied with the boards is a 'Windows only' application which is not ideal for server use or integration with other systems (a Java/C# API is available on request).
 
 ## Releases
 
+- v0.4.1: Get/set door control state functionality added to simulator, CLI and REST API
 - v0.4.0: REST API service
 - v0.3.1: functional simulator with minimal command API
 - v0.2.0: load access control list from TSV file
@@ -40,8 +41,8 @@ Supported functions:
 - GetStatus
 - GetTime
 - SetTime
-- GetDoorDelay
-- SetDoorDelay
+- GetDoorControlState
+- SetDoorControlState
 - GetListener
 - SetListener
 - GetCards
@@ -70,6 +71,8 @@ Supported commands:
 - set-time
 - get-door-delay
 - set-door-delay
+- get-door-control-state
+- set-door-control-state
 - get-listener
 - set-listener
 - get-cards

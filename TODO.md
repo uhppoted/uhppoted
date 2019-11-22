@@ -19,11 +19,11 @@
 - [x] Reimplement 'set door delay' with read-before-write
 - [x] Implement 'get door control state'
 - [x] Implement 'set door control state'
-- [ ] Swagger UI
+- [x] Swagger UI
 
 ### Documentation
-- [ ] README
-- [ ] OpenAPI
+- [x] README
+- [x] OpenAPI
 
 ## TODO
 
