@@ -258,7 +258,7 @@ paths:
         default:
           description: "Request failed"
 
-  /device/{device-id}/door/{door}/state:
+  /device/{device-id}/door/{door}/control:
     get:
       tags:
         - uhppote
@@ -748,7 +748,7 @@ components:
           
     DoorControlState:
       properties:
-        control-state:
+        control:
           type: string
           format: "'normally open', 'normally closed' or 'controlled'"
           description: "Door control state"

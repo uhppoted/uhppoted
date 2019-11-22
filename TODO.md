@@ -12,13 +12,13 @@
 
 ### uhppote-cli
 - [x] Reimplement set-door-delay with read-before-write
-- [x] Implement get-door-control-state
-- [x] Implement set-door-control-state
+- [x] Implement get-door-control
+- [x] Implement set-door-control
 
 ### uhppoted-rest
 - [x] Reimplement 'set door delay' with read-before-write
-- [x] Implement 'get door control state'
-- [x] Implement 'set door control state'
+- [x] Implement 'get door control'
+- [x] Implement 'set door control'
 - [x] Swagger UI
 
 ### Documentation
