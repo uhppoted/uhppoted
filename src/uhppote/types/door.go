@@ -5,6 +5,7 @@ import "fmt"
 type DoorDelay struct {
 	SerialNumber SerialNumber
 	Door         uint8
+	ControlState uint8
 	Delay        uint8
 }
 
