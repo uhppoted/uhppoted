@@ -3,16 +3,24 @@
 ## IN PROGRESS
 
 ### uhppote
-- [ ] Rework door control to include control state
+- [x] Rename message from GetDoorDelay to GetDoorControlState
+- [x] Rename message from SetDoorDelay to SetDoorControlState
+- [ ] Rename functions from ...DoorDelay to DoorControlState
+- [ ] Add control state to uhppote.SetDoorControlState
+- [ ] Rename Unit field to ControlState
 
 ### uhppote-simulator
-- [ ] Rework door control to include control state
+- [ ] Add door control state to simulator
 
 ### uhppote-cli
-- [ ] Rework door control to include control state
+- [ ] Reimplement set-door-delay with read-before-write
+- [ ] Implement get-door-control-state
+- [ ] Implement set-door-control-state
 
 ### uhppoted-rest
-- [ ] Rework door control to include control state
+- [ ] Reimplement 'set door delay' with read-before-write
+- [ ] Implement 'get door control state'
+- [ ] Implement 'set door control state'
 
 ## TODO
 

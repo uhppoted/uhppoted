@@ -121,8 +121,8 @@ func (s *UT0311L04) Handle(src *net.UDPAddr, rq messages.Request) {
 	case *messages.GetCardByIndexRequest:
 		s.getCardByIndex(src, rq.(*messages.GetCardByIndexRequest))
 
-	case *messages.SetDoorDelayRequest:
-		s.setDoorDelay(src, rq.(*messages.SetDoorDelayRequest))
+	case *messages.SetDoorControlStateRequest:
+		s.setDoorDelay(src, rq.(*messages.SetDoorControlStateRequest))
 
 	case *messages.GetDoorControlStateRequest:
 		s.getDoorDelay(src, rq.(*messages.GetDoorControlStateRequest))
