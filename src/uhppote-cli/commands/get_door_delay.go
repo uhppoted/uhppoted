@@ -1,11 +1,7 @@
 package commands
 
 import (
-	"errors"
-	"flag"
 	"fmt"
-	"regexp"
-	"strconv"
 )
 
 type GetDoorDelayCommand struct {
@@ -56,24 +52,4 @@ func (c *GetDoorDelayCommand) Help() {
 	fmt.Println()
 	fmt.Println("    uhppote-cli get-door-delay 12345678 3")
 	fmt.Println()
-}
-
-func getDoor(index int, missing, invalid string) (byte, error) {
-	if len(flag.Args()) < index+1 {
-		return 0, errors.New(missing)
-	}
-
-	valid, _ := regexp.MatchString("[1-4]", flag.Arg(index))
-
-	if !valid {
-		return 0, errors.New(fmt.Sprintf(invalid, flag.Arg(index)))
-	}
-
-	door, err := strconv.Atoi(flag.Arg(index))
-
-	if err != nil {
-		return 0, errors.New(fmt.Sprintf(invalid, flag.Arg(index)))
-	}
-
-	return byte(door), nil
 }

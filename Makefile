@@ -137,6 +137,12 @@ get-door-delay: build
 set-door-delay: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) set-door-delay $(SERIALNO) $(DOOR) 5
 
+get-door-control-state: build
+	$(CLI) --bind $(LOCAL) $(DEBUG) get-door-control-state $(SERIALNO) $(DOOR)
+
+set-door-control-state: build
+	$(CLI) --bind $(LOCAL) $(DEBUG) set-door-control-state $(SERIALNO) $(DOOR) 'normally closed'
+
 get-listener: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) get-listener $(SERIALNO)
 
