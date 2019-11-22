@@ -4,7 +4,7 @@ Go CLI and daemon/service implementation for the UHPPOTE UT0311-L04 TCP/IP Wiega
 
 ## Raison d'être
 
-The manufacturer supplied software for the UHPPOTE UT0311-L04 TCP/IP Wiegand Access Control Board is 'Windows only' and is also not suitable for server use or integration with other applications.
+Provide a cross-platform base for access control systems based on the UHPPOTE UT0311-L04 TCP/IP Wiegand Access Control Board. The manufacturer supplied software is a 'Windows only' application which is not ideal for server use or integration with other systems.
 
 ## Releases
 
