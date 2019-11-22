@@ -1,7 +1,5 @@
 ## v0.4.1
 
-## IN PROGRESS
-
 ### uhppote
 - [x] Rename message from GetDoorDelay to GetDoorControlState
 - [x] Rename message from SetDoorDelay to SetDoorControlState
@@ -13,9 +11,9 @@
 - [x] Add door control state to simulator
 
 ### uhppote-cli
-- [ ] Reimplement set-door-delay with read-before-write
-- [ ] Implement get-door-control-state
-- [ ] Implement set-door-control-state
+- [x] Reimplement set-door-delay with read-before-write
+- [x] Implement get-door-control-state
+- [x] Implement set-door-control-state
 
 ### uhppoted-rest
 - [ ] Reimplement 'set door delay' with read-before-write

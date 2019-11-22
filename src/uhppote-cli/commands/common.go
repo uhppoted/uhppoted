@@ -70,6 +70,14 @@ func getUint32(index int, missing, invalid string) (uint32, error) {
 	return uint32(N), err
 }
 
+func getString(index int, missing, invalid string) (string, error) {
+	if len(flag.Args()) < index+1 {
+		return "", errors.New(missing)
+	}
+
+	return flag.Arg(index), nil
+}
+
 func getDate(index int, missing, invalid string) (*time.Time, error) {
 	if len(flag.Args()) < index+1 {
 		return nil, errors.New(missing)
@@ -88,6 +96,26 @@ func getDate(index int, missing, invalid string) (*time.Time, error) {
 	}
 
 	return &date, err
+}
+
+func getDoor(index int, missing, invalid string) (byte, error) {
+	if len(flag.Args()) < index+1 {
+		return 0, errors.New(missing)
+	}
+
+	valid, _ := regexp.MatchString("[1-4]", flag.Arg(index))
+
+	if !valid {
+		return 0, errors.New(fmt.Sprintf(invalid, flag.Arg(index)))
+	}
+
+	door, err := strconv.Atoi(flag.Arg(index))
+
+	if err != nil {
+		return 0, errors.New(fmt.Sprintf(invalid, flag.Arg(index)))
+	}
+
+	return byte(door), nil
 }
 
 func getPermissions(index int) ([]bool, error) {
