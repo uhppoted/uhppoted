@@ -124,8 +124,8 @@ func (s *UT0311L04) Handle(src *net.UDPAddr, rq messages.Request) {
 	case *messages.SetDoorDelayRequest:
 		s.setDoorDelay(src, rq.(*messages.SetDoorDelayRequest))
 
-	case *messages.GetDoorDelayRequest:
-		s.getDoorDelay(src, rq.(*messages.GetDoorDelayRequest))
+	case *messages.GetDoorControlStateRequest:
+		s.getDoorDelay(src, rq.(*messages.GetDoorControlStateRequest))
 
 	case *messages.SetListenerRequest:
 		s.setListener(src, rq.(*messages.SetListenerRequest))
