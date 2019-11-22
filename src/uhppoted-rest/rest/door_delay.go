@@ -12,7 +12,7 @@ func getDoorDelay(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	deviceId := ctx.Value("device-id").(uint32)
 	door := ctx.Value("door").(uint8)
 
-	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorDelay(deviceId, door)
+	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(deviceId, door)
 	if err != nil {
 		warn(ctx, deviceId, "get-door-delay", err)
 		http.Error(w, "Error retrieving door delay", http.StatusInternalServerError)
@@ -50,7 +50,7 @@ func setDoorDelay(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).SetDoorDelay(deviceId, door, body.Delay)
+	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).SetDoorControlState(deviceId, door, 3, body.Delay)
 	if err != nil {
 		warn(ctx, deviceId, "set-door-delay", err)
 		http.Error(w, "Error setting door delay", http.StatusInternalServerError)
