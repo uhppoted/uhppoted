@@ -23,12 +23,17 @@ func (c *SetDoorDelayCommand) Execute(ctx Context) error {
 		return err
 	}
 
-	record, err := ctx.uhppote.SetDoorDelay(serialNumber, door, delay)
+	state, err := ctx.uhppote.GetDoorControlState(serialNumber, door)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("%v\n", record)
+	record, err := ctx.uhppote.SetDoorControlState(serialNumber, door, state.ControlState, delay)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("%s %v %v\n", record.SerialNumber, record.Door, record.Delay)
 
 	return nil
 }
@@ -48,7 +53,7 @@ func (c *SetDoorDelayCommand) Usage() string {
 func (c *SetDoorDelayCommand) Help() {
 	fmt.Println("Usage: uhppote-cli [options] set-door-delay <serial number> <door> <delay>")
 	fmt.Println()
-	fmt.Println(" Sets the door open delay (in seconds)")
+	fmt.Println(" Sets the door open delay (in seconds), independently of the door control state")
 	fmt.Println()
 	fmt.Println("  serial-number  (required) controller serial number")
 	fmt.Println("  door           (required) door (1,2,3 or 4")

@@ -52,11 +52,11 @@ var handlers = map[byte]*handler{
 	},
 
 	0x80: &handler{
-		func() Request { return new(SetDoorDelayRequest) },
+		func() Request { return new(SetDoorControlStateRequest) },
 	},
 
 	0x82: &handler{
-		func() Request { return new(GetDoorDelayRequest) },
+		func() Request { return new(GetDoorControlStateRequest) },
 	},
 
 	0x90: &handler{

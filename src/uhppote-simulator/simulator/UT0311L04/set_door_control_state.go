@@ -7,25 +7,21 @@ import (
 	"uhppote/messages"
 )
 
-func (s *UT0311L04) setDoorDelay(addr *net.UDPAddr, request *messages.SetDoorDelayRequest) {
+func (s *UT0311L04) setDoorControlState(addr *net.UDPAddr, request *messages.SetDoorControlStateRequest) {
 	if request.SerialNumber == s.SerialNumber {
-		if request.Unit != 0x03 {
-			fmt.Printf("ERROR: Invalid time unit' - expected: %02x, received:%02x", 0x03, request.Unit)
-			return
-		}
-
 		door := request.Door
 		if door < 1 || door > 4 {
 			fmt.Printf("ERROR: Invalid door' - expected: [1..4], received:%d", request.Door)
 			return
 		}
 
+		s.Doors[door].ControlState = request.ControlState
 		s.Doors[door].Delay = entities.Delay(uint64(request.Delay) * 1000000000)
 
-		response := messages.SetDoorDelayResponse{
+		response := messages.SetDoorControlStateResponse{
 			SerialNumber: s.SerialNumber,
 			Door:         door,
-			Unit:         0x03,
+			ControlState: s.Doors[door].ControlState,
 			Delay:        s.Doors[door].Delay.Seconds(),
 		}
 
