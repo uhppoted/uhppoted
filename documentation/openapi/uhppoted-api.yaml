@@ -1,7 +1,7 @@
 openapi: "3.0.2"
 
 info:
-  version: 0.4.0
+  version: 0.4.1
   title: "twystd-uhppoted"
   description: "REST API for the twystd UHPPOTE service"
   license:
@@ -249,6 +249,92 @@ paths:
             application/json:
               schema:
                   $ref: "#/components/schemas/DoorDelay"        
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+  /device/{device-id}/door/{door}/control:
+    get:
+      tags:
+        - uhppote
+      summary: "Retrieves the door control state"
+      description: "Retrieves the door control state (normally open, normally closed or controlled)"
+      operationId: getDoorControlState
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 305419896
+        - name: door
+          in: path
+          description: "Door number"
+          required: true
+          schema:
+            type: integer
+            format: uint8
+            example: 3
+      responses:
+        '200':
+          description: "Door control state"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DoorControlState"
+        '404':
+          description: "No device with ID matching device-id"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+    put:
+      tags:
+        - uhppote
+      summary: "Sets the door control state"
+      description: "Sets the door control state (normally open, normally closed or controlled"
+      operationId: putDoorControlState
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 305419896
+        - name: door
+          in: path
+          description: "Door number"
+          required: true
+          schema:
+            type: integer
+            format: uint8
+            example: 3
+      requestBody:
+        description: "Door control state"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DoorControlState"
+      responses:
+        '200':
+          description: "Door control state"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DoorControlState"
         '404':
           description: "No device with ID matching device-id"
         '405':
@@ -660,6 +746,14 @@ components:
           description: "Door delay in seconds"
           example: 5
           
+    DoorControlState:
+      properties:
+        control:
+          type: string
+          format: "'normally open', 'normally closed' or 'controlled'"
+          description: "Door control state"
+          example: 'normally closed'
+
     CardList:
       required: 
         - cards
