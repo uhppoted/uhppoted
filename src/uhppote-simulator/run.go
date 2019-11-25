@@ -15,7 +15,7 @@ import (
 )
 
 func simulate(ctx *simulator.Context) {
-	bind, err := net.ResolveUDPAddr("udp4", ":60000")
+	bind, err := net.ResolveUDPAddr("udp4", ctx.BindAddress)
 	if err != nil {
 		fmt.Printf("%v\n", errors.New(fmt.Sprintf("Failed to resolve UDP bind address [%v]", err)))
 		return
@@ -28,6 +28,8 @@ func simulate(ctx *simulator.Context) {
 	}
 
 	defer connection.Close()
+
+	fmt.Printf("   ... bound to address '%s'\n", bind)
 
 	wait := make(chan int, 1)
 	interrupt := make(chan os.Signal, 1)
@@ -43,6 +45,9 @@ func simulate(ctx *simulator.Context) {
 }
 
 func run(ctx *simulator.Context, connection *net.UDPConn, wait chan int) {
+
+	fmt.Println()
+
 	go func() {
 		err := listenAndServe(ctx, connection)
 		if err != nil {
