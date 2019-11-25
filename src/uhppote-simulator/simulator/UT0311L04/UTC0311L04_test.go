@@ -171,34 +171,34 @@ func TestHandleGetCardByIndex(t *testing.T) {
 	testHandle(&request, &response, t)
 }
 
-func TestHandleSetDoorDelay(t *testing.T) {
-	request := messages.SetDoorDelayRequest{
+func TestHandleSetDoorControlState(t *testing.T) {
+	request := messages.SetDoorControlStateRequest{
 		SerialNumber: 12345,
 		Door:         2,
-		Unit:         0x03,
+		ControlState: 3,
 		Delay:        7,
 	}
 
-	response := messages.SetDoorDelayResponse{
+	response := messages.SetDoorControlStateResponse{
 		SerialNumber: 12345,
 		Door:         2,
-		Unit:         0x03,
+		ControlState: 3,
 		Delay:        7,
 	}
 
 	testHandle(&request, &response, t)
 }
 
-func TestHandleGetDoorDelay(t *testing.T) {
-	request := messages.GetDoorDelayRequest{
+func TestHandleGetDoorControlState(t *testing.T) {
+	request := messages.GetDoorControlStateRequest{
 		SerialNumber: 12345,
 		Door:         2,
 	}
 
-	response := messages.GetDoorDelayResponse{
+	response := messages.GetDoorControlStateResponse{
 		SerialNumber: 12345,
 		Door:         2,
-		Unit:         0x03,
+		ControlState: 2,
 		Delay:        22,
 	}
 
@@ -325,10 +325,10 @@ func testHandle(request messages.Request, expected messages.Response, t *testing
 	listener := net.UDPAddr{IP: net.IPv4(10, 0, 0, 10), Port: 43210}
 
 	doors := map[uint8]*entities.Door{
-		1: &entities.Door{Delay: entities.DelayFromSeconds(11)},
-		2: &entities.Door{Delay: entities.DelayFromSeconds(22)},
-		3: &entities.Door{Delay: entities.DelayFromSeconds(33)},
-		4: &entities.Door{Delay: entities.DelayFromSeconds(44)},
+		1: &entities.Door{ControlState: 3, Delay: entities.DelayFromSeconds(11)},
+		2: &entities.Door{ControlState: 2, Delay: entities.DelayFromSeconds(22)},
+		3: &entities.Door{ControlState: 3, Delay: entities.DelayFromSeconds(33)},
+		4: &entities.Door{ControlState: 3, Delay: entities.DelayFromSeconds(44)},
 	}
 
 	cards := entities.CardList{
