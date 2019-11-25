@@ -118,6 +118,9 @@ run: build
 get-devices: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) get-devices
 
+get-device: build
+	$(CLI) --bind $(LOCAL) $(DEBUG) get-device $(SERIALNO)
+
 set-address: build
 	$(CLI) -bind $(LOCAL) $(DEBUG) set-address $(SERIALNO) '192.168.1.125' '255.255.255.0' '0.0.0.0'
 
