@@ -186,10 +186,10 @@ simulator: build
 	./bin/uhppote-simulator --debug --devices "./runtime/simulation/devices"
 
 simulator-device: build
-	./bin/uhppote-simulator --debug --devices "runtime/simulation/devices" new-device 666
+	./bin/uhppote-simulator --debug --devices "runtime/simulation/devices" new-device 678
 
 uhppoted: build
-	./bin/uhppoted-rest --console
+	./bin/uhppoted-rest --console --debug 
 
 uhppoted-daemonize: build
 	sudo ./bin/uhppoted-rest daemonize
