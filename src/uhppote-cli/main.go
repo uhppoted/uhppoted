@@ -17,6 +17,7 @@ type addr struct {
 var cli = []commands.Command{
 	&commands.VersionCommand{VERSION},
 	&commands.GetDevicesCommand{},
+	&commands.GetDeviceCommand{},
 	&commands.SetAddressCommand{},
 	&commands.GetStatusCommand{},
 	&commands.GetTimeCommand{},

@@ -31,7 +31,7 @@
 - [ ] concurrent requests
 - [ ] update tests with Errorf + return to Fatalf
 - [ ] commonalise ACL implementation
-- [ ] UT0311-L0x encoding: marshal/unmarshal arrays of structs
+- [ ] UT0311-L0x encoding: marshal/unmarshal arrays of structs and deprecate DirectedBroadcast
 
 ### uhppoted
 - [ ] MQTT 
@@ -47,6 +47,7 @@
 - [ ] JSON formatted output for e.g. get-status
 - [ ] Interactive shell (https://drewdevault.com/2019/09/02/Interactive-SSH-programs.html)
 - [ ] use flag.FlagSet for commands
+- [ ] Default to commmon config file
 
 ### simulator
 - [ ] concurrent requests
