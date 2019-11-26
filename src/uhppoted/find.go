@@ -8,7 +8,21 @@ import (
 	"uhppote/types"
 )
 
-type device struct {
+type DeviceSummary struct {
+	Device struct {
+		ID      uint32  `json:"id"`
+		Summary summary `json:"info"`
+	} `json:"device"`
+}
+
+type DeviceDetail struct {
+	Device struct {
+		ID     uint32 `json:"id"`
+		Detail detail `json:"info"`
+	} `json:"device"`
+}
+
+type summary struct {
 	SerialNumber types.SerialNumber `json:"serial-number"`
 	DeviceType   string             `json:"device-type"`
 }
@@ -34,16 +48,26 @@ func (u *UHPPOTED) GetDevices(ctx context.Context, rq Request) {
 		return
 	}
 
-	list := make([]device, 0)
+	list := make([]DeviceSummary, 0)
 	for _, d := range devices {
-		list = append(list, device{
-			SerialNumber: d.SerialNumber,
-			DeviceType:   "UTO311-L04",
-		})
+		item := DeviceSummary{
+			struct {
+				ID      uint32  `json:"id"`
+				Summary summary `json:"info"`
+			}{
+				ID: uint32(d.SerialNumber),
+				Summary: summary{
+					SerialNumber: d.SerialNumber,
+					DeviceType:   "UTO311-L04",
+				},
+			},
+		}
+
+		list = append(list, item)
 	}
 
 	response := struct {
-		Devices []device `json:"devices"`
+		Devices []DeviceSummary `json:"devices"`
 	}{
 		Devices: list,
 	}
@@ -74,18 +98,22 @@ func (u *UHPPOTED) GetDevice(ctx context.Context, rq Request) {
 		return
 	}
 
-	response := struct {
-		Device detail `json:"device"`
-	}{
-		Device: detail{
-			SerialNumber: device.SerialNumber,
-			DeviceType:   "UTO311-L04",
-			IpAddress:    device.IpAddress,
-			SubnetMask:   device.SubnetMask,
-			Gateway:      device.Gateway,
-			MacAddress:   device.MacAddress,
-			Version:      device.Version,
-			Date:         device.Date,
+	response := DeviceDetail{
+		struct {
+			ID     uint32 `json:"id"`
+			Detail detail `json:"info"`
+		}{
+			ID: id,
+			Detail: detail{
+				SerialNumber: device.SerialNumber,
+				DeviceType:   "UTO311-L04",
+				IpAddress:    device.IpAddress,
+				SubnetMask:   device.SubnetMask,
+				Gateway:      device.Gateway,
+				MacAddress:   device.MacAddress,
+				Version:      device.Version,
+				Date:         device.Date,
+			},
 		},
 	}
 
