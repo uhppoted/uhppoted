@@ -34,6 +34,7 @@
 - [ ] Update to use modules
 - [ ] Rework uhppoted-xxx Run, etc to use [method expressions](https://talks.golang.org/2012/10things.slide#9)
 - [x] docker: simulator
+- [ ] UT0311-L0x encoding: unmarshal arrays of structs (for broadcast)
 
 ## TODO
 
@@ -41,9 +42,9 @@
 - [ ] concurrent requests
 - [ ] update tests with Errorf + return to Fatalf
 - [ ] commonalise ACL implementation
-- [ ] UT0311-L0x encoding: marshal/unmarshal arrays of structs (for broadcast)
 
 ### uhppoted
+- [ ] websocket
 - [ ] GraphQL
 - [ ] MacOS launchd socket handoff
 - [ ] Linux systemd socket handoff
@@ -82,24 +83,24 @@
 2.  Consistently include device serial number in output e.g. of get-time
 3.  Look into UDP multicast
 4.  Look into ARP for set-address
-5.  Rework error handling to use Wrap/Frame
+5.  github project page
 6.  Integration tests
-8.  Verify fields in listen events/status replies:
+7.  Verify fields in listen events/status replies against SDK:
     - battery status can be (at least) 0x00, 0x01 and 0x04
-10. Mojave/HomeKit
-11. Phoenix UI
-12. step-ca (https://smallstep.com/blog/private-acme-server)
-13. fuse
-14. EventLogger 
+8.  Mojave/HomeKit
+9.  Phoenix UI
+10. step-ca (https://smallstep.com/blog/private-acme-server)
+11. fuse
+12. EventLogger 
     - MacOS: use [system logging](https://developer.apple.com/documentation/os/logging)
     - Windows: event logging
-16. [Streamsheets](https://github.com/cedalo/streamsheets)
-17. TLA+ models:
+13. [Streamsheets](https://github.com/cedalo/streamsheets)
+14. TLA+ models:
     - watchdog/health-check
     - concurrent connections
-18. [Muon](https://github.com/ImVexed/muon) GUI
+15. [Muon](https://github.com/ImVexed/muon) GUI
     - [webview](https://github.com/zserge/webview)
-18. PDL + go generate
+16. PDL + go generate
     - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)
     - [Diva](http://www.diva-portal.org/smash/get/diva2:407713/FULLTEXT01.pdf)
     - [PADS/ML](https://pads.cs.tufts.edu/papers/tfp07.pdf)
