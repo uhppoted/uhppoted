@@ -88,11 +88,9 @@ func (u *UHPPOTE) Broadcast(request interface{}) ([][]byte, error) {
 	return u.broadcast(request, u.broadcastAddress())
 }
 
-// Send a UDP message to an IP address but expects replies from more than one device i.e.
-// technically not a 'broadcast' unless it falls back to the broadcast address but shares
-// all the other functionality.
-//
-// May be superseded when the UT0311-L0x encoder handles arrays of structs.
+// Send a UDP message to an IP address but expects replies from more than one device
+// i.e. technically not a 'broadcast' (unless it falls back to the broadcast address)
+// but shares all the other functionality.
 func (u *UHPPOTE) DirectedBroadcast(serialNumber uint32, request interface{}) ([][]byte, error) {
 	dest := u.Devices[serialNumber]
 
