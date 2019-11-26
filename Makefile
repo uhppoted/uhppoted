@@ -207,8 +207,10 @@ uhppoted-mqtt-version: build
 uhppoted-mqtt-listen:
 	mqtt subscribe --topic 'twystd-uhppoted/#'
 
-uhppoted-mqtt-ping:
+uhppoted-mqtt-devices:
 	mqtt publish --topic 'twystd-uhppoted/gateway/ping' --message '{}'
+
+uhppoted-mqtt-device:
 	mqtt publish --topic 'twystd-uhppoted/gateway/device/ping' --message '{ "device": { "id": 305419896 } }'
 
 uhppoted-mqtt-status:
@@ -228,7 +230,7 @@ docker-simulator:
 	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --rm simulator
 
 docker-hivemq:
-	docker run --tty --interactive --publish 8080:8080 --publish 1883:1883 --rm hivemq/hivemq4
+	docker run --tty --interactive --publish 8081:8080 --publish 1883:1883 --rm hivemq/hivemq4
 
 docker-rest:
 	docker run --detach --publish 8080:8080 --rm uhppoted

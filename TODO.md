@@ -20,6 +20,12 @@
 - [x] ping
 - [x] device/ping
 - [x] device/status
+- [ ] device/time [get,set]
+- [ ] device/door/delay [get,set]
+- [ ] device/door/control [get,set]
+- [ ] device/card [get,put,delete]
+- [ ] device/events [get]
+- [ ] device/event [get]
 
 - [ ] uhppoted-rest: PUT card
 - [ ] commonalise functionality with uhppoted-rest
@@ -35,19 +41,24 @@
 - [ ] Rework uhppoted-xxx Run, etc to use [method expressions](https://talks.golang.org/2012/10things.slide#9)
 - [x] docker: simulator
 - [x] UT0311-L0x encoding: unmarshal arrays of structs (for broadcast)
+- [ ] Make health check interval configurable 
 
 ## TODO
 
 ### uhppote
 - [ ] concurrent requests
 - [ ] update tests with Errorf + return to Fatalf
-- [ ] commonalise ACL implementation
+- [ ] commonalise ACL
+- [ ] commonalise configuration
 
 ### uhppoted
 - [ ] websocket
 - [ ] GraphQL
 - [ ] MacOS launchd socket handoff
 - [ ] Linux systemd socket handoff
+
+### uhppoted-rest
+- [ ] Get events after XXX
 
 ### CLI
 - [ ] Rework grant/revoke for individual doors (labelled)
