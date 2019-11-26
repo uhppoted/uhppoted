@@ -86,21 +86,27 @@ func (u *UHPPOTE) Execute(serialNumber uint32, request, reply interface{}) error
 	return err
 }
 
-func (u *UHPPOTE) Broadcast(request interface{}) ([][]byte, error) {
-	return u.broadcast(request, u.broadcastAddress())
+func (u *UHPPOTE) Broadcast(request, replies interface{}) error {
+	if m, err := u.broadcast(request, u.broadcastAddress()); err != nil {
+		return err
+	} else {
+		return codec.UnmarshalArray(m, replies)
+	}
 }
 
-// Send a UDP message to an IP address but expects replies from more than one device
-// i.e. technically not a 'broadcast' (unless it falls back to the broadcast address)
-// but shares all the other functionality.
-func (u *UHPPOTE) DirectedBroadcast(serialNumber uint32, request interface{}) ([][]byte, error) {
+// Sends a UDP message to a specific device but anticipates replies from more than one device because
+// it may fall back to the broadcast address if the device ID has no configured IP address.
+func (u *UHPPOTE) DirectedBroadcast(serialNumber uint32, request, replies interface{}) error {
 	dest := u.Devices[serialNumber]
-
 	if dest == nil {
 		dest = u.broadcastAddress()
 	}
 
-	return u.broadcast(request, dest)
+	if m, err := u.broadcast(request, dest); err != nil {
+		return err
+	} else {
+		return codec.UnmarshalArray(m, replies)
+	}
 }
 
 func (u *UHPPOTE) open(addr *net.UDPAddr) (*net.UDPConn, error) {

@@ -34,7 +34,7 @@
 - [ ] Update to use modules
 - [ ] Rework uhppoted-xxx Run, etc to use [method expressions](https://talks.golang.org/2012/10things.slide#9)
 - [x] docker: simulator
-- [ ] UT0311-L0x encoding: unmarshal arrays of structs (for broadcast)
+- [x] UT0311-L0x encoding: unmarshal arrays of structs (for broadcast)
 
 ## TODO
 
