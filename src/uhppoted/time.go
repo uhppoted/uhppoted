@@ -42,4 +42,3 @@ func (u *UHPPOTED) GetTime(ctx context.Context, rq Request) {
 
 	u.reply(ctx, response)
 }
-
