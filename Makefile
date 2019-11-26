@@ -216,6 +216,9 @@ uhppoted-mqtt-device:
 uhppoted-mqtt-status:
 	mqtt publish --topic 'twystd-uhppoted/gateway/device/status' --message '{ "device": { "id": 305419896 } }'
 
+uhppoted-mqtt-time:
+	mqtt publish --topic 'twystd-uhppoted/gateway/device/time' --message '{ "device": { "id": 305419896 } }'
+
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
 
