@@ -45,6 +45,7 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/gateway/ping":          (*uhppoted.UHPPOTED).GetDevices,
 			m.Topic + "/gateway/device/ping":   (*uhppoted.UHPPOTED).GetDevice,
 			m.Topic + "/gateway/device/status": (*uhppoted.UHPPOTED).GetStatus,
+			m.Topic + "/gateway/device/time":   (*uhppoted.UHPPOTED).GetTime,
 		},
 	}
 
