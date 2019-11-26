@@ -50,6 +50,7 @@ release: format
 	env GOOS=darwin  GOARCH=amd64  go build -o dist/$(DIST)/darwin/uhppote-simulator      uhppote-simulator
 	env GOOS=windows GOARCH=amd64  go build -o dist/$(DIST)/windows/uhppote-simulator.exe uhppote-simulator
 	cp -r install/openapi/* dist/$(DIST)/openapi/
+	tar -C dist -cvzf dist/$(DIST).tar.gz $(DIST)
 
 build: format
 	go install uhppote-cli
