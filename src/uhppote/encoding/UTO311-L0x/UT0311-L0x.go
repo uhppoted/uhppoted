@@ -165,16 +165,19 @@ func Unmarshal(bytes []byte, m interface{}) error {
 		return unmarshal(bytes, v.Elem())
 	}
 
-	if v.Kind() == reflect.Ptr && v.Elem().Kind() == reflect.Slice {
-		if len(bytes)%64 != 0 {
-			return errors.New(fmt.Sprintf("Invalid message length - expected multiples of 64 bytes, received %v", len(bytes)))
-		}
+	return fmt.Errorf("Cannot unmarshal value with kind '%s'", v.Type())
+}
 
+func UnmarshalArray(bytes [][]byte, m interface{}) error {
+	v := reflect.ValueOf(m)
+
+	if v.Kind() == reflect.Ptr && v.Elem().Kind() == reflect.Slice {
 		t := v.Elem().Type().Elem()
 		vv := reflect.MakeSlice(reflect.SliceOf(t), 0, 0)
-		for i := 0; i < len(bytes); i += 64 {
+
+		for _, b := range bytes {
 			s := reflect.New(t).Elem()
-			if err := unmarshal(bytes[i:i+64], s); err != nil {
+			if err := unmarshal(b, s); err != nil {
 				return err
 			}
 
@@ -186,7 +189,7 @@ func Unmarshal(bytes []byte, m interface{}) error {
 		return nil
 	}
 
-	return fmt.Errorf("Cannot unmarshal value with kind '%s'", v.Type())
+	return fmt.Errorf("Cannot unmarshal array to value with kind '%s'", v.Type())
 }
 
 func unmarshal(bytes []byte, s reflect.Value) error {
