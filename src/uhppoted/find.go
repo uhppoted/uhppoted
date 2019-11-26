@@ -13,6 +13,17 @@ type device struct {
 	DeviceType   string             `json:"device-type"`
 }
 
+type detail struct {
+	SerialNumber types.SerialNumber `json:"serial-number"`
+	DeviceType   string             `json:"device-type"`
+	IpAddress    net.IP             `json:"ip-address"`
+	SubnetMask   net.IP             `json:"subnet-mask"`
+	Gateway      net.IP             `json:"gateway-address"`
+	MacAddress   types.MacAddress   `json:"mac-address"`
+	Version      types.Version      `json:"version"`
+	Date         types.Date         `json:"date"`
+}
+
 func (u *UHPPOTED) GetDevices(ctx context.Context, rq Request) {
 	u.debug(ctx, 0, "get-devices", rq)
 
@@ -43,46 +54,40 @@ func (u *UHPPOTED) GetDevices(ctx context.Context, rq Request) {
 func (u *UHPPOTED) GetDevice(ctx context.Context, rq Request) {
 	u.debug(ctx, 0, "get-device", rq)
 
-	deviceId, err := rq.DeviceId()
+	id, err := rq.DeviceId()
 	if err != nil {
-		u.warn(ctx, deviceId, "get-device", err)
+		u.warn(ctx, id, "get-device", err)
 		u.oops(ctx, "get-device", "Error retrieving device list (invalid device ID)", StatusBadRequest)
 		return
 	}
 
-	devices, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevices()
+	device, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevice(id)
 	if err != nil {
-		u.warn(ctx, deviceId, "get-device", err)
-		u.oops(ctx, "get-device", "Error retrieving device list", StatusInternalServerError)
+		u.warn(ctx, id, "get-device", err)
+		u.oops(ctx, "get-device", fmt.Sprintf("Error retrieving device summary for '%d'", id), StatusInternalServerError)
 		return
 	}
 
-	for _, d := range devices {
-		if d.SerialNumber == types.SerialNumber(deviceId) {
-			response := struct {
-				SerialNumber types.SerialNumber `json:"serial-number"`
-				DeviceType   string             `json:"device-type"`
-				IpAddress    net.IP             `json:"ip-address"`
-				SubnetMask   net.IP             `json:"subnet-mask"`
-				Gateway      net.IP             `json:"gateway-address"`
-				MacAddress   types.MacAddress   `json:"mac-address"`
-				Version      types.Version      `json:"version"`
-				Date         types.Date         `json:"date"`
-			}{
-				SerialNumber: d.SerialNumber,
-				DeviceType:   "UTO311-L04",
-				IpAddress:    d.IpAddress,
-				SubnetMask:   d.SubnetMask,
-				Gateway:      d.Gateway,
-				MacAddress:   d.MacAddress,
-				Version:      d.Version,
-				Date:         d.Date,
-			}
-
-			u.reply(ctx, response)
-			return
-		}
+	if device == nil {
+		u.warn(ctx, id, "get-device", fmt.Errorf("No device with ID '%v'", id))
+		u.oops(ctx, "get-device", fmt.Sprintf("Error retrieving device summary for '%d'", id), StatusNotFound)
+		return
 	}
 
-	u.oops(ctx, "get-device", fmt.Sprintf("No device with ID '%v'", deviceId), StatusNotFound)
+	response := struct {
+		Device detail `json:"device"`
+	}{
+		Device: detail{
+			SerialNumber: device.SerialNumber,
+			DeviceType:   "UTO311-L04",
+			IpAddress:    device.IpAddress,
+			SubnetMask:   device.SubnetMask,
+			Gateway:      device.Gateway,
+			MacAddress:   device.MacAddress,
+			Version:      device.Version,
+			Date:         device.Date,
+		},
+	}
+
+	u.reply(ctx, response)
 }
