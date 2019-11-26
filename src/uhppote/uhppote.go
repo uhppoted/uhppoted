@@ -90,6 +90,19 @@ func (u *UHPPOTE) Broadcast(request interface{}) ([][]byte, error) {
 	return u.broadcast(request, u.broadcastAddress())
 }
 
+// Send a UDP message to an IP address but expects replies from more than one device
+// i.e. technically not a 'broadcast' (unless it falls back to the broadcast address)
+// but shares all the other functionality.
+func (u *UHPPOTE) DirectedBroadcast(serialNumber uint32, request interface{}) ([][]byte, error) {
+	dest := u.Devices[serialNumber]
+
+	if dest == nil {
+		dest = u.broadcastAddress()
+	}
+
+	return u.broadcast(request, dest)
+}
+
 func (u *UHPPOTE) open(addr *net.UDPAddr) (*net.UDPConn, error) {
 	connection, err := net.ListenUDP("udp", addr)
 	if err != nil {

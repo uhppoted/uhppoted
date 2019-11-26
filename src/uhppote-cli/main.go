@@ -17,6 +17,7 @@ type addr struct {
 var cli = []commands.Command{
 	&commands.VersionCommand{VERSION},
 	&commands.GetDevicesCommand{},
+	&commands.GetDeviceCommand{},
 	&commands.SetAddressCommand{},
 	&commands.GetStatusCommand{},
 	&commands.GetTimeCommand{},
@@ -40,7 +41,7 @@ var cli = []commands.Command{
 	&commands.ListenCommand{},
 }
 
-var VERSION = "v0.04.0"
+var VERSION = "v0.4.2"
 
 var options = struct {
 	config    string

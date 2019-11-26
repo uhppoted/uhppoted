@@ -11,8 +11,9 @@ type DeviceList struct {
 }
 
 type Context struct {
-	DeviceList DeviceList
-	Directory  string
+	BindAddress string
+	DeviceList  DeviceList
+	Directory   string
 }
 
 func NewDeviceList(l []Simulator) DeviceList {

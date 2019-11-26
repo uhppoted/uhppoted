@@ -19,6 +19,9 @@ listen: build
 
 get-devices: build 
 	$(CLI) $(DEBUG) get-devices
+
+get-device: build
+	$(CLI) $(DEBUG) get-device $(SERIALNO)
  
 set-address: build 
 	$(CLI) $(DEBUG) set-address $(SERIALNO) '192.168.1.100' '255.255.255.0' '192.168.1.1'
