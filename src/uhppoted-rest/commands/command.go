@@ -18,7 +18,7 @@ type Command interface {
 	Help()
 }
 
-var VERSION = "v0.04.0"
+var VERSION = "v0.4.2"
 
 var cli = []Command{
 	NewDaemonize(),
