@@ -1,7 +1,7 @@
 openapi: "3.0.2"
 
 info:
-  version: 0.4.1
+  version: 0.4.2
   title: "twystd-uhppoted"
   description: "REST API for the twystd UHPPOTE service"
   license:

@@ -9,17 +9,20 @@ import (
 	"uhppote-simulator/simulator/UT0311L04"
 )
 
-var VERSION = "v0.04.0"
+var VERSION = "v0.4.2"
 
 var options = struct {
+	bind  string
 	dir   string
 	debug bool
 }{
+	bind:  ":60000",
 	dir:   "./devices",
 	debug: false,
 }
 
 func main() {
+	flag.StringVar(&options.bind, "bind", ":60000", "Specifies the bind address for the simulator")
 	flag.StringVar(&options.dir, "devices", "devices", "Specifies the simulation device directory")
 	flag.BoolVar(&options.debug, "debug", false, "Displays simulator activity")
 	flag.Parse()
@@ -35,8 +38,9 @@ func main() {
 	}
 
 	ctx := simulator.Context{
-		Directory:  options.dir,
-		DeviceList: simulator.NewDeviceList(load(options.dir)),
+		BindAddress: options.bind,
+		Directory:   options.dir,
+		DeviceList:  simulator.NewDeviceList(load(options.dir)),
 	}
 
 	simulate(&ctx)
@@ -74,8 +78,6 @@ func load(dir string) []simulator.Simulator {
 			}
 		}
 	}
-
-	fmt.Println()
 
 	l := make([]simulator.Simulator, 0)
 

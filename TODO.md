@@ -41,6 +41,7 @@
 - [ ] concurrent requests
 - [ ] update tests with Errorf + return to Fatalf
 - [ ] commonalise ACL implementation
+- [ ] UT0311-L0x encoding: marshal/unmarshal arrays of structs (for broadcast)
 
 ### uhppoted
 - [ ] GraphQL
@@ -54,6 +55,7 @@
 - [ ] JSON formatted output for e.g. get-status
 - [ ] Interactive shell (https://drewdevault.com/2019/09/02/Interactive-SSH-programs.html)
 - [ ] use flag.FlagSet for commands
+- [ ] Default to commmon config file
 
 ### simulator
 - [ ] concurrent requests
