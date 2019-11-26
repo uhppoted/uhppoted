@@ -8,6 +8,7 @@ Provide a cross-platform base library and system for access control systems base
 
 ## Releases
 
+- v0.4.2: Reworked `GetDevice` REST API to use directed broadcast and added get-device to CLI
 - v0.4.1: Get/set door control state functionality added to simulator, CLI and REST API
 - v0.4.0: REST API service
 - v0.3.1: functional simulator with minimal command API
@@ -37,6 +38,7 @@ Provide a cross-platform base library and system for access control systems base
 
 Supported functions:
 - FindDevices
+- FindDevice
 - SetAddress
 - GetStatus
 - GetTime
@@ -65,6 +67,7 @@ Supported commands:
 - help
 - version
 - get-devices
+- get-device
 - set-address
 - get-status
 - get-time
@@ -98,13 +101,23 @@ Defaults to 'run' unless one of the commands below is specified:
 - help
 - version
 
+Supported options:
+- --console
+- --debug
+
+
 ## uhppote-simulator
 
-Usage: *uhppote-simulator --devices=\<dir\>*
+Usage: *uhppote-simulator \<command\> --devices=\<dir\>*
+
+Defaults to 'run' unless one of the commands below is specified: 
+
+- help
+- version
 
 Supported options:
-- --help
-- --version
+- --bind <IP address to bind to>
+- --devices <directory path for device files>
 - --debug
 
 
