@@ -23,11 +23,14 @@ type Request struct {
 	} `json:"device"`
 }
 
+type fdispatch func(*uhppoted.UHPPOTED, context.Context, uhppoted.Request)
+
 type dispatcher struct {
 	uhppoted *uhppoted.UHPPOTED
 	uhppote  *uhppote.UHPPOTE
 	log      *log.Logger
 	topic    string
+	table    map[string]fdispatch
 }
 
 func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
@@ -38,6 +41,11 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		uhppote: u,
 		log:     l,
 		topic:   m.Topic,
+		table: map[string]fdispatch{
+			m.Topic + "/gateway/ping":          (*uhppoted.UHPPOTED).GetDevices,
+			m.Topic + "/gateway/device/ping":   (*uhppoted.UHPPOTED).GetDevice,
+			m.Topic + "/gateway/device/status": (*uhppoted.UHPPOTED).GetStatus,
+		},
 	}
 
 	if err := m.listenAndServe(&d); err != nil {
@@ -103,15 +111,8 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		return
 	}
 
-	switch msg.Topic() {
-	case d.topic + "/gateway/ping":
-		d.uhppoted.GetDevices(ctx, &request)
-
-	case d.topic + "/gateway/device/ping":
-		d.uhppoted.GetDevice(ctx, &request)
-
-	case d.topic + "/gateway/device/status":
-		d.uhppoted.GetStatus(ctx, &request)
+	if fn, ok := d.table[msg.Topic()]; ok {
+		fn(d.uhppoted, ctx, &request)
 	}
 }
 
