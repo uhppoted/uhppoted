@@ -159,6 +159,37 @@ func getMsgType(s reflect.Value) (byte, error) {
 }
 
 func Unmarshal(bytes []byte, m interface{}) error {
+	v := reflect.ValueOf(m)
+
+	if v.Kind() == reflect.Ptr && v.Elem().Kind() == reflect.Struct {
+		return unmarshal(bytes, v.Elem())
+	}
+
+	if v.Kind() == reflect.Ptr && v.Elem().Kind() == reflect.Slice {
+		if len(bytes)%64 != 0 {
+			return errors.New(fmt.Sprintf("Invalid message length - expected multiples of 64 bytes, received %v", len(bytes)))
+		}
+
+		t := v.Elem().Type().Elem()
+		vv := reflect.MakeSlice(reflect.SliceOf(t), 0, 0)
+		for i := 0; i < len(bytes); i += 64 {
+			s := reflect.New(t).Elem()
+			if err := unmarshal(bytes[i:i+64], s); err != nil {
+				return err
+			}
+
+			vv = reflect.Append(vv, s)
+		}
+
+		v.Elem().Set(vv)
+
+		return nil
+	}
+
+	return fmt.Errorf("Cannot unmarshal value with kind '%s'", v.Type())
+}
+
+func unmarshal(bytes []byte, s reflect.Value) error {
 	// Validate message format
 	if len(bytes) != 64 {
 		return errors.New(fmt.Sprintf("Invalid message length - expected 64 bytes, received %v", len(bytes)))
@@ -169,9 +200,6 @@ func Unmarshal(bytes []byte, m interface{}) error {
 	}
 
 	// Unmarshall fields tagged with `uhppote:"..."`
-	v := reflect.ValueOf(m)
-	s := v.Elem()
-
 	msgType, err := getMsgType(s)
 	if err != nil {
 		panic(errors.New(fmt.Sprintf("Cannot unmarshal message: %v", err)))
