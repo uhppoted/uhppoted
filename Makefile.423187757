@@ -3,6 +3,7 @@ DEBUG = --debug
 CARD = 6154412
 SERIALNO = 423187757
 DOOR = 3
+DATETIME = `date "+%Y-%m-%d %H:%M:%S"`
 
 format:
 	go fmt ./...
@@ -28,6 +29,7 @@ get-time: build
 
 set-time: build 
 	$(CLI) $(DEBUG) set-time $(SERIALNO)
+	$(CLI) $(DEBUG) set-time $(SERIALNO) "$(DATETIME)"
 
 get-door-delay: build 
 	$(CLI) $(DEBUG) get-door-delay $(SERIALNO) $(DOOR)
