@@ -6,7 +6,7 @@ CARD ?= 6154410
 SERIALNO ?= 423187757
 DOOR ?= 3
 DIST ?= development
-DATE = `date "+%Y-%m-%d %H:%M:%S"`
+DATETIME = `date "+%Y-%m-%d %H:%M:%S"`
 
 all: test      \
 	 benchmark \
@@ -107,8 +107,8 @@ get-time: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) get-time $(SERIALNO)
 
 set-time: build
-	# $(CLI) -debug set-time 423187757 '2019-01-08 12:34:56'
 	$(CLI) --bind $(LOCAL) $(DEBUG) set-time $(SERIALNO)
+	$(CLI) --bind $(LOCAL) $(DEBUG) set-time $(SERIALNO) "$(DATETIME)"
 
 get-door-delay: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) get-door-delay $(SERIALNO) $(DOOR)
@@ -221,7 +221,7 @@ uhppoted-mqtt-get-time:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/time:get' --message '{ "device-id": 305419896 }'
 
 uhppoted-mqtt-set-time:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/time:set' --message "{ \"device-id\": 305419896, \"datetime\": \"$(DATE)\" }"
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/time:set' --message "{ \"device-id\": 305419896, \"datetime\": \"$(DATETIME)\" }"
 
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
