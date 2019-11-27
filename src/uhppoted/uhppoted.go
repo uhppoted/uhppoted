@@ -4,20 +4,13 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"time"
 )
 
 const (
-	//	StatusOK              = http.StatusOK
-	StatusBadRequest = http.StatusBadRequest
-	//	StatusUnauthorized    = http.StatusUnauthorized
-	//	StatusForbidden       = http.StatusForbidden
-	StatusNotFound = http.StatusNotFound
-	//	StatusRequestTimeout  = http.StatusRequestTimeout
-	//	StatusTooManyRequests = http.StatusTooManyRequests
-
+	StatusBadRequest          = http.StatusBadRequest
+	StatusNotFound            = http.StatusNotFound
 	StatusInternalServerError = http.StatusInternalServerError
-
-	//	StatusNotImplemented  = http.StatusNotImplemented
 )
 
 type Service interface {
@@ -27,6 +20,7 @@ type Service interface {
 
 type Request interface {
 	DeviceId() (uint32, error)
+	DateTime() (*time.Time, error)
 }
 
 type UHPPOTED struct {
@@ -34,7 +28,7 @@ type UHPPOTED struct {
 }
 
 func (u *UHPPOTED) debug(ctx context.Context, deviceId int, operation string, rq Request) {
-	ctx.Value("log").(*log.Logger).Printf("DEBUG %-12d %-20s %#v\n", deviceId, operation, rq)
+	ctx.Value("log").(*log.Logger).Printf("DEBUG %-12d %-20s %s\n", deviceId, operation, rq)
 }
 
 func (u *UHPPOTED) warn(ctx context.Context, deviceId uint32, operation string, err error) {

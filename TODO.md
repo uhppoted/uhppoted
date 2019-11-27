@@ -17,10 +17,11 @@
 - [ ] watchdog
 
 - [ ] command protocol (embed auth, reply topic and request id)
-- [x] ping
-- [x] device/ping
-- [x] device/status
-- [ ] device/time [get,set]
+- [x] get-devices
+- [x] get-device
+- [x] get-status
+- [x] get-time
+- [x] set-time
 - [ ] device/door/delay [get,set]
 - [ ] device/door/control [get,set]
 - [ ] device/card [get,put,delete]
@@ -54,6 +55,7 @@
 ### uhppoted
 - [ ] websocket
 - [ ] GraphQL
+- [ ] Braid
 - [ ] MacOS launchd socket handoff
 - [ ] Linux systemd socket handoff
 
@@ -100,13 +102,14 @@
     - battery status can be (at least) 0x00, 0x01 and 0x04
 8.  Mojave/HomeKit
 9.  Phoenix UI
+10. Update build system to [CMake or Meson](http://anadoxin.org/blog/is-it-worth-using-make.html)
 10. step-ca (https://smallstep.com/blog/private-acme-server)
 11. fuse
 12. EventLogger 
     - MacOS: use [system logging](https://developer.apple.com/documentation/os/logging)
     - Windows: event logging
 13. [Streamsheets](https://github.com/cedalo/streamsheets)
-14. TLA+ models:
+14. TLA+/Alloy models:
     - watchdog/health-check
     - concurrent connections
 15. [Muon](https://github.com/ImVexed/muon) GUI

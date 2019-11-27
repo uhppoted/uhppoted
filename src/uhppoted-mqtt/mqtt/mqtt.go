@@ -6,7 +6,9 @@ import (
 	"errors"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"log"
+	"time"
 	"uhppote"
+	"uhppote/types"
 	"uhppoted"
 )
 
@@ -18,9 +20,6 @@ type MQTTD struct {
 
 type Request struct {
 	Message MQTT.Message
-	Device  struct {
-		ID uint32 `json:"id"`
-	} `json:"device"`
 }
 
 type fdispatch func(*uhppoted.UHPPOTED, context.Context, uhppoted.Request)
@@ -42,10 +41,11 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		log:     l,
 		topic:   m.Topic,
 		table: map[string]fdispatch{
-			m.Topic + "/gateway/ping":          (*uhppoted.UHPPOTED).GetDevices,
-			m.Topic + "/gateway/device/ping":   (*uhppoted.UHPPOTED).GetDevice,
-			m.Topic + "/gateway/device/status": (*uhppoted.UHPPOTED).GetStatus,
-			m.Topic + "/gateway/device/time":   (*uhppoted.UHPPOTED).GetTime,
+			m.Topic + "/devices:get":       (*uhppoted.UHPPOTED).GetDevices,
+			m.Topic + "/device:get":        (*uhppoted.UHPPOTED).GetDevice,
+			m.Topic + "/device/status:get": (*uhppoted.UHPPOTED).GetStatus,
+			m.Topic + "/device/time:get":   (*uhppoted.UHPPOTED).GetTime,
+			m.Topic + "/device/time:set":   (*uhppoted.UHPPOTED).SetTime,
 		},
 	}
 
@@ -92,7 +92,7 @@ func (m *MQTTD) listenAndServe(d *dispatcher) error {
 		return token.Error()
 	}
 
-	token = m.connection.Subscribe(m.Topic+"/gateway/#", 0, nil)
+	token = m.connection.Subscribe(m.Topic+"/#", 0, nil)
 	if token.Wait() && token.Error() != nil {
 		return token.Error()
 	}
@@ -105,10 +105,13 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 	ctx = context.WithValue(ctx, "client", client)
 	ctx = context.WithValue(ctx, "log", d.log)
 	ctx = context.WithValue(ctx, "topic", d.topic)
-	request := Request{Message: msg}
+
+	request := Request{
+		Message: msg,
+	}
 
 	if err := json.Unmarshal(msg.Payload(), &request); err != nil {
-		oops(ctx, "get-device", "Invalid message format", uhppoted.StatusBadRequest)
+		oops(ctx, "mqtt-dispatch", "Invalid message format", uhppoted.StatusBadRequest)
 		return
 	}
 
@@ -180,10 +183,34 @@ func oops(ctx context.Context, operation string, message string, errorCode int) 
 	token.Wait()
 }
 
+func (rq Request) String() string {
+	return rq.Message.Topic() + "  " + string(rq.Message.Payload())
+}
+
 func (rq *Request) DeviceId() (uint32, error) {
-	if rq.Device.ID == 0 {
+	body := struct {
+		DeviceID *uint32 `json:"device-id"`
+	}{}
+
+	if err := json.Unmarshal(rq.Message.Payload(), &body); err != nil {
+		return 0, err
+	} else if body.DeviceID == nil {
 		return 0, errors.New("Missing device ID")
 	}
 
-	return rq.Device.ID, nil
+	return *body.DeviceID, nil
+}
+
+func (rq *Request) DateTime() (*time.Time, error) {
+	body := struct {
+		DateTime *types.DateTime `json:"datetime"`
+	}{}
+
+	if err := json.Unmarshal(rq.Message.Payload(), &body); err != nil {
+		return nil, err
+	} else if body.DateTime == nil {
+		return nil, errors.New("Missing date/time")
+	}
+
+	return (*time.Time)(body.DateTime), nil
 }

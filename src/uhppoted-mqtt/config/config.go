@@ -44,7 +44,7 @@ func NewConfig() *Config {
 		BroadcastAddress: &broadcast,
 		MQTT: MQTT{
 			Broker: &broker,
-			Topic:  "twystd-uhppoted",
+			Topic:  "twystd/uhppoted/gateway",
 		},
 		Devices: make(DeviceMap, 0),
 	}

@@ -6,6 +6,7 @@ CARD ?= 6154410
 SERIALNO ?= 423187757
 DOOR ?= 3
 DIST ?= development
+DATE = `date "+%Y-%m-%d %H:%M:%S"`
 
 all: test      \
 	 benchmark \
@@ -205,19 +206,22 @@ uhppoted-mqtt-version: build
 	./bin/uhppoted-mqtt version
 
 uhppoted-mqtt-listen:
-	mqtt subscribe --topic 'twystd-uhppoted/#'
+	mqtt subscribe --topic 'twystd/uhppoted/#'
 
-uhppoted-mqtt-devices:
-	mqtt publish --topic 'twystd-uhppoted/gateway/ping' --message '{}'
+uhppoted-mqtt-get-devices:
+	mqtt publish --topic 'twystd/uhppoted/gateway/devices:get' --message '{}'
 
-uhppoted-mqtt-device:
-	mqtt publish --topic 'twystd-uhppoted/gateway/device/ping' --message '{ "device": { "id": 305419896 } }'
+uhppoted-mqtt-get-device:
+	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' --message '{ "device-id": 305419896 }'
 
-uhppoted-mqtt-status:
-	mqtt publish --topic 'twystd-uhppoted/gateway/device/status' --message '{ "device": { "id": 305419896 } }'
+uhppoted-mqtt-get-status:
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/status:get' --message '{ "device-id": 305419896 }'
 
-uhppoted-mqtt-time:
-	mqtt publish --topic 'twystd-uhppoted/gateway/device/time' --message '{ "device": { "id": 305419896 } }'
+uhppoted-mqtt-get-time:
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/time:get' --message '{ "device-id": 305419896 }'
+
+uhppoted-mqtt-set-time:
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/time:set' --message "{ \"device-id\": 305419896, \"datetime\": \"$(DATE)\" }"
 
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
