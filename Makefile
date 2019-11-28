@@ -71,7 +71,7 @@ usage: build
 debug: build
 	go clean -testcache
 #	go test -v uhppoted-mqtt...
-	go test -count=1 src/uhppote/encoding/UTO311-L0x/*.go -run TestUnmarshalArrayOfStruct
+	go test -count=1 src/uhppote/messages/*.go 
 
 help: build
 	$(CLI)       help
