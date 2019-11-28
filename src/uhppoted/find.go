@@ -80,20 +80,20 @@ func (u *UHPPOTED) GetDevice(ctx context.Context, rq Request) {
 
 	id, err := rq.DeviceId()
 	if err != nil {
-		u.warn(ctx, id, "get-device", err)
+		u.warn(ctx, 0, "get-device", err)
 		u.oops(ctx, "get-device", "Error retrieving device list (invalid device ID)", StatusBadRequest)
 		return
 	}
 
-	device, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevice(id)
+	device, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevice(*id)
 	if err != nil {
-		u.warn(ctx, id, "get-device", err)
-		u.oops(ctx, "get-device", fmt.Sprintf("Error retrieving device summary for '%d'", id), StatusInternalServerError)
+		u.warn(ctx, *id, "get-device", err)
+		u.oops(ctx, "get-device", fmt.Sprintf("Error retrieving device summary for '%d'", *id), StatusInternalServerError)
 		return
 	}
 
 	if device == nil {
-		u.warn(ctx, id, "get-device", fmt.Errorf("No device with ID '%v'", id))
+		u.warn(ctx, *id, "get-device", fmt.Errorf("No device with ID '%v'", *id))
 		u.oops(ctx, "get-device", fmt.Sprintf("Error retrieving device summary for '%d'", id), StatusNotFound)
 		return
 	}
@@ -103,7 +103,7 @@ func (u *UHPPOTED) GetDevice(ctx context.Context, rq Request) {
 			ID     uint32 `json:"id"`
 			Detail detail `json:"info"`
 		}{
-			ID: id,
+			ID: *id,
 			Detail: detail{
 				SerialNumber: device.SerialNumber,
 				DeviceType:   "UTO311-L04",

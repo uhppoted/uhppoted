@@ -23,7 +23,7 @@
 - [x] get-time
 - [x] set-time
 - [x] get-door-delay
-- [ ] set-door-delay
+- [x] set-door-delay
 - [ ] device/door/control [get,set]
 - [ ] device/card [get,put,delete]
 - [ ] device/events [get]
