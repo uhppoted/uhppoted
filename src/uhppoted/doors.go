@@ -2,7 +2,6 @@ package uhppoted
 
 import (
 	"context"
-	"fmt"
 	"uhppote"
 )
 
@@ -18,26 +17,22 @@ func (u *UHPPOTED) GetDoorDelay(ctx context.Context, rq Request) {
 	u.debug(ctx, 0, "get-door-delay", rq)
 
 	id, err := rq.DeviceId()
-	if err != nil || id == 0 {
-		u.warn(ctx, id, "get-door-delay", err)
-		u.oops(ctx, "get-time", "Error retrieving door delay (invalid device ID)", StatusBadRequest)
+	if err != nil {
+		u.warn(ctx, 0, "get-door-delay", err)
+		u.oops(ctx, "get-door-delay", "Error retrieving door delay (invalid device ID)", StatusBadRequest)
 		return
 	}
 
 	door, err := rq.Door()
 	if err != nil {
-		u.warn(ctx, id, "get-door-delay", err)
-		u.oops(ctx, "get-door-delay", "Error retrieving door delay (invalid door)", StatusBadRequest)
-		return
-	} else if door < 1 || door > 4 {
-		u.warn(ctx, id, "get-door-delay", fmt.Errorf("Invalid door: %v", door))
+		u.warn(ctx, *id, "get-door-delay", err)
 		u.oops(ctx, "get-door-delay", "Error retrieving door delay (invalid door)", StatusBadRequest)
 		return
 	}
 
-	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(id, door)
+	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(*id, *door)
 	if err != nil {
-		u.warn(ctx, id, "get-door-delay", err)
+		u.warn(ctx, *id, "get-door-delay", err)
 		u.oops(ctx, "get-door-delay", "Error retrieving door delay", StatusInternalServerError)
 		return
 	}
@@ -48,7 +43,53 @@ func (u *UHPPOTED) GetDoorDelay(ctx context.Context, rq Request) {
 			Door  uint8  `json:"door"`
 			Delay uint8  `json:"delay"`
 		}{
-			ID:    id,
+			ID:    *id,
+			Door:  result.Door,
+			Delay: result.Delay,
+		},
+	}
+
+	u.reply(ctx, response)
+}
+
+func (u *UHPPOTED) SetDoorDelay(ctx context.Context, rq Request) {
+	u.debug(ctx, 0, "set-door-delay", rq)
+
+	id, err := rq.DeviceId()
+	if err != nil {
+		u.warn(ctx, 0, "set-door-delay", err)
+		u.oops(ctx, "get-door-delay", "Error setting door delay (invalid device ID)", StatusBadRequest)
+		return
+	}
+
+	door, delay, err := rq.DoorDelay()
+	if err != nil {
+		u.warn(ctx, *id, "set-door-delay", err)
+		u.oops(ctx, "set-door-delay", "Error setting door delay (invalid door/delay)", StatusBadRequest)
+		return
+	}
+
+	state, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(*id, *door)
+	if err != nil {
+		u.warn(ctx, *id, "set-door-delay", err)
+		u.oops(ctx, "set-door-delay", "Error setting door delay (invalid delay)", StatusInternalServerError)
+		return
+	}
+
+	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).SetDoorControlState(*id, *door, state.ControlState, *delay)
+	if err != nil {
+		u.warn(ctx, *id, "set-door-delay", err)
+		u.oops(ctx, "set-door-delay", "Error setting door delay", StatusInternalServerError)
+		return
+	}
+
+	response := DoorDelay{
+		struct {
+			ID    uint32 `json:"id"`
+			Door  uint8  `json:"door"`
+			Delay uint8  `json:"delay"`
+		}{
+			ID:    *id,
 			Door:  result.Door,
 			Delay: result.Delay,
 		},

@@ -47,6 +47,7 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/time:get":       (*uhppoted.UHPPOTED).GetTime,
 			m.Topic + "/device/time:set":       (*uhppoted.UHPPOTED).SetTime,
 			m.Topic + "/device/door/delay:get": (*uhppoted.UHPPOTED).GetDoorDelay,
+			m.Topic + "/device/door/delay:set": (*uhppoted.UHPPOTED).SetDoorDelay,
 		},
 	}
 
@@ -188,18 +189,20 @@ func (rq Request) String() string {
 	return rq.Message.Topic() + "  " + string(rq.Message.Payload())
 }
 
-func (rq *Request) DeviceId() (uint32, error) {
+func (rq *Request) DeviceId() (*uint32, error) {
 	body := struct {
 		DeviceID *uint32 `json:"device-id"`
 	}{}
 
 	if err := json.Unmarshal(rq.Message.Payload(), &body); err != nil {
-		return 0, err
+		return nil, err
 	} else if body.DeviceID == nil {
-		return 0, errors.New("Missing device ID")
+		return nil, errors.New("Missing device ID")
+	} else if *body.DeviceID == 0 {
+		return nil, errors.New("Missing device ID")
 	}
 
-	return *body.DeviceID, nil
+	return body.DeviceID, nil
 }
 
 func (rq *Request) DateTime() (*time.Time, error) {
@@ -216,16 +219,38 @@ func (rq *Request) DateTime() (*time.Time, error) {
 	return (*time.Time)(body.DateTime), nil
 }
 
-func (rq *Request) Door() (uint8, error) {
+func (rq *Request) Door() (*uint8, error) {
 	body := struct {
-		Door uint8 `json:"door"`
+		Door *uint8 `json:"door"`
 	}{}
 
 	if err := json.Unmarshal(rq.Message.Payload(), &body); err != nil {
-		return 0, err
-	} else if body.Door < 1 || body.Door > 4 {
-		return 0, errors.New("Invalid door")
+		return nil, err
+	} else if body.Door == nil {
+		return nil, errors.New("Invalid door")
+	} else if *body.Door < 1 || *body.Door > 4 {
+		return nil, errors.New("Invalid door")
 	}
 
 	return body.Door, nil
+}
+func (rq *Request) DoorDelay() (*uint8, *uint8, error) {
+	body := struct {
+		Door  *uint8 `json:"door"`
+		Delay *uint8 `json:"delay"`
+	}{}
+
+	if err := json.Unmarshal(rq.Message.Payload(), &body); err != nil {
+		return nil, nil, err
+	} else if body.Door == nil {
+		return nil, nil, errors.New("Invalid door")
+	} else if *body.Door < 1 || *body.Door > 4 {
+		return nil, nil, errors.New("Invalid door")
+	} else if body.Delay == nil {
+		return nil, nil, errors.New("Invalid door delay")
+	} else if *body.Delay == 0 || *body.Delay > 60 {
+		return nil, nil, errors.New("Invalid door delay")
+	}
+
+	return body.Door, body.Delay, nil
 }

@@ -36,16 +36,16 @@ type DeviceStatus struct {
 func (u *UHPPOTED) GetStatus(ctx context.Context, rq Request) {
 	u.debug(ctx, 0, "get-status", rq)
 
-	deviceId, err := rq.DeviceId()
+	id, err := rq.DeviceId()
 	if err != nil {
-		u.warn(ctx, deviceId, "get-status", err)
+		u.warn(ctx, 0, "get-status", err)
 		u.oops(ctx, "get-status", "Error retrieving device status (invalid device ID)", StatusBadRequest)
 		return
 	}
 
-	status, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetStatus(deviceId)
+	status, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetStatus(*id)
 	if err != nil {
-		u.warn(ctx, deviceId, "get-status", err)
+		u.warn(ctx, *id, "get-status", err)
 		u.oops(ctx, "get-status", "Error retrieving device status", StatusInternalServerError)
 		return
 	}
@@ -55,7 +55,7 @@ func (u *UHPPOTED) GetStatus(ctx context.Context, rq Request) {
 			ID     uint32 `json:"id"`
 			Status Status `json:"status"`
 		}{
-			ID: deviceId,
+			ID: *id,
 			Status: Status{
 				LastEventIndex: status.LastIndex,
 				EventType:      status.EventType,
