@@ -15,6 +15,7 @@
 - [ ] MQTT v5.0
 - [ ] health check
 - [ ] watchdog
+- [ ] Clean up 'Request' implementation
 
 - [ ] command protocol (embed auth, reply topic and request id)
 - [x] get-devices
@@ -40,7 +41,6 @@
 - [ ] Rework UHPPOTE response messages to use factory
 - [ ] Rework plist encoder
 - [ ] Convert to 1.13 error handling
-- [ ] Update to use modules
 - [ ] Rework uhppoted-xxx Run, etc to use [method expressions](https://talks.golang.org/2012/10things.slide#9)
 - [x] docker: simulator
 - [x] UT0311-L0x encoding: unmarshal arrays of structs (for broadcast)
@@ -94,29 +94,30 @@
 
 ### Other
 
-1.  Rework uhppote to use bidirectional channel to serialize requests
-2.  Consistently include device serial number in output e.g. of get-time
-3.  Look into UDP multicast
-4.  Look into ARP for set-address
-5.  github project page
-6.  Integration tests
-7.  Verify fields in listen events/status replies against SDK:
+1.  Update to use modules
+2.  Rework uhppote to use bidirectional channel to serialize requests
+3.  Consistently include device serial number in output e.g. of get-time
+4.  Look into UDP multicast
+5.  Look into ARP for set-address
+6.  github project page
+7.  Integration tests
+8.  Verify fields in listen events/status replies against SDK:
     - battery status can be (at least) 0x00, 0x01 and 0x04
-8.  Mojave/HomeKit
-9.  Phoenix UI
-10. Update build system to [CMake or Meson](http://anadoxin.org/blog/is-it-worth-using-make.html)
-10. step-ca (https://smallstep.com/blog/private-acme-server)
-11. fuse
-12. EventLogger 
+9.  Mojave/HomeKit
+10.  Phoenix UI
+11. Update build system to [CMake or Meson](http://anadoxin.org/blog/is-it-worth-using-make.html)
+12. step-ca (https://smallstep.com/blog/private-acme-server)
+13. fuse
+14. EventLogger 
     - MacOS: use [system logging](https://developer.apple.com/documentation/os/logging)
     - Windows: event logging
-13. [Streamsheets](https://github.com/cedalo/streamsheets)
-14. TLA+/Alloy models:
+15. [Streamsheets](https://github.com/cedalo/streamsheets)
+16. TLA+/Alloy models:
     - watchdog/health-check
     - concurrent connections
-15. [Muon](https://github.com/ImVexed/muon) GUI
+17. [Muon](https://github.com/ImVexed/muon) GUI
     - [webview](https://github.com/zserge/webview)
-16. PDL + go generate
+18. PDL + go generate
     - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)
     - [Diva](http://www.diva-portal.org/smash/get/diva2:407713/FULLTEXT01.pdf)
     - [PADS/ML](https://pads.cs.tufts.edu/papers/tfp07.pdf)
