@@ -229,6 +229,9 @@ uhppoted-mqtt-get-door-delay:
 uhppoted-mqtt-set-door-delay:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/delay:set' --message '{ "device-id": 305419896, "door": 3, "delay": 8 }'
 
+uhppoted-mqtt-get-door-control:
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/control:get' --message '{ "device-id": 305419896, "door": 3 }'
+
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
 

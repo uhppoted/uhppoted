@@ -3,12 +3,9 @@ package mqtt
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"log"
-	"time"
 	"uhppote"
-	"uhppote/types"
 	"uhppoted"
 )
 
@@ -16,10 +13,6 @@ type MQTTD struct {
 	Broker     string
 	Topic      string
 	connection MQTT.Client
-}
-
-type Request struct {
-	Message MQTT.Message
 }
 
 type fdispatch func(*uhppoted.UHPPOTED, context.Context, uhppoted.Request)
@@ -41,13 +34,14 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		log:     l,
 		topic:   m.Topic,
 		table: map[string]fdispatch{
-			m.Topic + "/devices:get":           (*uhppoted.UHPPOTED).GetDevices,
-			m.Topic + "/device:get":            (*uhppoted.UHPPOTED).GetDevice,
-			m.Topic + "/device/status:get":     (*uhppoted.UHPPOTED).GetStatus,
-			m.Topic + "/device/time:get":       (*uhppoted.UHPPOTED).GetTime,
-			m.Topic + "/device/time:set":       (*uhppoted.UHPPOTED).SetTime,
-			m.Topic + "/device/door/delay:get": (*uhppoted.UHPPOTED).GetDoorDelay,
-			m.Topic + "/device/door/delay:set": (*uhppoted.UHPPOTED).SetDoorDelay,
+			m.Topic + "/devices:get":             (*uhppoted.UHPPOTED).GetDevices,
+			m.Topic + "/device:get":              (*uhppoted.UHPPOTED).GetDevice,
+			m.Topic + "/device/status:get":       (*uhppoted.UHPPOTED).GetStatus,
+			m.Topic + "/device/time:get":         (*uhppoted.UHPPOTED).GetTime,
+			m.Topic + "/device/time:set":         (*uhppoted.UHPPOTED).SetTime,
+			m.Topic + "/device/door/delay:get":   (*uhppoted.UHPPOTED).GetDoorDelay,
+			m.Topic + "/device/door/delay:set":   (*uhppoted.UHPPOTED).SetDoorDelay,
+			m.Topic + "/device/door/control:get": (*uhppoted.UHPPOTED).GetDoorControl,
 		},
 	}
 
@@ -183,74 +177,4 @@ func oops(ctx context.Context, operation string, message string, errorCode int) 
 
 	token := client.Publish(topic+"/gateway/errors", 0, false, string(b))
 	token.Wait()
-}
-
-func (rq Request) String() string {
-	return rq.Message.Topic() + "  " + string(rq.Message.Payload())
-}
-
-func (rq *Request) DeviceId() (*uint32, error) {
-	body := struct {
-		DeviceID *uint32 `json:"device-id"`
-	}{}
-
-	if err := json.Unmarshal(rq.Message.Payload(), &body); err != nil {
-		return nil, err
-	} else if body.DeviceID == nil {
-		return nil, errors.New("Missing device ID")
-	} else if *body.DeviceID == 0 {
-		return nil, errors.New("Missing device ID")
-	}
-
-	return body.DeviceID, nil
-}
-
-func (rq *Request) DateTime() (*time.Time, error) {
-	body := struct {
-		DateTime *types.DateTime `json:"datetime"`
-	}{}
-
-	if err := json.Unmarshal(rq.Message.Payload(), &body); err != nil {
-		return nil, err
-	} else if body.DateTime == nil {
-		return nil, errors.New("Missing date/time")
-	}
-
-	return (*time.Time)(body.DateTime), nil
-}
-
-func (rq *Request) Door() (*uint8, error) {
-	body := struct {
-		Door *uint8 `json:"door"`
-	}{}
-
-	if err := json.Unmarshal(rq.Message.Payload(), &body); err != nil {
-		return nil, err
-	} else if body.Door == nil {
-		return nil, errors.New("Invalid door")
-	} else if *body.Door < 1 || *body.Door > 4 {
-		return nil, errors.New("Invalid door")
-	}
-
-	return body.Door, nil
-}
-func (rq *Request) DoorDelay() (*uint8, *uint8, error) {
-	body := struct {
-		Door  *uint8 `json:"door"`
-		Delay *uint8 `json:"delay"`
-	}{}
-
-	if err := json.Unmarshal(rq.Message.Payload(), &body); err != nil {
-		return nil, nil, err
-	} else if body.Door == nil {
-		return nil, nil, errors.New("Invalid door")
-	} else if *body.Door < 1 || *body.Door > 4 {
-		return nil, nil, errors.New("Invalid door")
-	} else if body.Delay == nil {
-		return nil, nil, errors.New("Invalid door delay")
-	} else if *body.Delay == 0 || *body.Delay > 60 {
-		return nil, nil, errors.New("Invalid door delay")
-	}
-
-	return body.Door, body.Delay, nil
 }
