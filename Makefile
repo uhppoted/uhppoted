@@ -223,6 +223,9 @@ uhppoted-mqtt-get-time:
 uhppoted-mqtt-set-time:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/time:set' --message "{ \"device-id\": 305419896, \"datetime\": \"$(DATETIME)\" }"
 
+uhppoted-mqtt-get-door-delay:
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/delay:get' --message '{ "device-id": 305419896, "door": 3 }'
+
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
 
