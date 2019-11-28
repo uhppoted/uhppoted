@@ -25,7 +25,7 @@
 - [x] get-door-delay
 - [x] set-door-delay
 - [x] get-door-control
-- [ ] set-door-control
+- [x] set-door-control
 - [ ] device/card [get,put,delete]
 - [ ] device/events [get]
 - [ ] device/event [get]
