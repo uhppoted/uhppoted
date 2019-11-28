@@ -22,7 +22,8 @@ type Request interface {
 	DeviceId() (*uint32, error)
 	DateTime() (*time.Time, error)
 	DeviceDoor() (*uint32, *uint8, error)
-	DoorDelay() (*uint8, *uint8, error)
+	DeviceDoorDelay() (*uint32, *uint8, *uint8, error)
+	DeviceDoorControl() (*uint32, *uint8, *string, error)
 }
 
 type UHPPOTED struct {
