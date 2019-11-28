@@ -24,7 +24,8 @@
 - [x] set-time
 - [x] get-door-delay
 - [x] set-door-delay
-- [ ] device/door/control [get,set]
+- [x] get-door-control
+- [ ] set-door-control
 - [ ] device/card [get,put,delete]
 - [ ] device/events [get]
 - [ ] device/event [get]

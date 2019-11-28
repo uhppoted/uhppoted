@@ -13,20 +13,21 @@ type DoorDelay struct {
 	} `json:"device"`
 }
 
+type DoorControl struct {
+	Device struct {
+		ID           uint32 `json:"id"`
+		Door         uint8  `json:"door"`
+		ControlState string `json:"control"`
+	} `json:"device"`
+}
+
 func (u *UHPPOTED) GetDoorDelay(ctx context.Context, rq Request) {
 	u.debug(ctx, 0, "get-door-delay", rq)
 
-	id, err := rq.DeviceId()
+	id, door, err := rq.DeviceDoor()
 	if err != nil {
 		u.warn(ctx, 0, "get-door-delay", err)
-		u.oops(ctx, "get-door-delay", "Error retrieving door delay (invalid device ID)", StatusBadRequest)
-		return
-	}
-
-	door, err := rq.Door()
-	if err != nil {
-		u.warn(ctx, *id, "get-door-delay", err)
-		u.oops(ctx, "get-door-delay", "Error retrieving door delay (invalid door)", StatusBadRequest)
+		u.oops(ctx, "get-door-delay", "Error retrieving door delay (invalid device/door)", StatusBadRequest)
 		return
 	}
 
@@ -98,77 +99,44 @@ func (u *UHPPOTED) SetDoorDelay(ctx context.Context, rq Request) {
 	u.reply(ctx, response)
 }
 
-// func setDoorDelay(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-// 	deviceId := ctx.Value("device-id").(uint32)
-// 	door := ctx.Value("door").(uint8)
-//
-// 	blob, err := ioutil.ReadAll(r.Body)
-// 	if err != nil {
-// 		warn(ctx, deviceId, "set-door-delay", err)
-// 		http.Error(w, "Error reading request", http.StatusInternalServerError)
-// 		return
-// 	}
-//
-// 	body := struct {
-// 		Delay uint8 `json:"delay"`
-// 	}{}
-//
-// 	err = json.Unmarshal(blob, &body)
-// 	if err != nil {
-// 		warn(ctx, deviceId, "set-door-delay", err)
-// 		http.Error(w, "Invalid request format", http.StatusBadRequest)
-// 		return
-// 	}
-//
-// 	state, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(deviceId, door)
-// 	if err != nil {
-// 		warn(ctx, deviceId, "set-door-delay", err)
-// 		http.Error(w, "Error setting door delay", http.StatusInternalServerError)
-// 		return
-// 	}
-//
-// 	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).SetDoorControlState(deviceId, door, state.ControlState, body.Delay)
-// 	if err != nil {
-// 		warn(ctx, deviceId, "set-door-delay", err)
-// 		http.Error(w, "Error setting door delay", http.StatusInternalServerError)
-// 		return
-// 	}
-//
-// 	response := struct {
-// 		Delay uint8 `json:"delay"`
-// 	}{
-// 		Delay: result.Delay,
-// 	}
-//
-// 	reply(ctx, w, response)
-// }
-//
-// func getDoorControl(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-// 	lookup := map[uint8]string{
-// 		1: "normally open",
-// 		2: "normally closed",
-// 		3: "controlled",
-// 	}
-//
-// 	deviceId := ctx.Value("device-id").(uint32)
-// 	door := ctx.Value("door").(uint8)
-//
-// 	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(deviceId, door)
-// 	if err != nil {
-// 		warn(ctx, deviceId, "get-door-control", err)
-// 		http.Error(w, "Error retrieving door control", http.StatusInternalServerError)
-// 		return
-// 	}
-//
-// 	response := struct {
-// 		ControlState string `json:"control"`
-// 	}{
-// 		ControlState: lookup[result.ControlState],
-// 	}
-//
-// 	reply(ctx, w, response)
-// }
-//
+func (u *UHPPOTED) GetDoorControl(ctx context.Context, rq Request) {
+	u.debug(ctx, 0, "get-door-control", rq)
+
+	id, door, err := rq.DeviceDoor()
+	if err != nil {
+		u.warn(ctx, *id, "get-door-control", err)
+		u.oops(ctx, "get-door-control", "Error retrieving door control (invalid device/door)", StatusBadRequest)
+		return
+	}
+
+	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(*id, *door)
+	if err != nil {
+		u.warn(ctx, *id, "get-door-control", err)
+		u.oops(ctx, "get-door-control", "Error retrieving door control", StatusInternalServerError)
+		return
+	}
+
+	lookup := map[uint8]string{
+		1: "normally open",
+		2: "normally closed",
+		3: "controlled",
+	}
+
+	response := DoorControl{
+		struct {
+			ID           uint32 `json:"id"`
+			Door         uint8  `json:"door"`
+			ControlState string `json:"control"`
+		}{
+			ID:           *id,
+			Door:         result.Door,
+			ControlState: lookup[result.ControlState],
+		},
+	}
+
+	u.reply(ctx, response)
+}
+
 // func setDoorControl(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 // 	states := map[string]uint8{
 // 		"normally open":   1,

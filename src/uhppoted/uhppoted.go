@@ -21,7 +21,7 @@ type Service interface {
 type Request interface {
 	DeviceId() (*uint32, error)
 	DateTime() (*time.Time, error)
-	Door() (*uint8, error)
+	DeviceDoor() (*uint32, *uint8, error)
 	DoorDelay() (*uint8, *uint8, error)
 }
 
