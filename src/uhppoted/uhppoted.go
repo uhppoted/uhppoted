@@ -21,6 +21,7 @@ type Service interface {
 type Request interface {
 	DeviceId() (uint32, error)
 	DateTime() (*time.Time, error)
+	Door() (uint8, error)
 }
 
 type UHPPOTED struct {

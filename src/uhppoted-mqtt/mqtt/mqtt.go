@@ -41,11 +41,12 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		log:     l,
 		topic:   m.Topic,
 		table: map[string]fdispatch{
-			m.Topic + "/devices:get":       (*uhppoted.UHPPOTED).GetDevices,
-			m.Topic + "/device:get":        (*uhppoted.UHPPOTED).GetDevice,
-			m.Topic + "/device/status:get": (*uhppoted.UHPPOTED).GetStatus,
-			m.Topic + "/device/time:get":   (*uhppoted.UHPPOTED).GetTime,
-			m.Topic + "/device/time:set":   (*uhppoted.UHPPOTED).SetTime,
+			m.Topic + "/devices:get":           (*uhppoted.UHPPOTED).GetDevices,
+			m.Topic + "/device:get":            (*uhppoted.UHPPOTED).GetDevice,
+			m.Topic + "/device/status:get":     (*uhppoted.UHPPOTED).GetStatus,
+			m.Topic + "/device/time:get":       (*uhppoted.UHPPOTED).GetTime,
+			m.Topic + "/device/time:set":       (*uhppoted.UHPPOTED).SetTime,
+			m.Topic + "/device/door/delay:get": (*uhppoted.UHPPOTED).GetDoorDelay,
 		},
 	}
 
@@ -63,7 +64,7 @@ func (m *MQTTD) Close(l *log.Logger) {
 		log.Printf("... closing connection to %s", m.Broker)
 		token := m.connection.Unsubscribe(m.Topic + "/#")
 		if token.Wait() && token.Error() != nil {
-			l.Printf("WARN: Error unsubscribing from topic' %s': %v", "twystd-uhppote", token.Error())
+			l.Printf("WARN: Error unsubscribing from topic' %s': %v", m.Topic, token.Error())
 		}
 
 		m.connection.Disconnect(250)
@@ -213,4 +214,18 @@ func (rq *Request) DateTime() (*time.Time, error) {
 	}
 
 	return (*time.Time)(body.DateTime), nil
+}
+
+func (rq *Request) Door() (uint8, error) {
+	body := struct {
+		Door uint8 `json:"door"`
+	}{}
+
+	if err := json.Unmarshal(rq.Message.Payload(), &body); err != nil {
+		return 0, err
+	} else if body.Door < 1 || body.Door > 4 {
+		return 0, errors.New("Invalid door")
+	}
+
+	return body.Door, nil
 }
