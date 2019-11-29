@@ -24,6 +24,7 @@ type Request interface {
 	DeviceDoor() (*uint32, *uint8, error)
 	DeviceDoorDelay() (*uint32, *uint8, *uint8, error)
 	DeviceDoorControl() (*uint32, *uint8, *string, error)
+	DeviceCard() (*uint32, *uint32, error)
 }
 
 type UHPPOTED struct {

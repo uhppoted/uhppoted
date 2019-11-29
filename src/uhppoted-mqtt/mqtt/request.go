@@ -134,3 +134,26 @@ func (rq *Request) DeviceDoorControl() (*uint32, *uint8, *string, error) {
 
 	return body.DeviceID, body.Door, body.ControlState, nil
 }
+
+func (rq *Request) DeviceCard() (*uint32, *uint32, error) {
+	body := struct {
+		DeviceID   *uint32 `json:"device-id"`
+		CardNumber *uint32 `json:"card-number"`
+	}{}
+
+	if err := json.Unmarshal(rq.Message.Payload(), &body); err != nil {
+		return nil, nil, err
+	}
+
+	if body.DeviceID == nil {
+		return nil, nil, errors.New("Missing device ID")
+	} else if *body.DeviceID == 0 {
+		return nil, nil, errors.New("Missing device ID")
+	}
+
+	if body.CardNumber == nil {
+		return nil, nil, errors.New("Invalid card number")
+	}
+
+	return body.DeviceID, body.CardNumber, nil
+}

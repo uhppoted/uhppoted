@@ -2,7 +2,9 @@ package uhppoted
 
 import (
 	"context"
+	"fmt"
 	"uhppote"
+	"uhppote/types"
 )
 
 type CardList struct {
@@ -12,13 +14,20 @@ type CardList struct {
 	} `json:"device"`
 }
 
+type Card struct {
+	Device struct {
+		ID   uint32     `json:"id"`
+		Card types.Card `json:"card"`
+	} `json:"device"`
+}
+
 func (u *UHPPOTED) GetCards(ctx context.Context, rq Request) {
 	u.debug(ctx, 0, "get-cards", rq)
 
 	id, err := rq.DeviceId()
 	if err != nil {
 		u.warn(ctx, 0, "get-cards", err)
-		u.oops(ctx, "get-cards", "Error retrieving cards (invalid device ID)", StatusBadRequest)
+		u.oops(ctx, "get-cards", "Missing/invalid device ID)", StatusBadRequest)
 		return
 	}
 
@@ -55,63 +64,42 @@ func (u *UHPPOTED) GetCards(ctx context.Context, rq Request) {
 	u.reply(ctx, response)
 }
 
-//func getCards(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-//	deviceId := ctx.Value("device-id").(uint32)
-//
-//	N, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCards(deviceId)
-//	if err != nil {
-//		warn(ctx, deviceId, "get-cards", err)
-//		http.Error(w, "Error retrieving cards", http.StatusInternalServerError)
-//		return
-//	}
-//
-//	cards := make([]uint32, 0)
-//
-//	for index := uint32(0); index < N.Records; index++ {
-//		record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCardByIndex(deviceId, index+1)
-//		if err != nil {
-//			warn(ctx, deviceId, "get-card-by-index", err)
-//			http.Error(w, "Error retrieving cards", http.StatusInternalServerError)
-//			return
-//		}
-//
-//		cards = append(cards, record.CardNumber)
-//	}
-//
-//	response := struct {
-//		Cards []uint32 `json:"cards"`
-//	}{
-//		Cards: cards,
-//	}
-//
-//	reply(ctx, w, response)
-//}
+func (u *UHPPOTED) GetCard(ctx context.Context, rq Request) {
+	u.debug(ctx, 0, "get-card", rq)
 
-//func getCard(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-//	deviceId := ctx.Value("device-id").(uint32)
-//	cardNumber := ctx.Value("card-number").(uint32)
-//
-//	card, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCardById(deviceId, cardNumber)
-//	if err != nil {
-//		warn(ctx, deviceId, "get-card-by-id", err)
-//		http.Error(w, "Error retrieving card", http.StatusInternalServerError)
-//		return
-//	}
-//
-//	if card == nil {
-//		http.Error(w, "Card record does not exist", http.StatusNotFound)
-//		return
-//	}
-//
-//	response := struct {
-//		Card types.Card `json:"card"`
-//	}{
-//		Card: *card,
-//	}
-//
-//	reply(ctx, w, response)
-//}
-//
+	id, cardnumber, err := rq.DeviceCard()
+	if err != nil {
+		u.warn(ctx, 0, "get-card", err)
+		u.oops(ctx, "get-card", "Missing/invalid device ID or card number)", StatusBadRequest)
+		return
+	}
+
+	card, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCardById(*id, *cardnumber)
+	if err != nil {
+		u.warn(ctx, *id, "get-card", err)
+		u.oops(ctx, "get-card", "Error retrieving card", StatusInternalServerError)
+		return
+	}
+
+	if card == nil {
+		u.warn(ctx, *id, "get-card", fmt.Errorf("No record for card %d", *cardnumber))
+		u.oops(ctx, "get-card", fmt.Sprintf("No record for card %d", *cardnumber), StatusNotFound)
+		return
+	}
+
+	response := Card{
+		struct {
+			ID   uint32     `json:"id"`
+			Card types.Card `json:"card"`
+		}{
+			ID:   *id,
+			Card: *card,
+		},
+	}
+
+	u.reply(ctx, response)
+}
+
 //func deleteCards(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 //	deviceId := ctx.Value("device-id").(uint32)
 //
