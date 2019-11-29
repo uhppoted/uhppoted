@@ -29,7 +29,7 @@
 - [x] set-door-control
 - [x] get-cards
 - [x] get-card
-- [ ] put-card
+- [x] put-card
 - [ ] delete-card
 - [ ] delete-cards
 - [ ] device/events [get]
