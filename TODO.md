@@ -28,13 +28,15 @@
 - [x] get-door-control
 - [x] set-door-control
 - [x] get-cards
-- [ ] get-card
+- [x] get-card
 - [ ] add-card
 - [ ] delete-card
+- [ ] delete-cards
 - [ ] device/events [get]
 - [ ] device/event [get]
 
 - [ ] uhppoted-rest: PUT card
+- [ ] uhppoted-rest: DELETE card
 - [ ] commonalise functionality with uhppoted-rest
 
 - [x] conf file decoder with reflection

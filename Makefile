@@ -238,6 +238,9 @@ uhppoted-mqtt-set-door-control:
 uhppoted-mqtt-get-cards:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/cards:get' --message '{ "device-id": 305419896 }'
 
+uhppoted-mqtt-get-card:
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:get' --message '{ "device-id": 305419896, "card-number": 65537 }'
+
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
 
