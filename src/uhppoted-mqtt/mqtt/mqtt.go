@@ -44,6 +44,7 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/door/control:get": (*uhppoted.UHPPOTED).GetDoorControl,
 			m.Topic + "/device/door/control:set": (*uhppoted.UHPPOTED).SetDoorControl,
 			m.Topic + "/device/cards:get":        (*uhppoted.UHPPOTED).GetCards,
+			m.Topic + "/device/cards:delete":     (*uhppoted.UHPPOTED).DeleteCards,
 			m.Topic + "/device/card:get":         (*uhppoted.UHPPOTED).GetCard,
 			m.Topic + "/device/card:put":         (*uhppoted.UHPPOTED).PutCard,
 			m.Topic + "/device/card:delete":      (*uhppoted.UHPPOTED).DeleteCard,
