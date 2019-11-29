@@ -78,7 +78,7 @@ func (u *UHPPOTED) GetDevices(ctx context.Context, rq Request) {
 func (u *UHPPOTED) GetDevice(ctx context.Context, rq Request) {
 	u.debug(ctx, 0, "get-device", rq)
 
-	id, err := rq.DeviceId()
+	id, err := rq.DeviceID()
 	if err != nil {
 		u.warn(ctx, 0, "get-device", err)
 		u.oops(ctx, "get-device", "Error retrieving device list (invalid device ID)", StatusBadRequest)

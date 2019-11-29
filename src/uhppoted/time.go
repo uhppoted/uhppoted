@@ -16,7 +16,7 @@ type DeviceTime struct {
 func (u *UHPPOTED) GetTime(ctx context.Context, rq Request) {
 	u.debug(ctx, 0, "get-time", rq)
 
-	id, err := rq.DeviceId()
+	id, err := rq.DeviceID()
 	if err != nil {
 		u.warn(ctx, 0, "get-time", err)
 		u.oops(ctx, "get-time", "Error retrieving device time (invalid device ID)", StatusBadRequest)
@@ -46,7 +46,7 @@ func (u *UHPPOTED) GetTime(ctx context.Context, rq Request) {
 func (u *UHPPOTED) SetTime(ctx context.Context, rq Request) {
 	u.debug(ctx, 0, "set-time", rq)
 
-	id, err := rq.DeviceId()
+	id, err := rq.DeviceID()
 	if err != nil {
 		u.warn(ctx, 0, "set-time", err)
 		u.oops(ctx, "set-time", "Error setting device time (invalid device ID)", StatusBadRequest)

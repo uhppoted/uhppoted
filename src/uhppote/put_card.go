@@ -3,21 +3,20 @@ package uhppote
 import (
 	"errors"
 	"fmt"
-	"time"
 	"uhppote/messages"
 	"uhppote/types"
 )
 
-func (u *UHPPOTE) PutCard(serialNumber, cardNumber uint32, from, to time.Time, door1, door2, door3, door4 bool) (*types.Result, error) {
+func (u *UHPPOTE) PutCard(serialNumber uint32, card types.Card) (*types.Result, error) {
 	request := messages.PutCardRequest{
 		SerialNumber: types.SerialNumber(serialNumber),
-		CardNumber:   cardNumber,
-		From:         types.Date(from),
-		To:           types.Date(to),
-		Door1:        door1,
-		Door2:        door2,
-		Door3:        door3,
-		Door4:        door4,
+		CardNumber:   card.CardNumber,
+		From:         card.From,
+		To:           card.To,
+		Door1:        card.Doors[0],
+		Door2:        card.Doors[1],
+		Door3:        card.Doors[2],
+		Door4:        card.Doors[3],
 	}
 
 	reply := messages.PutCardResponse{}
