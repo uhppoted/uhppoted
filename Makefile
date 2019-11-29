@@ -244,6 +244,9 @@ uhppoted-mqtt-get-card:
 uhppoted-mqtt-put-card:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:put' --message '{ "device-id": 305419896, "card-number": 1327679, "from": "2019-11-01", "to": "2019-12-31", "doors": [1,4] }'
 
+uhppoted-mqtt-delete-card:
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:delete' --message '{ "device-id": 305419896, "card-number": 1327679 }'
+
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
 
