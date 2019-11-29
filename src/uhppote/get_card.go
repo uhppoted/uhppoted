@@ -3,7 +3,6 @@ package uhppote
 import (
 	"errors"
 	"fmt"
-	codec "uhppote/encoding/UTO311-L0x"
 	"uhppote/messages"
 	"uhppote/types"
 )
@@ -19,10 +18,9 @@ func (u *UHPPOTE) GetCardByIndex(serialNumber, index uint32) (*types.Card, error
 		return nil, err
 	}
 
-	response := messages.GetCardByIndexResponse{}
-	err = codec.Unmarshal(reply, &response)
-	if err != nil {
-		return nil, err
+	response, ok := reply.(*messages.GetCardByIndexResponse)
+	if !ok {
+		return nil, errors.New("Invalid response to GetCardByIndex")
 	}
 
 	if uint32(response.SerialNumber) != serialNumber {
@@ -60,10 +58,9 @@ func (u *UHPPOTE) GetCardById(serialNumber, cardNumber uint32) (*types.Card, err
 		return nil, err
 	}
 
-	response := messages.GetCardByIdResponse{}
-	err = codec.Unmarshal(reply, &response)
-	if err != nil {
-		return nil, err
+	response, ok := reply.(*messages.GetCardByIdResponse)
+	if !ok {
+		return nil, errors.New("Invalid response to GetCardById")
 	}
 
 	if uint32(response.SerialNumber) != serialNumber {

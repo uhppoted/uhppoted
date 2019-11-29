@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"time"
 	codec "uhppote/encoding/UTO311-L0x"
+	"uhppote/messages"
 )
 
 var VERSION = "v0.05.0"
@@ -20,7 +21,7 @@ type UHPPOTE struct {
 	Debug            bool
 }
 
-func (u *UHPPOTE) Send(serialNumber uint32, request interface{}) ([]byte, error) {
+func (u *UHPPOTE) Send(serialNumber uint32, request interface{}) (messages.Response, error) {
 	bind := u.bindAddress()
 	dest := u.Devices[serialNumber]
 
@@ -30,34 +31,38 @@ func (u *UHPPOTE) Send(serialNumber uint32, request interface{}) ([]byte, error)
 
 	c, err := u.open(bind)
 	if err != nil {
-		return []byte{}, err
+		return nil, err
 	}
 
 	defer func() {
 		c.Close()
 	}()
 
-	if err = u.send(c, dest, request); err == nil {
-		m := make([]byte, 2048)
-
-		err := c.SetDeadline(time.Now().Add(5000 * time.Millisecond))
-		if err != nil {
-			return []byte{}, errors.New(fmt.Sprintf("Failed to set UDP timeout [%v]", err))
-		}
-
-		N, remote, err := c.ReadFromUDP(m)
-		if err != nil {
-			return []byte{}, errors.New(fmt.Sprintf("Failed to read from UDP socket [%v]", err))
-		}
-
-		if u.Debug {
-			fmt.Printf(" ... received %v bytes from %v\n ... response\n%s\n", N, remote, dump(m[:N], " ...          "))
-		}
-
-		return m[:N], nil
+	if err = u.send(c, dest, request); err != nil {
+		return nil, err
 	}
 
-	return []byte{}, err
+	err = c.SetDeadline(time.Now().Add(5000 * time.Millisecond))
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Failed to set UDP timeout [%v]", err))
+	}
+
+	m := make([]byte, 2048)
+	N, remote, err := c.ReadFromUDP(m)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Failed to read from UDP socket [%v]", err))
+	}
+
+	if u.Debug {
+		fmt.Printf(" ... received %v bytes from %v\n ... response\n%s\n", N, remote, dump(m[:N], " ...          "))
+	}
+
+	response, err := messages.UnmarshalResponse(m[:N])
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
 
 func (u *UHPPOTE) Execute(serialNumber uint32, request, reply interface{}) error {
