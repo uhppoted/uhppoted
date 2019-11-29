@@ -235,6 +235,9 @@ uhppoted-mqtt-get-door-control:
 uhppoted-mqtt-set-door-control:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/control:set' --message '{ "device-id": 305419896, "door": 3, "control": "normally closed" }'
 
+uhppoted-mqtt-get-cards:
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/cards:get' --message '{ "device-id": 305419896 }'
+
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
 
