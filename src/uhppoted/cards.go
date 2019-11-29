@@ -14,7 +14,7 @@ type CardList struct {
 	} `json:"device"`
 }
 
-type Card struct {
+type GetCardResponse struct {
 	Device struct {
 		ID   uint32     `json:"id"`
 		Card types.Card `json:"card"`
@@ -26,6 +26,14 @@ type PutCardResponse struct {
 		ID         uint32 `json:"id"`
 		CardNumber uint32 `json:"card-number"`
 		Authorized bool   `json:"authorized"`
+	} `json:"device"`
+}
+
+type DeleteCardResponse struct {
+	Device struct {
+		ID         uint32 `json:"id"`
+		CardNumber uint32 `json:"card-number"`
+		Deleted    bool   `json:"deleted"`
 	} `json:"device"`
 }
 
@@ -95,7 +103,7 @@ func (u *UHPPOTED) GetCard(ctx context.Context, rq Request) {
 		return
 	}
 
-	response := Card{
+	response := GetCardResponse{
 		struct {
 			ID   uint32     `json:"id"`
 			Card types.Card `json:"card"`
@@ -140,6 +148,38 @@ func (u *UHPPOTED) PutCard(ctx context.Context, rq Request) {
 	u.reply(ctx, response)
 }
 
+func (u *UHPPOTED) DeleteCard(ctx context.Context, rq Request) {
+	u.debug(ctx, 0, "delete-card", rq)
+
+	id, cardnumber, err := rq.DeviceCardID()
+	if err != nil {
+		u.warn(ctx, 0, "delete-card", err)
+		u.oops(ctx, "delete-card", "Missing/invalid device ID or card number)", StatusBadRequest)
+		return
+	}
+
+	deleted, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).DeleteCard(*id, *cardnumber)
+	if err != nil {
+		u.warn(ctx, *id, "delete-card", err)
+		u.oops(ctx, "delete-card", "Error deleting card", StatusInternalServerError)
+		return
+	}
+
+	response := DeleteCardResponse{
+		struct {
+			ID         uint32 `json:"id"`
+			CardNumber uint32 `json:"card-number"`
+			Deleted    bool   `json:"deleted"`
+		}{
+			ID:         *id,
+			CardNumber: *cardnumber,
+			Deleted:    deleted.Succeeded,
+		},
+	}
+
+	u.reply(ctx, response)
+}
+
 //func deleteCards(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 //	deviceId := ctx.Value("device-id").(uint32)
 //
@@ -153,24 +193,6 @@ func (u *UHPPOTED) PutCard(ctx context.Context, rq Request) {
 //	if !result.Succeeded {
 //		warn(ctx, deviceId, "delete-cards", errors.New("Request failed"))
 //		http.Error(w, "Error deleting cards", http.StatusInternalServerError)
-//		return
-//	}
-//}
-//
-//func deleteCard(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-//	deviceId := ctx.Value("device-id").(uint32)
-//	cardNumber := ctx.Value("card-number").(uint32)
-//
-//	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).DeleteCard(deviceId, cardNumber)
-//	if err != nil {
-//		warn(ctx, deviceId, "delete-card-by-id", err)
-//		http.Error(w, "Error retrieving card", http.StatusInternalServerError)
-//		return
-//	}
-//
-//	if !result.Succeeded {
-//		warn(ctx, deviceId, "delete-card", errors.New("Request failed"))
-//		http.Error(w, "Error deleting card", http.StatusInternalServerError)
 //		return
 //	}
 //}

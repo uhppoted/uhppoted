@@ -30,7 +30,7 @@
 - [x] get-cards
 - [x] get-card
 - [x] put-card
-- [ ] delete-card
+- [x] delete-card
 - [ ] delete-cards
 - [ ] device/events [get]
 - [ ] device/event [get]
