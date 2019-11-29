@@ -16,7 +16,7 @@ func (rq Request) String() string {
 	return rq.Message.Topic() + "  " + string(rq.Message.Payload())
 }
 
-func (rq *Request) DeviceId() (*uint32, error) {
+func (rq *Request) DeviceID() (*uint32, error) {
 	body := struct {
 		DeviceID *uint32 `json:"device-id"`
 	}{}
@@ -135,7 +135,7 @@ func (rq *Request) DeviceDoorControl() (*uint32, *uint8, *string, error) {
 	return body.DeviceID, body.Door, body.ControlState, nil
 }
 
-func (rq *Request) DeviceCard() (*uint32, *uint32, error) {
+func (rq *Request) DeviceCardID() (*uint32, *uint32, error) {
 	body := struct {
 		DeviceID   *uint32 `json:"device-id"`
 		CardNumber *uint32 `json:"card-number"`
@@ -156,4 +156,50 @@ func (rq *Request) DeviceCard() (*uint32, *uint32, error) {
 	}
 
 	return body.DeviceID, body.CardNumber, nil
+}
+
+func (rq *Request) DeviceCard() (*uint32, *types.Card, error) {
+	body := struct {
+		DeviceID   *uint32     `json:"device-id"`
+		CardNumber *uint32     `json:"card-number"`
+		From       *types.Date `json:"from"`
+		To         *types.Date `json:"to"`
+		Doors      []uint8     `json:"doors"`
+	}{}
+
+	if err := json.Unmarshal(rq.Message.Payload(), &body); err != nil {
+		return nil, nil, err
+	}
+
+	if body.DeviceID == nil {
+		return nil, nil, errors.New("Missing device ID")
+	} else if *body.DeviceID == 0 {
+		return nil, nil, errors.New("Missing device ID")
+	}
+
+	if body.CardNumber == nil {
+		return nil, nil, errors.New("Invalid card number")
+	}
+
+	if body.From == nil {
+		return nil, nil, errors.New("Invalid card 'from' date")
+	}
+
+	if body.To == nil {
+		return nil, nil, errors.New("Invalid card 'to' date")
+	}
+
+	doors := []bool{false, false, false, false}
+	for _, door := range body.Doors {
+		if door >= 1 && door <= 4 {
+			doors[door-1] = true
+		}
+	}
+
+	return body.DeviceID, &types.Card{
+		CardNumber: *body.CardNumber,
+		From:       *body.From,
+		To:         *body.To,
+		Doors:      doors,
+	}, nil
 }

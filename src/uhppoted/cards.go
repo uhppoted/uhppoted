@@ -21,10 +21,18 @@ type Card struct {
 	} `json:"device"`
 }
 
+type PutCardResponse struct {
+	Device struct {
+		ID         uint32 `json:"id"`
+		CardNumber uint32 `json:"card-number"`
+		Authorized bool   `json:"authorized"`
+	} `json:"device"`
+}
+
 func (u *UHPPOTED) GetCards(ctx context.Context, rq Request) {
 	u.debug(ctx, 0, "get-cards", rq)
 
-	id, err := rq.DeviceId()
+	id, err := rq.DeviceID()
 	if err != nil {
 		u.warn(ctx, 0, "get-cards", err)
 		u.oops(ctx, "get-cards", "Missing/invalid device ID)", StatusBadRequest)
@@ -67,7 +75,7 @@ func (u *UHPPOTED) GetCards(ctx context.Context, rq Request) {
 func (u *UHPPOTED) GetCard(ctx context.Context, rq Request) {
 	u.debug(ctx, 0, "get-card", rq)
 
-	id, cardnumber, err := rq.DeviceCard()
+	id, cardnumber, err := rq.DeviceCardID()
 	if err != nil {
 		u.warn(ctx, 0, "get-card", err)
 		u.oops(ctx, "get-card", "Missing/invalid device ID or card number)", StatusBadRequest)
@@ -94,6 +102,38 @@ func (u *UHPPOTED) GetCard(ctx context.Context, rq Request) {
 		}{
 			ID:   *id,
 			Card: *card,
+		},
+	}
+
+	u.reply(ctx, response)
+}
+
+func (u *UHPPOTED) PutCard(ctx context.Context, rq Request) {
+	u.debug(ctx, 0, "put-card", rq)
+
+	id, card, err := rq.DeviceCard()
+	if err != nil {
+		u.warn(ctx, 0, "put-card", err)
+		u.oops(ctx, "put-card", "Missing/invalid device ID or card information)", StatusBadRequest)
+		return
+	}
+
+	authorized, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).PutCard(*id, *card)
+	if err != nil {
+		u.warn(ctx, *id, "put-card", err)
+		u.oops(ctx, "put-card", "Error adding/updating card", StatusInternalServerError)
+		return
+	}
+
+	response := PutCardResponse{
+		struct {
+			ID         uint32 `json:"id"`
+			CardNumber uint32 `json:"card-number"`
+			Authorized bool   `json:"authorized"`
+		}{
+			ID:         *id,
+			CardNumber: card.CardNumber,
+			Authorized: authorized.Succeeded,
 		},
 	}
 

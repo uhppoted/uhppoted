@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"uhppote/types"
 )
 
 type GrantCommand struct {
@@ -33,7 +34,12 @@ func (c *GrantCommand) Execute(ctx Context) error {
 		return err
 	}
 
-	authorised, err := ctx.uhppote.PutCard(serialNumber, cardNumber, *from, *to, permissions[0], permissions[1], permissions[2], permissions[3])
+	authorised, err := ctx.uhppote.PutCard(serialNumber, types.Card{
+		CardNumber: cardNumber,
+		From:       types.Date(*from),
+		To:         types.Date(*to),
+		Doors:      []bool{permissions[0], permissions[1], permissions[2], permissions[3]},
+	})
 
 	if err == nil {
 		fmt.Printf("%v\n", authorised)

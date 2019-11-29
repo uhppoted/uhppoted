@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"reflect"
-	"time"
 	"uhppote-cli/config"
 	"uhppote-cli/parsers"
 	"uhppote/types"
@@ -161,14 +160,25 @@ func compare(master, device map[uint32]*types.Card) diff {
 
 func merge(serialNumber uint32, d diff, ctx *Context) error {
 	for _, card := range d.add {
-		_, err := ctx.uhppote.PutCard(serialNumber, card.CardNumber, time.Time(card.From), time.Time(card.To), card.Doors[0], card.Doors[1], card.Doors[2], card.Doors[3])
+		_, err := ctx.uhppote.PutCard(serialNumber, types.Card{
+			CardNumber: card.CardNumber,
+			From:       card.From,
+			To:         card.To,
+			Doors:      card.Doors,
+		})
+
 		if err != nil {
 			return err
 		}
 	}
 
 	for _, card := range d.update {
-		_, err := ctx.uhppote.PutCard(serialNumber, card.CardNumber, time.Time(card.From), time.Time(card.To), card.Doors[0], card.Doors[1], card.Doors[2], card.Doors[3])
+		_, err := ctx.uhppote.PutCard(serialNumber, types.Card{
+			CardNumber: card.CardNumber,
+			From:       card.From,
+			To:         card.To,
+			Doors:      card.Doors,
+		})
 		if err != nil {
 			return err
 		}
