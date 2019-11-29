@@ -37,6 +37,13 @@ type DeleteCardResponse struct {
 	} `json:"device"`
 }
 
+type DeleteCardsResponse struct {
+	Device struct {
+		ID      uint32 `json:"id"`
+		Deleted bool   `json:"deleted"`
+	} `json:"device"`
+}
+
 func (u *UHPPOTED) GetCards(ctx context.Context, rq Request) {
 	u.debug(ctx, 0, "get-cards", rq)
 
@@ -74,6 +81,36 @@ func (u *UHPPOTED) GetCards(ctx context.Context, rq Request) {
 		}{
 			ID:    *id,
 			Cards: cards,
+		},
+	}
+
+	u.reply(ctx, response)
+}
+
+func (u *UHPPOTED) DeleteCards(ctx context.Context, rq Request) {
+	u.debug(ctx, 0, "delete-cards", rq)
+
+	id, err := rq.DeviceID()
+	if err != nil {
+		u.warn(ctx, 0, "delete-cards", err)
+		u.oops(ctx, "delete-cards", "Missing/invalid device ID)", StatusBadRequest)
+		return
+	}
+
+	deleted, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).DeleteCards(*id)
+	if err != nil {
+		u.warn(ctx, *id, "delete-cards", err)
+		u.oops(ctx, "delete-cards", "Error deleting cards", StatusInternalServerError)
+		return
+	}
+
+	response := DeleteCardsResponse{
+		struct {
+			ID      uint32 `json:"id"`
+			Deleted bool   `json:"deleted"`
+		}{
+			ID:      *id,
+			Deleted: deleted.Succeeded,
 		},
 	}
 
@@ -179,20 +216,3 @@ func (u *UHPPOTED) DeleteCard(ctx context.Context, rq Request) {
 
 	u.reply(ctx, response)
 }
-
-//func deleteCards(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-//	deviceId := ctx.Value("device-id").(uint32)
-//
-//	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).DeleteCards(deviceId)
-//	if err != nil {
-//		warn(ctx, deviceId, "delete-cards", err)
-//		http.Error(w, "Error deleting cards", http.StatusInternalServerError)
-//		return
-//	}
-//
-//	if !result.Succeeded {
-//		warn(ctx, deviceId, "delete-cards", errors.New("Request failed"))
-//		http.Error(w, "Error deleting cards", http.StatusInternalServerError)
-//		return
-//	}
-//}
