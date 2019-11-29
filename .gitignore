@@ -8,8 +8,8 @@ pkg
 dist
 runtime
 docker/simulator/uhppote-simulator
-docker/rest/uhppote-simulator
-docker/rest/uhppoted-rest
+docker/uhppoted-rest/uhppote-simulator
+docker/uhppoted-rest/uhppoted-rest
 *.exe
 *.exe~
 *.dll
