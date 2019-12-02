@@ -253,6 +253,9 @@ uhppoted-mqtt-delete-card:
 uhppoted-mqtt-get-events:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896 }'
 
+uhppoted-mqtt-get-event:
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' --message '{ "device-id": 305419896, "event-id": 58 }'
+
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
 

@@ -27,6 +27,7 @@ type Request interface {
 	DeviceDoorControl() (*uint32, *uint8, *string, error)
 	DeviceCardID() (*uint32, *uint32, error)
 	DeviceCard() (*uint32, *types.Card, error)
+	DeviceEventID() (*uint32, *uint32, error)
 }
 
 type UHPPOTED struct {

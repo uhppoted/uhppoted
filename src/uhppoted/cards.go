@@ -7,7 +7,7 @@ import (
 	"uhppote/types"
 )
 
-type CardList struct {
+type GetCardsResponse struct {
 	Device struct {
 		ID    uint32   `json:"id"`
 		Cards []uint32 `json:"cards"`
@@ -74,7 +74,7 @@ func (u *UHPPOTED) GetCards(ctx context.Context, rq Request) {
 		cards = append(cards, record.CardNumber)
 	}
 
-	response := CardList{
+	response := GetCardsResponse{
 		struct {
 			ID    uint32   `json:"id"`
 			Cards []uint32 `json:"cards"`

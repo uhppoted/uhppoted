@@ -203,3 +203,26 @@ func (rq *Request) DeviceCard() (*uint32, *types.Card, error) {
 		Doors:      doors,
 	}, nil
 }
+
+func (rq *Request) DeviceEventID() (*uint32, *uint32, error) {
+	body := struct {
+		DeviceID *uint32 `json:"device-id"`
+		EventID  *uint32 `json:"event-id"`
+	}{}
+
+	if err := json.Unmarshal(rq.Message.Payload(), &body); err != nil {
+		return nil, nil, err
+	}
+
+	if body.DeviceID == nil {
+		return nil, nil, errors.New("Missing device ID")
+	} else if *body.DeviceID == 0 {
+		return nil, nil, errors.New("Missing device ID")
+	}
+
+	if body.EventID == nil {
+		return nil, nil, errors.New("Invalid event ID")
+	}
+
+	return body.DeviceID, body.EventID, nil
+}
