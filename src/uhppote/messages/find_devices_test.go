@@ -53,7 +53,7 @@ func TestFactoryUnmarshalFindDevicesRequest(t *testing.T) {
 
 	rq, ok := request.(*FindDevicesRequest)
 	if !ok {
-		t.Fatalf("Invalid request type - expected:%T, got: %T\n", &FindDevicesRequest{}, rq)
+		t.Fatalf("Invalid request type - expected:%T, got: %T\n", &FindDevicesRequest{}, request)
 	}
 
 	if rq.MsgType != 0x94 {

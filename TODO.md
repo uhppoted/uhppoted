@@ -62,6 +62,7 @@
 ### uhppoted
 - [ ] websocket
 - [ ] GraphQL
+- [ ] IFTTT
 - [ ] Braid
 - [ ] MacOS launchd socket handoff
 - [ ] Linux systemd socket handoff
@@ -109,7 +110,7 @@
 8.  Verify fields in listen events/status replies against SDK:
     - battery status can be (at least) 0x00, 0x01 and 0x04
 9.  Mojave/HomeKit
-10.  Phoenix UI
+10. Phoenix UI
 11. Update build system to [CMake or Meson](http://anadoxin.org/blog/is-it-worth-using-make.html)
 12. step-ca (https://smallstep.com/blog/private-acme-server)
 13. fuse

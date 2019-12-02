@@ -11,7 +11,7 @@ var responses = map[byte]func() Response{
 	//	0x32: func() Response { return new(GetTimeResponse) },
 	//	0x40: func() Response { return new(OpenDoorResponse) },
 	//	0x50: func() Response { return new(PutCardResponse) },
-	//	0x52: func() Response { return new(DeleteCardResponse) },
+	0x52: func() Response { return new(DeleteCardResponse) },
 	//	0x54: func() Response { return new(DeleteCardsResponse) },
 	//	0x58: func() Response { return new(GetCardsResponse) },
 	0x5a: func() Response { return new(GetCardByIdResponse) },
