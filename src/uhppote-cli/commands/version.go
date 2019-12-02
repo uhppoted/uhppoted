@@ -2,14 +2,14 @@ package commands
 
 import (
 	"fmt"
+	"uhppote"
 )
 
 type VersionCommand struct {
-	Version string
 }
 
 func (c *VersionCommand) Execute(ctx Context) error {
-	fmt.Printf("%v\n", c.Version)
+	fmt.Printf("%s\n", uhppote.VERSION)
 
 	return nil
 }

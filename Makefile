@@ -7,6 +7,8 @@ SERIALNO ?= 423187757
 DOOR ?= 3
 DIST ?= development
 DATETIME = `date "+%Y-%m-%d %H:%M:%S"`
+VERSION = v0.5.x
+LDFLAGS = -ldflags "-X uhppote.VERSION=$(VERSION)" 
 
 all: test      \
 	 benchmark \
@@ -38,10 +40,10 @@ release-tar: release
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
 
 build: format
-	go install uhppote-cli
-	go install uhppoted-rest
-	go install uhppoted/uhppoted-mqtt
-	go install uhppote-simulator
+	go install $(LDFLAGS) uhppote-cli
+	go install $(LDFLAGS) uhppoted-rest
+	go install $(LDFLAGS) uhppoted/uhppoted-mqtt
+	go install $(LDFLAGS) uhppote-simulator
 
 test: build
 	go clean -testcache
@@ -71,7 +73,10 @@ usage: build
 debug: build
 	go clean -testcache
 #	go test -v uhppoted-mqtt...
-	go test src/uhppote/*.go --run TestConcurrentRequestsWithUnboundPort
+	./bin/uhppote-cli       version
+	./bin/uhppoted-rest     version
+	./bin/uhppoted-mqtt     version
+	./bin/uhppote-simulator version
 
 help: build
 	$(CLI)       help

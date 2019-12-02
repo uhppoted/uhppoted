@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"path"
 	"path/filepath"
+	"uhppote"
 	"uhppote-simulator/simulator"
 	"uhppote-simulator/simulator/UT0311L04"
 )
-
-var VERSION = "v0.4.2"
 
 var options = struct {
 	bind  string
@@ -89,7 +88,7 @@ func load(dir string) []simulator.Simulator {
 }
 
 func version() {
-	fmt.Printf("%v\n", VERSION)
+	fmt.Printf("%v\n", uhppote.VERSION)
 }
 
 func help() {

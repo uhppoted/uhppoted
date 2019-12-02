@@ -12,7 +12,7 @@ import (
 	"uhppote/messages"
 )
 
-var VERSION = "v0.05.0"
+var VERSION string
 
 type UHPPOTE struct {
 	BindAddress      *net.UDPAddr
