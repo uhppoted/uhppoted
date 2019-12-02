@@ -4,20 +4,6 @@
 
 ### uhppoted-mqtt
 
-- [x] subscribe
-- [x] error handling
-- [x] 'reply'
-- [ ] wrap request handling in go routine
-- [ ] listen/events
-- [ ] TLS connection
-- [ ] Encrypt & sign
-- [ ] HOTP
-- [ ] MQTT v5.0
-- [ ] health check
-- [ ] watchdog
-- [ ] Clean up 'Request' implementation
-
-- [ ] command protocol (embed auth, reply topic and request id)
 - [x] get-devices
 - [x] get-device
 - [x] get-status
@@ -32,11 +18,29 @@
 - [x] get-card
 - [x] put-card
 - [x] delete-card
-- [ ] device/events [get]
-- [ ] device/event [get]
+- [x] get-events
+- [x] get-event
+- [ ] get-events: date/ID range
+- [ ] listen/events
+- [ ] command protocol (embed auth, reply topic and request id)
+
+- [x] subscribe
+- [x] error handling
+- [x] 'reply'
+- [ ] wrap request handling in go routine
+- [ ] TLS connection
+- [ ] Encrypt & sign
+- [ ] HOTP
+- [ ] MQTT v5.0
+- [ ] health check
+- [ ] Make health check interval configurable 
+- [ ] watchdog
+- [ ] Clean up 'Request' implementation
+- [ ] Make events consistent across everything
 
 - [ ] uhppoted-rest: PUT card
 - [ ] uhppoted-rest: DELETE card
+- [ ] uhppoted-rest: get-events date/id range
 - [ ] commonalise functionality with uhppoted-rest
 
 - [x] conf file decoder with reflection
@@ -49,7 +53,6 @@
 - [ ] Rework uhppoted-xxx Run, etc to use [method expressions](https://talks.golang.org/2012/10things.slide#9)
 - [x] docker: simulator
 - [x] UT0311-L0x encoding: unmarshal arrays of structs (for broadcast)
-- [ ] Make health check interval configurable 
 
 ## TODO
 
@@ -60,10 +63,10 @@
 - [ ] commonalise configuration
 
 ### uhppoted
-- [ ] websocket
+- [ ] websocket (?)
 - [ ] GraphQL
 - [ ] IFTTT
-- [ ] Braid
+- [ ] Braid (?)
 - [ ] MacOS launchd socket handoff
 - [ ] Linux systemd socket handoff
 
@@ -101,6 +104,8 @@
 ### Other
 
 1.  Update to use modules
+    - Refactor uhppoted as uhppoted-api
+    - Rename and restructure repo
 2.  Rework uhppote to use bidirectional channel to serialize requests
 3.  Consistently include device serial number in output e.g. of get-time
 4.  Look into UDP multicast
