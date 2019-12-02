@@ -53,6 +53,7 @@
 - [ ] Rework uhppoted-xxx Run, etc to use [method expressions](https://talks.golang.org/2012/10things.slide#9)
 - [x] docker: simulator
 - [x] UT0311-L0x encoding: unmarshal arrays of structs (for broadcast)
+- [x] Move version to LDFLAGS (https://stackoverflow.com/questions/28459102/golang-compile-environment-variable-into-binary)
 
 ## TODO
 
