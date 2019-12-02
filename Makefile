@@ -71,7 +71,7 @@ usage: build
 debug: build
 	go clean -testcache
 #	go test -v uhppoted-mqtt...
-	go test -count=1 src/uhppote/messages/*.go 
+	go test src/uhppote/*.go --run TestConcurrentRequestsWithUnboundPort
 
 help: build
 	$(CLI)       help
@@ -249,6 +249,9 @@ uhppoted-mqtt-put-card:
 
 uhppoted-mqtt-delete-card:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:delete' --message '{ "device-id": 305419896, "card-number": 1327679 }'
+
+uhppoted-mqtt-get-events:
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896 }'
 
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
