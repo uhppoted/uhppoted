@@ -6,7 +6,7 @@ import (
 )
 
 var responses = map[byte]func() Response{
-	//	0x20: func() Response { return new(GetStatusResponse) },
+	0x20: func() Response { return new(GetStatusResponse) },
 	//	0x30: func() Response { return new(SetTimeResponse) },
 	//	0x32: func() Response { return new(GetTimeResponse) },
 	//	0x40: func() Response { return new(OpenDoorResponse) },
