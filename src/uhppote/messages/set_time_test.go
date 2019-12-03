@@ -59,7 +59,7 @@ func TestFactoryUnmarshalSetTimeRequest(t *testing.T) {
 		t.Fatalf("Invalid request type - expected:%T, got: %T\n", &SetTimeRequest{}, request)
 	}
 
-	if rq.MsgType != 0x20 {
+	if rq.MsgType != 0x30 {
 		t.Errorf("Incorrect 'message type' from valid message: %02x\n", rq.MsgType)
 	}
 }
@@ -78,6 +78,43 @@ func TestUnmarshalSetTimeResponse(t *testing.T) {
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v\n", err)
+	}
+
+	if reply.MsgType != 0x30 {
+		t.Errorf("Incorrect 'message type' - expected:%02X, got:%02x\n", 0x30, reply.MsgType)
+	}
+
+	if reply.SerialNumber != 423187757 {
+		t.Errorf("Incorrect 'serial number' from valid message: %v\n", reply.SerialNumber)
+	}
+
+	datetime, _ := time.ParseInLocation("2006-01-02 15:04:05", "2019-12-29 12:34:56", time.Local)
+	if reply.DateTime != types.DateTime(datetime) {
+		t.Errorf("Incorrect 'date/time' - expected:%s, got:%s\n", datetime.Format("2006-01-02 15:04:05"), reply.DateTime)
+	}
+}
+
+func TestFactoryUnmarshalSetTimeResponse(t *testing.T) {
+	message := []byte{
+		0x17, 0x30, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0x20, 0x19, 0x12, 0x29, 0x12, 0x34, 0x56, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	}
+
+	response, err := UnmarshalResponse(message)
+
+	if err != nil {
+		t.Fatalf("Unexpected error: %v\n", err)
+	}
+
+	if response == nil {
+		t.Fatalf("Unexpected response: %v\n", response)
+	}
+
+	reply, ok := response.(*SetTimeResponse)
+	if !ok {
+		t.Fatalf("Invalid response type - expected:%T, got: %T\n", &SetTimeResponse{}, response)
 	}
 
 	if reply.MsgType != 0x30 {
