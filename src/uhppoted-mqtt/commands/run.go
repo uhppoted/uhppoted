@@ -148,6 +148,7 @@ func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Sig
 	u := uhppote.UHPPOTE{
 		BindAddress:      c.BindAddress,
 		BroadcastAddress: c.BroadcastAddress,
+		ListenAddress:    c.ListenAddress,
 		Devices:          make(map[uint32]*net.UDPAddr),
 		Debug:            r.debug,
 	}
@@ -163,6 +164,7 @@ func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Sig
 	mqttd := mqtt.MQTTD{
 		Broker: fmt.Sprintf("tcp://%s", c.Broker),
 		Topic:  c.Topic,
+		Debug:  r.debug,
 	}
 
 	go func() {

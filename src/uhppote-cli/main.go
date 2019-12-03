@@ -45,11 +45,13 @@ var options = struct {
 	config    string
 	bind      addr
 	broadcast addr
+	listen    addr
 	debug     bool
 }{
 	config:    ".config",
 	bind:      addr{nil},
 	broadcast: addr{nil},
+	listen:    addr{nil},
 	debug:     false,
 }
 
@@ -57,6 +59,7 @@ func main() {
 	flag.StringVar(&options.config, "config", "", "Specifies the path for the config file")
 	flag.Var(&options.bind, "bind", "Sets the local IP address and port to which to bind (e.g. 192.168.0.100:60001)")
 	flag.Var(&options.broadcast, "broadcast", "Sets the IP address and port for UDP broadcast (e.g. 192.168.0.255:60000)")
+	flag.Var(&options.listen, "listen", "Sets the local IP address and port to which to bind for events (e.g. 192.168.0.100:60001)")
 	flag.BoolVar(&options.debug, "debug", false, "Displays vaguely useful information while processing a command")
 	flag.Parse()
 
@@ -72,8 +75,8 @@ func main() {
 	}
 
 	u.BindAddress = conf.BindAddress
-	u.ListenAddress = conf.BindAddress
 	u.BroadcastAddress = conf.BroadcastAddress
+	u.ListenAddress = conf.ListenAddress
 
 	for s, d := range conf.Devices {
 		if d.Address != nil {
@@ -88,6 +91,10 @@ func main() {
 
 	if options.broadcast.address != nil {
 		u.BroadcastAddress = options.broadcast.address
+	}
+
+	if options.listen.address != nil {
+		u.ListenAddress = options.listen.address
 	}
 
 	cmd, err := parse()
@@ -183,6 +190,7 @@ func usage() {
 	fmt.Println("    --config    Sets the configuration file")
 	fmt.Println("    --bind      Sets the local IP address and port to use")
 	fmt.Println("    --broadcast Sets the IP address and port to use for UDP broadcast")
+	fmt.Println("    --listen    Sets the local IP address and port to use for receiving device events")
 	fmt.Println("    --debug     Displays vaguely useful internal information")
 	fmt.Println()
 }

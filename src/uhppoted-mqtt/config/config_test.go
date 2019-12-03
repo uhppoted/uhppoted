@@ -10,6 +10,7 @@ import (
 var configuration = []byte(`# UDP
 bind.address = 192.168.1.100:54321
 broadcast.address = 192.168.1.255:60001
+listen.address = 192.168.1.100:12345
 
 # MQTT
 mqtt.broker = 127.0.0.63:1887
@@ -51,6 +52,16 @@ func TestUnmarshal(t *testing.T) {
 
 	if !reflect.DeepEqual(config.BroadcastAddress, &address) {
 		t.Errorf("Expected 'broadcast.address' %s, got:%s", &address, config.BroadcastAddress)
+	}
+
+	address = net.UDPAddr{
+		IP:   []byte{192, 168, 1, 100},
+		Port: 12345,
+		Zone: "",
+	}
+
+	if !reflect.DeepEqual(config.ListenAddress, &address) {
+		t.Errorf("Expected 'listen.address' %s, got: %s", &address, config.ListenAddress)
 	}
 
 	address = net.UDPAddr{

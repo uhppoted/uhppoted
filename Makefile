@@ -164,7 +164,7 @@ open: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) open $(SERIALNO) 1
 
 listen: build
-	$(CLI) --bind 192.168.1.100:60001 $(DEBUG) listen 
+	$(CLI) --listen 192.168.1.100:60001 $(DEBUG) listen 
 
 simulator: build
 	./bin/uhppote-simulator --debug --devices "./runtime/simulation/devices"

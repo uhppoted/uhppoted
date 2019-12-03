@@ -26,12 +26,13 @@ type MQTT struct {
 type Config struct {
 	BindAddress      *net.UDPAddr `conf:"bind.address"`
 	BroadcastAddress *net.UDPAddr `conf:"broadcast.address"`
+	ListenAddress    *net.UDPAddr `conf:"listen.address"`
 	Devices          DeviceMap    `conf:"/^UT0311-L0x\\.([0-9]+)\\.(.*)/"`
 	MQTT             `conf:"mqtt"`
 }
 
 func NewConfig() *Config {
-	bind, broadcast := DefaultIpAddresses()
+	bind, broadcast, listen := DefaultIpAddresses()
 
 	broker := net.UDPAddr{
 		IP:   []byte{127, 0, 0, 1},
@@ -42,6 +43,7 @@ func NewConfig() *Config {
 	c := Config{
 		BindAddress:      &bind,
 		BroadcastAddress: &broadcast,
+		ListenAddress:    &listen,
 		MQTT: MQTT{
 			Broker: &broker,
 			Topic:  "twystd/uhppoted/gateway",
@@ -73,7 +75,7 @@ func (c *Config) Load(path string) error {
 }
 
 // Ref. https://stackoverflow.com/questions/23529663/how-to-get-all-addresses-and-masks-from-local-interfaces-in-go
-func DefaultIpAddresses() (net.UDPAddr, net.UDPAddr) {
+func DefaultIpAddresses() (net.UDPAddr, net.UDPAddr, net.UDPAddr) {
 	bind := net.UDPAddr{
 		IP:   make(net.IP, net.IPv4len),
 		Port: 0,
@@ -86,8 +88,15 @@ func DefaultIpAddresses() (net.UDPAddr, net.UDPAddr) {
 		Zone: "",
 	}
 
+	listen := net.UDPAddr{
+		IP:   make(net.IP, net.IPv4len),
+		Port: 60001,
+		Zone: "",
+	}
+
 	copy(bind.IP, net.IPv4zero)
 	copy(broadcast.IP, net.IPv4bcast)
+	copy(listen.IP, net.IPv4zero)
 
 	if ifaces, err := net.Interfaces(); err == nil {
 	loop:
@@ -98,6 +107,7 @@ func DefaultIpAddresses() (net.UDPAddr, net.UDPAddr) {
 					case *net.IPNet:
 						if v.IP.To4() != nil && i.Flags&net.FlagLoopback == 0 {
 							copy(bind.IP, v.IP.To4())
+							copy(listen.IP, v.IP.To4())
 							if i.Flags&net.FlagBroadcast != 0 {
 								addr := v.IP.To4()
 								mask := v.Mask
@@ -111,7 +121,7 @@ func DefaultIpAddresses() (net.UDPAddr, net.UDPAddr) {
 		}
 	}
 
-	return bind, broadcast
+	return bind, broadcast, listen
 }
 
 func (f *DeviceMap) UnmarshalConf(tag string, values map[string]string) (interface{}, error) {
