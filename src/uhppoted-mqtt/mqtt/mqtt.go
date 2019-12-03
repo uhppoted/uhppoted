@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"log"
+	"os"
 	"uhppote"
 	"uhppoted"
 )
@@ -13,6 +14,7 @@ type MQTTD struct {
 	Broker     string
 	Topic      string
 	connection MQTT.Client
+	interrupt  chan os.Signal
 }
 
 type fdispatch func(*uhppoted.UHPPOTED, context.Context, uhppoted.Request)
@@ -26,13 +28,15 @@ type dispatcher struct {
 }
 
 func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
+	api := uhppoted.UHPPOTED{
+		Service: m,
+	}
+
 	d := dispatcher{
-		uhppoted: &uhppoted.UHPPOTED{
-			Service: m,
-		},
-		uhppote: u,
-		log:     l,
-		topic:   m.Topic,
+		uhppoted: &api,
+		uhppote:  u,
+		log:      l,
+		topic:    m.Topic,
 		table: map[string]fdispatch{
 			m.Topic + "/devices:get":             (*uhppoted.UHPPOTED).GetDevices,
 			m.Topic + "/device:get":              (*uhppoted.UHPPOTED).GetDevice,
@@ -53,16 +57,26 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		},
 	}
 
-	if err := m.listenAndServe(&d); err != nil {
+	if err := m.subscribeAndServe(&d); err != nil {
 		l.Printf("ERROR: Error connecting to '%s': %v", m.Broker, err)
 		m.Close(l)
 		return
 	}
 
 	log.Printf("... connected to %s\n", m.Broker)
+
+	if err := m.listen(&api, u, l); err != nil {
+		l.Printf("ERROR: Error binding to listen port '%d': %v", 12345, err)
+		m.Close(l)
+		return
+	}
 }
 
 func (m *MQTTD) Close(l *log.Logger) {
+	if m.interrupt != nil {
+		close(m.interrupt)
+	}
+
 	if m.connection != nil {
 		log.Printf("... closing connection to %s", m.Broker)
 		token := m.connection.Unsubscribe(m.Topic + "/#")
@@ -76,7 +90,24 @@ func (m *MQTTD) Close(l *log.Logger) {
 	m.connection = nil
 }
 
-func (m *MQTTD) listenAndServe(d *dispatcher) error {
+func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, l *log.Logger) error {
+	log.Printf("... listening on %v", u.ListenAddress)
+
+	ctx := context.WithValue(context.Background(), "uhppote", u)
+	ctx = context.WithValue(ctx, "client", m.connection)
+	ctx = context.WithValue(ctx, "log", l)
+	ctx = context.WithValue(ctx, "topic", m.Topic)
+
+	m.interrupt = make(chan os.Signal)
+
+	go func() {
+		api.Listen(ctx, m.interrupt)
+	}()
+
+	return nil
+}
+
+func (m *MQTTD) subscribeAndServe(d *dispatcher) error {
 	//	MQTT.DEBUG = log.New(os.Stdout, "", 0)
 	//	MQTT.WARN = log.New(os.Stdout, "", 0)
 	//	MQTT.ERROR = log.New(os.Stdout, "", 0)
@@ -124,10 +155,10 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 	}
 }
 
-func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
-	b, err := json.Marshal(response)
+func (m *MQTTD) Send(ctx context.Context, message interface{}) {
+	b, err := json.Marshal(message)
 	if err != nil {
-		oops(ctx, "encoding/json", "Error generating response", uhppoted.StatusInternalServerError)
+		oops(ctx, "encoding/json", "Error encoding message", uhppoted.StatusInternalServerError)
 		return
 	}
 
@@ -141,7 +172,28 @@ func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 		panic("MQTT root topic not included in context")
 	}
 
-	token := client.Publish(topic+"/devices/ping", 0, false, string(b))
+	token := client.Publish(topic+"/events", 0, false, string(b))
+	token.Wait()
+}
+
+func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
+	b, err := json.Marshal(response)
+	if err != nil {
+		oops(ctx, "encoding/json", "Error encoding response", uhppoted.StatusInternalServerError)
+		return
+	}
+
+	client, ok := ctx.Value("client").(MQTT.Client)
+	if !ok {
+		panic("MQTT client not included in context")
+	}
+
+	topic, ok := ctx.Value("topic").(string)
+	if !ok {
+		panic("MQTT root topic not included in context")
+	}
+
+	token := client.Publish(topic+"/reply", 0, false, string(b))
 	token.Wait()
 }
 

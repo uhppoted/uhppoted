@@ -53,7 +53,7 @@ get-listener: build
 	$(CLI) $(DEBUG) get-listener $(SERIALNO)
 
 set-listener: build 
-	$(CLI) $(DEBUG) set-listener $(SERIALNO) 192.168.1.100:40000
+	$(CLI) $(DEBUG) set-listener $(SERIALNO) 192.168.1.100:60001
  
 get-cards: build 
 	$(CLI) get-cards $(SERIALNO)

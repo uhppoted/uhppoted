@@ -72,6 +72,7 @@ func main() {
 	}
 
 	u.BindAddress = conf.BindAddress
+	u.ListenAddress = conf.BindAddress
 	u.BroadcastAddress = conf.BroadcastAddress
 
 	for s, d := range conf.Devices {
@@ -82,6 +83,7 @@ func main() {
 
 	if options.bind.address != nil {
 		u.BindAddress = options.bind.address
+		u.ListenAddress = options.bind.address
 	}
 
 	if options.broadcast.address != nil {

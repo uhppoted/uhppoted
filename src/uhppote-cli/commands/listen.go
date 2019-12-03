@@ -16,6 +16,8 @@ func (c *ListenCommand) Execute(ctx Context) error {
 	p := make(chan *types.Status)
 	q := make(chan os.Signal)
 
+	defer close(q)
+
 	go func() {
 		for {
 			event := <-p

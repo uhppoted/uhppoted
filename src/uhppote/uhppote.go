@@ -17,6 +17,7 @@ var VERSION string = "v0.5.0"
 type UHPPOTE struct {
 	BindAddress      *net.UDPAddr
 	BroadcastAddress *net.UDPAddr
+	ListenAddress    *net.UDPAddr
 	Devices          map[uint32]*net.UDPAddr
 	Debug            bool
 }
@@ -222,8 +223,8 @@ func (u *UHPPOTE) receive(c *net.UDPConn, reply interface{}) error {
 	return codec.Unmarshal(m[:N], reply)
 }
 
-func (u *UHPPOTE) listen(p chan Event, q chan os.Signal) error {
-	bind := u.bindAddress()
+func (u *UHPPOTE) listen(p chan *Event, q chan os.Signal) error {
+	bind := u.listenAddress()
 	if bind.Port == 0 {
 		return errors.New("Listen requires a non-zero UDP port")
 	}
@@ -239,12 +240,9 @@ func (u *UHPPOTE) listen(p chan Event, q chan os.Signal) error {
 
 	closed := false
 	go func() {
-		for {
-			if s := <-q; s == os.Interrupt {
-				closed = true
-				c.Close()
-			}
-		}
+		<-q
+		closed = true
+		c.Close()
 	}()
 
 	m := make([]byte, 2048)
@@ -273,7 +271,7 @@ func (u *UHPPOTE) listen(p chan Event, q chan os.Signal) error {
 			return errors.New(fmt.Sprintf("Error unmarshalling event [%v]", err))
 		}
 
-		p <- event
+		p <- &event
 	}
 
 	return nil
@@ -307,6 +305,22 @@ func (u *UHPPOTE) broadcastAddress() *net.UDPAddr {
 	}
 
 	copy(addr.IP, net.IPv4bcast)
+
+	return &addr
+}
+
+func (u *UHPPOTE) listenAddress() *net.UDPAddr {
+	if u.ListenAddress != nil {
+		return u.ListenAddress
+	}
+
+	addr := net.UDPAddr{
+		IP:   make(net.IP, net.IPv4len),
+		Port: 60001,
+		Zone: "",
+	}
+
+	copy(addr.IP, net.IPv4zero)
 
 	return &addr
 }
