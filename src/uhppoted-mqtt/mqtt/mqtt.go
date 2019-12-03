@@ -15,6 +15,7 @@ type MQTTD struct {
 	Topic      string
 	connection MQTT.Client
 	interrupt  chan os.Signal
+	Debug      bool
 }
 
 type fdispatch func(*uhppoted.UHPPOTED, context.Context, uhppoted.Request)
@@ -28,6 +29,13 @@ type dispatcher struct {
 }
 
 func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
+	if m.Debug {
+		MQTT.DEBUG = l
+	}
+	MQTT.WARN = l
+	MQTT.ERROR = l
+	MQTT.CRITICAL = l
+
 	api := uhppoted.UHPPOTED{
 		Service: m,
 	}
@@ -108,11 +116,6 @@ func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, l *log.Logger
 }
 
 func (m *MQTTD) subscribeAndServe(d *dispatcher) error {
-	//	MQTT.DEBUG = log.New(os.Stdout, "", 0)
-	//	MQTT.WARN = log.New(os.Stdout, "", 0)
-	//	MQTT.ERROR = log.New(os.Stdout, "", 0)
-	//	MQTT.CRITICAL = log.New(os.Stdout, "", 0)
-
 	var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
 		d.dispatch(client, msg)
 	}

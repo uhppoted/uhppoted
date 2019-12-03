@@ -21,7 +21,7 @@
 - [x] get-events
 - [x] get-event
 - [ ] get-events: date/ID range
-- [ ] listen/events
+- [x] listen/events
 - [ ] command protocol (embed auth, reply topic and request id)
 
 - [x] subscribe

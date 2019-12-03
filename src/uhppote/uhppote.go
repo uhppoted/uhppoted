@@ -229,6 +229,8 @@ func (u *UHPPOTE) listen(p chan *Event, q chan os.Signal) error {
 		return errors.New("Listen requires a non-zero UDP port")
 	}
 
+	println(bind.String())
+
 	c, err := u.open(bind)
 	if err != nil {
 		return err
