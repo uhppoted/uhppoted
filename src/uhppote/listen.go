@@ -36,19 +36,25 @@ type Event struct {
 }
 
 func (u *UHPPOTE) Listen(p chan *types.Status, q chan os.Signal) error {
-	pipe := make(chan Event)
+	pipe := make(chan *Event)
+
+	defer close(pipe)
+	defer close(p)
 
 	go func() {
 		for {
-			event := <-pipe
-			p <- event.transform()
+			if event := <-pipe; event == nil {
+				break
+			} else {
+				p <- event.transform()
+			}
 		}
 	}()
 
 	return u.listen(pipe, q)
 }
 
-func (event Event) transform() *types.Status {
+func (event *Event) transform() *types.Status {
 	d := time.Time(event.SystemDate).Format("2006-01-02")
 	t := time.Time(event.SystemTime).Format("15:04:05")
 	datetime, _ := time.ParseInLocation("2006-01-02 15:04:05", d+" "+t, time.Local)

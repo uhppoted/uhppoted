@@ -164,7 +164,7 @@ open: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) open $(SERIALNO) 1
 
 listen: build
-	$(CLI) --bind 192.168.1.100:40000 $(DEBUG) listen 
+	$(CLI) --bind 192.168.1.100:60001 $(DEBUG) listen 
 
 simulator: build
 	./bin/uhppote-simulator --debug --devices "./runtime/simulation/devices"
@@ -209,9 +209,6 @@ uhppoted-mqtt-help: build
 
 uhppoted-mqtt-version: build
 	./bin/uhppoted-mqtt version
-
-uhppoted-mqtt-listen:
-	mqtt subscribe --topic 'twystd/uhppoted/#'
 
 uhppoted-mqtt-get-devices:
 	mqtt publish --topic 'twystd/uhppoted/gateway/devices:get' --message '{}'
@@ -279,4 +276,9 @@ docker-hivemq:
 
 docker-rest:
 	docker run --detach --publish 8080:8080 --rm uhppoted
+
+hivemq-listen:
+	mqtt subscribe --topic 'twystd/uhppoted/#'
+
+
 
