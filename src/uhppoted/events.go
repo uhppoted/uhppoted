@@ -2,14 +2,16 @@ package uhppoted
 
 import (
 	"context"
+	"time"
 	"uhppote"
 	"uhppote/types"
 )
 
 type GetEventsResponse struct {
 	Device struct {
-		ID     uint32  `json:"id"`
-		Events []event `json:"events"`
+		ID     uint32      `json:"id"`
+		Dates  *daterange  `json:"dates,omitempty"`
+		Events *eventrange `json:"events,omitempty"`
 	} `json:"device"`
 }
 
@@ -18,6 +20,16 @@ type GetEventResponse struct {
 		ID    uint32 `json:"id"`
 		Event event  `json:"event"`
 	} `json:"device"`
+}
+
+type daterange struct {
+	Start *types.DateTime `json:"start,omitempty"`
+	End   *types.DateTime `json:"end,omitempty"`
+}
+
+type eventrange struct {
+	First uint32 `json:"first"`
+	Last  uint32 `json:"last"`
 }
 
 type event struct {
@@ -41,43 +53,78 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, rq Request) {
 		return
 	}
 
-	last, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(*id, 0xffffffff)
+	start, end, err := rq.DateRange()
+	if err != nil {
+		u.warn(ctx, 0, "get-events", err)
+		u.oops(ctx, "get-events", "Invalid date range)", StatusBadRequest)
+		return
+	}
+
+	event, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(*id, 0xffffffff)
 	if err != nil {
 		u.warn(ctx, *id, "get-events", err)
 		u.oops(ctx, "get-events", "Error retrieving last events", StatusInternalServerError)
 		return
 	}
 
-	events := make([]event, 0)
+	first := uint32(0)
+	last := uint32(0)
+	if event != nil {
+		first = 1
+		last = event.Index
 
-	if last != nil {
-		for index := last.Index; index > 0; index-- {
-			record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(*id, index)
-			if err != nil {
-				u.warn(ctx, *id, "get-events", err)
-				u.oops(ctx, "get-events", "Error retrieving events", StatusInternalServerError)
-				return
+		if start != nil {
+			first = last
+		}
+
+		if end != nil {
+			last = 1
+		}
+
+		if start != nil || end != nil {
+			for index := event.Index; index > 0; index-- {
+				record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(*id, index)
+				if err != nil {
+					u.warn(ctx, *id, "get-events", err)
+					u.oops(ctx, "get-events", "Error retrieving events", StatusInternalServerError)
+					return
+				}
+
+				if start != nil && !time.Time(record.Timestamp).Before(time.Time(*start)) && record.Index < first {
+					first = record.Index
+				}
+
+				if end != nil && !time.Time(*end).Before(time.Time(record.Timestamp)) && record.Index > last {
+					last = record.Index
+				}
 			}
+		}
+	}
 
-			events = append(events, event{
-				Index:      record.Index,
-				Type:       record.Type,
-				Granted:    record.Granted,
-				Door:       record.Door,
-				DoorOpened: record.DoorOpened,
-				UserId:     record.UserId,
-				Timestamp:  record.Timestamp,
-				Result:     record.Result,
-			})
+	dates := (*daterange)(nil)
+	if start != nil || end != nil {
+		dates = &daterange{
+			Start: start,
+			End:   end,
+		}
+	}
+
+	events := (*eventrange)(nil)
+	if first != 0 || last != 0 {
+		events = &eventrange{
+			First: first,
+			Last:  last,
 		}
 	}
 
 	response := GetEventsResponse{
 		struct {
-			ID     uint32  `json:"id"`
-			Events []event `json:"events"`
+			ID     uint32      `json:"id"`
+			Dates  *daterange  `json:"dates,omitempty"`
+			Events *eventrange `json:"events,omitempty"`
 		}{
 			ID:     *id,
+			Dates:  dates,
 			Events: events,
 		},
 	}
