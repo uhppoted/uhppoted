@@ -253,7 +253,11 @@ uhppoted-mqtt-delete-card:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:delete' --message '{ "device-id": 305419896, "card-number": 1327679 }'
 
 uhppoted-mqtt-get-events:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896 }'
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896 }'
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05 08:10:00" , "end": "2019-08-09 20:35:46" }'
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05 08:10" , "end": "2019-08-09 20:35" }'
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "end": "2019-08-05" , "start": "2019-08-09" }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05" , "end": "2019-08-09" }'
 
 uhppoted-mqtt-get-event:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' --message '{ "device-id": 305419896, "event-id": 58 }'
@@ -265,6 +269,8 @@ docker: build
 	env GOOS=linux GOARCH=amd64 go build -o docker/simulator/uhppote-simulator     uhppote-simulator
 	env GOOS=linux GOARCH=amd64 go build -o docker/uhppoted-rest/uhppote-simulator uhppote-simulator
 	env GOOS=linux GOARCH=amd64 go build -o docker/uhppoted-rest/uhppoted-rest     uhppoted-rest
+	docker image     prune
+	docker container prune
 	docker build -f ./docker/simulator/Dockerfile     -t simulator . 
 	docker build -f ./docker/uhppoted-rest/Dockerfile -t uhppoted . 
 

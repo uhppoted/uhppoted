@@ -29,6 +29,7 @@ type Request interface {
 	DeviceCardID() (*uint32, *uint32, error)
 	DeviceCard() (*uint32, *types.Card, error)
 	DeviceEventID() (*uint32, *uint32, error)
+	DateRange() (*types.DateTime, *types.DateTime, error)
 }
 
 type UHPPOTED struct {

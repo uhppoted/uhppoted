@@ -20,7 +20,7 @@
 - [x] delete-card
 - [x] get-events
 - [x] get-event
-- [ ] get-events: date/ID range
+- [x] get-events: date/ID range
 - [x] listen/events
 - [ ] command protocol (embed auth, reply topic and request id)
 
