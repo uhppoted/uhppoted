@@ -40,8 +40,8 @@ func (u *UHPPOTED) log(ctx context.Context, tag string, deviceId uint32, msg str
 	ctx.Value("log").(*log.Logger).Printf("%-5s %-12d %s\n", tag, deviceId, msg)
 }
 
-func (u *UHPPOTED) debug(ctx context.Context, deviceId uint32, operation string, rq Request) {
-	ctx.Value("log").(*log.Logger).Printf("DEBUG %-12d %-20s %s\n", deviceId, operation, rq)
+func (u *UHPPOTED) debug(ctx context.Context, deviceId uint32, operation string, rq interface{}) {
+	ctx.Value("log").(*log.Logger).Printf("DEBUG %-12d %-20s %v\n", deviceId, operation, rq)
 }
 
 func (u *UHPPOTED) info(ctx context.Context, deviceId uint32, operation string, rq Request) {

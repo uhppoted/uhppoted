@@ -19,28 +19,33 @@ type MQTTD struct {
 }
 
 type fdispatch func(*uhppoted.UHPPOTED, context.Context, uhppoted.Request)
+type fdispatchx func(*MQTTD, *uhppoted.UHPPOTED, context.Context, MQTT.Message)
 
 type dispatcher struct {
+	mqttd    *MQTTD
 	uhppoted *uhppoted.UHPPOTED
 	uhppote  *uhppote.UHPPOTE
 	log      *log.Logger
 	topic    string
 	table    map[string]fdispatch
+	tablex   map[string]fdispatchx
 }
 
 func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
+	MQTT.CRITICAL = l
+	MQTT.ERROR = l
+	MQTT.WARN = l
+
 	if m.Debug {
 		MQTT.DEBUG = l
 	}
-	MQTT.WARN = l
-	MQTT.ERROR = l
-	MQTT.CRITICAL = l
 
 	api := uhppoted.UHPPOTED{
 		Service: m,
 	}
 
 	d := dispatcher{
+		mqttd:    m,
 		uhppoted: &api,
 		uhppote:  u,
 		log:      l,
@@ -60,8 +65,10 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/card:get":         (*uhppoted.UHPPOTED).GetCard,
 			m.Topic + "/device/card:put":         (*uhppoted.UHPPOTED).PutCard,
 			m.Topic + "/device/card:delete":      (*uhppoted.UHPPOTED).DeleteCard,
-			m.Topic + "/device/events:get":       (*uhppoted.UHPPOTED).GetEvents,
 			m.Topic + "/device/event:get":        (*uhppoted.UHPPOTED).GetEvent,
+		},
+		tablex: map[string]fdispatchx{
+			m.Topic + "/device/events:get": (*MQTTD).getEvents,
 		},
 	}
 
@@ -155,6 +162,8 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 
 	if fn, ok := d.table[msg.Topic()]; ok {
 		fn(d.uhppoted, ctx, &request)
+	} else if fnx, ok := d.tablex[msg.Topic()]; ok {
+		fnx(d.mqttd, d.uhppoted, ctx, msg)
 	}
 }
 
@@ -201,6 +210,12 @@ func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 }
 
 func (m *MQTTD) Oops(ctx context.Context, operation string, message string, errorCode int) {
+	oops(ctx, operation, message, errorCode)
+}
+
+func (m *MQTTD) OnError(ctx context.Context, operation string, message string, errorCode int, err error) {
+	// u.warn(ctx, 0, "get-events", err)
+	// u.oops(ctx, "get-events", "Missing/invalid device ID", StatusBadRequest)
 	oops(ctx, operation, message, errorCode)
 }
 

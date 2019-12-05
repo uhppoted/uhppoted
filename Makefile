@@ -72,11 +72,12 @@ usage: build
 
 debug: build
 	go clean -testcache
-#	go test -v uhppoted-mqtt...
-	./bin/uhppote-cli       version
-	./bin/uhppoted-rest     version
-	./bin/uhppoted-mqtt     version
-	./bin/uhppote-simulator version
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05 08:10:00" , "end": "2019-08-09 20:35:46" }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05 08:10" , "end": "2019-08-09 20:35" }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "end": "2019-08-05" , "start": "2019-08-09" }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05" , "end": "2019-08-09" }'
 
 help: build
 	$(CLI)       help
@@ -253,10 +254,11 @@ uhppoted-mqtt-delete-card:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:delete' --message '{ "device-id": 305419896, "card-number": 1327679 }'
 
 uhppoted-mqtt-get-events:
-#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896 }'
-#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05 08:10:00" , "end": "2019-08-09 20:35:46" }'
-#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05 08:10" , "end": "2019-08-09 20:35" }'
-#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "end": "2019-08-05" , "start": "2019-08-09" }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05 08:10:00" , "end": "2019-08-09 20:35:46" }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05 08:10" , "end": "2019-08-09 20:35" }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "end": "2019-08-05" , "start": "2019-08-09" }'
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05" , "end": "2019-08-09" }'
 
 uhppoted-mqtt-get-event:
