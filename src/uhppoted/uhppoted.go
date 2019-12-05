@@ -29,7 +29,6 @@ type Request interface {
 	DeviceCardID() (*uint32, *uint32, error)
 	DeviceCard() (*uint32, *types.Card, error)
 	DeviceEventID() (*uint32, *uint32, error)
-	DateRange() (*types.DateTime, *types.DateTime, error)
 }
 
 type UHPPOTED struct {
@@ -41,7 +40,7 @@ func (u *UHPPOTED) log(ctx context.Context, tag string, deviceId uint32, msg str
 }
 
 func (u *UHPPOTED) debug(ctx context.Context, deviceId uint32, operation string, rq interface{}) {
-	ctx.Value("log").(*log.Logger).Printf("DEBUG %-12d %-20s %v\n", deviceId, operation, rq)
+	ctx.Value("log").(*log.Logger).Printf("DEBUG %-20s %-12d %v\n", operation, deviceId, rq)
 }
 
 func (u *UHPPOTED) info(ctx context.Context, deviceId uint32, operation string, rq Request) {

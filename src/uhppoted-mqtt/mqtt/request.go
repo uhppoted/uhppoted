@@ -3,7 +3,6 @@ package mqtt
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"time"
 	"uhppote/types"
@@ -227,77 +226,3 @@ func (rq *Request) DeviceEventID() (*uint32, *uint32, error) {
 
 	return body.DeviceID, body.EventID, nil
 }
-
-func (rq *Request) DateRange() (*types.DateTime, *types.DateTime, error) {
-	body := struct {
-		From *startdate `json:"start"`
-		To   *enddate   `json:"end"`
-	}{}
-
-	if err := json.Unmarshal(rq.Message.Payload(), &body); err != nil {
-		return nil, nil, err
-	}
-
-	if body.From != nil && body.To != nil {
-		if time.Time(*body.To).Before(time.Time(*body.From)) {
-			return nil, nil, fmt.Errorf("Invalid date range (%s to %s)", (*types.DateTime)(body.From), (*types.DateTime)(body.To))
-		}
-	}
-
-	return (*types.DateTime)(body.From), (*types.DateTime)(body.To), nil
-}
-
-// type startdate time.Time
-// type enddate time.Time
-//
-// func (d *startdate) UnmarshalJSON(bytes []byte) error {
-// 	var s string
-//
-// 	err := json.Unmarshal(bytes, &s)
-// 	if err != nil {
-// 		return err
-// 	}
-//
-// 	if datetime, err := time.ParseInLocation("2006-01-02 15:04:05", s, time.Local); err == nil {
-// 		*d = startdate(datetime)
-// 		return nil
-// 	}
-//
-// 	if datetime, err := time.ParseInLocation("2006-01-02 15:04", s, time.Local); err == nil {
-// 		*d = startdate(datetime)
-// 		return nil
-// 	}
-//
-// 	if date, err := time.ParseInLocation("2006-01-02", s, time.Local); err == nil {
-// 		*d = startdate(date)
-// 		return nil
-// 	}
-//
-// 	return fmt.Errorf("Cannot parse date/time %s", string(bytes))
-// }
-//
-// func (d *enddate) UnmarshalJSON(bytes []byte) error {
-// 	var s string
-//
-// 	err := json.Unmarshal(bytes, &s)
-// 	if err != nil {
-// 		return err
-// 	}
-//
-// 	if datetime, err := time.ParseInLocation("2006-01-02 15:04:05", s, time.Local); err == nil {
-// 		*d = enddate(datetime)
-// 		return nil
-// 	}
-//
-// 	if datetime, err := time.ParseInLocation("2006-01-02 15:04", s, time.Local); err == nil {
-// 		*d = enddate(datetime)
-// 		return nil
-// 	}
-//
-// 	if date, err := time.ParseInLocation("2006-01-02", s, time.Local); err == nil {
-// 		*d = enddate(time.Date(date.Year(), date.Month(), date.Day(), 23, 59, 59, 999999999, time.Local))
-// 		return nil
-// 	}
-//
-// 	return fmt.Errorf("Cannot parse date/time %s", string(bytes))
-// }
