@@ -15,6 +15,9 @@ type enddate time.Time
 
 func (m *MQTTD) getEvents(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
 	body := struct {
+		Request struct {
+			ReplyTo *string `json:"reply-to"`
+		} `json:"request"`
 		DeviceID *uint32    `json:"device-id"`
 		Start    *startdate `json:"start"`
 		End      *enddate   `json:"end"`

@@ -22,7 +22,8 @@
 - [x] get-event
 - [x] get-events: date/ID range
 - [x] listen/events
-- [ ] command protocol (embed auth, reply topic and request id)
+- [x] command protocol: reply topic
+- [ ] command protocol (embed auth, request id)
 
 - [x] subscribe
 - [x] error handling

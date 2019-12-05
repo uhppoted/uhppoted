@@ -3,6 +3,7 @@ package mqtt
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"log"
 	"os"
@@ -29,6 +30,10 @@ type dispatcher struct {
 	topic    string
 	table    map[string]fdispatch
 	tablex   map[string]fdispatchx
+}
+
+type request struct {
+	ReplyTo *string `json:"reply-to"`
 }
 
 func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
@@ -151,18 +156,33 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 	ctx = context.WithValue(ctx, "log", d.log)
 	ctx = context.WithValue(ctx, "topic", d.topic)
 
-	request := Request{
-		Message: msg,
-	}
+	// TODO (in progress) replace with local wrapper functions
+	if fn, ok := d.table[msg.Topic()]; ok {
+		rq := Request{
+			Message: msg,
+		}
 
-	if err := json.Unmarshal(msg.Payload(), &request); err != nil {
-		oops(ctx, "mqtt-dispatch", "Invalid message format", uhppoted.StatusBadRequest)
+		if err := json.Unmarshal(msg.Payload(), &rq); err != nil {
+			ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %v\n", "dispatch", fmt.Errorf("Invalid message format '%s'", string(msg.Payload())))
+			return
+		}
+
+		fn(d.uhppoted, ctx, &rq)
 		return
 	}
 
-	if fn, ok := d.table[msg.Topic()]; ok {
-		fn(d.uhppoted, ctx, &request)
-	} else if fnx, ok := d.tablex[msg.Topic()]; ok {
+	if fnx, ok := d.tablex[msg.Topic()]; ok {
+		body := struct {
+			Request request `json:"request"`
+		}{}
+
+		if err := json.Unmarshal(msg.Payload(), &body); err != nil {
+			ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %v\n", "dispatch", fmt.Errorf("Invalid message format '%s'", string(msg.Payload())))
+			return
+		}
+
+		ctx = context.WithValue(ctx, "request", body.Request)
+
 		fnx(d.mqttd, d.uhppoted, ctx, msg)
 	}
 }
@@ -205,7 +225,15 @@ func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 		panic("MQTT root topic not included in context")
 	}
 
-	token := client.Publish(topic+"/reply", 0, false, string(b))
+	replyTo := "reply"
+	rq, ok := ctx.Value("request").(request)
+	if ok {
+		if rq.ReplyTo != nil {
+			replyTo = *rq.ReplyTo
+		}
+	}
+
+	token := client.Publish(topic+"/"+replyTo, 0, false, string(b))
 	token.Wait()
 }
 
@@ -255,4 +283,8 @@ func oops(ctx context.Context, operation string, message string, errorCode int) 
 
 	token := client.Publish(topic+"/gateway/errors", 0, false, string(b))
 	token.Wait()
+}
+
+func debug(ctx context.Context, location string, detail interface{}) {
+	ctx.Value("log").(*log.Logger).Printf("DEBUG %-20s %v\n", location, detail)
 }
