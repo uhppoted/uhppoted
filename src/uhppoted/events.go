@@ -7,11 +7,17 @@ import (
 	"uhppote/types"
 )
 
+type GetEventsRequest struct {
+	DeviceID uint32
+	Start    *types.DateTime
+	End      *types.DateTime
+}
+
 type GetEventsResponse struct {
 	Device struct {
 		ID     uint32      `json:"id"`
-		Dates  *daterange  `json:"dates,omitempty"`
-		Events *eventrange `json:"events,omitempty"`
+		Dates  *DateRange  `json:"dates,omitempty"`
+		Events *EventRange `json:"events,omitempty"`
 	} `json:"device"`
 }
 
@@ -22,12 +28,12 @@ type GetEventResponse struct {
 	} `json:"device"`
 }
 
-type daterange struct {
+type DateRange struct {
 	Start *types.DateTime `json:"start,omitempty"`
 	End   *types.DateTime `json:"end,omitempty"`
 }
 
-type eventrange struct {
+type EventRange struct {
 	First uint32 `json:"first"`
 	Last  uint32 `json:"last"`
 }
@@ -43,28 +49,16 @@ type event struct {
 	Result     uint8          `json:"event-result"`
 }
 
-func (u *UHPPOTED) GetEvents(ctx context.Context, rq Request) {
+func (u *UHPPOTED) GetEvents(ctx context.Context, rq GetEventsRequest) (*GetEventsResponse, error) {
 	u.debug(ctx, 0, "get-events", rq)
 
-	id, err := rq.DeviceID()
-	if err != nil {
-		u.warn(ctx, 0, "get-events", err)
-		u.oops(ctx, "get-events", "Missing/invalid device ID)", StatusBadRequest)
-		return
-	}
+	id := rq.DeviceID
+	start := rq.Start
+	end := rq.End
 
-	start, end, err := rq.DateRange()
+	event, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(id, 0xffffffff)
 	if err != nil {
-		u.warn(ctx, 0, "get-events", err)
-		u.oops(ctx, "get-events", "Invalid date range)", StatusBadRequest)
-		return
-	}
-
-	event, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(*id, 0xffffffff)
-	if err != nil {
-		u.warn(ctx, *id, "get-events", err)
-		u.oops(ctx, "get-events", "Error retrieving last events", StatusInternalServerError)
-		return
+		return nil, err
 	}
 
 	first := uint32(0)
@@ -83,11 +77,9 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, rq Request) {
 
 		if start != nil || end != nil {
 			for index := event.Index; index > 0; index-- {
-				record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(*id, index)
+				record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(id, index)
 				if err != nil {
-					u.warn(ctx, *id, "get-events", err)
-					u.oops(ctx, "get-events", "Error retrieving events", StatusInternalServerError)
-					return
+					return nil, err
 				}
 
 				if start != nil && !time.Time(record.Timestamp).Before(time.Time(*start)) && record.Index < first {
@@ -101,17 +93,17 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, rq Request) {
 		}
 	}
 
-	dates := (*daterange)(nil)
+	dates := (*DateRange)(nil)
 	if start != nil || end != nil {
-		dates = &daterange{
+		dates = &DateRange{
 			Start: start,
 			End:   end,
 		}
 	}
 
-	events := (*eventrange)(nil)
+	events := (*EventRange)(nil)
 	if first != 0 || last != 0 {
-		events = &eventrange{
+		events = &EventRange{
 			First: first,
 			Last:  last,
 		}
@@ -120,16 +112,16 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, rq Request) {
 	response := GetEventsResponse{
 		struct {
 			ID     uint32      `json:"id"`
-			Dates  *daterange  `json:"dates,omitempty"`
-			Events *eventrange `json:"events,omitempty"`
+			Dates  *DateRange  `json:"dates,omitempty"`
+			Events *EventRange `json:"events,omitempty"`
 		}{
-			ID:     *id,
+			ID:     id,
 			Dates:  dates,
 			Events: events,
 		},
 	}
 
-	u.reply(ctx, response)
+	return &response, nil
 }
 
 func (u *UHPPOTED) GetEvent(ctx context.Context, rq Request) {
