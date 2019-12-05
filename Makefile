@@ -73,11 +73,11 @@ usage: build
 debug: build
 	go clean -testcache
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ }'
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896 }'
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05 08:10:00" , "end": "2019-08-09 20:35:46" }'
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05 08:10" , "end": "2019-08-09 20:35" }'
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896 }'
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05 08:10:00" , "end": "2019-08-09 20:35:46" }'
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05 08:10" , "end": "2019-08-09 20:35" }'
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "end": "2019-08-05" , "start": "2019-08-09" }'
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05" , "end": "2019-08-09" }'
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05" , "end": "2019-08-09" }'
 
 help: build
 	$(CLI)       help

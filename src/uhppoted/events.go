@@ -50,13 +50,13 @@ type event struct {
 }
 
 func (u *UHPPOTED) GetEvents(ctx context.Context, rq GetEventsRequest) (*GetEventsResponse, error) {
-	u.debug(ctx, 0, "get-events", rq)
+	u.debug(ctx, rq.DeviceID, "get-events", rq)
 
-	id := rq.DeviceID
+	device := rq.DeviceID
 	start := rq.Start
 	end := rq.End
 
-	event, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(id, 0xffffffff)
+	event, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, 0xffffffff)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, rq GetEventsRequest) (*GetEven
 
 		if start != nil || end != nil {
 			for index := event.Index; index > 0; index-- {
-				record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(id, index)
+				record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, index)
 				if err != nil {
 					return nil, err
 				}
@@ -115,7 +115,7 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, rq GetEventsRequest) (*GetEven
 			Dates  *DateRange  `json:"dates,omitempty"`
 			Events *EventRange `json:"events,omitempty"`
 		}{
-			ID:     id,
+			ID:     device,
 			Dates:  dates,
 			Events: events,
 		},

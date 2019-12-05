@@ -214,8 +214,8 @@ func (m *MQTTD) Oops(ctx context.Context, operation string, message string, erro
 }
 
 func (m *MQTTD) OnError(ctx context.Context, operation string, message string, errorCode int, err error) {
-	// u.warn(ctx, 0, "get-events", err)
-	// u.oops(ctx, "get-events", "Missing/invalid device ID", StatusBadRequest)
+	ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %v\n", operation, err)
+
 	oops(ctx, operation, message, errorCode)
 }
 

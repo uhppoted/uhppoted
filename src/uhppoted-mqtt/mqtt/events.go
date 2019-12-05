@@ -3,7 +3,6 @@ package mqtt
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"time"
@@ -22,13 +21,13 @@ func (m *MQTTD) getEvents(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT
 	}{}
 
 	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
-		m.OnError(ctx, "get-events", "Missing/invalid device ID", uhppoted.StatusBadRequest, err)
+		m.OnError(ctx, "get-events", "Cannot parse request", uhppoted.StatusBadRequest, err)
 	} else if body.DeviceID == nil {
-		m.OnError(ctx, "get-events", "Missing/invalid device ID", uhppoted.StatusBadRequest, errors.New("Missing device/invalid ID"))
+		m.OnError(ctx, "get-events", "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
 	} else if *body.DeviceID == 0 {
-		m.OnError(ctx, "get-events", "Missing/invalid device ID", uhppoted.StatusBadRequest, errors.New("Missing device/invalid ID"))
+		m.OnError(ctx, "get-events", "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
 	} else if body.Start != nil && body.End != nil && time.Time(*body.End).Before(time.Time(*body.Start)) {
-		m.OnError(ctx, "get-events", "Invalid date range", uhppoted.StatusBadRequest, fmt.Errorf("Invalid date range (%s to %s)", (*types.DateTime)(body.Start), (*types.DateTime)(body.End)))
+		m.OnError(ctx, "get-events", "Invalid date range", uhppoted.StatusBadRequest, fmt.Errorf("Invalid date range '%s'", string(msg.Payload())))
 	} else {
 		rq := uhppoted.GetEventsRequest{
 			DeviceID: *body.DeviceID,
