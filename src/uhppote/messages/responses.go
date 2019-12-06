@@ -13,7 +13,7 @@ var responses = map[byte]func() Response{
 	0x50: func() Response { return new(PutCardResponse) },
 	0x52: func() Response { return new(DeleteCardResponse) },
 	0x54: func() Response { return new(DeleteCardsResponse) },
-	//	0x58: func() Response { return new(GetCardsResponse) },
+	0x58: func() Response { return new(GetCardsResponse) },
 	0x5a: func() Response { return new(GetCardByIdResponse) },
 	0x5c: func() Response { return new(GetCardByIndexResponse) },
 	//	0x80: func() Response { return new(SetDoorControlStateResponse) },
