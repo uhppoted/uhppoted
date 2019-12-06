@@ -24,6 +24,7 @@
 - [x] listen/events
 - [x] command protocol: reply topic
 - [ ] command protocol (embed auth, request id)
+- [ ] clean up 'Request' implementation
 
 - [x] subscribe
 - [x] error handling
@@ -36,7 +37,6 @@
 - [ ] health check
 - [ ] Make health check interval configurable 
 - [ ] watchdog
-- [ ] Clean up 'Request' implementation
 - [ ] Make events consistent across everything
 
 - [ ] uhppoted-rest: PUT card
