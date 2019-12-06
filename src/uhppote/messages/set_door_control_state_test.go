@@ -34,6 +34,51 @@ func TestMarshalSetDoorControlStateRequest(t *testing.T) {
 	}
 }
 
+func TestFactoryUnmarshalSetDoorControlStateRequest(t *testing.T) {
+	message := []byte{
+		0x17, 0x80, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0x04, 0x02, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	}
+
+	request, err := UnmarshalRequest(message)
+
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+		return
+	}
+
+	if request == nil {
+		t.Fatalf("Unexpected request: %v\n", request)
+	}
+
+	rq, ok := request.(*SetDoorControlStateRequest)
+	if !ok {
+		t.Fatalf("Invalid request type - expected:%T, got: %T\n", &SetDoorControlStateRequest{}, request)
+	}
+
+	if rq.MsgType != 0x80 {
+		t.Errorf("Incorrect 'message type' from valid message: %02x\n", rq.MsgType)
+	}
+
+	if rq.SerialNumber != 423187757 {
+		t.Errorf("Incorrect 'serial number' - expected:%v, got:%v\n", 423187757, rq.SerialNumber)
+	}
+
+	if rq.Door != 4 {
+		t.Errorf("Incorrect 'door' - expected:%v, got:%v\n", 4, rq.Door)
+	}
+
+	if rq.ControlState != 2 {
+		t.Errorf("Incorrect 'control state' - expected:%v, got:%v\n", 2, rq.ControlState)
+	}
+
+	if rq.Delay != 5 {
+		t.Errorf("Incorrect 'delay' - expected:%v, got:%v\n", 5, rq.Delay)
+	}
+}
+
 func TestUnmarshalSetDoorControlStateResponse(t *testing.T) {
 	message := []byte{
 		0x17, 0x80, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0x04, 0x02, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -48,6 +93,50 @@ func TestUnmarshalSetDoorControlStateResponse(t *testing.T) {
 
 	if err != nil {
 		t.Errorf("Unexpected error: %v\n", err)
+	}
+
+	if reply.MsgType != 0x80 {
+		t.Errorf("Incorrect 'message type' - expected:%02X, got:%02x\n", 0x80, reply.MsgType)
+	}
+
+	if reply.SerialNumber != 423187757 {
+		t.Errorf("Incorrect 'serial number' - expected:%v, got:%v\n", 423187757, reply.SerialNumber)
+	}
+
+	if reply.Door != 4 {
+		t.Errorf("Incorrect 'door' - expected:%v, got:%v\n", 4, reply.Door)
+	}
+
+	if reply.ControlState != 2 {
+		t.Errorf("Incorrect 'control state' - expected:%v, got:%v\n", 2, reply.ControlState)
+	}
+
+	if reply.Delay != 5 {
+		t.Errorf("Incorrect 'delay' - expected:%v, got:%v\n", 5, reply.Delay)
+	}
+}
+
+func TestFactoryUnmarshalSetDoorControlStateResponse(t *testing.T) {
+	message := []byte{
+		0x17, 0x80, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0x04, 0x02, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	}
+
+	response, err := UnmarshalResponse(message)
+
+	if err != nil {
+		t.Fatalf("Unexpected error: %v\n", err)
+	}
+
+	if response == nil {
+		t.Fatalf("Unexpected response: %v\n", response)
+	}
+
+	reply, ok := response.(*SetDoorControlStateResponse)
+	if !ok {
+		t.Fatalf("Invalid response type - expected:%T, got: %T\n", &SetDoorControlStateResponse{}, response)
 	}
 
 	if reply.MsgType != 0x80 {
