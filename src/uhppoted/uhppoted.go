@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	StatusOK                  = http.StatusOK
 	StatusBadRequest          = http.StatusBadRequest
 	StatusNotFound            = http.StatusNotFound
 	StatusInternalServerError = http.StatusInternalServerError
@@ -28,7 +29,6 @@ type Request interface {
 	DeviceDoorControl() (*uint32, *uint8, *string, error)
 	DeviceCardID() (*uint32, *uint32, error)
 	DeviceCard() (*uint32, *types.Card, error)
-	DeviceEventID() (*uint32, *uint32, error)
 }
 
 type UHPPOTED struct {
