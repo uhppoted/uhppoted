@@ -22,7 +22,7 @@ type DoorControl struct {
 }
 
 func (u *UHPPOTED) GetDoorDelay(ctx context.Context, rq Request) {
-	u.debug(ctx, 0, "get-door-delay", rq)
+	u.debug(ctx, "get-door-delay", rq)
 
 	id, door, err := rq.DeviceDoor()
 	if err != nil {
@@ -54,7 +54,7 @@ func (u *UHPPOTED) GetDoorDelay(ctx context.Context, rq Request) {
 }
 
 func (u *UHPPOTED) SetDoorDelay(ctx context.Context, rq Request) {
-	u.debug(ctx, 0, "set-door-delay", rq)
+	u.debug(ctx, "set-door-delay", rq)
 
 	id, door, delay, err := rq.DeviceDoorDelay()
 	if err != nil {
@@ -93,7 +93,7 @@ func (u *UHPPOTED) SetDoorDelay(ctx context.Context, rq Request) {
 }
 
 func (u *UHPPOTED) GetDoorControl(ctx context.Context, rq Request) {
-	u.debug(ctx, 0, "get-door-control", rq)
+	u.debug(ctx, "get-door-control", rq)
 
 	id, door, err := rq.DeviceDoor()
 	if err != nil {
@@ -131,7 +131,7 @@ func (u *UHPPOTED) GetDoorControl(ctx context.Context, rq Request) {
 }
 
 func (u *UHPPOTED) SetDoorControl(ctx context.Context, rq Request) {
-	u.debug(ctx, 0, "set-door-control", rq)
+	u.debug(ctx, "set-door-control", rq)
 
 	id, door, control, err := rq.DeviceDoorControl()
 	if err != nil {

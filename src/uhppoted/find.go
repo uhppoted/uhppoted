@@ -39,7 +39,7 @@ type detail struct {
 }
 
 func (u *UHPPOTED) GetDevices(ctx context.Context, rq Request) {
-	u.debug(ctx, 0, "get-devices", rq)
+	u.debug(ctx, "get-devices", rq)
 
 	devices, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevices()
 	if err != nil {
@@ -76,7 +76,7 @@ func (u *UHPPOTED) GetDevices(ctx context.Context, rq Request) {
 }
 
 func (u *UHPPOTED) GetDevice(ctx context.Context, rq Request) {
-	u.debug(ctx, 0, "get-device", rq)
+	u.debug(ctx, "get-device", rq)
 
 	id, err := rq.DeviceID()
 	if err != nil {

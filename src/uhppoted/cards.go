@@ -45,7 +45,7 @@ type DeleteCardsResponse struct {
 }
 
 func (u *UHPPOTED) GetCards(ctx context.Context, rq Request) {
-	u.debug(ctx, 0, "get-cards", rq)
+	u.debug(ctx, "get-cards", rq)
 
 	id, err := rq.DeviceID()
 	if err != nil {
@@ -88,7 +88,7 @@ func (u *UHPPOTED) GetCards(ctx context.Context, rq Request) {
 }
 
 func (u *UHPPOTED) DeleteCards(ctx context.Context, rq Request) {
-	u.debug(ctx, 0, "delete-cards", rq)
+	u.debug(ctx, "delete-cards", rq)
 
 	id, err := rq.DeviceID()
 	if err != nil {
@@ -118,7 +118,7 @@ func (u *UHPPOTED) DeleteCards(ctx context.Context, rq Request) {
 }
 
 func (u *UHPPOTED) GetCard(ctx context.Context, rq Request) {
-	u.debug(ctx, 0, "get-card", rq)
+	u.debug(ctx, "get-card", rq)
 
 	id, cardnumber, err := rq.DeviceCardID()
 	if err != nil {
@@ -154,7 +154,7 @@ func (u *UHPPOTED) GetCard(ctx context.Context, rq Request) {
 }
 
 func (u *UHPPOTED) PutCard(ctx context.Context, rq Request) {
-	u.debug(ctx, 0, "put-card", rq)
+	u.debug(ctx, "put-card", rq)
 
 	id, card, err := rq.DeviceCard()
 	if err != nil {
@@ -186,7 +186,7 @@ func (u *UHPPOTED) PutCard(ctx context.Context, rq Request) {
 }
 
 func (u *UHPPOTED) DeleteCard(ctx context.Context, rq Request) {
-	u.debug(ctx, 0, "delete-card", rq)
+	u.debug(ctx, "delete-card", rq)
 
 	id, cardnumber, err := rq.DeviceCardID()
 	if err != nil {

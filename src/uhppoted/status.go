@@ -34,7 +34,7 @@ type DeviceStatus struct {
 }
 
 func (u *UHPPOTED) GetStatus(ctx context.Context, rq Request) {
-	u.debug(ctx, 0, "get-status", rq)
+	u.debug(ctx, "get-status", rq)
 
 	id, err := rq.DeviceID()
 	if err != nil {

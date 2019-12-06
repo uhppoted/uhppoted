@@ -23,7 +23,9 @@
 - [x] get-events: date/ID range
 - [x] listen/events
 - [x] command protocol: reply topic
-- [ ] command protocol (embed auth, request id)
+- [x] command protocol: request ID
+- [ ] command protocol: rework response JSON marshaling
+- [ ] command protocol: HOTP
 - [ ] clean up 'Request' implementation
 
 - [x] subscribe
@@ -32,7 +34,6 @@
 - [ ] wrap request handling in go routine
 - [ ] TLS connection
 - [ ] Encrypt & sign
-- [ ] HOTP
 - [ ] MQTT v5.0
 - [ ] health check
 - [ ] Make health check interval configurable 
