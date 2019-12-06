@@ -55,12 +55,12 @@ type event struct {
 	Result     uint8          `json:"event-result"`
 }
 
-func (u *UHPPOTED) GetEvents(ctx context.Context, rq GetEventsRequest) (*GetEventsResponse, int, error) {
-	u.debug(ctx, rq.DeviceID, "get-events", rq)
+func (u *UHPPOTED) GetEvents(ctx context.Context, request GetEventsRequest) (*GetEventsResponse, int, error) {
+	u.debug(ctx, "get-events", fmt.Sprintf("request  %v", request))
 
-	device := rq.DeviceID
-	start := rq.Start
-	end := rq.End
+	device := request.DeviceID
+	start := request.Start
+	end := request.End
 
 	event, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, 0xffffffff)
 	if err != nil {
@@ -127,14 +127,16 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, rq GetEventsRequest) (*GetEven
 		},
 	}
 
+	u.debug(ctx, "get-events", fmt.Sprintf("response %v", response))
+
 	return &response, StatusOK, nil
 }
 
-func (u *UHPPOTED) GetEvent(ctx context.Context, rq GetEventRequest) (*GetEventResponse, int, error) {
-	u.debug(ctx, 0, "get-event", rq)
+func (u *UHPPOTED) GetEvent(ctx context.Context, request GetEventRequest) (*GetEventResponse, int, error) {
+	u.debug(ctx, "get-events", fmt.Sprintf("request  %v", request))
 
-	device := rq.DeviceID
-	eventID := rq.EventID
+	device := request.DeviceID
+	eventID := request.EventID
 
 	record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, eventID)
 	if err != nil {
@@ -167,6 +169,8 @@ func (u *UHPPOTED) GetEvent(ctx context.Context, rq GetEventRequest) (*GetEventR
 			},
 		},
 	}
+
+	u.debug(ctx, "get-event", fmt.Sprintf("response %v", response))
 
 	return &response, StatusOK, nil
 }

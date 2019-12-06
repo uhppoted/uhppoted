@@ -277,7 +277,7 @@ uhppoted-mqtt-get-event:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' \
 	             --message '{ "request": { "reply-to": "reply/97531" }, "device-id": 305419896, "event-id": 58 }'
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' \
-	             --message '{ "request": { "reply-to": "reply/97531" }, "device-id": 305419896, "event-id": 112 }'
+	             --message '{ "request": { "request-id": "98YWRW524", "reply-to": "reply/97531" }, "device-id": 305419896, "event-id": 112 }'
 
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 

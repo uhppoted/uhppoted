@@ -14,7 +14,7 @@ type DeviceTime struct {
 }
 
 func (u *UHPPOTED) GetTime(ctx context.Context, rq Request) {
-	u.debug(ctx, 0, "get-time", rq)
+	u.debug(ctx, "get-time", rq)
 
 	id, err := rq.DeviceID()
 	if err != nil {
@@ -44,7 +44,7 @@ func (u *UHPPOTED) GetTime(ctx context.Context, rq Request) {
 }
 
 func (u *UHPPOTED) SetTime(ctx context.Context, rq Request) {
-	u.debug(ctx, 0, "set-time", rq)
+	u.debug(ctx, "set-time", rq)
 
 	id, err := rq.DeviceID()
 	if err != nil {

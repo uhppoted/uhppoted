@@ -33,7 +33,8 @@ type dispatcher struct {
 }
 
 type request struct {
-	ReplyTo *string `json:"reply-to"`
+	RequestID *string `json:"request-id"`
+	ReplyTo   *string `json:"reply-to"`
 }
 
 func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
@@ -163,7 +164,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		}
 
 		if err := json.Unmarshal(msg.Payload(), &rq); err != nil {
-			ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %v\n", "dispatch", fmt.Errorf("Invalid message format '%s'", string(msg.Payload())))
+			ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %v\n", "dispatch", fmt.Errorf("Invalid message: %v <%s>", err, string(msg.Payload())))
 			return
 		}
 
@@ -177,7 +178,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		}{}
 
 		if err := json.Unmarshal(msg.Payload(), &body); err != nil {
-			ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %v\n", "dispatch", fmt.Errorf("Invalid message format '%s'", string(msg.Payload())))
+			ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %v\n", "dispatch", fmt.Errorf("Invalid message: %v <%s>", err, string(msg.Payload())))
 			return
 		}
 
@@ -209,12 +210,6 @@ func (m *MQTTD) Send(ctx context.Context, message interface{}) {
 }
 
 func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
-	b, err := json.Marshal(response)
-	if err != nil {
-		oops(ctx, "encoding/json", "Error encoding response", uhppoted.StatusInternalServerError)
-		return
-	}
-
 	client, ok := ctx.Value("client").(MQTT.Client)
 	if !ok {
 		panic("MQTT client not included in context")
@@ -225,12 +220,38 @@ func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 		panic("MQTT root topic not included in context")
 	}
 
+	requestID := ""
 	replyTo := "reply"
+
 	rq, ok := ctx.Value("request").(request)
 	if ok {
+		if rq.RequestID != nil {
+			requestID = *rq.RequestID
+		}
+
 		if rq.ReplyTo != nil {
 			replyTo = *rq.ReplyTo
 		}
+	}
+
+	message := struct {
+		Meta struct {
+			RequestID string `json:"request-id,omitempty"`
+		} `json:"meta"`
+		Body interface{} `json:"body"`
+	}{
+		Meta: struct {
+			RequestID string `json:"request-id,omitempty"`
+		}{
+			RequestID: requestID,
+		},
+		Body: response,
+	}
+
+	b, err := json.Marshal(message)
+	if err != nil {
+		oops(ctx, "encoding/json", "Error encoding response", uhppoted.StatusInternalServerError)
+		return
 	}
 
 	token := client.Publish(topic+"/"+replyTo, 0, false, string(b))
@@ -247,30 +268,7 @@ func (m *MQTTD) OnError(ctx context.Context, operation string, message string, e
 	oops(ctx, operation, message, errorCode)
 }
 
-func oops(ctx context.Context, operation string, message string, errorCode int) {
-	response := struct {
-		Operation string `json:"operation"`
-		Error     struct {
-			Message   string `json:"message"`
-			ErrorCode int    `json:"error-code"`
-		} `json:"error"`
-	}{
-		Operation: operation,
-		Error: struct {
-			Message   string `json:"message"`
-			ErrorCode int    `json:"error-code"`
-		}{
-			Message:   message,
-			ErrorCode: errorCode,
-		},
-	}
-
-	b, err := json.Marshal(response)
-	if err != nil {
-		ctx.Value("log").(*log.Logger).Printf("ERROR: Error generating JSON response (%v)", err)
-		return
-	}
-
+func oops(ctx context.Context, operation string, msg string, errorCode int) {
 	client, ok := ctx.Value("client").(MQTT.Client)
 	if !ok {
 		panic("MQTT client not included in context")
@@ -281,18 +279,55 @@ func oops(ctx context.Context, operation string, message string, errorCode int) 
 		panic("MQTT root topic not included in context")
 	}
 
+	requestID := ""
 	replyTo := "errors"
+
 	rq, ok := ctx.Value("request").(request)
 	if ok {
-		if rq.ReplyTo != nil {
-			replyTo = *rq.ReplyTo
+		if rq.RequestID != nil {
+			requestID = *rq.RequestID
 		}
+
+		if rq.ReplyTo != nil {
+			replyTo = *rq.ReplyTo + "/errors"
+		}
+	}
+
+	response := struct {
+		Meta struct {
+			RequestID string `json:"request-id,omitempty"`
+		} `json:"meta"`
+		Operation string `json:"operation"`
+		Error     struct {
+			Message   string `json:"message"`
+			ErrorCode int    `json:"error-code"`
+		} `json:"error"`
+	}{
+		Meta: struct {
+			RequestID string `json:"request-id,omitempty"`
+		}{
+			RequestID: requestID,
+		},
+		Operation: operation,
+		Error: struct {
+			Message   string `json:"message"`
+			ErrorCode int    `json:"error-code"`
+		}{
+			Message:   msg,
+			ErrorCode: errorCode,
+		},
+	}
+
+	b, err := json.Marshal(response)
+	if err != nil {
+		ctx.Value("log").(*log.Logger).Printf("ERROR: Error generating JSON response (%v)", err)
+		return
 	}
 
 	token := client.Publish(topic+"/"+replyTo, 0, false, string(b))
 	token.Wait()
 }
 
-func debug(ctx context.Context, location string, detail interface{}) {
-	ctx.Value("log").(*log.Logger).Printf("DEBUG %-20s %v\n", location, detail)
+func debug(ctx context.Context, operation string, msg interface{}) {
+	ctx.Value("log").(*log.Logger).Printf("DEBUG %-20s %v\n", operation, msg)
 }
