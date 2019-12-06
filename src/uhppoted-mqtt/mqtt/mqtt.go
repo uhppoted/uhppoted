@@ -70,10 +70,10 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/card:get":         (*uhppoted.UHPPOTED).GetCard,
 			m.Topic + "/device/card:put":         (*uhppoted.UHPPOTED).PutCard,
 			m.Topic + "/device/card:delete":      (*uhppoted.UHPPOTED).DeleteCard,
-			m.Topic + "/device/event:get":        (*uhppoted.UHPPOTED).GetEvent,
 		},
 		tablex: map[string]fdispatchx{
 			m.Topic + "/device/events:get": (*MQTTD).getEvents,
+			m.Topic + "/device/event:get":  (*MQTTD).getEvent,
 		},
 	}
 
@@ -281,7 +281,15 @@ func oops(ctx context.Context, operation string, message string, errorCode int) 
 		panic("MQTT root topic not included in context")
 	}
 
-	token := client.Publish(topic+"/gateway/errors", 0, false, string(b))
+	replyTo := "errors"
+	rq, ok := ctx.Value("request").(request)
+	if ok {
+		if rq.ReplyTo != nil {
+			replyTo = *rq.ReplyTo
+		}
+	}
+
+	token := client.Publish(topic+"/"+replyTo, 0, false, string(b))
 	token.Wait()
 }
 

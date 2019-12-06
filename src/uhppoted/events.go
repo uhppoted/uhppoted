@@ -2,6 +2,7 @@ package uhppoted
 
 import (
 	"context"
+	"fmt"
 	"time"
 	"uhppote"
 	"uhppote/types"
@@ -19,6 +20,11 @@ type GetEventsResponse struct {
 		Dates  *DateRange  `json:"dates,omitempty"`
 		Events *EventRange `json:"events,omitempty"`
 	} `json:"device"`
+}
+
+type GetEventRequest struct {
+	DeviceID uint32
+	EventID  uint32
 }
 
 type GetEventResponse struct {
@@ -49,7 +55,7 @@ type event struct {
 	Result     uint8          `json:"event-result"`
 }
 
-func (u *UHPPOTED) GetEvents(ctx context.Context, rq GetEventsRequest) (*GetEventsResponse, error) {
+func (u *UHPPOTED) GetEvents(ctx context.Context, rq GetEventsRequest) (*GetEventsResponse, int, error) {
 	u.debug(ctx, rq.DeviceID, "get-events", rq)
 
 	device := rq.DeviceID
@@ -58,7 +64,7 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, rq GetEventsRequest) (*GetEven
 
 	event, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, 0xffffffff)
 	if err != nil {
-		return nil, err
+		return nil, StatusInternalServerError, err
 	}
 
 	first := uint32(0)
@@ -79,7 +85,7 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, rq GetEventsRequest) (*GetEven
 			for index := event.Index; index > 0; index-- {
 				record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, index)
 				if err != nil {
-					return nil, err
+					return nil, StatusInternalServerError, err
 				}
 
 				if start != nil && !time.Time(record.Timestamp).Before(time.Time(*start)) && record.Index < first {
@@ -121,34 +127,26 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, rq GetEventsRequest) (*GetEven
 		},
 	}
 
-	return &response, nil
+	return &response, StatusOK, nil
 }
 
-func (u *UHPPOTED) GetEvent(ctx context.Context, rq Request) {
+func (u *UHPPOTED) GetEvent(ctx context.Context, rq GetEventRequest) (*GetEventResponse, int, error) {
 	u.debug(ctx, 0, "get-event", rq)
 
-	id, eventID, err := rq.DeviceEventID()
-	if err != nil {
-		u.warn(ctx, 0, "get-event", err)
-		u.oops(ctx, "get-event", "Missing/invalid device ID or event ID", StatusBadRequest)
-		return
-	}
+	device := rq.DeviceID
+	eventID := rq.EventID
 
-	record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(*id, *eventID)
+	record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, eventID)
 	if err != nil {
-		u.warn(ctx, *id, "get-event", err)
-		u.oops(ctx, "get-event", "Failed to retrieve event", StatusInternalServerError)
-		return
+		return nil, StatusInternalServerError, fmt.Errorf("Failed to retrieve event ID %d", eventID)
 	}
 
 	if record == nil {
-		u.oops(ctx, "get-event", "Event record does not exist", StatusNotFound)
-		return
+		return nil, StatusNotFound, fmt.Errorf("No event record for ID %d", eventID)
 	}
 
-	if record.Index != *eventID {
-		u.oops(ctx, "get-event", "Event record does not exist", StatusNotFound)
-		return
+	if record.Index != eventID {
+		return nil, StatusNotFound, fmt.Errorf("No event record for ID %d", eventID)
 	}
 
 	response := GetEventResponse{
@@ -156,7 +154,7 @@ func (u *UHPPOTED) GetEvent(ctx context.Context, rq Request) {
 			ID    uint32 `json:"id"`
 			Event event  `json:"event"`
 		}{
-			ID: *id,
+			ID: device,
 			Event: event{
 				Index:      record.Index,
 				Type:       record.Type,
@@ -170,5 +168,5 @@ func (u *UHPPOTED) GetEvent(ctx context.Context, rq Request) {
 		},
 	}
 
-	u.reply(ctx, response)
+	return &response, StatusOK, nil
 }

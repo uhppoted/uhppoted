@@ -49,6 +49,7 @@
 - [ ] conf file decoder: JSON
 - [ ] conf file encoder
 - [ ] Rework UHPPOTE response messages to use factory
+- [ ] Genericize message unit tests
 - [ ] Rework plist encoder
 - [ ] Convert to 1.13 error handling
 - [ ] Rework uhppoted-xxx Run, etc to use [method expressions](https://talks.golang.org/2012/10things.slide#9)

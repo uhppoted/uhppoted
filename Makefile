@@ -261,9 +261,23 @@ uhppoted-mqtt-get-events:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05 08:10" , "end": "2019-08-09 20:35" }'
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "end": "2019-08-05" , "start": "2019-08-09" }'
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05" , "end": "2019-08-09" }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' \
+	             --message '{ "request": { \
+	                             "reply-to": "reply/97531"\
+	                          }, \
+	                          "device-id": 305419896, \
+	                          "start": "2019-08-05" , \
+	                          "end": "2019-08-09" }'
+
+
 
 uhppoted-mqtt-get-event:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' --message '{ "device-id": 305419896, "event-id": 58 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' \
+	             --message '{ "device-id": 305419896, "event-id": 58 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' \
+	             --message '{ "request": { "reply-to": "reply/97531" }, "device-id": 305419896, "event-id": 58 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' \
+	             --message '{ "request": { "reply-to": "reply/97531" }, "device-id": 305419896, "event-id": 112 }'
 
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
