@@ -1,10 +1,11 @@
 # uhppote-go
 
-Go CLI and daemon/service implementation for the UHPPOTE UT0311-L04 TCP/IP Wiegand Access Control Board. Based largely on the [carbonsphere/UHPPOTE](https://github.com/carbonsphere/UHPPOTE) PHP implementation.
+Go CLI and daemon/service implementation for the UHPPOTE UT0311-L04 TCP/IP Wiegand Access Control Board. 
 
 ## Raison d'être
 
-Provide a cross-platform base library and system for access control systems based on the UHPPOTE UT0311-L04 TCP/IP Wiegand Access Control Board. The out-of-the-box application supplied with the boards is a 'Windows only' application which is not ideal for server use or integration with other systems (a Java/C# API is available on request).
+Provides a set of cross-platform building blocks for access control systems based on the UHPPOTE UT0311-L04 TCP/IP 
+Wiegand Access Control Board, to supplement the 'Windows-only' out-of-the-box application supplied with the boards.
 
 ## Releases
 
@@ -120,7 +121,13 @@ Supported options:
 - --devices <directory path for device files>
 - --debug
 
+## References and Related Projects
 
+1. [carbonsphere/UHPPOTE](https://github.com/carbonsphere/UHPPOTE) `PHP`
+2. [carbonsphere/DoorControl](https://github.com/carbonsphere/DoorControl) `PHP`
+2. [andrewvaughan/uhppote-rfid](https://github.com/andrewvaughan/uhppote-rfid) `Python`
+3. [tachoknight/uhppote-tools](https://github.com/tachoknight/uhppote-tools): `Go`
+4. [jjhuff/uhppote-go](https://github.com/jjhuff/uhppote-go): `Go`
 
 
 
