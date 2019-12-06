@@ -17,7 +17,7 @@ var responses = map[byte]func() Response{
 	0x5a: func() Response { return new(GetCardByIdResponse) },
 	0x5c: func() Response { return new(GetCardByIndexResponse) },
 	0x80: func() Response { return new(SetDoorControlStateResponse) },
-	//	0x82: func() Response { return new(GetDoorControlStateResponse) },
+	0x82: func() Response { return new(GetDoorControlStateResponse) },
 	//	0x90: func() Response { return new(SetListenerResponse) },
 	//	0x92: func() Response { return new(GetListenerResponse) },
 	0x94: func() Response { return new(FindDevicesResponse) },
