@@ -31,7 +31,9 @@ Wiegand Access Control Board, to supplement the 'Windows-only' out-of-the-box ap
 
 #### Dependencies
 
-- golang.org.x.sys (for uhppoted Windows service)
+- golang.org.x.sys *(for uhppoted Windows service)*
+- eclipse/paho.mqtt.golang *(for MQTT 3.1.1 implementation)*
+- gorilla/websocket *(paho.mqtt.golang dependency)*
 
 ### Binaries
 

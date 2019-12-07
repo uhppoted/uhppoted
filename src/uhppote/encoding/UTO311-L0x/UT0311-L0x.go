@@ -198,7 +198,8 @@ func unmarshal(bytes []byte, s reflect.Value) error {
 		return errors.New(fmt.Sprintf("Invalid message length - expected 64 bytes, received %v", len(bytes)))
 	}
 
-	if bytes[0] != 0x17 {
+	// INTERIM PATCH: accommodates undocumented but seemingly valid 'listen' events that start with 0x19
+	if (bytes[0] != 0x17) && (bytes[0] != 0x19 || bytes[1] != 0x20) {
 		return errors.New(fmt.Sprintf("Invalid start of message - expected 0x17, received 0x%02x", bytes[0]))
 	}
 
