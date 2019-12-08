@@ -14,10 +14,34 @@ all: test      \
 	 benchmark \
      coverage
 
+clean:
+	go clean
+	rm -rf bin
+
 format: 
 	go fmt uhppote...
 
-release: format
+build: format
+	go install $(LDFLAGS) uhppote-cli
+	go install $(LDFLAGS) uhppoted-rest
+	go install $(LDFLAGS) uhppoted/uhppoted-mqtt
+	go install $(LDFLAGS) uhppote-simulator
+
+test: build
+	go clean -testcache
+	go test uhppote...
+
+benchmark: build
+	go test src/uhppote/encoding/bcd/*.go -bench .
+
+coverage: build
+	go clean -testcache
+	go test -cover src/uhppote/*.go
+	go test -cover src/uhppote/encoding/bcd/*.go
+	go test -cover src/uhppote/encoding/UTO311-L0x/*.go
+	go test -cover src/uhppoted-rest/encoding/plist/*.go
+
+release: test
 	mkdir -p dist/$(DIST)/windows
 	mkdir -p dist/$(DIST)/darwin
 	mkdir -p dist/$(DIST)/linux
@@ -39,33 +63,9 @@ release: format
 release-tar: release
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
 
-build: format
-	go install $(LDFLAGS) uhppote-cli
-	go install $(LDFLAGS) uhppoted-rest
-	go install $(LDFLAGS) uhppoted/uhppoted-mqtt
-	go install $(LDFLAGS) uhppote-simulator
-
-test: build
-	go clean -testcache
-	go test uhppote...
-
 integration-tests: build
 	go clean -testcache
 	go test -count=1 src/integration-tests/*.go
-
-benchmark: build
-	go test src/uhppote/encoding/bcd/*.go -bench .
-
-coverage: build
-	go clean -testcache
-	go test -cover src/uhppote/*.go
-	go test -cover src/uhppote/encoding/bcd/*.go
-	go test -cover src/uhppote/encoding/UTO311-L0x/*.go
-	go test -cover src/uhppoted-rest/encoding/plist/*.go
-
-clean:
-	go clean
-	rm -rf bin
 
 usage: build
 	$(CLI)

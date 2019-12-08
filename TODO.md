@@ -34,8 +34,12 @@
 - [ ] wrap request handling in go routine
 - [ ] TLS connection
 - [ ] Encrypt & sign
+- [ ] Implement retry + backoff for connection to broker
+- [ ] Implement retry + backoff for 'listen'
+- [ ] Rework listen logic to handle errors robustly
 - [ ] MQTT v5.0
 - [ ] health check
+- [ ] Include get-listener in health check
 - [ ] Make health check interval configurable 
 - [ ] watchdog
 - [ ] Make events consistent across everything

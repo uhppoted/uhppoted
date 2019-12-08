@@ -238,7 +238,7 @@ func TestUnmarshal(t *testing.T) {
 	}
 
 	if reply.Uint32 != 423187757 {
-		t.Errorf("Expected 'uint32':%v, got: %v\n", 423187757, reply.Uint32)
+		t.Errorf("Expected 'uint32':%d, got: %v\n", uint32(423187757), reply.Uint32)
 	}
 
 	if reply.Uint16 != 1234 {
@@ -362,7 +362,7 @@ func TestUnmarshalFromArray(t *testing.T) {
 	}
 
 	if reply[0].Uint32 != 2018915346 {
-		t.Errorf("Expected 'uint32':%v, got: %v\n", 2018915346, reply[0].Uint32)
+		t.Errorf("Expected 'uint32':%d, got: %v\n", uint32(2018915346), reply[0].Uint32)
 	}
 
 	if reply[1].MsgType != 0x94 {
@@ -370,7 +370,7 @@ func TestUnmarshalFromArray(t *testing.T) {
 	}
 
 	if reply[1].Uint32 != 2305246499 {
-		t.Errorf("Expected 'uint32':%v, got: %v\n", 2305246499, reply[1].Uint32)
+		t.Errorf("Expected 'uint32':%d, got: %v\n", uint32(2305246499), reply[1].Uint32)
 	}
 }
 
@@ -399,7 +399,7 @@ func TestUnmarshalWithDecimalMsgType(t *testing.T) {
 	}
 
 	if reply.Uint32 != 423187757 {
-		t.Errorf("Expected 'uint32':%v, got: %v\n", 423187757, reply.Uint32)
+		t.Errorf("Expected 'uint32':%d, got: %v\n", uint32(423187757), reply.Uint32)
 	}
 }
 
@@ -428,7 +428,7 @@ func TestUnmarshalWithHexadecimalMsgType(t *testing.T) {
 	}
 
 	if reply.Uint32 != 423187757 {
-		t.Errorf("Expected 'uint32':%v, got: %v\n", 423187757, reply.Uint32)
+		t.Errorf("Expected 'uint32':%d, got: %v\n", uint32(423187757), reply.Uint32)
 	}
 }
 
