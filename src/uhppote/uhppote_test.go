@@ -86,15 +86,15 @@ func TestSequentialRequests(t *testing.T) {
 		BindAddress:      resolve("127.0.0.1:12345", t),
 		BroadcastAddress: resolve("127.0.0.1:60000", t),
 		Devices: map[uint32]*net.UDPAddr{
-			423187757: resolve("127.0.0.1:60001", t),
-			757781324: resolve("127.0.0.1:60002", t),
+			423187757: resolve("127.0.0.1:65001", t),
+			757781324: resolve("127.0.0.1:65002", t),
 		},
 	}
 
 	closed := make(chan int)
 	listening := []*net.UDPConn{
-		listen(423187757, "127.0.0.1:60001", 0*time.Millisecond, closed, t),
-		listen(757781324, "127.0.0.1:60002", 0*time.Millisecond, closed, t),
+		listen(423187757, "127.0.0.1:65001", 0*time.Millisecond, closed, t),
+		listen(757781324, "127.0.0.1:65002", 0*time.Millisecond, closed, t),
 	}
 
 	defer func() {
@@ -160,15 +160,15 @@ func TestConcurrentRequestsWithUnboundPort(t *testing.T) {
 		BindAddress:      resolve("127.0.0.1:0", t),
 		BroadcastAddress: resolve("127.0.0.1:60000", t),
 		Devices: map[uint32]*net.UDPAddr{
-			423187757: resolve("127.0.0.1:60001", t),
-			757781324: resolve("127.0.0.1:60002", t),
+			423187757: resolve("127.0.0.1:65001", t),
+			757781324: resolve("127.0.0.1:65002", t),
 		},
 	}
 
 	closed := make(chan int)
 	listening := []*net.UDPConn{
-		listen(423187757, "127.0.0.1:60001", 1500*time.Millisecond, closed, t),
-		listen(757781324, "127.0.0.1:60002", 500*time.Millisecond, closed, t),
+		listen(423187757, "127.0.0.1:65001", 1500*time.Millisecond, closed, t),
+		listen(757781324, "127.0.0.1:65002", 500*time.Millisecond, closed, t),
 	}
 
 	defer func() {
@@ -244,15 +244,15 @@ func TestConcurrentRequestsWithBoundPort(t *testing.T) {
 		BindAddress:      resolve("127.0.0.1:12345", t),
 		BroadcastAddress: resolve("127.0.0.1:60000", t),
 		Devices: map[uint32]*net.UDPAddr{
-			423187757: resolve("127.0.0.1:60001", t),
-			757781324: resolve("127.0.0.1:60002", t),
+			423187757: resolve("127.0.0.1:65001", t),
+			757781324: resolve("127.0.0.1:65002", t),
 		},
 	}
 
 	closed := make(chan int)
 	listening := []*net.UDPConn{
-		listen(423187757, "127.0.0.1:60001", 1000*time.Millisecond, closed, t),
-		listen(757781324, "127.0.0.1:60002", 500*time.Millisecond, closed, t),
+		listen(423187757, "127.0.0.1:65001", 1000*time.Millisecond, closed, t),
+		listen(757781324, "127.0.0.1:65002", 500*time.Millisecond, closed, t),
 	}
 
 	defer func() {
