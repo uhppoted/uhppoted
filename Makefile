@@ -72,8 +72,8 @@ usage: build
 
 debug: build
 	go clean -testcache
-	go test -v uhppote... --run TestSequentialRequests
-	go test -v uhppote... --run TestConcurrentRequestsWithUnboundPort
+	go test src/uhppoted-mqtt/auth/*.go
+#	go test -v uhppote... --run TestConcurrentRequestsWithUnboundPort
 # 	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' \
 # 	              --message '{ "request": { \
 # 	                              "reply-to": "reply/97531"\
