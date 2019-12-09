@@ -39,7 +39,6 @@ func TestFactoryUnmarshalDeleteCardRequest(t *testing.T) {
 	}
 
 	request, err := UnmarshalRequest(message)
-
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
 		return

@@ -71,8 +71,7 @@
 - [ ] commonalise configuration
 
 ### uhppoted
-- [ ] websocket (?)
-- [ ] GraphQL
+- [ ] websocket + GraphQL (?)
 - [ ] IFTTT
 - [ ] Braid (?)
 - [ ] MacOS launchd socket handoff
