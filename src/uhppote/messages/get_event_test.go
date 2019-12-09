@@ -17,7 +17,6 @@ func TestMarshalGetEventRequest(t *testing.T) {
 	}
 
 	request := GetEventRequest{
-		MsgType:      0xb0,
 		SerialNumber: 423187757,
 		Index:        1,
 	}
@@ -31,6 +30,37 @@ func TestMarshalGetEventRequest(t *testing.T) {
 
 	if !reflect.DeepEqual(m, expected) {
 		t.Errorf("Invalid byte array:\nExpected:\n%s\nReturned:\n%s", dump(expected, ""), dump(m, ""))
+		return
+	}
+}
+
+func TestFactoryUnmarshalGetEventRequest(t *testing.T) {
+	message := []byte{
+		0x17, 0xb0, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	}
+
+	expected := GetEventRequest{
+		MsgType:      0xb0,
+		SerialNumber: 423187757,
+		Index:        1,
+	}
+
+	request, err := UnmarshalRequest(message)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+		return
+	}
+
+	rq, ok := request.(*GetEventRequest)
+	if !ok {
+		t.Fatalf("Invalid request type - expected:%T, got: %T\n", &GetEventRequest{}, request)
+	}
+
+	if !reflect.DeepEqual(*rq, expected) {
+		t.Errorf("Invalid unmarshalled request:\nexpected:%#v\ngot:     %#v", expected, *rq)
 		return
 	}
 }
@@ -83,9 +113,52 @@ func TestUnmarshalGetEventResponse(t *testing.T) {
 		t.Errorf("Incorrect 'user ID' - expected:%d, got: %v\n", 6154413, reply.UserId)
 	}
 
+	if reply.Result != 6 {
+		t.Errorf("Incorrect 'result' - expected:%d, got: %v\n", 6, reply.Result)
+	}
+
 	timestamp, _ := time.ParseInLocation("2006-01-02 15:04:05", "2019-02-10 07:12:01", time.Local)
 	if reply.Timestamp != types.DateTime(timestamp) {
 		t.Errorf("Incorrect 'timestamp' - expected:%s, got:%s\n", timestamp.Format("2006-01-02 15:04:05"), reply.Timestamp)
+	}
+}
+
+func TestFactoryUnmarshalGetEventResponse(t *testing.T) {
+	message := []byte{
+		0x17, 0xb0, 0x00, 0x00, 0x2d, 0x55, 0x39, 0x19, 0x08, 0x00, 0x00, 0x00, 0x02, 0x01, 0x03, 0x01,
+		0xad, 0xe8, 0x5d, 0x00, 0x20, 0x19, 0x02, 0x10, 0x07, 0x12, 0x01, 0x06, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4a, 0x26, 0x80, 0x39, 0x08, 0x92, 0x00, 0x00,
+	}
+
+	timestamp, _ := time.ParseInLocation("2006-01-02 15:04:05", "2019-02-10 07:12:01", time.Local)
+	expected := GetEventResponse{
+		MsgType:      0xb0,
+		SerialNumber: 423187757,
+		Index:        8,
+		Type:         2,
+		Granted:      true,
+		Door:         3,
+		DoorOpened:   true,
+		UserId:       6154413,
+		Timestamp:    types.DateTime(timestamp),
+		Result:       0x06,
+	}
+
+	response, err := UnmarshalResponse(message)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+		return
+	}
+
+	reply, ok := response.(*GetEventResponse)
+	if !ok {
+		t.Fatalf("Invalid response type - expected:%T, got: %T\n", &GetEventResponse{}, reply)
+	}
+
+	if !reflect.DeepEqual(*reply, expected) {
+		t.Errorf("Invalid unmarshalled response:\nexpected:%#v\ngot:     %#v", expected, *reply)
+		return
 	}
 }
 
