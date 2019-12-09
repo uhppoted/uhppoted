@@ -3,17 +3,21 @@ package mqtt
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"log"
 	"os"
 	"uhppote"
 	"uhppoted"
+	"uhppoted-mqtt/auth"
 )
 
 type MQTTD struct {
 	Broker     string
 	Topic      string
+	Secrets    map[string]string
+	Counters   map[string]uint64
 	connection MQTT.Client
 	interrupt  chan os.Signal
 	Debug      bool
@@ -35,6 +39,8 @@ type dispatcher struct {
 type request struct {
 	RequestID *string `json:"request-id"`
 	ReplyTo   *string `json:"reply-to"`
+	ClientID  *string `json:"client-id"`
+	HOTP      *string `json:"hotp"`
 }
 
 func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
@@ -164,13 +170,14 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		}
 
 		if err := json.Unmarshal(msg.Payload(), &rq); err != nil {
-			ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %v\n", "dispatch", fmt.Errorf("Invalid message: %v <%s>", err, string(msg.Payload())))
+			d.log.Printf("WARN  %-20s %v\n", "dispatch", fmt.Errorf("Invalid message: %v <%s>", err, string(msg.Payload())))
 			return
 		}
 
 		fn(d.uhppoted, ctx, &rq)
 		return
 	}
+	// ----
 
 	if fnx, ok := d.tablex[msg.Topic()]; ok {
 		body := struct {
@@ -178,7 +185,12 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		}{}
 
 		if err := json.Unmarshal(msg.Payload(), &body); err != nil {
-			ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %v\n", "dispatch", fmt.Errorf("Invalid message: %v <%s>", err, string(msg.Payload())))
+			d.log.Printf("WARN  %-20s %v %s\n", "dispatch", err, string(msg.Payload()))
+			return
+		}
+
+		if err := d.mqttd.authorise(body.Request); err != nil {
+			d.log.Printf("WARN  %-20s %v %s\n", "dispatch", err, string(msg.Payload()))
 			return
 		}
 
@@ -186,6 +198,37 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 
 		fnx(d.mqttd, d.uhppoted, ctx, msg)
 	}
+}
+
+func (m *MQTTD) authorise(rq request) error {
+	if rq.ClientID == nil {
+		return errors.New("Request without client-id")
+	}
+
+	if rq.HOTP == nil {
+		return errors.New("Request without HOTP")
+	}
+
+	secret, ok := m.Secrets[*rq.ClientID]
+	if !ok {
+		return fmt.Errorf("No authorisation key for client-id '%s'", *rq.ClientID)
+	}
+
+	counter, ok := m.Counters[*rq.ClientID]
+	if !ok {
+		return fmt.Errorf("No HOTP counter for client-id '%s'", *rq.ClientID)
+	}
+
+	for i := 0; i < 5; i++ {
+		if auth.ValidateHOTP(*rq.HOTP, counter, secret) {
+			m.Counters[*rq.ClientID] = counter + 1
+			return nil
+		}
+
+		counter++
+	}
+
+	return fmt.Errorf("client-id '%s': invalid HOTP %s", *rq.ClientID, *rq.HOTP)
 }
 
 func (m *MQTTD) Send(ctx context.Context, message interface{}) {

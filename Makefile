@@ -72,15 +72,13 @@ usage: build
 
 debug: build
 	go clean -testcache
-	go test src/uhppoted-mqtt/auth/*.go
+#	go test -v uhppote... --run TestSequentialRequests
 #	go test -v uhppote... --run TestConcurrentRequestsWithUnboundPort
-# 	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' \
-# 	              --message '{ "request": { \
-# 	                              "reply-to": "reply/97531"\
-# 	                            }, \
-# 	                            "device-id": 305419896, \
-# 	                            "start": "2019-08-05" , \
-# 	                            "end": "2019-08-09" }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' \
+                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
+                              "device-id": 305419896, \
+                              "start": "2019-08-05" , \
+                              "end": "2019-08-09" }'
 
 help: build
 	$(CLI)       help
