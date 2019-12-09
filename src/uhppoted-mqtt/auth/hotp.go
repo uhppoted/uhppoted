@@ -1,4 +1,4 @@
-package hotp
+package auth
 
 import (
 	"crypto/hmac"
@@ -14,13 +14,13 @@ import (
 
 const DIGITS = 6
 
-func Validate(passcode string, counter uint64, secret string) bool {
+func ValidateHOTP(passcode string, counter uint64, secret string) bool {
 	passcode = strings.TrimSpace(passcode)
 	if len(passcode) != DIGITS {
 		return false
 	}
 
-	otpstr, err := generateCode(secret, counter, DIGITS, sha1.New)
+	otpstr, err := generateHOTP(secret, counter, DIGITS, sha1.New)
 	if err != nil {
 		return false
 	}
@@ -28,7 +28,7 @@ func Validate(passcode string, counter uint64, secret string) bool {
 	return subtle.ConstantTimeCompare([]byte(otpstr), []byte(passcode)) == 1
 }
 
-func generateCode(secret string, counter uint64, digits int, algorithm func() hash.Hash) (passcode string, err error) {
+func generateHOTP(secret string, counter uint64, digits int, algorithm func() hash.Hash) (passcode string, err error) {
 	secret = strings.TrimSpace(secret)
 	if n := len(secret) % 8; n != 0 {
 		secret = secret + strings.Repeat("=", 8-n)

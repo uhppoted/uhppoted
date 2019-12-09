@@ -164,7 +164,13 @@ func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Sig
 	mqttd := mqtt.MQTTD{
 		Broker: fmt.Sprintf("tcp://%s", c.Broker),
 		Topic:  c.Topic,
-		Debug:  r.debug,
+		Secrets: map[string]string{
+			"QWERTY54": "DFIOJ3BJPHPCRJBT",
+		},
+		Counters: map[string]uint64{
+			"QWERTY54": 1,
+		},
+		Debug: r.debug,
 	}
 
 	go func() {
