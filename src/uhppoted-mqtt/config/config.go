@@ -21,6 +21,14 @@ type Device struct {
 type MQTT struct {
 	Broker *net.UDPAddr `conf:"broker"`
 	Topic  string       `conf:"topic"`
+	HOTP   HOTP         `conf:"hotp"`
+}
+
+type HOTP struct {
+	Enabled  bool   `conf:"enabled"`
+	Range    uint64 `conf:"range"`
+	Secrets  string `conf:"secrets"`
+	Counters string `conf:"Counters"`
 }
 
 type Config struct {
@@ -47,6 +55,12 @@ func NewConfig() *Config {
 		MQTT: MQTT{
 			Broker: &broker,
 			Topic:  "twystd/uhppoted/gateway",
+			HOTP: HOTP{
+				Enabled:  false,
+				Range:    8,
+				Secrets:  secrets,
+				Counters: counters,
+			},
 		},
 		Devices: make(DeviceMap, 0),
 	}
