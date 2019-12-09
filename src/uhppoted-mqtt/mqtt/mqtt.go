@@ -14,13 +14,13 @@ import (
 )
 
 type MQTTD struct {
-	Broker     string
-	Topic      string
-	Secrets    map[string]string
-	Counters   map[string]uint64
+	Broker string
+	Topic  string
+	HOTP   auth.HOTP
+	Debug  bool
+
 	connection MQTT.Client
 	interrupt  chan os.Signal
-	Debug      bool
 }
 
 type fdispatch func(*uhppoted.UHPPOTED, context.Context, uhppoted.Request)
@@ -201,6 +201,10 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 }
 
 func (m *MQTTD) authorise(rq request) error {
+	if !m.HOTP.Enabled {
+		return nil
+	}
+
 	if rq.ClientID == nil {
 		return errors.New("Request without client-id")
 	}
@@ -209,19 +213,19 @@ func (m *MQTTD) authorise(rq request) error {
 		return errors.New("Request without HOTP")
 	}
 
-	secret, ok := m.Secrets[*rq.ClientID]
+	secret, ok := m.HOTP.Secrets[*rq.ClientID]
 	if !ok {
 		return fmt.Errorf("No authorisation key for client-id '%s'", *rq.ClientID)
 	}
 
-	counter, ok := m.Counters[*rq.ClientID]
+	counter, ok := m.HOTP.Counters[*rq.ClientID]
 	if !ok {
 		return fmt.Errorf("No HOTP counter for client-id '%s'", *rq.ClientID)
 	}
 
-	for i := 0; i < 5; i++ {
+	for i := uint64(0); i < m.HOTP.Range; i++ {
 		if auth.ValidateHOTP(*rq.HOTP, counter, secret) {
-			m.Counters[*rq.ClientID] = counter + 1
+			m.HOTP.Counters[*rq.ClientID] = counter + 1
 			return nil
 		}
 

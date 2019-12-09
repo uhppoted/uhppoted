@@ -15,6 +15,7 @@ import (
 	"time"
 	"uhppote"
 	"uhppote/types"
+	"uhppoted-mqtt/auth"
 	"uhppoted-mqtt/config"
 	"uhppoted-mqtt/mqtt"
 )
@@ -161,16 +162,21 @@ func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Sig
 
 	// ... MQTT task
 
+	hotp, err := auth.NewHOTP(
+		c.MQTT.HOTP.Enabled,
+		c.MQTT.HOTP.Range,
+		c.MQTT.HOTP.Secrets,
+		c.MQTT.HOTP.Counters,
+	)
+	if err != nil {
+		return err
+	}
+
 	mqttd := mqtt.MQTTD{
 		Broker: fmt.Sprintf("tcp://%s", c.Broker),
 		Topic:  c.Topic,
-		Secrets: map[string]string{
-			"QWERTY54": "DFIOJ3BJPHPCRJBT",
-		},
-		Counters: map[string]uint64{
-			"QWERTY54": 1,
-		},
-		Debug: r.debug,
+		HOTP:   *hotp,
+		Debug:  r.debug,
 	}
 
 	go func() {
