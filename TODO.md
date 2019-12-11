@@ -25,7 +25,8 @@
 - [x] command protocol: reply topic
 - [x] command protocol: request ID
 - [ ] command protocol: rework response JSON marshaling
-- [ ] command protocol: HOTP
+- [x] command protocol: HOTP
+- [ ] command protocol: authorisation
 - [ ] clean up 'Request' implementation
 
 - [x] subscribe
