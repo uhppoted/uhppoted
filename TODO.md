@@ -79,6 +79,7 @@
 
 ### uhppoted-rest
 - [ ] Get events after XXX
+- [ ] Certificate revocation list
 
 ### CLI
 - [ ] Rework grant/revoke for individual doors (labelled)
@@ -133,6 +134,7 @@
 16. TLA+/Alloy models:
     - watchdog/health-check
     - concurrent connections
+    - HOTP counter update
 17. [Muon](https://github.com/ImVexed/muon) GUI
     - [webview](https://github.com/zserge/webview)
 18. PDL + go generate
