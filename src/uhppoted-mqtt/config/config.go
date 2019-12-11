@@ -29,11 +29,13 @@ type HOTP struct {
 	Enabled  bool   `conf:"enabled"`
 	Range    uint64 `conf:"range"`
 	Secrets  string `conf:"secrets"`
-	Counters string `conf:"Counters"`
+	Counters string `conf:"counters"`
 }
 
 type Permissions struct {
-	Enabled bool `conf:"enabled"`
+	Enabled bool   `conf:"enabled"`
+	Users   string `conf:"users"`
+	Groups  string `conf:"groups"`
 }
 
 type Config struct {
@@ -65,6 +67,11 @@ func NewConfig() *Config {
 				Range:    8,
 				Secrets:  secrets,
 				Counters: counters,
+			},
+			Permissions: Permissions{
+				Enabled: false,
+				Users:   users,
+				Groups:  groups,
 			},
 		},
 		Devices: make(DeviceMap, 0),
