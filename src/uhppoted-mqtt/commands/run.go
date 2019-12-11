@@ -126,22 +126,24 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 		}
 	}
 
-	hotp, err := auth.NewHOTP(
-		c.MQTT.HOTP.Enabled,
-		c.MQTT.HOTP.Range,
-		c.MQTT.HOTP.Secrets,
-		c.MQTT.HOTP.Counters,
-	)
+	hotp, err := auth.NewHOTP(c.MQTT.HOTP.Enabled, c.MQTT.HOTP.Range, c.MQTT.HOTP.Secrets, c.MQTT.HOTP.Counters)
+	if err != nil {
+		log.Printf("ERROR: %v", err)
+		return
+	}
+
+	permissions, err := auth.NewPermissions(c.MQTT.Permissions.Enabled)
 	if err != nil {
 		log.Printf("ERROR: %v", err)
 		return
 	}
 
 	mqttd := mqtt.MQTTD{
-		Broker: fmt.Sprintf("tcp://%s", c.Broker),
-		Topic:  c.Topic,
-		HOTP:   *hotp,
-		Debug:  r.debug,
+		Broker:      fmt.Sprintf("tcp://%s", c.Broker),
+		Topic:       c.Topic,
+		HOTP:        *hotp,
+		Permissions: *permissions,
+		Debug:       r.debug,
 	}
 
 	// ... listen forever

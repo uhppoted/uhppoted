@@ -8,16 +8,18 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"log"
 	"os"
+	"regexp"
 	"uhppote"
 	"uhppoted"
 	"uhppoted-mqtt/auth"
 )
 
 type MQTTD struct {
-	Broker string
-	Topic  string
-	HOTP   auth.HOTP
-	Debug  bool
+	Broker      string
+	Topic       string
+	HOTP        auth.HOTP
+	Permissions auth.Permissions
+	Debug       bool
 
 	connection MQTT.Client
 	interrupt  chan os.Signal
@@ -194,6 +196,11 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 			return
 		}
 
+		if err := d.mqttd.authorise(body.Request, msg.Topic()); err != nil {
+			d.log.Printf("WARN  %-20s %v %s\n", "dispatch", err, string(msg.Payload()))
+			return
+		}
+
 		ctx = context.WithValue(ctx, "request", body.Request)
 
 		fnx(d.mqttd, d.uhppoted, ctx, msg)
@@ -209,6 +216,23 @@ func (m *MQTTD) authenticate(rq request) error {
 		}
 
 		return m.HOTP.Validate(*rq.ClientID, *rq.HOTP)
+	}
+
+	return nil
+}
+
+func (m *MQTTD) authorise(rq request, topic string) error {
+	if m.Permissions.Enabled {
+		if rq.ClientID == nil {
+			return errors.New("Request without client-id")
+		}
+
+		match := regexp.MustCompile(`.*?/(\w+):(\w+)$`).FindStringSubmatch(topic)
+		if len(match) != 3 {
+			return fmt.Errorf("Invalid resource:action (%s)", topic)
+		}
+
+		return m.Permissions.Validate(*rq.ClientID, match[1], match[2])
 	}
 
 	return nil

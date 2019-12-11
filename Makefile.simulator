@@ -6,7 +6,7 @@ DOOR = 3
 DATETIME = `date "+%Y-%m-%d %H:%M:%S"`
 
 format:
-	go fmt ./...
+	go fmt uhppote...
 
 build: format
 	go install uhppote-cli

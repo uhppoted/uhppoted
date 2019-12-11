@@ -19,9 +19,10 @@ type Device struct {
 }
 
 type MQTT struct {
-	Broker *net.UDPAddr `conf:"broker"`
-	Topic  string       `conf:"topic"`
-	HOTP   HOTP         `conf:"hotp"`
+	Broker      *net.UDPAddr `conf:"broker"`
+	Topic       string       `conf:"topic"`
+	HOTP        HOTP         `conf:"hotp"`
+	Permissions Permissions  `conf:"permissions"`
 }
 
 type HOTP struct {
@@ -29,6 +30,10 @@ type HOTP struct {
 	Range    uint64 `conf:"range"`
 	Secrets  string `conf:"secrets"`
 	Counters string `conf:"Counters"`
+}
+
+type Permissions struct {
+	Enabled bool `conf:"enabled"`
 }
 
 type Config struct {
