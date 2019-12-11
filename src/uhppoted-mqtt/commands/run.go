@@ -110,10 +110,44 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 
 	signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM)
 
+	// ... initialise MQTT
+
+	u := uhppote.UHPPOTE{
+		BindAddress:      c.BindAddress,
+		BroadcastAddress: c.BroadcastAddress,
+		ListenAddress:    c.ListenAddress,
+		Devices:          make(map[uint32]*net.UDPAddr),
+		Debug:            r.debug,
+	}
+
+	for id, d := range c.Devices {
+		if d.Address != nil {
+			u.Devices[id] = d.Address
+		}
+	}
+
+	hotp, err := auth.NewHOTP(
+		c.MQTT.HOTP.Enabled,
+		c.MQTT.HOTP.Range,
+		c.MQTT.HOTP.Secrets,
+		c.MQTT.HOTP.Counters,
+	)
+	if err != nil {
+		log.Printf("ERROR: %v", err)
+		return
+	}
+
+	mqttd := mqtt.MQTTD{
+		Broker: fmt.Sprintf("tcp://%s", c.Broker),
+		Topic:  c.Topic,
+		HOTP:   *hotp,
+		Debug:  r.debug,
+	}
+
 	// ... listen forever
 
 	for {
-		err := r.listen(c, logger, interrupt)
+		err := r.listen(&u, &mqttd, logger, interrupt)
 		if err != nil {
 			log.Printf("ERROR: %v", err)
 			continue
@@ -126,7 +160,7 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 	logger.Printf("STOP")
 }
 
-func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Signal) error {
+func (r *Run) listen(u *uhppote.UHPPOTE, mqttd *mqtt.MQTTD, logger *log.Logger, interrupt chan os.Signal) error {
 	// 	s := state{
 	// 		started: time.Now(),
 
@@ -146,41 +180,41 @@ func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Sig
 	// 		},
 	// 	}
 
-	u := uhppote.UHPPOTE{
-		BindAddress:      c.BindAddress,
-		BroadcastAddress: c.BroadcastAddress,
-		ListenAddress:    c.ListenAddress,
-		Devices:          make(map[uint32]*net.UDPAddr),
-		Debug:            r.debug,
-	}
+	// u := uhppote.UHPPOTE{
+	// 	BindAddress:      c.BindAddress,
+	// 	BroadcastAddress: c.BroadcastAddress,
+	// 	ListenAddress:    c.ListenAddress,
+	// 	Devices:          make(map[uint32]*net.UDPAddr),
+	// 	Debug:            r.debug,
+	// }
 
-	for id, d := range c.Devices {
-		if d.Address != nil {
-			u.Devices[id] = d.Address
-		}
-	}
+	// for id, d := range c.Devices {
+	// 	if d.Address != nil {
+	// 		u.Devices[id] = d.Address
+	// 	}
+	// }
 
 	// ... MQTT task
 
-	hotp, err := auth.NewHOTP(
-		c.MQTT.HOTP.Enabled,
-		c.MQTT.HOTP.Range,
-		c.MQTT.HOTP.Secrets,
-		c.MQTT.HOTP.Counters,
-	)
-	if err != nil {
-		return err
-	}
+	// hotp, err := auth.NewHOTP(
+	// 	c.MQTT.HOTP.Enabled,
+	// 	c.MQTT.HOTP.Range,
+	// 	c.MQTT.HOTP.Secrets,
+	// 	c.MQTT.HOTP.Counters,
+	// )
+	// if err != nil {
+	// 	return err
+	// }
 
-	mqttd := mqtt.MQTTD{
-		Broker: fmt.Sprintf("tcp://%s", c.Broker),
-		Topic:  c.Topic,
-		HOTP:   *hotp,
-		Debug:  r.debug,
-	}
+	// mqttd := mqtt.MQTTD{
+	// 	Broker: fmt.Sprintf("tcp://%s", c.Broker),
+	// 	Topic:  c.Topic,
+	// 	HOTP:   *hotp,
+	// 	Debug:  r.debug,
+	// }
 
 	go func() {
-		mqttd.Run(&u, logger)
+		mqttd.Run(u, logger)
 	}()
 
 	defer mqttd.Close(logger)

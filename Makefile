@@ -72,15 +72,12 @@ usage: build
 
 debug: build
 	go clean -testcache
-	go test src/uhppote/messages/*.go
-
-#	go test -v uhppote... --run TestSequentialRequests
-#	go test -v uhppote... --run TestConcurrentRequestsWithUnboundPort
-#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' \
-#                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
-#                              "device-id": 305419896, \
-#                              "start": "2019-08-05" , \
-#                              "end": "2019-08-09" }'
+#	go test src/uhppoted-mqtt/auth/*.go
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' \
+                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
+                              "device-id": 305419896, \
+                              "start": "2019-08-05" , \
+                              "end": "2019-08-09" }'
 
 help: build
 	$(CLI)       help
@@ -288,8 +285,8 @@ docker: build
 	env GOOS=linux GOARCH=amd64 go build -o docker/simulator/uhppote-simulator     uhppote-simulator
 	env GOOS=linux GOARCH=amd64 go build -o docker/uhppoted-rest/uhppote-simulator uhppote-simulator
 	env GOOS=linux GOARCH=amd64 go build -o docker/uhppoted-rest/uhppoted-rest     uhppoted-rest
-	docker image     prune
-	docker container prune
+	docker image     prune -f
+	docker container prune -f
 	docker build -f ./docker/simulator/Dockerfile     -t simulator . 
 	docker build -f ./docker/uhppoted-rest/Dockerfile -t uhppoted . 
 
