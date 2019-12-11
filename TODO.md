@@ -24,10 +24,12 @@
 - [x] listen/events
 - [x] command protocol: reply topic
 - [x] command protocol: request ID
-- [ ] command protocol: rework response JSON marshaling
-- [x] command protocol: HOTP
+- [x] command protocol: authentication/HOTP
 - [ ] command protocol: authorisation
+- [ ] file watch on HOTP, user and permissions files
+- [ ] command protocol: rework response JSON marshaling
 - [ ] clean up 'Request' implementation
+- [ ] CLI: generate OTP secret
 
 - [x] subscribe
 - [x] error handling
@@ -136,8 +138,11 @@
     - watchdog/health-check
     - concurrent connections
     - HOTP counter update
-17. [Muon](https://github.com/ImVexed/muon) GUI
+17. GUI
+    - [Muon](https://github.com/ImVexed/muon) 
     - [webview](https://github.com/zserge/webview)
+    - [fyne](https://github.com/fyne-io/fyne)
+    - https://instadeq.com/blog/posts/things-end-users-care-about-but-programmers-dont/
 18. PDL + go generate
     - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)
     - [Diva](http://www.diva-portal.org/smash/get/diva2:407713/FULLTEXT01.pdf)
