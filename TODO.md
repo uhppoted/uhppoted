@@ -26,7 +26,7 @@
 - [x] command protocol: request ID
 - [x] command protocol: authentication/HOTP
 - [x] command protocol: authorisation
-- [ ] file watch on HOTP, user and permissions files
+- [x] file watch on HOTP, user and permissions files
 - [ ] command protocol: rework response JSON marshaling
 - [ ] clean up 'Request' implementation
 - [ ] CLI: generate OTP secret
