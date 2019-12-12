@@ -8,7 +8,9 @@ import (
 	"encoding/binary"
 	"fmt"
 	"hash"
+	"log"
 	"math"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync"
@@ -17,8 +19,12 @@ import (
 type HOTP struct {
 	Enabled   bool
 	increment uint64
-	secrets   map[string]string
-	counters  struct {
+	secrets   struct {
+		secrets  map[string]string
+		filepath string
+		guard    sync.Mutex
+	}
+	counters struct {
 		counters map[string]uint64
 		filepath string
 		guard    sync.Mutex
@@ -27,11 +33,19 @@ type HOTP struct {
 
 const DIGITS = 6
 
-func NewHOTP(enabled bool, increment uint64, secrets string, counters string) (*HOTP, error) {
+func NewHOTP(enabled bool, increment uint64, secrets string, counters string, logger *log.Logger) (*HOTP, error) {
 	hotp := HOTP{
 		Enabled:   enabled,
 		increment: increment,
-		secrets:   map[string]string{},
+		secrets: struct {
+			secrets  map[string]string
+			filepath string
+			guard    sync.Mutex
+		}{
+			secrets:  map[string]string{},
+			filepath: secrets,
+			guard:    sync.Mutex{},
+		},
 		counters: struct {
 			counters map[string]uint64
 			filepath string
@@ -54,8 +68,14 @@ func NewHOTP(enabled bool, increment uint64, secrets string, counters string) (*
 			return nil, err
 		}
 
-		hotp.secrets = keys
+		hotp.secrets.secrets = keys
 		hotp.counters.counters = ctrs
+
+		f := func() error {
+			return hotp.reload(logger)
+		}
+
+		watch(secrets, f, logger)
 	}
 
 	return &hotp, nil
@@ -67,7 +87,10 @@ func (hotp *HOTP) Validate(clientID, otp string) error {
 		return fmt.Errorf("%s: invalid OTP '%s' - expected %d digits", clientID, otp, DIGITS)
 	}
 
-	secret, ok := hotp.secrets[clientID]
+	hotp.secrets.guard.Lock()
+	defer hotp.secrets.guard.Unlock()
+
+	secret, ok := hotp.secrets.secrets[clientID]
 	if !ok {
 		return fmt.Errorf("%s: no authorisation key", clientID)
 	}
@@ -154,4 +177,30 @@ func getCounters(path string) (map[string]uint64, error) {
 	})
 
 	return counters, err
+}
+
+func (h *HOTP) reload(log *log.Logger) error {
+	secrets, err := getSecrets(h.secrets.filepath)
+	if err != nil {
+		return err
+	}
+
+	h.secrets.guard.Lock()
+	defer h.secrets.guard.Unlock()
+
+	if !reflect.DeepEqual(secrets, h.secrets.secrets) {
+		for k, v := range secrets {
+			h.secrets.secrets[k] = v
+		}
+
+		for k, _ := range h.secrets.secrets {
+			if _, ok := secrets[k]; !ok {
+				delete(h.secrets.secrets, k)
+			}
+		}
+
+		log.Printf("WARN  Updated HOTP secrets from '%s'", h.secrets.filepath)
+	}
+
+	return nil
 }

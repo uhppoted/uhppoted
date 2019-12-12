@@ -154,4 +154,6 @@
     - [Mozilla IPDL](https://developer.mozilla.org/en-US/docs/Mozilla/IPDL/Tutorial)
     - [PDL: Failure Semanics](https://www.researchgate.net/publication/2784726_A_Protocol_Description_Language_for_Customizing_Failure_Semantics)
     - https://en.wikipedia.org/wiki/Abstract_Syntax_Notation_One
+19. Update file watchers to fsnotify when that is merged into the standard library (1.4 ?)
+    - https://github.com/golang/go/issues/4068
 

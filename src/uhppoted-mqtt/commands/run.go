@@ -126,7 +126,12 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 		}
 	}
 
-	hotp, err := auth.NewHOTP(c.MQTT.HOTP.Enabled, c.MQTT.HOTP.Range, c.MQTT.HOTP.Secrets, c.MQTT.HOTP.Counters)
+	hotp, err := auth.NewHOTP(
+		c.MQTT.HOTP.Enabled,
+		c.MQTT.HOTP.Range,
+		c.MQTT.HOTP.Secrets,
+		c.MQTT.HOTP.Counters,
+		logger)
 	if err != nil {
 		log.Printf("ERROR: %v", err)
 		return
