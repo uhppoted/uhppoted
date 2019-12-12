@@ -137,7 +137,11 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 		return
 	}
 
-	permissions, err := auth.NewPermissions(c.MQTT.Permissions.Enabled, c.MQTT.Permissions.Users, c.MQTT.Permissions.Groups)
+	permissions, err := auth.NewPermissions(
+		c.MQTT.Permissions.Enabled,
+		c.MQTT.Permissions.Users,
+		c.MQTT.Permissions.Groups,
+		logger)
 	if err != nil {
 		log.Printf("ERROR: %v", err)
 		return
