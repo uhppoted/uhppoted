@@ -23,7 +23,7 @@ func load(filepath string, g func(key, value string) error) error {
 
 	defer f.Close()
 
-	re := regexp.MustCompile(`^\s*(.*?)\s+(\S.*)\s*`)
+	re := regexp.MustCompile(`^\s*(.*?)(?::\s*|\s*=\s*|\s+)(\S.*)\s*`)
 	s := bufio.NewScanner(f)
 	for s.Scan() {
 		match := re.FindStringSubmatch(s.Text())
