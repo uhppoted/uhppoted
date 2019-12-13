@@ -1,12 +1,23 @@
 package uhppoted
 
 import (
+	"bufio"
 	"context"
 	"fmt"
+	"log"
 	"os"
+	"path"
+	"regexp"
+	"strconv"
+	"strings"
 	"uhppote"
 	"uhppote/types"
 )
+
+type EventMap struct {
+	filepath  string
+	retrieved map[uint32]uint32
+}
 
 type ListenEvent struct {
 	DeviceID   uint32         `json:"device-id"`
@@ -24,7 +35,25 @@ type EventMessage struct {
 	Event ListenEvent `json:"event"`
 }
 
-func (u *UHPPOTED) Listen(ctx context.Context, q chan os.Signal) {
+func (u *UHPPOTED) Listen(ctx context.Context, received *EventMap, q chan os.Signal) {
+	for device, index := range received.retrieved {
+		event, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, 0xffffffff)
+		if err != nil {
+			u.warn(ctx, 0, "listen", err)
+		} else {
+			if retrieved := u.fetch(ctx, device, index+1, event.Index); retrieved != 0 {
+				received.retrieved[device] = retrieved
+				if err := received.store(); err != nil {
+					u.warn(ctx, 0, "listen", err)
+				}
+			}
+		}
+	}
+
+	u.listen(ctx, received, q)
+}
+
+func (u *UHPPOTED) listen(ctx context.Context, received *EventMap, q chan os.Signal) {
 	p := make(chan *types.Status)
 
 	go func() {
@@ -42,23 +71,43 @@ func (u *UHPPOTED) Listen(ctx context.Context, q chan os.Signal) {
 		u.log(ctx, "EVENT", uint32(event.SerialNumber), fmt.Sprintf("%v", event))
 
 		device := uint32(event.SerialNumber)
-		eventID := event.LastIndex
-		record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, eventID)
+		last := event.LastIndex
+		first := last
+		retrieved, ok := received.retrieved[device]
+		if ok {
+			first = retrieved + 1
+		}
+
+		if retrieved := u.fetch(ctx, device, first, last); retrieved != 0 {
+			received.retrieved[device] = retrieved
+			if err := received.store(); err != nil {
+				u.warn(ctx, 0, "listen", err)
+			}
+		}
+	}
+}
+
+func (u *UHPPOTED) fetch(ctx context.Context, device uint32, first uint32, last uint32) uint32 {
+	retrieved := uint32(0)
+
+	for index := first; index <= last; index++ {
+		record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, index)
 		if err != nil {
-			u.warn(ctx, device, "listen", fmt.Errorf("Failed to retrieve event ID %d", eventID))
+			u.warn(ctx, device, "listen", fmt.Errorf("Failed to retrieve event ID %d", index))
 			continue
 		}
 
 		if record == nil {
-			u.warn(ctx, device, "listen", fmt.Errorf("No event record for ID %d", eventID))
+			u.warn(ctx, device, "listen", fmt.Errorf("No event record for ID %d", index))
 			continue
 		}
 
-		if record.Index != eventID {
-			u.warn(ctx, device, "listen", fmt.Errorf("No event record for ID %d", eventID))
+		if record.Index != index {
+			u.warn(ctx, device, "listen", fmt.Errorf("No event record for ID %d", index))
 			continue
 		}
 
+		retrieved = record.Index
 		message := EventMessage{
 			Event: ListenEvent{
 				DeviceID:   device,
@@ -76,4 +125,73 @@ func (u *UHPPOTED) Listen(ctx context.Context, q chan os.Signal) {
 		u.debug(ctx, "listen", fmt.Sprintf("event %v", message))
 		u.send(ctx, message)
 	}
+
+	return retrieved
+}
+
+func NewEventMap(filepath string) *EventMap {
+	return &EventMap{
+		filepath:  filepath,
+		retrieved: map[uint32]uint32{},
+	}
+}
+
+func (m *EventMap) Load(log *log.Logger) error {
+	if m.filepath == "" {
+		return nil
+	}
+
+	f, err := os.Open(m.filepath)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	re := regexp.MustCompile(`^\s*(.*?)(?::\s*|\s*=\s*|\s+)(\S.*)\s*`)
+	s := bufio.NewScanner(f)
+	for s.Scan() {
+		match := re.FindStringSubmatch(s.Text())
+		if len(match) == 3 {
+			key := strings.TrimSpace(match[1])
+			value := strings.TrimSpace(match[2])
+
+			if device, err := strconv.ParseUint(key, 10, 32); err != nil {
+				log.Printf("WARN: Error parsing event map entry '%s': %v", s.Text(), err)
+			} else if eventID, err := strconv.ParseUint(value, 10, 32); err != nil {
+				log.Printf("WARN: Error parsing event map entry '%s': %v", s.Text(), err)
+			} else {
+				m.retrieved[uint32(device)] = uint32(eventID)
+			}
+		}
+	}
+
+	return s.Err()
+}
+
+func (m *EventMap) store() error {
+	if m.filepath == "" {
+		return nil
+	}
+
+	dir := path.Dir(m.filepath)
+	filename := path.Base(m.filepath) + ".tmp"
+	tmpfile := path.Join(dir, filename)
+
+	f, err := os.Create(tmpfile)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	for key, value := range m.retrieved {
+		if _, err := fmt.Fprintf(f, "%-16d %v\n", key, value); err != nil {
+			return err
+		}
+	}
+
+	f.Close()
+
+	return os.Rename(tmpfile, m.filepath)
 }
