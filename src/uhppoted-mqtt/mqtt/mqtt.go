@@ -19,6 +19,7 @@ type MQTTD struct {
 	Topic       string
 	HOTP        auth.HOTP
 	Permissions auth.Permissions
+	EventMap    string
 	Debug       bool
 
 	connection MQTT.Client
@@ -110,7 +111,7 @@ func (m *MQTTD) Close(l *log.Logger) {
 		log.Printf("... closing connection to %s", m.Broker)
 		token := m.connection.Unsubscribe(m.Topic + "/#")
 		if token.Wait() && token.Error() != nil {
-			l.Printf("WARN: Error unsubscribing from topic' %s': %v", m.Topic, token.Error())
+			l.Printf("WARN: Error unsubscribing from topic '%s': %v", m.Topic, token.Error())
 		}
 
 		m.connection.Disconnect(250)
@@ -127,10 +128,15 @@ func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, l *log.Logger
 	ctx = context.WithValue(ctx, "log", l)
 	ctx = context.WithValue(ctx, "topic", m.Topic)
 
+	last := uhppoted.NewEventMap(m.EventMap)
+	if err := last.Load(l); err != nil {
+		l.Printf("WARN: Error loading event map [%v]", err)
+	}
+
 	m.interrupt = make(chan os.Signal)
 
 	go func() {
-		api.Listen(ctx, m.interrupt)
+		api.Listen(ctx, last, m.interrupt)
 	}()
 
 	return nil

@@ -9,7 +9,15 @@ func TestValidateHOTPWithValidOTP(t *testing.T) {
 	hotp := HOTP{
 		Enabled:   true,
 		increment: 8,
-		secrets:   map[string]string{"qwerty": "DFIOJ3BJPHPCRJBT"},
+		secrets: struct {
+			secrets  map[string]string
+			filepath string
+			guard    sync.Mutex
+		}{
+			secrets:  map[string]string{"qwerty": "DFIOJ3BJPHPCRJBT"},
+			filepath: "",
+			guard:    sync.Mutex{},
+		},
 		counters: struct {
 			counters map[string]uint64
 			filepath string
@@ -34,7 +42,15 @@ func TestValidateHOTPWithOutOfOrderOTP(t *testing.T) {
 	hotp := HOTP{
 		Enabled:   true,
 		increment: 8,
-		secrets:   map[string]string{"qwerty": "DFIOJ3BJPHPCRJBT"},
+		secrets: struct {
+			secrets  map[string]string
+			filepath string
+			guard    sync.Mutex
+		}{
+			secrets:  map[string]string{"qwerty": "DFIOJ3BJPHPCRJBT"},
+			filepath: "",
+			guard:    sync.Mutex{},
+		},
 		counters: struct {
 			counters map[string]uint64
 			filepath string
@@ -59,7 +75,15 @@ func TestValidateHOTPWithOutOfRangeOTP(t *testing.T) {
 	hotp := HOTP{
 		Enabled:   true,
 		increment: 2,
-		secrets:   map[string]string{"qwerty": "DFIOJ3BJPHPCRJBT"},
+		secrets: struct {
+			secrets  map[string]string
+			filepath string
+			guard    sync.Mutex
+		}{
+			secrets:  map[string]string{"qwerty": "DFIOJ3BJPHPCRJBT"},
+			filepath: "",
+			guard:    sync.Mutex{},
+		},
 		counters: struct {
 			counters map[string]uint64
 			filepath string
@@ -80,7 +104,15 @@ func TestValidateHOTPWithInvalidOTP(t *testing.T) {
 	hotp := HOTP{
 		Enabled:   true,
 		increment: 8,
-		secrets:   map[string]string{"qwerty": "DFIOJ3BJPHPCRJBT"},
+		secrets: struct {
+			secrets  map[string]string
+			filepath string
+			guard    sync.Mutex
+		}{
+			secrets:  map[string]string{"qwerty": "DFIOJ3BJPHPCRJBT"},
+			filepath: "",
+			guard:    sync.Mutex{},
+		},
 		counters: struct {
 			counters map[string]uint64
 			filepath string

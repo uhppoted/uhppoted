@@ -152,6 +152,7 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 		Topic:       c.Topic,
 		HOTP:        *hotp,
 		Permissions: *permissions,
+		EventMap:    c.EventIDs,
 		Debug:       r.debug,
 	}
 

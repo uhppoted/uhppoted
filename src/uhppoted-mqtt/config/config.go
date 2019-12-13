@@ -23,6 +23,7 @@ type MQTT struct {
 	Topic       string       `conf:"topic"`
 	HOTP        HOTP         `conf:"hotp"`
 	Permissions Permissions  `conf:"permissions"`
+	EventIDs    string       `conf:"events.index.filepath"`
 }
 
 type HOTP struct {
@@ -73,6 +74,7 @@ func NewConfig() *Config {
 				Users:   users,
 				Groups:  groups,
 			},
+			EventIDs: eventIDs,
 		},
 		Devices: make(DeviceMap, 0),
 	}

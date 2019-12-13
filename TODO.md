@@ -28,8 +28,9 @@
 - [x] command protocol: authorisation
 - [ ] command protocol: rework response JSON marshaling
 - [x] file watch on HOTP, user and permissions files
-- [ ] listen/events: retrieve and send actual events
+- [x] listen/events: retrieve and send actual events
 - [ ] clean up 'Request' implementation
+- [ ] CLI/events: retrieve and show actual events
 - [ ] CLI: generate OTP secret
 
 - [x] subscribe
@@ -73,6 +74,7 @@
 - [ ] update tests with Errorf + return to Fatalf
 - [ ] commonalise ACL
 - [ ] commonalise configuration
+- [ ] make types consistent across API
 
 ### uhppoted
 - [ ] websocket + GraphQL (?)
