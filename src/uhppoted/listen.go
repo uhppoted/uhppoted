@@ -143,6 +143,10 @@ func (m *EventMap) Load(log *log.Logger) error {
 
 	f, err := os.Open(m.filepath)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+
 		return err
 	}
 

@@ -56,7 +56,7 @@ func store(filepath string, kv map[string]uint64) error {
 	defer f.Close()
 
 	for key, value := range kv {
-		if _, err := fmt.Fprintf(f, "%-20s %v\n", key, value); err != nil {
+		if _, err := fmt.Fprintf(f, "%-20s  %v\n", key, value); err != nil {
 			return err
 		}
 	}

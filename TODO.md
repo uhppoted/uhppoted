@@ -42,7 +42,6 @@
 - [ ] Implement retry + backoff for connection to broker
 - [ ] Implement retry + backoff for 'listen'
 - [ ] Rework listen logic to handle errors robustly
-- [ ] MQTT v5.0
 - [ ] health check
 - [ ] Include get-listener in health check
 - [ ] Make health check interval configurable 
@@ -86,6 +85,9 @@
 ### uhppoted-rest
 - [ ] Get events after XXX
 - [ ] Certificate revocation list
+
+### uhppoted-mqtt
+- [ ] MQTT v5.0
 
 ### CLI
 - [ ] Rework grant/revoke for individual doors (labelled)
@@ -159,4 +161,5 @@
     - https://en.wikipedia.org/wiki/Abstract_Syntax_Notation_One
 19. Update file watchers to fsnotify when that is merged into the standard library (1.4 ?)
     - https://github.com/golang/go/issues/4068
+20. [Ballerina](https://ballerina.io)
 
