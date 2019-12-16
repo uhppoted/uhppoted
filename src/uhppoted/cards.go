@@ -29,6 +29,11 @@ type PutCardResponse struct {
 	} `json:"device"`
 }
 
+type DeleteCardRequest struct {
+	DeviceID   uint32
+	CardNumber uint32
+}
+
 type DeleteCardResponse struct {
 	Device struct {
 		ID         uint32 `json:"id"`
@@ -185,21 +190,15 @@ func (u *UHPPOTED) PutCard(ctx context.Context, rq Request) {
 	u.reply(ctx, response)
 }
 
-func (u *UHPPOTED) DeleteCard(ctx context.Context, rq Request) {
-	u.debug(ctx, "delete-card", rq)
+func (u *UHPPOTED) DeleteCard(ctx context.Context, request DeleteCardRequest) (*DeleteCardResponse, int, error) {
+	u.debug(ctx, "delete-card", fmt.Sprintf("request  %v", request))
 
-	id, cardnumber, err := rq.DeviceCardID()
-	if err != nil {
-		u.warn(ctx, 0, "delete-card", err)
-		u.oops(ctx, "delete-card", "Missing/invalid device ID or card number)", StatusBadRequest)
-		return
-	}
+	device := request.DeviceID
+	card := request.CardNumber
 
-	deleted, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).DeleteCard(*id, *cardnumber)
+	deleted, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).DeleteCard(device, card)
 	if err != nil {
-		u.warn(ctx, *id, "delete-card", err)
-		u.oops(ctx, "delete-card", "Error deleting card", StatusInternalServerError)
-		return
+		return nil, StatusInternalServerError, fmt.Errorf("Error deleting card %v from %v", card, device)
 	}
 
 	response := DeleteCardResponse{
@@ -208,11 +207,13 @@ func (u *UHPPOTED) DeleteCard(ctx context.Context, rq Request) {
 			CardNumber uint32 `json:"card-number"`
 			Deleted    bool   `json:"deleted"`
 		}{
-			ID:         *id,
-			CardNumber: *cardnumber,
+			ID:         device,
+			CardNumber: card,
 			Deleted:    deleted.Succeeded,
 		},
 	}
 
-	u.reply(ctx, response)
+	u.debug(ctx, "delete-card", fmt.Sprintf("response %v", response))
+
+	return &response, StatusOK, nil
 }

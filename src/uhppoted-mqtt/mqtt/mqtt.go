@@ -79,11 +79,11 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/cards:delete":     (*uhppoted.UHPPOTED).DeleteCards,
 			m.Topic + "/device/card:get":         (*uhppoted.UHPPOTED).GetCard,
 			m.Topic + "/device/card:put":         (*uhppoted.UHPPOTED).PutCard,
-			m.Topic + "/device/card:delete":      (*uhppoted.UHPPOTED).DeleteCard,
 		},
 		tablex: map[string]fdispatchx{
-			m.Topic + "/device/events:get": (*MQTTD).getEvents,
-			m.Topic + "/device/event:get":  (*MQTTD).getEvent,
+			m.Topic + "/device/card:delete": (*MQTTD).deleteCard,
+			m.Topic + "/device/events:get":  (*MQTTD).getEvents,
+			m.Topic + "/device/event:get":   (*MQTTD).getEvent,
 		},
 	}
 
@@ -293,7 +293,7 @@ func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 	message := struct {
 		Meta struct {
 			RequestID string `json:"request-id,omitempty"`
-		} `json:"meta"`
+		} `json:"meta-info"`
 		Body interface{} `json:"body"`
 	}{
 		Meta: struct {
@@ -352,7 +352,7 @@ func oops(ctx context.Context, operation string, msg string, errorCode int) {
 	response := struct {
 		Meta struct {
 			RequestID string `json:"request-id,omitempty"`
-		} `json:"meta"`
+		} `json:"meta-info"`
 		Operation string `json:"operation"`
 		Error     struct {
 			Message   string `json:"message"`

@@ -250,7 +250,11 @@ uhppoted-mqtt-put-card:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:put' --message '{ "device-id": 305419896, "card-number": 1327679, "from": "2019-11-01", "to": "2019-12-31", "doors": [1,4] }'
 
 uhppoted-mqtt-delete-card:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:delete' --message '{ "device-id": 305419896, "card-number": 1327679 }'
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:delete' --message '{ "device-id": 305419896, "card-number": 1327679 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:delete' \
+                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
+                              "device-id": 305419896, "card-number": 1327679 }'
+
 
 uhppoted-mqtt-get-events:
 #	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ }'
@@ -267,12 +271,13 @@ uhppoted-mqtt-get-events:
 
 
 uhppoted-mqtt-get-event:
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' \
+#	             --message '{ "device-id": 305419896, "event-id": 58 }'
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' \
+#	             --message '{ "request": { "reply-to": "reply/97531" }, "device-id": 305419896, "event-id": 58 }'
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' \
-	             --message '{ "device-id": 305419896, "event-id": 58 }'
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' \
-	             --message '{ "request": { "reply-to": "reply/97531" }, "device-id": 305419896, "event-id": 58 }'
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' \
-	             --message '{ "request": { "request-id": "98YWRW524", "reply-to": "reply/97531" }, "device-id": 305419896, "event-id": 112 }'
+	             --message '{ "request": { "request-id": "98YWRW524", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
+	                          "device-id": 305419896, "event-id": 50 }'
 
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
