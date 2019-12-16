@@ -15,11 +15,16 @@ type GetEventsRequest struct {
 }
 
 type GetEventsResponse struct {
-	Device struct {
+	MetaInfo interface{} `json:"meta-info,omitempty"`
+	Device   struct {
 		ID     uint32      `json:"id"`
 		Dates  *DateRange  `json:"dates,omitempty"`
 		Events *EventRange `json:"events,omitempty"`
 	} `json:"device"`
+}
+
+func (m *GetEventsResponse) SetMetaInfo(meta interface{}) {
+	m.MetaInfo = meta
 }
 
 type GetEventRequest struct {
@@ -28,10 +33,15 @@ type GetEventRequest struct {
 }
 
 type GetEventResponse struct {
-	Device struct {
+	MetaInfo interface{} `json:"meta-info,omitempty"`
+	Device   struct {
 		ID    uint32 `json:"id"`
 		Event event  `json:"event"`
 	} `json:"device"`
+}
+
+func (m *GetEventResponse) SetMetaInfo(meta interface{}) {
+	m.MetaInfo = meta
 }
 
 type DateRange struct {
@@ -116,7 +126,7 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, request GetEventsRequest) (*Ge
 	}
 
 	response := GetEventsResponse{
-		struct {
+		Device: struct {
 			ID     uint32      `json:"id"`
 			Dates  *DateRange  `json:"dates,omitempty"`
 			Events *EventRange `json:"events,omitempty"`
@@ -152,7 +162,7 @@ func (u *UHPPOTED) GetEvent(ctx context.Context, request GetEventRequest) (*GetE
 	}
 
 	response := GetEventResponse{
-		struct {
+		Device: struct {
 			ID    uint32 `json:"id"`
 			Event event  `json:"event"`
 		}{
