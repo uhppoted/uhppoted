@@ -38,15 +38,17 @@ K3  C`
 
 func TestKVSSave(t *testing.T) {
 	expected := map[string]string{
-		"K1": "X",
-		"K2": "Y",
-		"K3": "Z",
+		"K1":                    "X",
+		"K2":                    "Y",
+		"K3":                    "Z",
+		"K12345678901234567890": "Q",
 	}
 
 	kvs := NewKeyValueStore(func(v string) (interface{}, error) { return v, nil })
 	kvs.Put("K1", "X")
 	kvs.Put("K2", "Y")
 	kvs.Put("K3", "Z")
+	kvs.Put("K12345678901234567890", "Q")
 
 	buffer := new(bytes.Buffer)
 	err := kvs.Save(buffer)
