@@ -26,16 +26,18 @@
 - [x] command protocol: request ID
 - [x] command protocol: authentication/HOTP
 - [x] command protocol: authorisation
-- [ ] command protocol: rework response JSON marshaling
 - [x] file watch on HOTP, user and permissions files
 - [x] listen/events: retrieve and send actual events
 - [ ] clean up 'Request' implementation
-- [ ] CLI/events: retrieve and show actual events
-- [ ] CLI: generate OTP secret
+- [ ] command protocol: rework response JSON marshaling
+- [ ] command protocol: add 'operation' to response meta-info
+- [ ] command protocol: add 'client-id' to response meta-info (?)
 
 - [x] subscribe
 - [x] error handling
 - [x] 'reply'
+- [ ] CLI/events: retrieve and show actual events
+- [ ] CLI: generate OTP secret
 - [ ] wrap request handling in go routine
 - [ ] TLS connection
 - [ ] Encrypt & sign
