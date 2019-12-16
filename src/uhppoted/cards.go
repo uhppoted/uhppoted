@@ -35,11 +35,18 @@ type DeleteCardRequest struct {
 }
 
 type DeleteCardResponse struct {
-	Device struct {
-		ID         uint32 `json:"id"`
+	MetaInfo interface{} `json:"meta-info,omitempty"`
+	Device   struct {
+		ID uint32 `json:"id"`
+	} `json:"device"`
+	Card struct {
 		CardNumber uint32 `json:"card-number"`
 		Deleted    bool   `json:"deleted"`
-	} `json:"device"`
+	} `json:"card"`
+}
+
+func (m *DeleteCardResponse) SetMetaInfo(meta interface{}) {
+	m.MetaInfo = meta
 }
 
 type DeleteCardsResponse struct {
@@ -202,12 +209,15 @@ func (u *UHPPOTED) DeleteCard(ctx context.Context, request DeleteCardRequest) (*
 	}
 
 	response := DeleteCardResponse{
-		struct {
-			ID         uint32 `json:"id"`
+		Device: struct {
+			ID uint32 `json:"id"`
+		}{
+			ID: device,
+		},
+		Card: struct {
 			CardNumber uint32 `json:"card-number"`
 			Deleted    bool   `json:"deleted"`
 		}{
-			ID:         device,
 			CardNumber: card,
 			Deleted:    deleted.Succeeded,
 		},

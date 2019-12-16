@@ -290,21 +290,32 @@ func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 		}
 	}
 
-	message := struct {
-		Meta struct {
-			RequestID string `json:"request-id,omitempty"`
-		} `json:"meta-info"`
-		Body interface{} `json:"body"`
-	}{
-		Meta: struct {
+	var reply interface{}
+	if r, ok := response.(uhppoted.Response); ok {
+		r.SetMetaInfo(struct {
 			RequestID string `json:"request-id,omitempty"`
 		}{
 			RequestID: requestID,
-		},
-		Body: response,
+		})
+
+		reply = r
+	} else {
+		reply = struct {
+			Meta struct {
+				RequestID string `json:"request-id,omitempty"`
+			} `json:"meta-info,omitempty"`
+			Body interface{} `json:"body,omitempty"`
+		}{
+			Meta: struct {
+				RequestID string `json:"request-id,omitempty"`
+			}{
+				RequestID: requestID,
+			},
+			Body: response,
+		}
 	}
 
-	b, err := json.Marshal(message)
+	b, err := json.Marshal(reply)
 	if err != nil {
 		oops(ctx, "encoding/json", "Error encoding response", uhppoted.StatusInternalServerError)
 		return

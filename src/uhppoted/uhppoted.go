@@ -31,6 +31,10 @@ type Request interface {
 	DeviceCard() (*uint32, *types.Card, error)
 }
 
+type Response interface {
+	SetMetaInfo(interface{})
+}
+
 type UHPPOTED struct {
 	Service Service
 }

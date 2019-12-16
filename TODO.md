@@ -145,6 +145,7 @@
     - watchdog/health-check
     - concurrent connections
     - HOTP counter update
+    - key-value stores
 17. GUI
     - [Muon](https://github.com/ImVexed/muon) 
     - [webview](https://github.com/zserge/webview)
