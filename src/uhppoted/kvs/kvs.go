@@ -48,31 +48,18 @@ func (kv *KeyValueStore) Put(key string, value interface{}) {
 }
 
 func (kv *KeyValueStore) LoadFromFile(filepath string) error {
-	store, err := load(filepath, kv.f)
+	if filepath == "" {
+		return nil
+	}
+
+	f, err := os.Open(filepath)
 	if err != nil {
 		return err
 	}
 
-	return kv.merge(*store)
-}
+	defer f.Close()
 
-func (kv *KeyValueStore) Load(r io.Reader) error {
-	s := bufio.NewScanner(r)
-	for s.Scan() {
-		match := kv.re.FindStringSubmatch(s.Text())
-		if len(match) == 3 {
-			key := strings.TrimSpace(match[1])
-			value := strings.TrimSpace(match[2])
-
-			if v, err := kv.f(value); err != nil {
-				return err
-			} else {
-				kv.store[key] = v
-			}
-		}
-	}
-
-	return s.Err()
+	return kv.load(f)
 }
 
 func (kv *KeyValueStore) Save(w io.Writer) error {
@@ -112,15 +99,9 @@ func (kv *KeyValueStore) Watch(filepath string, logger *log.Logger) {
 			if finfo.ModTime() != lastModified {
 				log.Printf("INFO  Reloading information from %s\n", filepath)
 
-				store, err := load(filepath, kv.f)
+				err := kv.LoadFromFile(filepath)
 				if err != nil {
 					log.Printf("ERROR Failed to reload information from %s: %v", filepath, err)
-					continue
-				}
-
-				err = kv.merge(*store)
-				if err != nil {
-					logger.Printf("ERROR Failed to reload information from %s: %v", filepath, err)
 					continue
 				}
 
@@ -131,36 +112,28 @@ func (kv *KeyValueStore) Watch(filepath string, logger *log.Logger) {
 	}()
 }
 
-func load(filepath string, g func(string) (interface{}, error)) (*map[string]interface{}, error) {
-	if filepath == "" {
-		return nil, nil
-	}
-
-	f, err := os.Open(filepath)
-	if err != nil {
-		return nil, err
-	}
-
-	defer f.Close()
-
+func (kv *KeyValueStore) load(r io.Reader) error {
 	store := map[string]interface{}{}
-	re := regexp.MustCompile(`^\s*(.*?)(?:\s{2,})(\S.*)\s*`)
-	s := bufio.NewScanner(f)
+	s := bufio.NewScanner(r)
 	for s.Scan() {
-		match := re.FindStringSubmatch(s.Text())
+		match := kv.re.FindStringSubmatch(s.Text())
 		if len(match) == 3 {
 			key := strings.TrimSpace(match[1])
 			value := strings.TrimSpace(match[2])
 
-			if v, err := g(value); err != nil {
-				return &store, err
+			if v, err := kv.f(value); err != nil {
+				return err
 			} else {
 				store[key] = v
 			}
 		}
 	}
 
-	return &store, s.Err()
+	if s.Err() != nil {
+		return s.Err()
+	}
+
+	return kv.merge(store)
 }
 
 func (kv *KeyValueStore) merge(store map[string]interface{}) error {
