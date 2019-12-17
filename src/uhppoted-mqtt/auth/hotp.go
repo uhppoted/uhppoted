@@ -10,21 +10,17 @@ import (
 	"hash"
 	"log"
 	"math"
-	"reflect"
 	"strconv"
 	"strings"
 	"sync"
+	"uhppoted/kvs"
 )
 
 type HOTP struct {
 	Enabled   bool
 	increment uint64
-	secrets   struct {
-		secrets  map[string]string
-		filepath string
-		guard    sync.Mutex
-	}
-	counters struct {
+	secrets   *kvs.KeyValueStore
+	counters  struct {
 		counters map[string]uint64
 		filepath string
 		guard    sync.Mutex
@@ -34,18 +30,14 @@ type HOTP struct {
 const DIGITS = 6
 
 func NewHOTP(enabled bool, increment uint64, secrets string, counters string, logger *log.Logger) (*HOTP, error) {
+	u := func(value string) (interface{}, error) {
+		return value, nil
+	}
+
 	hotp := HOTP{
 		Enabled:   enabled,
 		increment: increment,
-		secrets: struct {
-			secrets  map[string]string
-			filepath string
-			guard    sync.Mutex
-		}{
-			secrets:  map[string]string{},
-			filepath: secrets,
-			guard:    sync.Mutex{},
-		},
+		secrets:   kvs.NewKeyValueStore("hotp:secrets", u),
 		counters: struct {
 			counters map[string]uint64
 			filepath string
@@ -58,7 +50,7 @@ func NewHOTP(enabled bool, increment uint64, secrets string, counters string, lo
 	}
 
 	if enabled {
-		keys, err := getSecrets(secrets)
+		err := hotp.secrets.LoadFromFile(secrets)
 		if err != nil {
 			return nil, err
 		}
@@ -68,14 +60,8 @@ func NewHOTP(enabled bool, increment uint64, secrets string, counters string, lo
 			return nil, err
 		}
 
-		hotp.secrets.secrets = keys
 		hotp.counters.counters = ctrs
-
-		f := func() error {
-			return hotp.reload(logger)
-		}
-
-		watch(secrets, f, logger)
+		hotp.secrets.Watch(secrets, logger)
 	}
 
 	return &hotp, nil
@@ -87,10 +73,7 @@ func (hotp *HOTP) Validate(clientID, otp string) error {
 		return fmt.Errorf("%s: invalid OTP '%s' - expected %d digits", clientID, otp, DIGITS)
 	}
 
-	hotp.secrets.guard.Lock()
-	defer hotp.secrets.guard.Unlock()
-
-	secret, ok := hotp.secrets.secrets[clientID]
+	secret, ok := hotp.secrets.Get(clientID)
 	if !ok {
 		return fmt.Errorf("%s: no authorisation key", clientID)
 	}
@@ -104,7 +87,7 @@ func (hotp *HOTP) Validate(clientID, otp string) error {
 	}
 
 	for i := uint64(0); i < hotp.increment; i++ {
-		generated, err := generateHOTP(secret, counter, DIGITS, sha1.New)
+		generated, err := generateHOTP(secret.(string), counter, DIGITS, sha1.New)
 		if err != nil {
 			return err
 		}
@@ -155,16 +138,6 @@ func generateHOTP(secret string, counter uint64, digits int, algorithm func() ha
 	return fmt.Sprintf("%06d", mod), nil
 }
 
-func getSecrets(path string) (map[string]string, error) {
-	secrets := map[string]string{}
-	err := load(path, func(key, value string) error {
-		secrets[key] = value
-		return nil
-	})
-
-	return secrets, err
-}
-
 func getCounters(path string) (map[string]uint64, error) {
 	counters := map[string]uint64{}
 	err := load(path, func(key, value string) error {
@@ -177,30 +150,4 @@ func getCounters(path string) (map[string]uint64, error) {
 	})
 
 	return counters, err
-}
-
-func (h *HOTP) reload(log *log.Logger) error {
-	secrets, err := getSecrets(h.secrets.filepath)
-	if err != nil {
-		return err
-	}
-
-	h.secrets.guard.Lock()
-	defer h.secrets.guard.Unlock()
-
-	if !reflect.DeepEqual(secrets, h.secrets.secrets) {
-		for k, v := range secrets {
-			h.secrets.secrets[k] = v
-		}
-
-		for k, _ := range h.secrets.secrets {
-			if _, ok := secrets[k]; !ok {
-				delete(h.secrets.secrets, k)
-			}
-		}
-
-		log.Printf("WARN  Updated HOTP secrets from '%s'", h.secrets.filepath)
-	}
-
-	return nil
 }
