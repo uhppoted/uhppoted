@@ -27,7 +27,6 @@ type Request interface {
 	DeviceDoor() (*uint32, *uint8, error)
 	DeviceDoorDelay() (*uint32, *uint8, *uint8, error)
 	DeviceDoorControl() (*uint32, *uint8, *string, error)
-	DeviceCardID() (*uint32, *uint32, error)
 	DeviceCard() (*uint32, *types.Card, error)
 }
 
@@ -37,6 +36,10 @@ type Response interface {
 
 type UHPPOTED struct {
 	Service Service
+}
+
+type Device struct {
+	ID uint32 `json:"id"`
 }
 
 func (u *UHPPOTED) log(ctx context.Context, tag string, deviceId uint32, msg string) {

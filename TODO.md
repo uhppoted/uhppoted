@@ -26,12 +26,12 @@
 - [x] command protocol: request ID
 - [x] command protocol: authentication/HOTP
 - [x] command protocol: authorisation
+- [x] command protocol: add 'client-id' to response meta-info (?)
 - [x] file watch on HOTP, user and permissions files
 - [x] listen/events: retrieve and send actual events
 - [ ] clean up 'Request' implementation
 - [ ] command protocol: rework response JSON marshaling
 - [ ] command protocol: add 'operation' to response meta-info
-- [ ] command protocol: add 'client-id' to response meta-info (?)
 
 - [x] subscribe
 - [x] error handling
