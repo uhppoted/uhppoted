@@ -14,11 +14,19 @@ type GetCardsResponse struct {
 	} `json:"device"`
 }
 
+type GetCardRequest struct {
+	DeviceID   uint32
+	CardNumber uint32
+}
+
 type GetCardResponse struct {
-	Device struct {
-		ID   uint32     `json:"id"`
-		Card types.Card `json:"card"`
-	} `json:"device"`
+	MetaInfo interface{} `json:"meta-info,omitempty"`
+	Device   Device      `json:"device"`
+	Card     types.Card  `json:"card"`
+}
+
+func (m *GetCardResponse) SetMetaInfo(meta interface{}) {
+	m.MetaInfo = meta
 }
 
 type PutCardResponse struct {
@@ -36,10 +44,8 @@ type DeleteCardRequest struct {
 
 type DeleteCardResponse struct {
 	MetaInfo interface{} `json:"meta-info,omitempty"`
-	Device   struct {
-		ID uint32 `json:"id"`
-	} `json:"device"`
-	Card struct {
+	Device   Device      `json:"device"`
+	Card     struct {
 		CardNumber uint32 `json:"card-number"`
 		Deleted    bool   `json:"deleted"`
 	} `json:"card"`
@@ -129,40 +135,29 @@ func (u *UHPPOTED) DeleteCards(ctx context.Context, rq Request) {
 	u.reply(ctx, response)
 }
 
-func (u *UHPPOTED) GetCard(ctx context.Context, rq Request) {
-	u.debug(ctx, "get-card", rq)
+func (u *UHPPOTED) GetCard(ctx context.Context, request GetCardRequest) (*GetCardResponse, int, error) {
+	u.debug(ctx, "get-card", fmt.Sprintf("request  %v", request))
 
-	id, cardnumber, err := rq.DeviceCardID()
-	if err != nil {
-		u.warn(ctx, 0, "get-card", err)
-		u.oops(ctx, "get-card", "Missing/invalid device ID or card number)", StatusBadRequest)
-		return
-	}
+	device := request.DeviceID
+	cardID := request.CardNumber
 
-	card, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCardById(*id, *cardnumber)
+	card, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCardById(device, cardID)
 	if err != nil {
-		u.warn(ctx, *id, "get-card", err)
-		u.oops(ctx, "get-card", "Error retrieving card", StatusInternalServerError)
-		return
+		return nil, StatusInternalServerError, fmt.Errorf("Error retrieving card %v from %v", cardID, device)
 	}
 
 	if card == nil {
-		u.warn(ctx, *id, "get-card", fmt.Errorf("No record for card %d", *cardnumber))
-		u.oops(ctx, "get-card", fmt.Sprintf("No record for card %d", *cardnumber), StatusNotFound)
-		return
+		return nil, StatusNotFound, fmt.Errorf("No record for card %v on %v", cardID, device)
 	}
 
 	response := GetCardResponse{
-		struct {
-			ID   uint32     `json:"id"`
-			Card types.Card `json:"card"`
-		}{
-			ID:   *id,
-			Card: *card,
-		},
+		Device: Device{device},
+		Card:   *card,
 	}
 
-	u.reply(ctx, response)
+	u.debug(ctx, "get-card", fmt.Sprintf("response %v", response))
+
+	return &response, StatusOK, nil
 }
 
 func (u *UHPPOTED) PutCard(ctx context.Context, rq Request) {
@@ -201,24 +196,20 @@ func (u *UHPPOTED) DeleteCard(ctx context.Context, request DeleteCardRequest) (*
 	u.debug(ctx, "delete-card", fmt.Sprintf("request  %v", request))
 
 	device := request.DeviceID
-	card := request.CardNumber
+	cardNo := request.CardNumber
 
-	deleted, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).DeleteCard(device, card)
+	deleted, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).DeleteCard(device, cardNo)
 	if err != nil {
-		return nil, StatusInternalServerError, fmt.Errorf("Error deleting card %v from %v", card, device)
+		return nil, StatusInternalServerError, fmt.Errorf("Error deleting card %v from %v", cardNo, device)
 	}
 
 	response := DeleteCardResponse{
-		Device: struct {
-			ID uint32 `json:"id"`
-		}{
-			ID: device,
-		},
+		Device: Device{device},
 		Card: struct {
 			CardNumber uint32 `json:"card-number"`
 			Deleted    bool   `json:"deleted"`
 		}{
-			CardNumber: card,
+			CardNumber: cardNo,
 			Deleted:    deleted.Succeeded,
 		},
 	}
