@@ -290,39 +290,37 @@ func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 		}
 	}
 
-	var reply interface{}
-	if r, ok := response.(uhppoted.Response); ok {
-		r.SetMetaInfo(struct {
-			RequestID string `json:"request-id,omitempty"`
-		}{
-			RequestID: requestID,
-		})
-
-		reply = r
-	} else {
-		reply = struct {
-			Meta struct {
-				RequestID string `json:"request-id,omitempty"`
-			} `json:"meta-info,omitempty"`
-			Body interface{} `json:"body,omitempty"`
-		}{
-			Meta: struct {
-				RequestID string `json:"request-id,omitempty"`
-			}{
-				RequestID: requestID,
-			},
-			Body: response,
-		}
+	meta := struct {
+		RequestID string `json:"request-id,omitempty"`
+	}{
+		RequestID: requestID,
 	}
 
+	reply := inject(response, meta)
 	b, err := json.Marshal(reply)
 	if err != nil {
 		oops(ctx, "encoding/json", "Error encoding response", uhppoted.StatusInternalServerError)
 		return
 	}
 
+	println(string(b))
 	token := client.Publish(topic+"/"+replyTo, 0, false, string(b))
 	token.Wait()
+}
+
+func inject(response interface{}, meta interface{}) interface{} {
+	if r, ok := response.(uhppoted.Response); ok {
+		r.SetMetaInfo(meta)
+		return r
+	}
+
+	return struct {
+		MetaInfo interface{} `json:"meta-info,omitempty"`
+		Content  interface{} `json:"content,omitempty"`
+	}{
+		MetaInfo: meta,
+		Content:  response,
+	}
 }
 
 func (m *MQTTD) Oops(ctx context.Context, operation string, message string, errorCode int) {
