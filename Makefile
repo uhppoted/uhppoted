@@ -245,6 +245,7 @@ uhppoted-mqtt-delete-cards:
 
 uhppoted-mqtt-get-card:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:get' \
+                 --secure --port 8883 --capath ./docker/hivemq     \
                  --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
                               "device-id": 305419896, "card-number": 65537 }'
 
@@ -272,10 +273,6 @@ uhppoted-mqtt-get-events:
 
 
 uhppoted-mqtt-get-event:
-#	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' \
-#	             --message '{ "device-id": 305419896, "event-id": 58 }'
-#	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' \
-#	             --message '{ "request": { "reply-to": "reply/97531" }, "device-id": 305419896, "event-id": 58 }'
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' \
 	             --message '{ "request": { "request-id": "98YWRW524", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
 	                          "device-id": 305419896, "event-id": 50 }'
@@ -289,14 +286,16 @@ docker: build
 	env GOOS=linux GOARCH=amd64 go build -o docker/uhppoted-rest/uhppoted-rest     uhppoted-rest
 	docker image     prune -f
 	docker container prune -f
-	docker build -f ./docker/simulator/Dockerfile     -t simulator . 
-	docker build -f ./docker/uhppoted-rest/Dockerfile -t uhppoted . 
+	docker build -f ./docker/simulator/Dockerfile     -t simulator       . 
+	docker build -f ./docker/uhppoted-rest/Dockerfile -t uhppoted        . 
+	docker build -f ./docker/hivemq/Dockerfile        -t hivemq/uhppoted . 
 
 docker-simulator:
 	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --rm simulator
 
 docker-hivemq:
-	docker run --tty --interactive --publish 8081:8080 --publish 1883:1883 --rm hivemq/hivemq4
+#	docker run --tty --interactive --publish 8081:8080 --publish 1883:1883 --rm hivemq/hivemq4
+	docker run --tty --interactive --publish 8081:8080 --publish 1883:1883 --publish 8883:8883 --rm hivemq/uhppoted
 
 docker-rest:
 	docker run --detach --publish 8080:8080 --rm uhppoted
