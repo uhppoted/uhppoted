@@ -20,13 +20,8 @@ type GetCardRequest struct {
 }
 
 type GetCardResponse struct {
-	MetaInfo interface{} `json:"meta-info,omitempty"`
-	Device   Device      `json:"device"`
-	Card     types.Card  `json:"card"`
-}
-
-func (m *GetCardResponse) SetMetaInfo(meta interface{}) {
-	m.MetaInfo = meta
+	Device Device     `json:"device"`
+	Card   types.Card `json:"card"`
 }
 
 type PutCardResponse struct {
@@ -43,16 +38,11 @@ type DeleteCardRequest struct {
 }
 
 type DeleteCardResponse struct {
-	MetaInfo interface{} `json:"meta-info,omitempty"`
-	Device   Device      `json:"device"`
-	Card     struct {
+	Device Device `json:"device"`
+	Card   struct {
 		CardNumber uint32 `json:"card-number"`
 		Deleted    bool   `json:"deleted"`
 	} `json:"card"`
-}
-
-func (m *DeleteCardResponse) SetMetaInfo(meta interface{}) {
-	m.MetaInfo = meta
 }
 
 type DeleteCardsResponse struct {

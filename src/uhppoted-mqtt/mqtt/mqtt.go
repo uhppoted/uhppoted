@@ -310,24 +310,26 @@ func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 		return
 	}
 
-	println(string(b))
 	token := client.Publish(topic+"/"+replyTo, 0, false, string(b))
 	token.Wait()
 }
 
+// TODO: interim implementation, pending a rework using reflection and/or custom marshaler
 func inject(response interface{}, meta interface{}) interface{} {
-	if r, ok := response.(uhppoted.Response); ok {
-		r.SetMetaInfo(meta)
-		return r
+	b, err := json.Marshal(response)
+	if err != nil {
+		return response
 	}
 
-	return struct {
-		MetaInfo interface{} `json:"meta-info,omitempty"`
-		Content  interface{} `json:"content,omitempty"`
-	}{
-		MetaInfo: meta,
-		Content:  response,
+	r := map[string]interface{}{}
+	err = json.Unmarshal(b, &r)
+	if err != nil {
+		return response
 	}
+
+	r["meta-info"] = meta
+
+	return r
 }
 
 func (m *MQTTD) Oops(ctx context.Context, operation string, message string, errorCode int) {
