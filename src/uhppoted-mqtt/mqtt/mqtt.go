@@ -79,10 +79,10 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/door/control:set": (*uhppoted.UHPPOTED).SetDoorControl,
 			m.Topic + "/device/cards:get":        (*uhppoted.UHPPOTED).GetCards,
 			m.Topic + "/device/cards:delete":     (*uhppoted.UHPPOTED).DeleteCards,
-			m.Topic + "/device/card:put":         (*uhppoted.UHPPOTED).PutCard,
 		},
 		tablex: map[string]fdispatchx{
 			m.Topic + "/device/card:get":    (*MQTTD).getCard,
+			m.Topic + "/device/card:put":    (*MQTTD).putCard,
 			m.Topic + "/device/card:delete": (*MQTTD).deleteCard,
 			m.Topic + "/device/events:get":  (*MQTTD).getEvents,
 			m.Topic + "/device/event:get":   (*MQTTD).getEvent,

@@ -250,7 +250,10 @@ uhppoted-mqtt-get-card:
                               "device-id": 305419896, "card-number": 65537 }'
 
 uhppoted-mqtt-put-card:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:put' --message '{ "device-id": 305419896, "card-number": 1327679, "from": "2019-11-01", "to": "2019-12-31", "doors": [1,4] }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:put' \
+                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
+                              "device-id": 305419896, \
+                              "card": { "card-number": 1327679, "valid-from": "2019-11-01", "valid-until": "2019-12-31", "doors": [true,false,false,true] }}'
 
 uhppoted-mqtt-delete-card:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:delete' \

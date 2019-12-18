@@ -5,10 +5,10 @@ import (
 )
 
 type Card struct {
-	CardNumber uint32
-	From       Date
-	To         Date
-	Doors      []bool
+	CardNumber uint32 `json:"card-number"`
+	From       Date   `json:"valid-from"`
+	To         Date   `json:"valid-until"`
+	Doors      []bool `json:"doors"`
 }
 
 type Authorised struct {

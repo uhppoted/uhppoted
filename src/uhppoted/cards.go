@@ -7,6 +7,13 @@ import (
 	"uhppote/types"
 )
 
+type ACL struct {
+	DeviceID uint32         `json:"device-id"`
+	From     types.Date     `json:"valid-from"`
+	To       types.Date     `json:"valid-until"`
+	Doors    map[uint8]bool `json:"doors"`
+}
+
 type GetCardsResponse struct {
 	Device struct {
 		ID    uint32   `json:"id"`
@@ -20,16 +27,22 @@ type GetCardRequest struct {
 }
 
 type GetCardResponse struct {
-	Device Device     `json:"device"`
-	Card   types.Card `json:"card"`
+	Card struct {
+		CardNumber uint32 `json:"card-number"`
+		ACL        []ACL  `json:"acl"`
+	} `json:"card"`
+}
+
+type PutCardRequest struct {
+	DeviceID uint32     `json:"device"`
+	Card     types.Card `json:"card"`
 }
 
 type PutCardResponse struct {
-	Device struct {
-		ID         uint32 `json:"id"`
+	Card struct {
 		CardNumber uint32 `json:"card-number"`
-		Authorized bool   `json:"authorized"`
-	} `json:"device"`
+		ACL        []ACL  `json:"acl"`
+	} `json:"card"`
 }
 
 type DeleteCardRequest struct {
@@ -141,8 +154,25 @@ func (u *UHPPOTED) GetCard(ctx context.Context, request GetCardRequest) (*GetCar
 	}
 
 	response := GetCardResponse{
-		Device: Device{device},
-		Card:   *card,
+		Card: struct {
+			CardNumber uint32 `json:"card-number"`
+			ACL        []ACL  `json:"acl"`
+		}{
+			CardNumber: card.CardNumber,
+			ACL: []ACL{
+				ACL{
+					DeviceID: device,
+					From:     card.From,
+					To:       card.To,
+					Doors: map[uint8]bool{
+						1: card.Doors[0],
+						2: card.Doors[1],
+						3: card.Doors[2],
+						4: card.Doors[3],
+					},
+				},
+			},
+		},
 	}
 
 	u.debug(ctx, "get-card", fmt.Sprintf("response %v", response))
@@ -150,36 +180,46 @@ func (u *UHPPOTED) GetCard(ctx context.Context, request GetCardRequest) (*GetCar
 	return &response, StatusOK, nil
 }
 
-func (u *UHPPOTED) PutCard(ctx context.Context, rq Request) {
-	u.debug(ctx, "put-card", rq)
+func (u *UHPPOTED) PutCard(ctx context.Context, request PutCardRequest) (*PutCardResponse, int, error) {
+	u.debug(ctx, "put-card", fmt.Sprintf("request  %v", request))
 
-	id, card, err := rq.DeviceCard()
+	device := request.DeviceID
+	card := request.Card
+
+	authorised, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).PutCard(device, card)
 	if err != nil {
-		u.warn(ctx, 0, "put-card", err)
-		u.oops(ctx, "put-card", "Missing/invalid device ID or card information)", StatusBadRequest)
-		return
+		return nil, StatusInternalServerError, fmt.Errorf("Error storing card %v to %v", card.CardNumber, device)
 	}
 
-	authorized, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).PutCard(*id, *card)
-	if err != nil {
-		u.warn(ctx, *id, "put-card", err)
-		u.oops(ctx, "put-card", "Error adding/updating card", StatusInternalServerError)
-		return
+	if !authorised.Succeeded {
+		return nil, StatusInternalServerError, fmt.Errorf("Error storing card %v to %v", card.CardNumber, device)
 	}
 
 	response := PutCardResponse{
-		struct {
-			ID         uint32 `json:"id"`
+		Card: struct {
 			CardNumber uint32 `json:"card-number"`
-			Authorized bool   `json:"authorized"`
+			ACL        []ACL  `json:"acl"`
 		}{
-			ID:         *id,
 			CardNumber: card.CardNumber,
-			Authorized: authorized.Succeeded,
+			ACL: []ACL{
+				ACL{
+					DeviceID: device,
+					From:     card.From,
+					To:       card.To,
+					Doors: map[uint8]bool{
+						1: card.Doors[0],
+						2: card.Doors[1],
+						3: card.Doors[2],
+						4: card.Doors[3],
+					},
+				},
+			},
 		},
 	}
 
-	u.reply(ctx, response)
+	u.debug(ctx, "put-card", fmt.Sprintf("response %v", response))
+
+	return &response, StatusOK, nil
 }
 
 func (u *UHPPOTED) DeleteCard(ctx context.Context, request DeleteCardRequest) (*DeleteCardResponse, int, error) {
