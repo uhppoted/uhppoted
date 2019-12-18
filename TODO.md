@@ -39,8 +39,8 @@
 - [ ] CLI/events: retrieve and show actual events
 - [ ] CLI: generate OTP secret
 - [ ] wrap request handling in go routine
-- [ ] TLS connection
-- [ ] Encrypt & sign
+- [x] TLS connection
+- [ ] Encrypt &| sign
 - [ ] Implement retry + backoff for connection to broker
 - [ ] Implement retry + backoff for 'listen'
 - [ ] Rework listen logic to handle errors robustly
@@ -86,7 +86,7 @@
 
 ### uhppoted-rest
 - [ ] Get events after XXX
-- [ ] Certificate revocation list
+- [ ] Client certificate revocation list
 
 ### uhppoted-mqtt
 - [ ] MQTT v5.0
@@ -165,4 +165,5 @@
 19. Update file watchers to fsnotify when that is merged into the standard library (1.4 ?)
     - https://github.com/golang/go/issues/4068
 20. [Ballerina](https://ballerina.io)
+21. [Eclipse Kura](https://www.eclipse.org/kura)
 

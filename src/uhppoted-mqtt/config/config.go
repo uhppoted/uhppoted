@@ -19,11 +19,12 @@ type Device struct {
 }
 
 type MQTT struct {
-	Broker      *net.UDPAddr `conf:"broker"`
-	Topic       string       `conf:"topic"`
-	HOTP        HOTP         `conf:"hotp"`
-	Permissions Permissions  `conf:"permissions"`
-	EventIDs    string       `conf:"events.index.filepath"`
+	Broker            string      `conf:"broker"`
+	BrokerCertificate string      `conf:"broker.certificate"`
+	Topic             string      `conf:"topic"`
+	HOTP              HOTP        `conf:"hotp"`
+	Permissions       Permissions `conf:"permissions"`
+	EventIDs          string      `conf:"events.index.filepath"`
 }
 
 type HOTP struct {
@@ -50,19 +51,14 @@ type Config struct {
 func NewConfig() *Config {
 	bind, broadcast, listen := DefaultIpAddresses()
 
-	broker := net.UDPAddr{
-		IP:   []byte{127, 0, 0, 1},
-		Port: 1883,
-		Zone: "",
-	}
-
 	c := Config{
 		BindAddress:      &bind,
 		BroadcastAddress: &broadcast,
 		ListenAddress:    &listen,
 		MQTT: MQTT{
-			Broker: &broker,
-			Topic:  "twystd/uhppoted/gateway",
+			Broker:            "tcp://127.0.0.1:1883",
+			BrokerCertificate: certificate,
+			Topic:             "twystd/uhppoted/gateway",
 			HOTP: HOTP{
 				Enabled:  false,
 				Range:    8,

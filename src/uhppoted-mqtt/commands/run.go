@@ -2,6 +2,8 @@ package commands
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"errors"
 	"flag"
 	"fmt"
@@ -10,6 +12,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -148,12 +151,27 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 	}
 
 	mqttd := mqtt.MQTTD{
-		Broker:      fmt.Sprintf("tcp://%s", c.Broker),
+		Broker:      fmt.Sprintf(c.Broker),
+		TLS:         &tls.Config{},
 		Topic:       c.Topic,
 		HOTP:        *hotp,
 		Permissions: *permissions,
 		EventMap:    c.EventIDs,
 		Debug:       r.debug,
+	}
+
+	if strings.HasPrefix(mqttd.Broker, "tls:") {
+		pem, err := ioutil.ReadFile(c.BrokerCertificate)
+		if err != nil {
+			log.Printf("ERROR: %v", err)
+		} else {
+			mqttd.TLS.InsecureSkipVerify = false
+			mqttd.TLS.RootCAs = x509.NewCertPool()
+
+			if ok := mqttd.TLS.RootCAs.AppendCertsFromPEM(pem); !ok {
+				log.Printf("ERROR: Could not initialise MQTTD CA certificates")
+			}
+		}
 	}
 
 	// ... listen forever

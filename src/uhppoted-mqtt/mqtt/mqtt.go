@@ -2,6 +2,7 @@ package mqtt
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -16,6 +17,7 @@ import (
 
 type MQTTD struct {
 	Broker      string
+	TLS         *tls.Config
 	Topic       string
 	HOTP        auth.HOTP
 	Permissions auth.Permissions
@@ -147,9 +149,12 @@ func (m *MQTTD) subscribeAndServe(d *dispatcher) error {
 		d.dispatch(client, msg)
 	}
 
-	options := MQTT.NewClientOptions().AddBroker(m.Broker)
+	options := MQTT.NewClientOptions()
+
+	options.AddBroker(m.Broker)
 	options.SetClientID("twystd-uhppoted-mqttd")
 	options.SetDefaultPublishHandler(f)
+	options.SetTLSConfig(m.TLS)
 
 	m.connection = MQTT.NewClient(options)
 	token := m.connection.Connect()
