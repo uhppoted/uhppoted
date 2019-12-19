@@ -1,25 +1,20 @@
 package auth
 
 import (
-	"sync"
+	"log"
+	"os"
+	"strconv"
 	"testing"
 	"uhppoted/kvs"
 )
 
 func TestValidateHOTPWithValidOTP(t *testing.T) {
+	l := log.New(os.Stderr, "test", log.Lshortfile)
 	hotp := HOTP{
 		Enabled:   true,
 		increment: 8,
-		secrets:   kvs.NewKeyValueStore("test", func(v string) (interface{}, error) { return v, nil }),
-		counters: struct {
-			counters map[string]uint64
-			filepath string
-			guard    sync.Mutex
-		}{
-			counters: map[string]uint64{"qwerty": 1},
-			filepath: "",
-			guard:    sync.Mutex{},
-		},
+		secrets:   kvs.NewKeyValueStore("test:secrets", func(v string) (interface{}, error) { return v, nil }, l),
+		counters:  kvs.NewKeyValueStore("test:counters", func(v string) (interface{}, error) { return strconv.ParseUint(v, 10, 64) }, l),
 	}
 
 	hotp.secrets.Put("qwerty", "DFIOJ3BJPHPCRJBT")
@@ -34,19 +29,12 @@ func TestValidateHOTPWithValidOTP(t *testing.T) {
 }
 
 func TestValidateHOTPWithOutOfOrderOTP(t *testing.T) {
+	l := log.New(os.Stderr, "test", log.Lshortfile)
 	hotp := HOTP{
 		Enabled:   true,
 		increment: 8,
-		secrets:   kvs.NewKeyValueStore("test", func(v string) (interface{}, error) { return v, nil }),
-		counters: struct {
-			counters map[string]uint64
-			filepath string
-			guard    sync.Mutex
-		}{
-			counters: map[string]uint64{"qwerty": 1},
-			filepath: "",
-			guard:    sync.Mutex{},
-		},
+		secrets:   kvs.NewKeyValueStore("test:secrets", func(v string) (interface{}, error) { return v, nil }, l),
+		counters:  kvs.NewKeyValueStore("test:counters", func(v string) (interface{}, error) { return strconv.ParseUint(v, 10, 64) }, l),
 	}
 
 	hotp.secrets.Put("qwerty", "DFIOJ3BJPHPCRJBT")
@@ -61,19 +49,12 @@ func TestValidateHOTPWithOutOfOrderOTP(t *testing.T) {
 }
 
 func TestValidateHOTPWithOutOfRangeOTP(t *testing.T) {
+	l := log.New(os.Stderr, "test", log.Lshortfile)
 	hotp := HOTP{
 		Enabled:   true,
 		increment: 2,
-		secrets:   kvs.NewKeyValueStore("test", func(v string) (interface{}, error) { return v, nil }),
-		counters: struct {
-			counters map[string]uint64
-			filepath string
-			guard    sync.Mutex
-		}{
-			counters: map[string]uint64{"qwerty": 1},
-			filepath: "",
-			guard:    sync.Mutex{},
-		},
+		secrets:   kvs.NewKeyValueStore("test:secrets", func(v string) (interface{}, error) { return v, nil }, l),
+		counters:  kvs.NewKeyValueStore("test:counters", func(v string) (interface{}, error) { return strconv.ParseUint(v, 10, 64) }, l),
 	}
 
 	hotp.secrets.Put("qwerty", "DFIOJ3BJPHPCRJBT")
@@ -84,19 +65,12 @@ func TestValidateHOTPWithOutOfRangeOTP(t *testing.T) {
 }
 
 func TestValidateHOTPWithInvalidOTP(t *testing.T) {
+	l := log.New(os.Stderr, "test", log.Lshortfile)
 	hotp := HOTP{
 		Enabled:   true,
 		increment: 8,
-		secrets:   kvs.NewKeyValueStore("test", func(v string) (interface{}, error) { return v, nil }),
-		counters: struct {
-			counters map[string]uint64
-			filepath string
-			guard    sync.Mutex
-		}{
-			counters: map[string]uint64{"qwerty": 1},
-			filepath: "",
-			guard:    sync.Mutex{},
-		},
+		secrets:   kvs.NewKeyValueStore("test:secrets", func(v string) (interface{}, error) { return v, nil }, l),
+		counters:  kvs.NewKeyValueStore("test:counters", func(v string) (interface{}, error) { return strconv.ParseUint(v, 10, 64) }, l),
 	}
 
 	hotp.secrets.Put("qwerty", "DFIOJ3BJPHPCRJBT")

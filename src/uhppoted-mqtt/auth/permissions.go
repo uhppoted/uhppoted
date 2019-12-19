@@ -58,8 +58,8 @@ func NewPermissions(enabled bool, users, groups string, logger *log.Logger) (*Pe
 
 	permissions := Permissions{
 		Enabled: enabled,
-		users:   kvs.NewKeyValueStore("permissions:users", u),
-		groups:  kvs.NewKeyValueStore("permissions:groups", g),
+		users:   kvs.NewKeyValueStore("permissions:users", u, logger),
+		groups:  kvs.NewKeyValueStore("permissions:groups", g, logger),
 	}
 
 	if enabled {

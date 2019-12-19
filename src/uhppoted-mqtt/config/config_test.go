@@ -13,7 +13,7 @@ broadcast.address = 192.168.1.255:60001
 listen.address = 192.168.1.100:12345
 
 # MQTT
-mqtt.broker = 127.0.0.63:1887
+mqtt.broker = tls://127.0.0.63:8887
 mqtt.topic = twystd-qwerty
 
 # DEVICES
@@ -64,14 +64,8 @@ func TestUnmarshal(t *testing.T) {
 		t.Errorf("Expected 'listen.address' %s, got: %s", &address, config.ListenAddress)
 	}
 
-	address = net.UDPAddr{
-		IP:   []byte{127, 0, 0, 63},
-		Port: 1887,
-		Zone: "",
-	}
-
-	if !reflect.DeepEqual(config.Broker, &address) {
-		t.Errorf("Expected 'mqtt.broker' %s, got:%v", &address, config.Broker)
+	if config.Broker != "tls://127.0.0.63:8887" {
+		t.Errorf("Expected 'mqtt.broker' %s, got:%v", "tls://127.0.0.63:8887", config.Broker)
 	}
 
 	if config.Topic != "twystd-qwerty" {
