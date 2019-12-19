@@ -41,7 +41,7 @@
 - [ ] CLI: generate OTP secret
 - [ ] wrap request handling in go routine
 - [x] TLS connection
-- [ ] TLS connection: client authentication
+- [x] TLS connection: client authentication
 - [ ] Encrypt &| sign
 - [ ] Implement retry + backoff for connection to broker
 - [ ] Implement retry + backoff for 'listen'
