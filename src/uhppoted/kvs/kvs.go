@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path"
 	"reflect"
 	"regexp"
 	"strings"
@@ -14,20 +15,26 @@ import (
 )
 
 type KeyValueStore struct {
-	name  string
-	store map[string]interface{}
-	guard sync.Mutex
-	re    *regexp.Regexp
-	f     func(string) (interface{}, error)
+	name      string
+	filepath  string
+	store     map[string]interface{}
+	guard     sync.Mutex
+	writeLock sync.Mutex
+	re        *regexp.Regexp
+	f         func(string) (interface{}, error)
+	log       *log.Logger
 }
 
-func NewKeyValueStore(name string, f func(string) (interface{}, error)) *KeyValueStore {
+func NewKeyValueStore(name string, f func(string) (interface{}, error), log *log.Logger) *KeyValueStore {
 	return &KeyValueStore{
-		name:  name,
-		store: map[string]interface{}{},
-		guard: sync.Mutex{},
-		re:    regexp.MustCompile(`^\s*(.*?)(?:\s{2,})(\S.*)\s*`),
-		f:     f,
+		name:      name,
+		filepath:  "",
+		store:     map[string]interface{}{},
+		guard:     sync.Mutex{},
+		writeLock: sync.Mutex{},
+		re:        regexp.MustCompile(`^\s*(.*?)(?:\s{2,})(\S.*)\s*`),
+		f:         f,
+		log:       log,
 	}
 }
 
@@ -45,9 +52,18 @@ func (kv *KeyValueStore) Put(key string, value interface{}) {
 	defer kv.guard.Unlock()
 
 	kv.store[key] = value
+
+	c := map[string]interface{}{}
+	for k, v := range kv.store {
+		c[k] = v
+	}
+
+	go kv.save(c, kv.filepath)
 }
 
 func (kv *KeyValueStore) LoadFromFile(filepath string) error {
+	kv.filepath = filepath
+
 	if filepath == "" {
 		return nil
 	}
@@ -60,6 +76,50 @@ func (kv *KeyValueStore) LoadFromFile(filepath string) error {
 	defer f.Close()
 
 	return kv.load(f)
+}
+
+// TODO Ensure write order is retained
+// Ref. https://www.joeshaw.org/dont-defer-close-on-writable-files/
+func (kv *KeyValueStore) save(store map[string]interface{}, filepath string) {
+	kv.writeLock.Lock()
+	defer kv.writeLock.Unlock()
+
+	if filepath == "" {
+		return
+	}
+
+	dir := path.Dir(filepath)
+	filename := path.Base(filepath) + ".tmp"
+	tmpfile := path.Join(dir, filename)
+
+	os.MkdirAll(dir, os.ModeDir|os.ModePerm)
+
+	f, err := os.Create(tmpfile)
+	if err != nil {
+		log.Printf("ERROR: %v", err)
+		return
+	}
+
+	for key, value := range store {
+		if _, err := fmt.Fprintf(f, "%-20s  %v\n", key, value); err != nil {
+			log.Printf("ERROR: %v", err)
+			f.Close()
+			return
+		}
+	}
+
+	if err := f.Sync(); err != nil {
+		log.Printf("ERROR: %v", err)
+		f.Close()
+		return
+	}
+
+	if err := f.Close(); err != nil {
+		log.Printf("ERROR: %v", err)
+		return
+	}
+
+	os.Rename(tmpfile, filepath)
 }
 
 func (kv *KeyValueStore) Save(w io.Writer) error {

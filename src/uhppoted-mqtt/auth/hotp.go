@@ -12,7 +12,6 @@ import (
 	"math"
 	"strconv"
 	"strings"
-	"sync"
 	"uhppoted/kvs"
 )
 
@@ -20,11 +19,7 @@ type HOTP struct {
 	Enabled   bool
 	increment uint64
 	secrets   *kvs.KeyValueStore
-	counters  struct {
-		counters map[string]uint64
-		filepath string
-		guard    sync.Mutex
-	}
+	counters  *kvs.KeyValueStore
 }
 
 const DIGITS = 6
@@ -34,33 +29,26 @@ func NewHOTP(enabled bool, increment uint64, secrets string, counters string, lo
 		return value, nil
 	}
 
+	v := func(value string) (interface{}, error) {
+		return strconv.ParseUint(value, 10, 64)
+	}
+
 	hotp := HOTP{
 		Enabled:   enabled,
 		increment: increment,
-		secrets:   kvs.NewKeyValueStore("hotp:secrets", u),
-		counters: struct {
-			counters map[string]uint64
-			filepath string
-			guard    sync.Mutex
-		}{
-			counters: map[string]uint64{},
-			filepath: counters,
-			guard:    sync.Mutex{},
-		},
+		secrets:   kvs.NewKeyValueStore("hotp:secrets", u, logger),
+		counters:  kvs.NewKeyValueStore("hotp:counters", v, logger),
 	}
 
 	if enabled {
-		err := hotp.secrets.LoadFromFile(secrets)
-		if err != nil {
+		if err := hotp.secrets.LoadFromFile(secrets); err != nil {
 			return nil, err
 		}
 
-		ctrs, err := getCounters(counters)
-		if err != nil {
-			return nil, err
+		if err := hotp.counters.LoadFromFile(counters); err != nil {
+			log.Printf("WARN: %v", err)
 		}
 
-		hotp.counters.counters = ctrs
 		hotp.secrets.Watch(secrets, logger)
 	}
 
@@ -78,30 +66,23 @@ func (hotp *HOTP) Validate(clientID, otp string) error {
 		return fmt.Errorf("%s: no authorisation key", clientID)
 	}
 
-	hotp.counters.guard.Lock()
-	defer hotp.counters.guard.Unlock()
-
-	counter, ok := hotp.counters.counters[clientID]
+	counter, ok := hotp.counters.Get(clientID)
 	if !ok {
-		counter = 1
+		counter = uint64(1)
 	}
 
 	for i := uint64(0); i < hotp.increment; i++ {
-		generated, err := generateHOTP(secret.(string), counter, DIGITS, sha1.New)
+		generated, err := generateHOTP(secret.(string), counter.(uint64), DIGITS, sha1.New)
 		if err != nil {
 			return err
 		}
 
 		if subtle.ConstantTimeCompare([]byte(generated), []byte(otp)) == 1 {
-			hotp.counters.counters[clientID] = counter + 1
-			err := store(hotp.counters.filepath, hotp.counters.counters)
-			if err != nil {
-				fmt.Printf("WARN: Error storing updated HOTP counters (%v)\n", err)
-			}
+			hotp.counters.Put(clientID, counter.(uint64)+1)
 			return nil
 		}
 
-		counter++
+		counter = counter.(uint64) + 1
 	}
 
 	return fmt.Errorf("%s: invalid OTP %s", clientID, otp)
@@ -136,18 +117,4 @@ func generateHOTP(secret string, counter uint64, digits int, algorithm func() ha
 	mod := int32(value % int64(math.Pow10(digits)))
 
 	return fmt.Sprintf("%06d", mod), nil
-}
-
-func getCounters(path string) (map[string]uint64, error) {
-	counters := map[string]uint64{}
-	err := load(path, func(key, value string) error {
-		if v, e := strconv.ParseUint(value, 10, 64); e != nil {
-			return fmt.Errorf("Error parsing %s: %v", path, e)
-		} else {
-			counters[key] = v
-			return nil
-		}
-	})
-
-	return counters, err
 }
