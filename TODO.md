@@ -32,6 +32,7 @@
 - [ ] clean up 'Request' implementation
 - [ ] command protocol: rework response JSON marshaling
 - [ ] command protocol: add 'operation' to response meta-info
+- [ ] move incoming requests to /requests subtopic
 
 - [x] subscribe
 - [x] error handling
@@ -40,6 +41,7 @@
 - [ ] CLI: generate OTP secret
 - [ ] wrap request handling in go routine
 - [x] TLS connection
+- [ ] TLS connection: client authentication
 - [ ] Encrypt &| sign
 - [ ] Implement retry + backoff for connection to broker
 - [ ] Implement retry + backoff for 'listen'
@@ -49,6 +51,7 @@
 - [ ] Make health check interval configurable 
 - [ ] watchdog
 - [ ] Make events consistent across everything
+- [ ] Rework UHPPOTE response messages to use factory
 
 - [ ] uhppoted-rest: PUT card
 - [ ] uhppoted-rest: DELETE card
@@ -57,11 +60,6 @@
 
 - [x] conf file decoder with reflection
 - [x] conf file decoder: embedded structs
-- [ ] conf file decoder: JSON
-- [ ] conf file encoder
-- [ ] Rework UHPPOTE response messages to use factory
-- [ ] Genericize message unit tests
-- [ ] Rework plist encoder
 - [ ] Convert to 1.13 error handling
 - [ ] Rework uhppoted-xxx Run, etc to use [method expressions](https://talks.golang.org/2012/10things.slide#9)
 - [x] docker: simulator
@@ -76,6 +74,7 @@
 - [ ] commonalise ACL
 - [ ] commonalise configuration
 - [ ] make types consistent across API
+- [ ] Genericize message unit tests
 
 ### uhppoted
 - [ ] websocket + GraphQL (?)
@@ -83,6 +82,9 @@
 - [ ] Braid (?)
 - [ ] MacOS launchd socket handoff
 - [ ] Linux systemd socket handoff
+- [ ] conf file decoder: JSON
+- [ ] conf file encoder
+- [ ] Rework plist encoder
 
 ### uhppoted-rest
 - [ ] Get events after XXX

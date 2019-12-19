@@ -21,6 +21,8 @@ type Device struct {
 type MQTT struct {
 	Broker            string      `conf:"broker"`
 	BrokerCertificate string      `conf:"broker.certificate"`
+	ClientCertificate string      `conf:"client.certificate"`
+	ClientKey         string      `conf:"client.key"`
 	Topic             string      `conf:"topic"`
 	HOTP              HOTP        `conf:"hotp"`
 	Permissions       Permissions `conf:"permissions"`
@@ -57,7 +59,9 @@ func NewConfig() *Config {
 		ListenAddress:    &listen,
 		MQTT: MQTT{
 			Broker:            "tcp://127.0.0.1:1883",
-			BrokerCertificate: certificate,
+			BrokerCertificate: brokerCertificate,
+			ClientCertificate: clientCertificate,
+			ClientKey:         clientKey,
 			Topic:             "twystd/uhppoted/gateway",
 			HOTP: HOTP{
 				Enabled:  false,
