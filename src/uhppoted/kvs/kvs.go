@@ -17,6 +17,8 @@ import (
 type KeyValueStore struct {
 	name      string
 	store     map[string]interface{}
+	version   uint64
+	stored    uint64
 	guard     sync.Mutex
 	writeLock sync.Mutex
 	re        *regexp.Regexp
@@ -27,6 +29,8 @@ func NewKeyValueStore(name string, f func(string) (interface{}, error)) *KeyValu
 	return &KeyValueStore{
 		name:      name,
 		store:     map[string]interface{}{},
+		version:   0,
+		stored:    0,
 		guard:     sync.Mutex{},
 		writeLock: sync.Mutex{},
 		re:        regexp.MustCompile(`^\s*(.*?)(?:\s{2,})(\S.*)\s*`),
@@ -60,13 +64,9 @@ func (kv *KeyValueStore) Store(key string, value interface{}, filepath string, l
 	defer kv.guard.Unlock()
 
 	kv.store[key] = value
+	kv.version += 1
 
-	c := map[string]interface{}{}
-	for k, v := range kv.store {
-		c[k] = v
-	}
-
-	go kv.save(c, filepath, log)
+	go kv.save(filepath, log)
 }
 
 func (kv *KeyValueStore) LoadFromFile(filepath string) error {
@@ -84,9 +84,22 @@ func (kv *KeyValueStore) LoadFromFile(filepath string) error {
 	return kv.load(f)
 }
 
-// TODO Ensure write order is retained
 // Ref. https://www.joeshaw.org/dont-defer-close-on-writable-files/
-func (kv *KeyValueStore) save(store map[string]interface{}, filepath string, log *log.Logger) {
+func (kv *KeyValueStore) save(filepath string, log *log.Logger) {
+	// ... copy current store
+
+	kv.guard.Lock()
+
+	version := kv.version
+	store := map[string]interface{}{}
+	for k, v := range kv.store {
+		store[k] = v
+	}
+
+	kv.guard.Unlock()
+
+	// ... store copy to file
+
 	kv.writeLock.Lock()
 	defer kv.writeLock.Unlock()
 
@@ -95,37 +108,48 @@ func (kv *KeyValueStore) save(store map[string]interface{}, filepath string, log
 	}
 
 	dir := path.Dir(filepath)
-	filename := path.Base(filepath) + ".tmp"
+	filename := fmt.Sprintf("%s.%d", path.Base(filepath), kv.version)
 	tmpfile := path.Join(dir, filename)
 
 	os.MkdirAll(dir, os.ModeDir|os.ModePerm)
 
 	f, err := os.Create(tmpfile)
 	if err != nil {
-		log.Printf("ERROR: %v", err)
+		log.Printf("ERROR: %s - %v", kv.name, err)
 		return
 	}
 
 	for key, value := range store {
 		if _, err := fmt.Fprintf(f, "%-20s  %v\n", key, value); err != nil {
-			log.Printf("ERROR: %v", err)
+			log.Printf("ERROR: %s - %v", kv.name, err)
 			f.Close()
 			return
 		}
 	}
 
 	if err := f.Sync(); err != nil {
-		log.Printf("ERROR: %v", err)
+		log.Printf("ERROR: %s - %v", kv.name, err)
 		f.Close()
 		return
 	}
 
 	if err := f.Close(); err != nil {
-		log.Printf("ERROR: %v", err)
+		log.Printf("ERROR: %s - %v", kv.name, err)
 		return
 	}
 
-	os.Rename(tmpfile, filepath)
+	if version > kv.stored {
+		if err := os.Rename(tmpfile, filepath); err != nil {
+			log.Printf("ERROR: %s - %v", kv.name, err)
+		} else {
+			kv.stored = version
+		}
+	} else {
+		log.Printf("WARN: %s - out of date version discarded", kv.name)
+		if err := os.Remove(tmpfile); err != nil {
+			log.Printf("ERROR: %s - %v", kv.name, err)
+		}
+	}
 }
 
 func (kv *KeyValueStore) Save(w io.Writer) error {
