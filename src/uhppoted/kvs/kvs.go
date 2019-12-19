@@ -16,25 +16,21 @@ import (
 
 type KeyValueStore struct {
 	name      string
-	filepath  string
 	store     map[string]interface{}
 	guard     sync.Mutex
 	writeLock sync.Mutex
 	re        *regexp.Regexp
 	f         func(string) (interface{}, error)
-	log       *log.Logger
 }
 
-func NewKeyValueStore(name string, f func(string) (interface{}, error), log *log.Logger) *KeyValueStore {
+func NewKeyValueStore(name string, f func(string) (interface{}, error)) *KeyValueStore {
 	return &KeyValueStore{
 		name:      name,
-		filepath:  "",
 		store:     map[string]interface{}{},
 		guard:     sync.Mutex{},
 		writeLock: sync.Mutex{},
 		re:        regexp.MustCompile(`^\s*(.*?)(?:\s{2,})(\S.*)\s*`),
 		f:         f,
-		log:       log,
 	}
 }
 
@@ -57,13 +53,23 @@ func (kv *KeyValueStore) Put(key string, value interface{}) {
 	for k, v := range kv.store {
 		c[k] = v
 	}
+}
 
-	go kv.save(c, kv.filepath)
+func (kv *KeyValueStore) Store(key string, value interface{}, filepath string, log *log.Logger) {
+	kv.guard.Lock()
+	defer kv.guard.Unlock()
+
+	kv.store[key] = value
+
+	c := map[string]interface{}{}
+	for k, v := range kv.store {
+		c[k] = v
+	}
+
+	go kv.save(c, filepath, log)
 }
 
 func (kv *KeyValueStore) LoadFromFile(filepath string) error {
-	kv.filepath = filepath
-
 	if filepath == "" {
 		return nil
 	}
@@ -80,7 +86,7 @@ func (kv *KeyValueStore) LoadFromFile(filepath string) error {
 
 // TODO Ensure write order is retained
 // Ref. https://www.joeshaw.org/dont-defer-close-on-writable-files/
-func (kv *KeyValueStore) save(store map[string]interface{}, filepath string) {
+func (kv *KeyValueStore) save(store map[string]interface{}, filepath string, log *log.Logger) {
 	kv.writeLock.Lock()
 	defer kv.writeLock.Unlock()
 

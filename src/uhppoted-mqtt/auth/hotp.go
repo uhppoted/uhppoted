@@ -19,7 +19,11 @@ type HOTP struct {
 	Enabled   bool
 	increment uint64
 	secrets   *kvs.KeyValueStore
-	counters  *kvs.KeyValueStore
+	counters  struct {
+		*kvs.KeyValueStore
+		filepath string
+		log      *log.Logger
+	}
 }
 
 const DIGITS = 6
@@ -36,8 +40,16 @@ func NewHOTP(enabled bool, increment uint64, secrets string, counters string, lo
 	hotp := HOTP{
 		Enabled:   enabled,
 		increment: increment,
-		secrets:   kvs.NewKeyValueStore("hotp:secrets", u, logger),
-		counters:  kvs.NewKeyValueStore("hotp:counters", v, logger),
+		secrets:   kvs.NewKeyValueStore("hotp:secrets", u),
+		counters: struct {
+			*kvs.KeyValueStore
+			filepath string
+			log      *log.Logger
+		}{
+			kvs.NewKeyValueStore("hotp:counters", v),
+			counters,
+			logger,
+		},
 	}
 
 	if enabled {
@@ -78,7 +90,7 @@ func (hotp *HOTP) Validate(clientID, otp string) error {
 		}
 
 		if subtle.ConstantTimeCompare([]byte(generated), []byte(otp)) == 1 {
-			hotp.counters.Put(clientID, counter.(uint64)+1)
+			hotp.counters.Store(clientID, counter.(uint64)+1, hotp.counters.filepath, hotp.counters.log)
 			return nil
 		}
 
