@@ -20,7 +20,11 @@
                     <password>hivemq</password>
                     <private-key-password>hivemq</private-key-password>
                 </keystore>
-                <client-authentication-mode>NONE</client-authentication-mode>
+                <client-authentication-mode>REQUIRED</client-authentication-mode>
+                <truststore>
+                    <path>/opt/hivemq/conf/clients.jks</path>
+                    <password>hivemq</password>
+                </truststore>
             </tls>
         </tls-tcp-listener>
 

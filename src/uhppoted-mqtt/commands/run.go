@@ -172,6 +172,13 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 				log.Printf("ERROR: Could not initialise MQTTD CA certificates")
 			}
 		}
+
+		certificate, err := tls.LoadX509KeyPair(c.ClientCertificate, c.ClientKey)
+		if err != nil {
+			log.Printf("ERROR: %v", err)
+		} else {
+			mqttd.TLS.Certificates = []tls.Certificate{certificate}
+		}
 	}
 
 	// ... listen forever
