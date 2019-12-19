@@ -297,8 +297,7 @@ docker-simulator:
 	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --rm simulator
 
 docker-hivemq:
-#	docker run --tty --interactive --publish 8081:8080 --publish 1883:1883 --rm hivemq/hivemq4
-	docker run --tty --interactive --publish 8081:8080 --publish 1883:1883 --publish 8883:8883 --rm hivemq/uhppoted
+	docker run --detach --publish 8081:8080 --publish 1883:1883 --publish 8883:8883 --rm hivemq/uhppoted
 
 docker-rest:
 	docker run --detach --publish 8080:8080 --rm uhppoted
