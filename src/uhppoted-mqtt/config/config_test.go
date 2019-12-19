@@ -15,6 +15,9 @@ listen.address = 192.168.1.100:12345
 # MQTT
 mqtt.broker = tls://127.0.0.63:8887
 mqtt.topic = twystd-qwerty
+mqtt.broker.certificate = mqtt-broker.cert
+mqtt.client.certificate = mqtt-client.cert
+mqtt.client.key = mqtt-client.key
 
 # DEVICES
 UT0311-L0x.305419896.address = 192.168.1.100:60000
@@ -66,6 +69,18 @@ func TestUnmarshal(t *testing.T) {
 
 	if config.Broker != "tls://127.0.0.63:8887" {
 		t.Errorf("Expected 'mqtt.broker' %s, got:%v", "tls://127.0.0.63:8887", config.Broker)
+	}
+
+	if config.BrokerCertificate != "mqtt-broker.cert" {
+		t.Errorf("Expected 'mqtt.broker.certificate' %s, got:%v", "mqtt-broker.cert", config.BrokerCertificate)
+	}
+
+	if config.ClientCertificate != "mqtt-client.cert" {
+		t.Errorf("Expected 'mqtt.client.certificate' %s, got:%v", "mqtt-client.cert", config.ClientCertificate)
+	}
+
+	if config.ClientKey != "mqtt-client.key" {
+		t.Errorf("Expected 'mqtt.client.key' %s, got:%v", "mqtt-client.key", config.ClientKey)
 	}
 
 	if config.Topic != "twystd-qwerty" {
