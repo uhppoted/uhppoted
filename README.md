@@ -8,6 +8,11 @@ Provides a set of cross-platform building blocks for access control systems base
 Wiegand Access Control Board, to supplement the 'Windows-only' out-of-the-box application supplied with the boards.
 
 ## Releases
+----
+- *v0.5.x (in development)*
+  - *MQTT endpoint*
+  - *Rework REST API*
+----
 
 - v0.4.2: Reworked `GetDevice` REST API to use directed broadcast and added get-device to CLI
 - v0.4.1: Get/set door control state functionality added to simulator, CLI and REST API
