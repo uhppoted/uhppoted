@@ -53,7 +53,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 305419896
+            example: 405419896
       responses:
         '200':
           description: "Device configuration"
@@ -85,7 +85,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 305419896
+            example: 405419896
       responses:
         '200':
           description: "Device current status"
@@ -117,7 +117,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 305419896
+            example: 405419896
       responses:
         '200':
           description: "Device current date/time"
@@ -148,7 +148,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 305419896
+            example: 405419896
       requestBody:
         description: "Date time"
         required: true
@@ -187,7 +187,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 305419896
+            example: 405419896
         - name: door
           in: path
           description: "Door number"
@@ -226,7 +226,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 305419896
+            example: 405419896
         - name: door
           in: path
           description: "Door number"
@@ -273,7 +273,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 305419896
+            example: 405419896
         - name: door
           in: path
           description: "Door number"
@@ -312,7 +312,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 305419896
+            example: 405419896
         - name: door
           in: path
           description: "Door number"
@@ -359,7 +359,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 305419896
+            example: 405419896
       responses:
         '200':
           description: "Card list"
@@ -390,7 +390,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 305419896
+            example: 405419896
       responses:
         '200':
           description: "Stored card list cleared"
@@ -418,7 +418,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 305419896
+            example: 405419896
         - name: card-number
           in: path
           description: "Card number"
@@ -457,7 +457,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 305419896
+            example: 405419896
         - name: card-number
           in: path
           description: "Card number"
@@ -493,7 +493,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 305419896
+            example: 405419896
       responses:
         '200':
           description: "Event list"
@@ -525,7 +525,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 305419896
+            example: 405419896
         - name: event-id
           in: path
           description: "Event ID"
@@ -571,7 +571,7 @@ components:
           type: number
           format: uint32
           description: "UHPPOTE device serial number"
-          example: 305419896
+          example: 405419896
         device-type:  
           type: string
           format: string

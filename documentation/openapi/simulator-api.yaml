@@ -106,7 +106,7 @@ paths:
           schema:
             type: integer
             format: uint64
-            example: 305419896
+            example: 405419896
       requestBody:
         description: "Wiegand-26 access card details"
         required: true
@@ -146,7 +146,7 @@ components:
           type: number
           format: uint32
           description: "Simulator device ID"
-          example: 305419896
+          example: 405419896
         device-type:  
           type: string
           format: string
