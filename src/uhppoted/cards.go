@@ -14,6 +14,10 @@ type ACL struct {
 	Doors    map[uint8]bool `json:"doors"`
 }
 
+type GetCardsRequest struct {
+	DeviceID uint32
+}
+
 type GetCardsResponse struct {
 	Device struct {
 		ID    uint32   `json:"id"`
@@ -65,31 +69,22 @@ type DeleteCardsResponse struct {
 	} `json:"device"`
 }
 
-func (u *UHPPOTED) GetCards(ctx context.Context, rq Request) {
-	u.debug(ctx, "get-cards", rq)
+func (u *UHPPOTED) GetCards(ctx context.Context, request GetCardsRequest) (*GetCardsResponse, int, error) {
+	u.debug(ctx, "get-cards", fmt.Sprintf("request  %v", request))
 
-	id, err := rq.DeviceID()
-	if err != nil {
-		u.warn(ctx, 0, "get-cards", err)
-		u.oops(ctx, "get-cards", "Missing/invalid device ID)", StatusBadRequest)
-		return
-	}
+	device := request.DeviceID
 
-	N, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCards(*id)
+	N, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCards(device)
 	if err != nil {
-		u.warn(ctx, *id, "get-cards", err)
-		u.oops(ctx, "get-cards", "Error retrieving cards", StatusInternalServerError)
-		return
+		return nil, StatusInternalServerError, fmt.Errorf("Error retrieving cards from %v", device)
 	}
 
 	cards := make([]uint32, 0)
 
 	for index := uint32(0); index < N.Records; index++ {
-		record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCardByIndex(*id, index+1)
+		record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCardByIndex(device, index+1)
 		if err != nil {
-			u.warn(ctx, *id, "get-cards", err)
-			u.oops(ctx, "get-cards", "Error retrieving cards", StatusInternalServerError)
-			return
+			return nil, StatusInternalServerError, fmt.Errorf("Error retrieving cards from %v", device)
 		}
 
 		cards = append(cards, record.CardNumber)
@@ -100,12 +95,14 @@ func (u *UHPPOTED) GetCards(ctx context.Context, rq Request) {
 			ID    uint32   `json:"id"`
 			Cards []uint32 `json:"cards"`
 		}{
-			ID:    *id,
+			ID:    device,
 			Cards: cards,
 		},
 	}
 
-	u.reply(ctx, response)
+	u.debug(ctx, "get-cards", fmt.Sprintf("response %v", response))
+
+	return &response, StatusOK, nil
 }
 
 func (u *UHPPOTED) DeleteCards(ctx context.Context, rq Request) {

@@ -238,16 +238,24 @@ uhppoted-mqtt-set-door-control:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/control:set' --message '{ "device-id": 305419896, "door": 3, "control": "normally closed" }'
 
 uhppoted-mqtt-get-cards:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/cards:get' --message '{ "device-id": 305419896 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/cards:get' \
+                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
+                              "device-id": 305419896 }'
 
 uhppoted-mqtt-delete-cards:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/cards:delete' --message '{ "device-id": 305419896 }'
 
 uhppoted-mqtt-get-card:
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:get' \
+#                 --secure --port 8883 --cafile ./docker/hivemq/localhost.pem \
+#                 --cert "./docker/hivemq/client-cert.pem"          \
+#                 --key  "./docker/hivemq/client-key.pem"           \
+#                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
+#                              "device-id": 305419896, "card-number": 65537 }'
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:get' \
-                 --secure --port 8883 --capath ./docker/hivemq     \
                  --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
                               "device-id": 305419896, "card-number": 65537 }'
+
 
 uhppoted-mqtt-put-card:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:put' \
