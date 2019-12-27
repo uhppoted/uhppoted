@@ -77,10 +77,11 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/door/delay:set":   (*uhppoted.UHPPOTED).SetDoorDelay,
 			m.Topic + "/device/door/control:get": (*uhppoted.UHPPOTED).GetDoorControl,
 			m.Topic + "/device/door/control:set": (*uhppoted.UHPPOTED).SetDoorControl,
-			m.Topic + "/device/cards:get":        (*uhppoted.UHPPOTED).GetCards,
-			m.Topic + "/device/cards:delete":     (*uhppoted.UHPPOTED).DeleteCards,
+			//			m.Topic + "/device/cards:get":        (*uhppoted.UHPPOTED).GetCards,
+			m.Topic + "/device/cards:delete": (*uhppoted.UHPPOTED).DeleteCards,
 		},
 		tablex: map[string]fdispatchx{
+			m.Topic + "/device/cards:get":   (*MQTTD).getCards,
 			m.Topic + "/device/card:get":    (*MQTTD).getCard,
 			m.Topic + "/device/card:put":    (*MQTTD).putCard,
 			m.Topic + "/device/card:delete": (*MQTTD).deleteCard,
@@ -309,6 +310,7 @@ func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 	}
 
 	reply := inject(response, meta)
+
 	b, err := json.Marshal(reply)
 	if err != nil {
 		oops(ctx, "encoding/json", "Error encoding response", uhppoted.StatusInternalServerError)

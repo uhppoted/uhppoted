@@ -1,29 +1,40 @@
 # uhppote-go
 
-Go CLI and daemon/service implementation for the UHPPOTE UT0311-L04 TCP/IP Wiegand Access Control Board. 
+A set of cross-platform building blocks for access control systems based on the UHPPOTE UT0311-L0x TCP/IP 
+Wiegand access control boards. Currently available:
+
+- low level communication library
+- CLI for scripting and system administration
+- REST service for integration with HTTP servers and mobile clients
+- (in development) MQTT endpoint for integration with IOT systems
+
+Supported operating systems:
+- Linux
+- MacOS
+- Windows
 
 ## Raison d'être
 
-Provides a set of cross-platform building blocks for access control systems based on the UHPPOTE UT0311-L04 TCP/IP 
-Wiegand Access Control Board, to supplement the 'Windows-only' out-of-the-box application supplied with the boards.
+The manufacturer supplied application is 'Windows-only' and provides limited support for integration with other
+systems.
 
 ## Releases
 
 - v0.4.2: Reworked `GetDevice` REST API to use directed broadcast and added get-device to CLI
 - v0.4.1: Get/set door control state functionality added to simulator, CLI and REST API
 - v0.4.0: REST API service
-- v0.3.1: functional simulator with minimal command API
-- v0.2.0: load access control list from TSV file
-- v0.1.0: bare-bones but functional CLI
+- v0.3.1: Functional simulator with minimal command API
+- v0.2.0: Load access control list from TSV file
+- v0.1.0: Bare-bones but functional CLI
 
 ## Modules
 
 | Module            | Description                                                              |
 | ----------------- | ------------------------------------------------------------------------ |
 | uhppote           | core library, implements the UDP interface to UT0311-L0x controllers     |
+| uhppote-simulator | UT0311-L04 simulator for development use                                 |
 | uhppote-cli       | command line interface                                                   |
 | uhppoted-rest     | daemon/service with REST API for remote access to UT0311-L0x controllers |
-| uhppote-simulator | UT0311-L04 simulator for development use                                 |
 
 ## Installation
 

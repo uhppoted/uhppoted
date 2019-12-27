@@ -9,6 +9,30 @@ import (
 	"uhppoted"
 )
 
+func (m *MQTTD) getCards(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
+	body := struct {
+		DeviceID *uint32 `json:"device-id"`
+	}{}
+
+	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
+		m.OnError(ctx, "get-cards", "Cannot parse request", uhppoted.StatusBadRequest, err)
+	} else if body.DeviceID == nil {
+		m.OnError(ctx, "get-cards", "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+	} else if *body.DeviceID == 0 {
+		m.OnError(ctx, "get-cards", "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+	} else {
+		rq := uhppoted.GetCardsRequest{
+			DeviceID: *body.DeviceID,
+		}
+
+		if response, status, err := impl.GetCards(ctx, rq); err != nil {
+			m.OnError(ctx, "get-cards", "Error retrieving cards", status, err)
+		} else if response != nil {
+			m.Reply(ctx, response)
+		}
+	}
+}
+
 func (m *MQTTD) getCard(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
 	body := struct {
 		DeviceID   *uint32 `json:"device-id"`
