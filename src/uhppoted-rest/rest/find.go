@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"strconv"
+	"strings"
 	"uhppote"
 	"uhppote/types"
 )
@@ -29,7 +31,7 @@ func getDevices(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	for _, d := range devices {
 		list = append(list, device{
 			SerialNumber: d.SerialNumber,
-			DeviceType:   "UTO311-L04",
+			DeviceType:   identify(d.SerialNumber),
 		})
 	}
 
@@ -69,7 +71,7 @@ func getDevice(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		Date         types.Date         `json:"date"`
 	}{
 		SerialNumber: device.SerialNumber,
-		DeviceType:   "UTO311-L04",
+		DeviceType:   identify(device.SerialNumber),
 		IpAddress:    device.IpAddress,
 		SubnetMask:   device.SubnetMask,
 		Gateway:      device.Gateway,
@@ -79,4 +81,26 @@ func getDevice(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	reply(ctx, w, response)
+}
+
+func identify(deviceID types.SerialNumber) string {
+	id := strconv.FormatUint(uint64(deviceID), 10)
+
+	if strings.HasPrefix(id, "4") {
+		return "UTO311-L04"
+	}
+
+	if strings.HasPrefix(id, "3") {
+		return "UTO311-L03"
+	}
+
+	if strings.HasPrefix(id, "2") {
+		return "UTO311-L02"
+	}
+
+	if strings.HasPrefix(id, "1") {
+		return "UTO311-L01"
+	}
+
+	return "UTO311-L0x"
 }

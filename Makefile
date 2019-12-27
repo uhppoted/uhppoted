@@ -74,7 +74,7 @@ debug: build
 	go test src/uhppoted/kvs/*.go
 #	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' \
 #                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
-#                              "device-id": 305419896, \
+#                              "device-id": 405419896, \
 #                              "start": "2019-08-05" , \
 #                              "end": "2019-08-09" }'
 
@@ -214,38 +214,38 @@ uhppoted-mqtt-get-devices:
 	mqtt publish --topic 'twystd/uhppoted/gateway/devices:get' --message '{}'
 
 uhppoted-mqtt-get-device:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' --message '{ "device-id": 305419896 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' --message '{ "device-id": 405419896 }'
 
 uhppoted-mqtt-get-status:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/status:get' --message '{ "device-id": 305419896 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/status:get' --message '{ "device-id": 405419896 }'
 
 uhppoted-mqtt-get-time:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/time:get' --message '{ "device-id": 305419896 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/time:get' --message '{ "device-id": 405419896 }'
 
 uhppoted-mqtt-set-time:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/time:set' --message "{ \"device-id\": 305419896, \"datetime\": \"$(DATETIME)\" }"
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/time:set' --message "{ \"device-id\": 405419896, \"datetime\": \"$(DATETIME)\" }"
 
 uhppoted-mqtt-get-door-delay:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/delay:get' --message '{ "device-id": 305419896, "door": 3 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/delay:get' --message '{ "device-id": 405419896, "door": 3 }'
 
 uhppoted-mqtt-set-door-delay:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/delay:set' --message '{ "device-id": 305419896, "door": 3, "delay": 8 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/delay:set' --message '{ "device-id": 405419896, "door": 3, "delay": 8 }'
 
 uhppoted-mqtt-get-door-control:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/control:get' --message '{ "device-id": 305419896, "door": 3 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/control:get' --message '{ "device-id": 405419896, "door": 3 }'
 
 uhppoted-mqtt-set-door-control:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/control:set' --message '{ "device-id": 305419896, "door": 3, "control": "normally closed" }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/control:set' --message '{ "device-id": 405419896, "door": 3, "control": "normally closed" }'
 
 uhppoted-mqtt-get-cards:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/cards:get' \
                  --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
-                              "device-id": 305419896 }'
+                              "device-id": 405419896 }'
 
 uhppoted-mqtt-delete-cards:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/cards:delete' \
                  --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
-                              "device-id": 305419896 }'
+                              "device-id": 405419896 }'
 
 uhppoted-mqtt-get-card:
 #	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:get' \
@@ -253,34 +253,34 @@ uhppoted-mqtt-get-card:
 #                 --cert "./docker/hivemq/client-cert.pem"          \
 #                 --key  "./docker/hivemq/client-key.pem"           \
 #                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
-#                              "device-id": 305419896, "card-number": 65537 }'
+#                              "device-id": 405419896, "card-number": 65537 }'
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:get' \
                  --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
-                              "device-id": 305419896, "card-number": 65537 }'
+                              "device-id": 405419896, "card-number": 65537 }'
 
 
 uhppoted-mqtt-put-card:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:put' \
                  --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
-                              "device-id": 305419896, \
+                              "device-id": 405419896, \
                               "card": { "card-number": 1327679, "valid-from": "2019-11-01", "valid-until": "2019-12-31", "doors": [true,false,false,true] }}'
 
 uhppoted-mqtt-delete-card:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:delete' \
                  --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
-                              "device-id": 305419896, "card-number": 1327679 }'
+                              "device-id": 405419896, "card-number": 1327679 }'
 
 
 uhppoted-mqtt-get-events:
 #	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ }'
-#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896 }'
-#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05 08:10:00" , "end": "2019-08-09 20:35:46" }'
-#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05 08:10" , "end": "2019-08-09 20:35" }'
-#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "end": "2019-08-05" , "start": "2019-08-09" }'
-#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 305419896, "start": "2019-08-05" , "end": "2019-08-09" }'
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 405419896 }'
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 405419896, "start": "2019-08-05 08:10:00" , "end": "2019-08-09 20:35:46" }'
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 405419896, "start": "2019-08-05 08:10" , "end": "2019-08-09 20:35" }'
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 405419896, "end": "2019-08-05" , "start": "2019-08-09" }'
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' --message '{ "device-id": 405419896, "start": "2019-08-05" , "end": "2019-08-09" }'
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' \
                  --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
-                              "device-id": 305419896, "start": "2019-08-05" , "end": "2019-08-09" }'
+                              "device-id": 405419896, "start": "2019-08-05" , "end": "2019-08-09" }'
 
 
 
@@ -288,7 +288,7 @@ uhppoted-mqtt-get-events:
 uhppoted-mqtt-get-event:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' \
 	             --message '{ "request": { "request-id": "98YWRW524", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
-	                          "device-id": 305419896, "event-id": 50 }'
+	                          "device-id": 405419896, "event-id": 50 }'
 
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 

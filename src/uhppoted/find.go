@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"strconv"
+	"strings"
 	"uhppote"
 	"uhppote/types"
 )
@@ -58,7 +60,7 @@ func (u *UHPPOTED) GetDevices(ctx context.Context, rq Request) {
 				ID: uint32(d.SerialNumber),
 				Summary: summary{
 					SerialNumber: d.SerialNumber,
-					DeviceType:   "UTO311-L04",
+					DeviceType:   identify(d.SerialNumber),
 				},
 			},
 		}
@@ -106,7 +108,7 @@ func (u *UHPPOTED) GetDevice(ctx context.Context, rq Request) {
 			ID: *id,
 			Detail: detail{
 				SerialNumber: device.SerialNumber,
-				DeviceType:   "UTO311-L04",
+				DeviceType:   identify(device.SerialNumber),
 				IpAddress:    device.IpAddress,
 				SubnetMask:   device.SubnetMask,
 				Gateway:      device.Gateway,
@@ -118,4 +120,26 @@ func (u *UHPPOTED) GetDevice(ctx context.Context, rq Request) {
 	}
 
 	u.reply(ctx, response)
+}
+
+func identify(deviceID types.SerialNumber) string {
+	id := strconv.FormatUint(uint64(deviceID), 10)
+
+	if strings.HasPrefix(id, "4") {
+		return "UTO311-L04"
+	}
+
+	if strings.HasPrefix(id, "3") {
+		return "UTO311-L03"
+	}
+
+	if strings.HasPrefix(id, "2") {
+		return "UTO311-L02"
+	}
+
+	if strings.HasPrefix(id, "1") {
+		return "UTO311-L01"
+	}
+
+	return "UTO311-L0x"
 }
