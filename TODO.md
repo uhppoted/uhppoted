@@ -55,7 +55,7 @@
 - [ ] Make events consistent across everything
 - [ ] Rework UHPPOTE response messages to use factory
 - [ ] Add ARM7 target to build
-- [ ] Identify UTO311-L01..L04 based on serial number prefix
+- [x] Identify UTO311-L01..L04 based on serial number prefix
 
 - [ ] uhppoted-rest: PUT card
 - [ ] uhppoted-rest: DELETE card
