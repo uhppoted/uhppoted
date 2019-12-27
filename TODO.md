@@ -34,6 +34,7 @@
 - [ ] command protocol: add 'operation' to response meta-info
 - [ ] move incoming requests to /requests subtopic
 - [ ] publish add/delete card, etc to event stream
+- [ ] move ACL and events to separate API's
 
 - [x] subscribe
 - [x] error handling

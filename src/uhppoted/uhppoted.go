@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"time"
-	"uhppote/types"
 )
 
 const (
@@ -27,7 +26,6 @@ type Request interface {
 	DeviceDoor() (*uint32, *uint8, error)
 	DeviceDoorDelay() (*uint32, *uint8, *uint8, error)
 	DeviceDoorControl() (*uint32, *uint8, *string, error)
-	DeviceCard() (*uint32, *types.Card, error)
 }
 
 type UHPPOTED struct {
