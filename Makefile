@@ -28,20 +28,27 @@ build: format
 	go install $(LDFLAGS) uhppote-simulator
 
 test: build
-	go clean -testcache
 	go test uhppote...
 
+vet: build
+	go vet uhppote...
+
+lint: build
+	golint uhppote...
+
 benchmark: build
-	go test src/uhppote/encoding/bcd/*.go -bench .
+	go test -bench uhppote...
 
 coverage: build
-	go clean -testcache
-	go test -cover src/uhppote/*.go
-	go test -cover src/uhppote/encoding/bcd/*.go
-	go test -cover src/uhppote/encoding/UTO311-L0x/*.go
-	go test -cover src/uhppoted-rest/encoding/plist/*.go
+	go test -cover uhppote...
 
-release: test
+integration-tests: build
+	go fmt src/integration-tests/cli/*.go
+	go fmt src/integration-tests/mqttd/*.go
+#	go test src/integration-tests/cli/*.go
+	go test src/integration-tests/mqttd/*.go
+
+release: test vet lint
 	mkdir -p dist/$(DIST)/windows
 	mkdir -p dist/$(DIST)/darwin
 	mkdir -p dist/$(DIST)/linux
@@ -62,10 +69,6 @@ release: test
 
 release-tar: release
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
-
-integration-tests: build
-	go clean -testcache
-	go test -count=1 src/integration-tests/*.go
 
 usage: build
 	$(CLI)

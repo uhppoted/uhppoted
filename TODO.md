@@ -62,6 +62,8 @@
 - [ ] uhppoted-rest: get-events date/id range
 - [ ] commonalise functionality with uhppoted-rest
 
+- [ ] Fix go vet errors
+- [ ] Fix golint errors
 - [x] conf file decoder with reflection
 - [x] conf file decoder: embedded structs
 - [ ] Convert to 1.13 error handling
@@ -172,4 +174,5 @@
     - https://github.com/golang/go/issues/4068
 20. [Ballerina](https://ballerina.io)
 21. [Eclipse Kura](https://www.eclipse.org/kura)
+22. [Klee](https://klee.github.io)
 

@@ -6,7 +6,7 @@ Wiegand access control boards. Currently available:
 - low level communication library
 - CLI for scripting and system administration
 - REST service for integration with HTTP servers and mobile clients
-- (in development) MQTT endpoint for integration with IOT systems
+- *(in development) MQTT endpoint for integration with IOT systems*
 
 Supported operating systems:
 - Linux
@@ -42,9 +42,13 @@ systems.
 
 #### Dependencies
 
-- golang.org.x.sys *(for uhppoted Windows service)*
-- eclipse/paho.mqtt.golang *(for MQTT 3.1.1 implementation)*
-- gorilla/websocket *(paho.mqtt.golang dependency)*
+| Dependency                          | Description                                            |
+| ----------------------------------- | ------------------------------------------------------ |
+| golang.org.x.sys                    | Support for Windows services                           |
+| golang.org/x/lint/golint            | Additional *lint* check for release builds             |
+| github.com/eclipse/paho.mqtt.golang | UT0311-L04 simulator for development use               |
+| github.com/gorilla/websocket        | paho.mqtt.golang dependency                            |
+| github.com/docker/docker/client     | Docker client for acceptance/integration tests         |
 
 ### Binaries
 
