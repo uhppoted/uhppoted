@@ -29,7 +29,7 @@ systems.
 
 ## Modules
 
-| Module            | Description                                                              |
+| *Module*          | *Description*                                                            |
 | ----------------- | ------------------------------------------------------------------------ |
 | uhppote           | core library, implements the UDP interface to UT0311-L0x controllers     |
 | uhppote-simulator | UT0311-L04 simulator for development use                                 |
@@ -42,9 +42,9 @@ systems.
 
 #### Dependencies
 
-| Dependency                          | Description                                            |
+| *Dependency*                        | *Description*                                          |
 | ----------------------------------- | ------------------------------------------------------ |
-| golang.org.x.sys                    | Support for Windows services                           |
+| golang.org/x/sys/windows            | Support for Windows services                           |
 | golang.org/x/lint/golint            | Additional *lint* check for release builds             |
 | github.com/eclipse/paho.mqtt.golang | UT0311-L04 simulator for development use               |
 | github.com/gorilla/websocket        | paho.mqtt.golang dependency                            |

@@ -218,9 +218,6 @@ func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Sig
 			return errors.New("Server error")
 		}
 	}
-
-	logger.Printf("... exit")
-	return nil
 }
 
 func healthcheck(u *uhppote.UHPPOTE, st *state, l *log.Logger) {

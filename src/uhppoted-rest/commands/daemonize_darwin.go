@@ -277,16 +277,14 @@ func (c *Daemonize) firewall() error {
 
 	path, err := os.Executable()
 	if err != nil {
-		fmt.Errorf("Failed to get path to executable: %v\n", err)
-		return err
+		return fmt.Errorf("Failed to get path to executable: %v\n", err)
 	}
 
 	cmd := exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--getglobalstate")
 	out, err := cmd.CombinedOutput()
 	fmt.Printf("   > %s", out)
 	if err != nil {
-		fmt.Errorf("ERROR: Failed to retrieve application firewall global state (%v)\n", err)
-		return err
+		return fmt.Errorf("Failed to retrieve application firewall global state (%v)\n", err)
 	}
 
 	if strings.Contains(string(out), "State = 1") {
@@ -294,32 +292,28 @@ func (c *Daemonize) firewall() error {
 		out, err = cmd.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			fmt.Errorf("ERROR: Failed to disable the application firewall (%v)\n", err)
-			return err
+			return fmt.Errorf("Failed to disable the application firewall (%v)\n", err)
 		}
 
 		cmd = exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--add", path)
 		out, err = cmd.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			fmt.Errorf("ERROR: Failed to add 'uhppoted-rest' to the application firewall (%v)\n", err)
-			return err
+			return fmt.Errorf("Failed to add 'uhppoted-rest' to the application firewall (%v)\n", err)
 		}
 
 		cmd = exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--unblockapp", path)
 		out, err = cmd.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			fmt.Errorf("ERROR: Failed to unblock 'uhppoted-rest' on the application firewall (%v)\n", err)
-			return err
+			return fmt.Errorf("Failed to unblock 'uhppoted-rest' on the application firewall (%v)\n", err)
 		}
 
 		cmd = exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--setglobalstate", "on")
 		out, err = cmd.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			fmt.Errorf("ERROR: Failed to re-enable the application firewall (%v)\n", err)
-			return err
+			return fmt.Errorf("Failed to re-enable the application firewall (%v)\n", err)
 		}
 
 		fmt.Println()

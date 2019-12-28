@@ -332,14 +332,29 @@ func testHandle(request messages.Request, expected messages.Response, t *testing
 	}
 
 	cards := entities.CardList{
-		&entities.Card{100000001, *from, *to, map[uint8]bool{1: false, 2: false, 3: false, 4: false}},
-		&entities.Card{192837465, *from, *to, map[uint8]bool{1: true, 2: false, 3: false, 4: true}},
-		&entities.Card{100000003, *from, *to, map[uint8]bool{1: false, 2: false, 3: false, 4: false}},
+		&entities.Card{
+			CardNumber: 100000001,
+			From:       *from,
+			To:         *to,
+			Doors:      map[uint8]bool{1: false, 2: false, 3: false, 4: false},
+		},
+		&entities.Card{
+			CardNumber: 192837465,
+			From:       *from,
+			To:         *to,
+			Doors:      map[uint8]bool{1: true, 2: false, 3: false, 4: true},
+		},
+		&entities.Card{
+			CardNumber: 100000003,
+			From:       *from,
+			To:         *to,
+			Doors:      map[uint8]bool{1: false, 2: false, 3: false, 4: false},
+		},
 	}
 
 	events := entities.EventList{
-		123,
-		[]entities.Event{
+		Index: 123,
+		Events: []entities.Event{
 			entities.Event{
 				RecordNumber: 1,
 				Type:         0x05,

@@ -292,9 +292,6 @@ func (r *Run) listen(u *uhppote.UHPPOTE, mqttd *mqtt.MQTTD, logger *log.Logger, 
 			return errors.New("MQTT client error")
 		}
 	}
-
-	logger.Printf("... exit")
-	return nil
 }
 
 // func healthcheck(u *uhppote.UHPPOTE, st *state, l *log.Logger) {

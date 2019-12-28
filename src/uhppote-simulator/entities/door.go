@@ -8,11 +8,11 @@ import (
 type Delay time.Duration
 
 type Door struct {
-	ControlState uint8      `json:"control"`
-	Delay        Delay      `json:"delay"`
-	open         bool       `json:"-"`
-	openUntil    *time.Time `json:"-"`
-	button       bool       `json:"-"`
+	ControlState uint8 `json:"control"`
+	Delay        Delay `json:"delay"`
+	open         bool
+	openUntil    *time.Time
+	button       bool
 }
 
 func (delay Delay) MarshalJSON() ([]byte, error) {
