@@ -78,8 +78,6 @@ func listenAndServe(ctx *simulator.Context, c *net.UDPConn) error {
 
 		handle(ctx, c, remote, request)
 	}
-
-	return nil
 }
 
 func handle(ctx *simulator.Context, c *net.UDPConn, src *net.UDPAddr, bytes []byte) {

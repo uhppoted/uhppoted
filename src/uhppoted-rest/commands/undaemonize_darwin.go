@@ -109,8 +109,7 @@ func (c *Undaemonize) launchd(path string, d info) error {
 	out, err := cmd.CombinedOutput()
 	fmt.Printf("   > %s", out)
 	if err != nil {
-		fmt.Errorf("ERROR: Failed to unload '%s' (%v)\n", d.Label, err)
-		return err
+		return fmt.Errorf("Failed to unload '%s' (%v)\n", d.Label, err)
 	}
 
 	fmt.Printf("   ... removing '%s'\n", path)
@@ -150,8 +149,7 @@ func (c *Undaemonize) firewall(d info) error {
 	out, err := cmd.CombinedOutput()
 	fmt.Printf("   > %s", out)
 	if err != nil {
-		fmt.Errorf("ERROR: Failed to retrieve application firewall global state (%v)\n", err)
-		return err
+		return fmt.Errorf("Failed to retrieve application firewall global state (%v)\n", err)
 	}
 
 	if strings.Contains(string(out), "State = 1") {
@@ -159,24 +157,21 @@ func (c *Undaemonize) firewall(d info) error {
 		out, err = cmd.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			fmt.Errorf("ERROR: Failed to disable the application firewall (%v)\n", err)
-			return err
+			return fmt.Errorf("Failed to disable the application firewall (%v)\n", err)
 		}
 
 		cmd = exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--remove", path)
 		out, err = cmd.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			fmt.Errorf("ERROR: Failed to remove 'uhppoted-rest' from the application firewall (%v)\n", err)
-			return err
+			return fmt.Errorf("Failed to remove 'uhppoted-rest' from the application firewall (%v)\n", err)
 		}
 
 		cmd = exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--setglobalstate", "on")
 		out, err = cmd.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			fmt.Errorf("ERROR: Failed to re-enable the application firewall (%v)\n", err)
-			return err
+			return fmt.Errorf("Failed to re-enable the application firewall (%v)\n", err)
 		}
 
 		fmt.Println()

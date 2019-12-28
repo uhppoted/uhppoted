@@ -23,11 +23,25 @@ var encoders = map[reflect.Type]encoder{
 	reflect.TypeOf([]string{}):  encodeStringArray,
 }
 
-var instruction = xml.ProcInst{"xml", []byte(`version="1.0" encoding="UTF-8"`)}
+var instruction = xml.ProcInst{
+	Target: "xml",
+	Inst:   []byte(`version="1.0" encoding="UTF-8"`),
+}
+
 var doctype = xml.Directive([]byte(`DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"`))
 var newline = xml.CharData("\n")
-var dict = xml.StartElement{Name: xml.Name{"", "dict"}}
-var key = xml.StartElement{Name: xml.Name{"", "key"}}
+var dict = xml.StartElement{
+	Name: xml.Name{
+		Space: "",
+		Local: "dict",
+	},
+}
+
+var key = xml.StartElement{
+	Name: xml.Name{
+		Space: "",
+		Local: "key"},
+}
 
 var header = []xml.Token{
 	instruction,
@@ -37,9 +51,18 @@ var header = []xml.Token{
 }
 
 var body = xml.StartElement{
-	Name: xml.Name{"", "plist"},
+	Name: xml.Name{
+		Space: "",
+		Local: "plist",
+	},
 	Attr: []xml.Attr{
-		xml.Attr{xml.Name{"", "version"}, "1.0"}},
+		xml.Attr{
+			Name: xml.Name{
+				Space: "",
+				Local: "version",
+			},
+			Value: "1.0"},
+	},
 }
 
 func NewEncoder(w io.Writer) *Encoder {
@@ -118,7 +141,12 @@ func (e *Encoder) encode(s reflect.Value) error {
 
 func encodeString(e *Encoder, f reflect.Value) error {
 	value := f.String()
-	element := xml.StartElement{Name: xml.Name{"", "string"}}
+	element := xml.StartElement{
+		Name: xml.Name{
+			Space: "",
+			Local: "string",
+		},
+	}
 
 	return e.encoder.EncodeElement(value, element)
 }
@@ -134,13 +162,23 @@ func encodeBool(e *Encoder, f reflect.Value) error {
 
 func encodeInt(e *Encoder, f reflect.Value) error {
 	value := xml.CharData(strconv.FormatInt(f.Int(), 10))
-	element := xml.StartElement{Name: xml.Name{"", "integer"}}
+	element := xml.StartElement{
+		Name: xml.Name{
+			Space: "",
+			Local: "integer",
+		},
+	}
 
 	return e.encoder.EncodeElement(value, element)
 }
 
 func encodeStringArray(e *Encoder, f reflect.Value) error {
-	start := xml.StartElement{Name: xml.Name{"", "array"}}
+	start := xml.StartElement{
+		Name: xml.Name{
+			Space: "",
+			Local: "array",
+		},
+	}
 	end := start.End()
 
 	if err := e.encoder.EncodeToken(start); err != nil {

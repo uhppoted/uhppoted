@@ -20,9 +20,9 @@ import (
 )
 
 type UT0311L04 struct {
-	file       string                `json:"-"`
-	compressed bool                  `json:"-"`
-	txq        chan entities.Message `json:"-"`
+	file       string
+	compressed bool
+	txq        chan entities.Message
 
 	SerialNumber   types.SerialNumber       `json:"serial-number"`
 	IpAddress      net.IP                   `json:"address"`
@@ -255,7 +255,10 @@ func (s *UT0311L04) send(dest *net.UDPAddr, message interface{}) {
 	}
 
 	if s.txq != nil && dest != nil && message != nil && !reflect.ValueOf(message).IsNil() {
-		s.txq <- entities.Message{dest, message}
+		s.txq <- entities.Message{
+			Destination: dest,
+			Message:     message,
+		}
 	}
 }
 

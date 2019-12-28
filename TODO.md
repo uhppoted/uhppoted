@@ -62,7 +62,7 @@
 - [ ] uhppoted-rest: get-events date/id range
 - [ ] commonalise functionality with uhppoted-rest
 
-- [ ] Fix go vet errors
+- [x] Fix go vet errors
 - [ ] Fix golint errors
 - [x] conf file decoder with reflection
 - [x] conf file decoder: embedded structs

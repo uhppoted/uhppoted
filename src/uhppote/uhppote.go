@@ -273,8 +273,6 @@ func (u *UHPPOTE) listen(p chan *Event, q chan os.Signal) error {
 
 		p <- &event
 	}
-
-	return nil
 }
 
 func (u *UHPPOTE) bindAddress() *net.UDPAddr {
