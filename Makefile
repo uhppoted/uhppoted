@@ -48,7 +48,7 @@ integration-tests: build
 #	go test src/integration-tests/cli/*.go
 	go test src/integration-tests/mqttd/*.go
 
-release: test vet lint
+release: test vet
 	mkdir -p dist/$(DIST)/windows
 	mkdir -p dist/$(DIST)/darwin
 	mkdir -p dist/$(DIST)/linux

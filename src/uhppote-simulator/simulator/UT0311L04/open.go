@@ -31,7 +31,7 @@ func (s *UT0311L04) openDoor(addr *net.UDPAddr, request *messages.OpenDoorReques
 				Granted:    granted,
 				Door:       door,
 				DoorOpened: opened,
-				UserId:     3922570474,
+				UserID:     3922570474,
 				Timestamp:  types.DateTime(datetime),
 				Result:     0x2c,
 			}

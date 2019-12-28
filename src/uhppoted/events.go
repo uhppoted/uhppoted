@@ -50,7 +50,7 @@ type event struct {
 	Granted    bool           `json:"access-granted"`
 	Door       uint8          `json:"door-id"`
 	DoorOpened bool           `json:"door-opened"`
-	UserId     uint32         `json:"user-id"`
+	UserID     uint32         `json:"user-id"`
 	Timestamp  types.DateTime `json:"timestamp"`
 	Result     uint8          `json:"event-result"`
 }
@@ -163,7 +163,7 @@ func (u *UHPPOTED) GetEvent(ctx context.Context, request GetEventRequest) (*GetE
 				Granted:    record.Granted,
 				Door:       record.Door,
 				DoorOpened: record.DoorOpened,
-				UserId:     record.UserId,
+				UserID:     record.UserID,
 				Timestamp:  record.Timestamp,
 				Result:     record.Result,
 			},

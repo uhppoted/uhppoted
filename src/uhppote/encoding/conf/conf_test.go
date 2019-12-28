@@ -15,7 +15,7 @@ type testType struct {
 
 type Embedded struct {
 	Name string `conf:"name"`
-	Id   uint   `conf:"id"`
+	ID   uint   `conf:"id"`
 }
 
 var configuration = []byte(
@@ -87,8 +87,8 @@ func TestUnmarshal(t *testing.T) {
 		t.Errorf("Expected 'embedded.name' value '%v', got: '%v'", "zxcvb", config.Name)
 	}
 
-	if config.Id != 67890 {
-		t.Errorf("Expected 'embedded.id' value '%v', got: '%v'", 67890, config.Id)
+	if config.ID != 67890 {
+		t.Errorf("Expected 'embedded.id' value '%v', got: '%v'", 67890, config.ID)
 	}
 }
 

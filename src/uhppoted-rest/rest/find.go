@@ -45,18 +45,18 @@ func getDevices(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 }
 
 func getDevice(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	deviceId := ctx.Value("device-id").(uint32)
+	deviceID := ctx.Value("device-id").(uint32)
 
-	device, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevice(deviceId)
+	device, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevice(deviceID)
 
 	if err != nil {
-		warn(ctx, deviceId, "get-device", err)
+		warn(ctx, deviceID, "get-device", err)
 		http.Error(w, "Error retrieving device list", http.StatusInternalServerError)
 		return
 	}
 
 	if device == nil {
-		http.Error(w, fmt.Sprintf("No device with ID '%v'", deviceId), http.StatusNotFound)
+		http.Error(w, fmt.Sprintf("No device with ID '%v'", deviceID), http.StatusNotFound)
 		return
 	}
 

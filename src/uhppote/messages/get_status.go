@@ -17,7 +17,7 @@ type GetStatusResponse struct {
 	Granted        bool               `uhppote:"offset:13"`
 	Door           byte               `uhppote:"offset:14"`
 	DoorOpened     bool               `uhppote:"offset:15"`
-	UserId         uint32             `uhppote:"offset:16"`
+	UserID         uint32             `uhppote:"offset:16"`
 	EventTimestamp types.DateTime     `uhppote:"offset:20"`
 	EventResult    byte               `uhppote:"offset:27"`
 	Door1State     bool               `uhppote:"offset:28"`

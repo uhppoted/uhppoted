@@ -115,7 +115,7 @@ func (u *UHPPOTED) GetCard(ctx context.Context, request GetCardRequest) (*GetCar
 	device := request.DeviceID
 	cardID := request.CardNumber
 
-	card, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCardById(device, cardID)
+	card, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCardByID(device, cardID)
 	if err != nil {
 		return nil, StatusInternalServerError, fmt.Errorf("Error retrieving card %v from %v", cardID, device)
 	}

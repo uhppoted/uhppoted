@@ -109,8 +109,8 @@ func TestUnmarshalGetEventResponse(t *testing.T) {
 		t.Errorf("Incorrect 'door opened' - expected:%v, got:%v\n", true, reply.DoorOpened)
 	}
 
-	if reply.UserId != 6154413 {
-		t.Errorf("Incorrect 'user ID' - expected:%d, got: %v\n", 6154413, reply.UserId)
+	if reply.UserID != 6154413 {
+		t.Errorf("Incorrect 'user ID' - expected:%d, got: %v\n", 6154413, reply.UserID)
 	}
 
 	if reply.Result != 6 {
@@ -140,7 +140,7 @@ func TestFactoryUnmarshalGetEventResponse(t *testing.T) {
 		Granted:      true,
 		Door:         3,
 		DoorOpened:   true,
-		UserId:       6154413,
+		UserID:       6154413,
 		Timestamp:    types.DateTime(timestamp),
 		Result:       0x06,
 	}

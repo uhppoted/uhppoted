@@ -10,7 +10,7 @@ type GetCardByIndexRequest struct {
 	Index        uint32             `uhppote:"offset:8"`
 }
 
-type GetCardByIdRequest struct {
+type GetCardByIDRequest struct {
 	MsgType      types.MsgType      `uhppote:"value:0x5a"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 	CardNumber   uint32             `uhppote:"offset:8"`
@@ -28,7 +28,7 @@ type GetCardByIndexResponse struct {
 	Door4        bool               `uhppote:"offset:23"`
 }
 
-type GetCardByIdResponse struct {
+type GetCardByIDResponse struct {
 	MsgType      types.MsgType      `uhppote:"value:0x5a"`
 	SerialNumber types.SerialNumber `uhppote:"offset:4"`
 	CardNumber   uint32             `uhppote:"offset:8"`

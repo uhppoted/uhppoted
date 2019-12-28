@@ -5,9 +5,9 @@ import (
 	"uhppote/messages"
 )
 
-func (s *UT0311L04) getCardById(addr *net.UDPAddr, request *messages.GetCardByIdRequest) {
+func (s *UT0311L04) getCardByID(addr *net.UDPAddr, request *messages.GetCardByIDRequest) {
 	if request.SerialNumber == s.SerialNumber {
-		response := messages.GetCardByIdResponse{
+		response := messages.GetCardByIDResponse{
 			SerialNumber: s.SerialNumber,
 		}
 

@@ -47,8 +47,8 @@ func (u *UHPPOTE) GetCardByIndex(serialNumber, index uint32) (*types.Card, error
 	}, nil
 }
 
-func (u *UHPPOTE) GetCardById(serialNumber, cardNumber uint32) (*types.Card, error) {
-	request := messages.GetCardByIdRequest{
+func (u *UHPPOTE) GetCardByID(serialNumber, cardNumber uint32) (*types.Card, error) {
+	request := messages.GetCardByIDRequest{
 		SerialNumber: types.SerialNumber(serialNumber),
 		CardNumber:   cardNumber,
 	}
@@ -58,7 +58,7 @@ func (u *UHPPOTE) GetCardById(serialNumber, cardNumber uint32) (*types.Card, err
 		return nil, err
 	}
 
-	response, ok := reply.(*messages.GetCardByIdResponse)
+	response, ok := reply.(*messages.GetCardByIDResponse)
 	if !ok {
 		return nil, errors.New("Invalid response to GetCardById")
 	}

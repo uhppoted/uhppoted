@@ -41,7 +41,7 @@ func (s *UT0311L04) getStatus(addr *net.UDPAddr, request *messages.GetStatusRequ
 			response.Granted = event.Granted
 			response.Door = event.Door
 			response.DoorOpened = event.DoorOpened
-			response.UserId = event.UserId
+			response.UserID = event.UserID
 			response.EventTimestamp = event.Timestamp
 			response.EventResult = event.Result
 		}

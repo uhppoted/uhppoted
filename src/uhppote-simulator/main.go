@@ -66,12 +66,12 @@ func load(dir string) []simulator.Simulator {
 				if err != nil {
 					fmt.Printf("   ... error loading device from file '%s': %v\n", f, err)
 				} else {
-					deviceId := s.DeviceID()
-					if devices[deviceId] == nil {
-						devices[deviceId] = s
+					deviceID := s.DeviceID()
+					if devices[deviceID] == nil {
+						devices[deviceID] = s
 						fmt.Printf("   ... loaded device  from '%s'\n", f)
 					} else {
-						fmt.Printf("   ... duplicate serial number %v in device file '%s' - using device loaded from '%s'\n", deviceId, f, devices[deviceId].FilePath())
+						fmt.Printf("   ... duplicate serial number %v in device file '%s' - using device loaded from '%s'\n", deviceID, f, devices[deviceID].FilePath())
 					}
 				}
 			}

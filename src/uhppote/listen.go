@@ -14,7 +14,7 @@ type Event struct {
 	Granted        bool               `uhppote:"offset:13"`
 	Door           byte               `uhppote:"offset:14"`
 	DoorOpened     bool               `uhppote:"offset:15"`
-	UserId         uint32             `uhppote:"offset:16"`
+	UserID         uint32             `uhppote:"offset:16"`
 	Timestamp      types.DateTime     `uhppote:"offset:20"`
 	EventResult    byte               `uhppote:"offset:27"`
 	Door1State     bool               `uhppote:"offset:28"`
@@ -66,7 +66,7 @@ func (event *Event) transform() *types.Status {
 		Granted:        event.Granted,
 		Door:           event.Door,
 		DoorOpened:     event.DoorOpened,
-		UserId:         event.UserId,
+		UserID:         event.UserID,
 		EventTimestamp: event.Timestamp,
 		EventResult:    event.EventResult,
 		DoorState:      []bool{event.Door1State, event.Door2State, event.Door3State, event.Door4State},

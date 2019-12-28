@@ -129,12 +129,12 @@ func TestHandleGetCardById(t *testing.T) {
 	from, _ := types.DateFromString("2019-01-01")
 	to, _ := types.DateFromString("2019-12-31")
 
-	request := messages.GetCardByIdRequest{
+	request := messages.GetCardByIDRequest{
 		SerialNumber: 12345,
 		CardNumber:   192837465,
 	}
 
-	response := messages.GetCardByIdResponse{
+	response := messages.GetCardByIDResponse{
 		SerialNumber: 12345,
 		CardNumber:   192837465,
 		From:         from,
@@ -281,7 +281,7 @@ func TestHandleGetEvent(t *testing.T) {
 		Granted:      true,
 		Door:         4,
 		DoorOpened:   false,
-		UserId:       555444321,
+		UserID:       555444321,
 		Timestamp:    types.DateTime(timestamp),
 		Result:       9,
 	}
@@ -361,7 +361,7 @@ func testHandle(request messages.Request, expected messages.Response, t *testing
 				Granted:      false,
 				Door:         3,
 				DoorOpened:   false,
-				UserId:       1234567890,
+				UserID:       1234567890,
 				Timestamp:    types.DateTime(timestamp),
 				Result:       1,
 			},
@@ -371,7 +371,7 @@ func testHandle(request messages.Request, expected messages.Response, t *testing
 				Granted:      true,
 				Door:         4,
 				DoorOpened:   false,
-				UserId:       555444321,
+				UserID:       555444321,
 				Timestamp:    types.DateTime(timestamp),
 				Result:       9,
 			},
@@ -381,7 +381,7 @@ func testHandle(request messages.Request, expected messages.Response, t *testing
 				Granted:      false,
 				Door:         3,
 				DoorOpened:   false,
-				UserId:       1234567890,
+				UserID:       1234567890,
 				Timestamp:    types.DateTime(timestamp),
 				Result:       1,
 			},

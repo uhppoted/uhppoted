@@ -106,8 +106,8 @@ func TestUnmarshalGetStatusResponse(t *testing.T) {
 		t.Errorf("Incorrect 'door opened' - expected:%v, got:%v", true, reply.DoorOpened)
 	}
 
-	if reply.UserId != 6154410 {
-		t.Errorf("Incorrect 'user ID' - expected:%v, got:%v", 6154410, reply.UserId)
+	if reply.UserID != 6154410 {
+		t.Errorf("Incorrect 'user ID' - expected:%v, got:%v", 6154410, reply.UserID)
 	}
 
 	swiped, _ := time.ParseInLocation("2006-01-02 15:04:05", "2019-04-19 17:00:09", time.Local)
@@ -237,8 +237,8 @@ func TestFactoryUnmarshalGetStatusResponse(t *testing.T) {
 		t.Errorf("Incorrect 'door opened' - expected:%v, got:%v", true, reply.DoorOpened)
 	}
 
-	if reply.UserId != 6154410 {
-		t.Errorf("Incorrect 'user ID' - expected:%v, got:%v", 6154410, reply.UserId)
+	if reply.UserID != 6154410 {
+		t.Errorf("Incorrect 'user ID' - expected:%v, got:%v", 6154410, reply.UserID)
 	}
 
 	swiped, _ := time.ParseInLocation("2006-01-02 15:04:05", "2019-04-19 17:00:09", time.Local)

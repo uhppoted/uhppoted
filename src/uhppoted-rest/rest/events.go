@@ -13,17 +13,17 @@ type event struct {
 	Granted    bool           `json:"access-granted"`
 	Door       uint8          `json:"door-id"`
 	DoorOpened bool           `json:"door-opened"`
-	UserId     uint32         `json:"user-id"`
+	UserID     uint32         `json:"user-id"`
 	Timestamp  types.DateTime `json:"timestamp"`
 	Result     uint8          `json:"event-result"`
 }
 
 func getEvents(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	deviceId := ctx.Value("device-id").(uint32)
+	deviceID := ctx.Value("device-id").(uint32)
 
-	last, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(deviceId, 0xffffffff)
+	last, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(deviceID, 0xffffffff)
 	if err != nil {
-		warn(ctx, deviceId, "get-events", err)
+		warn(ctx, deviceID, "get-events", err)
 		http.Error(w, "Error retrieving events", http.StatusInternalServerError)
 		return
 	}
@@ -32,9 +32,9 @@ func getEvents(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 
 	if last != nil {
 		for index := last.Index; index > 0; index-- {
-			record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(deviceId, index)
+			record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(deviceID, index)
 			if err != nil {
-				warn(ctx, deviceId, "get-event", err)
+				warn(ctx, deviceID, "get-event", err)
 				http.Error(w, "Error retrieving event", http.StatusInternalServerError)
 				return
 			}
@@ -45,7 +45,7 @@ func getEvents(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 				Granted:    record.Granted,
 				Door:       record.Door,
 				DoorOpened: record.DoorOpened,
-				UserId:     record.UserId,
+				UserID:     record.UserID,
 				Timestamp:  record.Timestamp,
 				Result:     record.Result,
 			})
@@ -62,12 +62,12 @@ func getEvents(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 }
 
 func getEvent(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	deviceId := ctx.Value("device-id").(uint32)
-	eventId := ctx.Value("event-id").(uint32)
+	deviceID := ctx.Value("device-id").(uint32)
+	eventID := ctx.Value("event-id").(uint32)
 
-	record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(deviceId, eventId)
+	record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(deviceID, eventID)
 	if err != nil {
-		warn(ctx, deviceId, "get-event", err)
+		warn(ctx, deviceID, "get-event", err)
 		http.Error(w, "Error retrieving event", http.StatusInternalServerError)
 		return
 	}
@@ -77,7 +77,7 @@ func getEvent(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if record.Index != eventId {
+	if record.Index != eventID {
 		http.Error(w, "Event record does not exist", http.StatusNotFound)
 		return
 	}
@@ -91,7 +91,7 @@ func getEvent(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 			Granted:    record.Granted,
 			Door:       record.Door,
 			DoorOpened: record.DoorOpened,
-			UserId:     record.UserId,
+			UserID:     record.UserID,
 			Timestamp:  record.Timestamp,
 			Result:     record.Result,
 		},

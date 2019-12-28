@@ -9,11 +9,11 @@ import (
 )
 
 func getCards(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	deviceId := ctx.Value("device-id").(uint32)
+	deviceID := ctx.Value("device-id").(uint32)
 
-	N, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCards(deviceId)
+	N, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCards(deviceID)
 	if err != nil {
-		warn(ctx, deviceId, "get-cards", err)
+		warn(ctx, deviceID, "get-cards", err)
 		http.Error(w, "Error retrieving cards", http.StatusInternalServerError)
 		return
 	}
@@ -21,9 +21,9 @@ func getCards(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	cards := make([]uint32, 0)
 
 	for index := uint32(0); index < N.Records; index++ {
-		record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCardByIndex(deviceId, index+1)
+		record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCardByIndex(deviceID, index+1)
 		if err != nil {
-			warn(ctx, deviceId, "get-card-by-index", err)
+			warn(ctx, deviceID, "get-card-by-index", err)
 			http.Error(w, "Error retrieving cards", http.StatusInternalServerError)
 			return
 		}
@@ -41,12 +41,12 @@ func getCards(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 }
 
 func getCard(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	deviceId := ctx.Value("device-id").(uint32)
+	deviceID := ctx.Value("device-id").(uint32)
 	cardNumber := ctx.Value("card-number").(uint32)
 
-	card, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCardById(deviceId, cardNumber)
+	card, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCardByID(deviceID, cardNumber)
 	if err != nil {
-		warn(ctx, deviceId, "get-card-by-id", err)
+		warn(ctx, deviceID, "get-card-by-id", err)
 		http.Error(w, "Error retrieving card", http.StatusInternalServerError)
 		return
 	}
@@ -66,35 +66,35 @@ func getCard(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteCards(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	deviceId := ctx.Value("device-id").(uint32)
+	deviceID := ctx.Value("device-id").(uint32)
 
-	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).DeleteCards(deviceId)
+	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).DeleteCards(deviceID)
 	if err != nil {
-		warn(ctx, deviceId, "delete-cards", err)
+		warn(ctx, deviceID, "delete-cards", err)
 		http.Error(w, "Error deleting cards", http.StatusInternalServerError)
 		return
 	}
 
 	if !result.Succeeded {
-		warn(ctx, deviceId, "delete-cards", errors.New("Request failed"))
+		warn(ctx, deviceID, "delete-cards", errors.New("Request failed"))
 		http.Error(w, "Error deleting cards", http.StatusInternalServerError)
 		return
 	}
 }
 
 func deleteCard(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	deviceId := ctx.Value("device-id").(uint32)
+	deviceID := ctx.Value("device-id").(uint32)
 	cardNumber := ctx.Value("card-number").(uint32)
 
-	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).DeleteCard(deviceId, cardNumber)
+	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).DeleteCard(deviceID, cardNumber)
 	if err != nil {
-		warn(ctx, deviceId, "delete-card-by-id", err)
+		warn(ctx, deviceID, "delete-card-by-id", err)
 		http.Error(w, "Error retrieving card", http.StatusInternalServerError)
 		return
 	}
 
 	if !result.Succeeded {
-		warn(ctx, deviceId, "delete-card", errors.New("Request failed"))
+		warn(ctx, deviceID, "delete-card", errors.New("Request failed"))
 		http.Error(w, "Error deleting card", http.StatusInternalServerError)
 		return
 	}

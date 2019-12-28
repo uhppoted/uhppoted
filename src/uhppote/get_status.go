@@ -29,7 +29,7 @@ func (u *UHPPOTE) GetStatus(serialNumber uint32) (*types.Status, error) {
 		Granted:        reply.Granted,
 		Door:           reply.Door,
 		DoorOpened:     reply.DoorOpened,
-		UserId:         reply.UserId,
+		UserID:         reply.UserID,
 		EventTimestamp: reply.EventTimestamp,
 		EventResult:    reply.EventResult,
 		DoorState:      []bool{reply.Door1State, reply.Door2State, reply.Door3State, reply.Door4State},
