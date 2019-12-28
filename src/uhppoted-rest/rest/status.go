@@ -8,11 +8,11 @@ import (
 )
 
 func getStatus(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	deviceId := ctx.Value("device-id").(uint32)
+	deviceID := ctx.Value("device-id").(uint32)
 
-	status, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetStatus(deviceId)
+	status, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetStatus(deviceID)
 	if err != nil {
-		warn(ctx, deviceId, "get-status", err)
+		warn(ctx, deviceID, "get-status", err)
 		http.Error(w, "Error retrieving device status", http.StatusInternalServerError)
 		return
 	}
@@ -23,7 +23,7 @@ func getStatus(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		Granted        bool           `json:"access-granted"`
 		Door           byte           `json:"door"`
 		DoorOpened     bool           `json:"door-opened"`
-		UserId         uint32         `json:"user-id"`
+		UserID         uint32         `json:"user-id"`
 		EventTimestamp types.DateTime `json:"event-timestamp"`
 		EventResult    byte           `json:"event-result"`
 		DoorState      []bool         `json:"door-states"`
@@ -41,7 +41,7 @@ func getStatus(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		Granted:        status.Granted,
 		Door:           status.Door,
 		DoorOpened:     status.DoorOpened,
-		UserId:         status.UserId,
+		UserID:         status.UserID,
 		EventTimestamp: status.EventTimestamp,
 		EventResult:    status.EventResult,
 		DoorState:      status.DoorState,

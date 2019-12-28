@@ -43,10 +43,10 @@ type UT0311L04 struct {
 	Events         entities.EventList       `json:"events"`
 }
 
-func NewUT0311L04(deviceId uint32, dir string, compressed bool) *UT0311L04 {
-	filename := fmt.Sprintf("%d.json", deviceId)
+func NewUT0311L04(deviceID uint32, dir string, compressed bool) *UT0311L04 {
+	filename := fmt.Sprintf("%d.json", deviceID)
 	if compressed {
-		filename = fmt.Sprintf("%d.json.gz", deviceId)
+		filename = fmt.Sprintf("%d.json.gz", deviceID)
 	}
 
 	mac := make([]byte, 6)
@@ -56,7 +56,7 @@ func NewUT0311L04(deviceId uint32, dir string, compressed bool) *UT0311L04 {
 		file:       path.Join(dir, filename),
 		compressed: compressed,
 
-		SerialNumber: types.SerialNumber(deviceId),
+		SerialNumber: types.SerialNumber(deviceID),
 		IpAddress:    net.IPv4(0, 0, 0, 0),
 		SubnetMask:   net.IPv4(255, 255, 255, 0),
 		Gateway:      net.IPv4(0, 0, 0, 0),
@@ -115,8 +115,8 @@ func (s *UT0311L04) Handle(src *net.UDPAddr, rq messages.Request) {
 	case *messages.GetCardsRequest:
 		s.getCards(src, rq.(*messages.GetCardsRequest))
 
-	case *messages.GetCardByIdRequest:
-		s.getCardById(src, rq.(*messages.GetCardByIdRequest))
+	case *messages.GetCardByIDRequest:
+		s.getCardByID(src, rq.(*messages.GetCardByIDRequest))
 
 	case *messages.GetCardByIndexRequest:
 		s.getCardByIndex(src, rq.(*messages.GetCardByIndexRequest))
@@ -323,7 +323,7 @@ func (s *UT0311L04) add(e *entities.Event) uint32 {
 			EventType:   e.Type,
 			EventResult: e.Result,
 			Timestamp:   e.Timestamp,
-			UserId:      e.UserId,
+			UserID:      e.UserID,
 			Granted:     e.Granted,
 			Door:        e.Door,
 			DoorOpened:  e.DoorOpened,

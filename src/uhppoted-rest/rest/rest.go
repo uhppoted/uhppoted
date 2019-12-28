@@ -193,9 +193,9 @@ func parse(ctx context.Context, r *http.Request) context.Context {
 
 	matches := regexp.MustCompile("^/uhppote/device/([0-9]+)(?:$|/.*$)").FindStringSubmatch(url)
 	if matches != nil {
-		deviceId, err := strconv.ParseUint(matches[1], 10, 32)
+		deviceID, err := strconv.ParseUint(matches[1], 10, 32)
 		if err == nil {
-			ctx = context.WithValue(ctx, "device-id", uint32(deviceId))
+			ctx = context.WithValue(ctx, "device-id", uint32(deviceID))
 		}
 	}
 
@@ -217,9 +217,9 @@ func parse(ctx context.Context, r *http.Request) context.Context {
 
 	matches = regexp.MustCompile("^/uhppote/device/[0-9]+/event/([0-9]+)$").FindStringSubmatch(url)
 	if matches != nil {
-		eventId, err := strconv.ParseUint(matches[1], 10, 32)
+		eventID, err := strconv.ParseUint(matches[1], 10, 32)
 		if err == nil {
-			ctx = context.WithValue(ctx, "event-id", uint32(eventId))
+			ctx = context.WithValue(ctx, "event-id", uint32(eventID))
 		}
 	}
 

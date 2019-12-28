@@ -38,9 +38,9 @@ func (l *DeviceList) Apply(f func(Simulator)) {
 	}
 }
 
-func (l *DeviceList) Find(deviceId uint32) Simulator {
+func (l *DeviceList) Find(deviceID uint32) Simulator {
 	for _, s := range l.devices {
-		if s.DeviceID() == deviceId {
+		if s.DeviceID() == deviceID {
 			return s
 		}
 	}
@@ -48,14 +48,14 @@ func (l *DeviceList) Find(deviceId uint32) Simulator {
 	return nil
 }
 
-func (l *DeviceList) Add(deviceId uint32, compressed bool, dir string) (bool, error) {
+func (l *DeviceList) Add(deviceID uint32, compressed bool, dir string) (bool, error) {
 	for _, s := range l.devices {
-		if s.DeviceID() == deviceId {
+		if s.DeviceID() == deviceID {
 			return false, nil
 		}
 	}
 
-	device := UT0311L04.NewUT0311L04(deviceId, dir, compressed)
+	device := UT0311L04.NewUT0311L04(deviceID, dir, compressed)
 	device.SetTxQ(l.txq)
 	err := device.Save()
 	if err != nil {
@@ -67,9 +67,9 @@ func (l *DeviceList) Add(deviceId uint32, compressed bool, dir string) (bool, er
 	return true, nil
 }
 
-func (l *DeviceList) Delete(deviceId uint32) error {
+func (l *DeviceList) Delete(deviceID uint32) error {
 	for ix, s := range l.devices {
-		if s.DeviceID() == deviceId {
+		if s.DeviceID() == deviceID {
 			if err := s.Delete(); err != nil {
 				return err
 			}

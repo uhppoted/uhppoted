@@ -25,7 +25,7 @@ func (u *UHPPOTE) GetEvent(serialNumber, index uint32) (*types.Event, error) {
 		Granted:      reply.Granted,
 		Door:         reply.Door,
 		DoorOpened:   reply.DoorOpened,
-		UserId:       reply.UserId,
+		UserID:       reply.UserID,
 		Timestamp:    reply.Timestamp,
 		Result:       reply.Result,
 	}, nil

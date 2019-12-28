@@ -20,7 +20,7 @@ func (s *UT0311L04) getEvent(addr *net.UDPAddr, request *messages.GetEventReques
 				Granted:      event.Granted,
 				Door:         event.Door,
 				DoorOpened:   event.DoorOpened,
-				UserId:       event.UserId,
+				UserID:       event.UserID,
 				Timestamp:    event.Timestamp,
 				Result:       event.Result,
 			}

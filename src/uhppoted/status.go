@@ -12,7 +12,7 @@ type Status struct {
 	Granted        bool           `json:"access-granted"`
 	Door           byte           `json:"door"`
 	DoorOpened     bool           `json:"door-opened"`
-	UserId         uint32         `json:"user-id"`
+	UserID         uint32         `json:"user-id"`
 	EventTimestamp types.DateTime `json:"event-timestamp"`
 	EventResult    byte           `json:"event-result"`
 	DoorState      []bool         `json:"door-states"`
@@ -62,7 +62,7 @@ func (u *UHPPOTED) GetStatus(ctx context.Context, rq Request) {
 				Granted:        status.Granted,
 				Door:           status.Door,
 				DoorOpened:     status.DoorOpened,
-				UserId:         status.UserId,
+				UserID:         status.UserID,
 				EventTimestamp: status.EventTimestamp,
 				EventResult:    status.EventResult,
 				DoorState:      status.DoorState,

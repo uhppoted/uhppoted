@@ -36,20 +36,20 @@ type Device struct {
 	ID uint32 `json:"id"`
 }
 
-func (u *UHPPOTED) log(ctx context.Context, tag string, deviceId uint32, msg string) {
-	ctx.Value("log").(*log.Logger).Printf("%-5s %-12d %s\n", tag, deviceId, msg)
+func (u *UHPPOTED) log(ctx context.Context, tag string, deviceID uint32, msg string) {
+	ctx.Value("log").(*log.Logger).Printf("%-5s %-12d %s\n", tag, deviceID, msg)
 }
 
 func (u *UHPPOTED) debug(ctx context.Context, operation string, msg interface{}) {
 	ctx.Value("log").(*log.Logger).Printf("DEBUG %-20s %v\n", operation, msg)
 }
 
-func (u *UHPPOTED) info(ctx context.Context, deviceId uint32, operation string, rq Request) {
-	ctx.Value("log").(*log.Logger).Printf("INFO   %-12d %-20s %s\n", deviceId, operation, rq)
+func (u *UHPPOTED) info(ctx context.Context, deviceID uint32, operation string, rq Request) {
+	ctx.Value("log").(*log.Logger).Printf("INFO   %-12d %-20s %s\n", deviceID, operation, rq)
 }
 
-func (u *UHPPOTED) warn(ctx context.Context, deviceId uint32, operation string, err error) {
-	ctx.Value("log").(*log.Logger).Printf("WARN  %-12d %-20s %v\n", deviceId, operation, err)
+func (u *UHPPOTED) warn(ctx context.Context, deviceID uint32, operation string, err error) {
+	ctx.Value("log").(*log.Logger).Printf("WARN  %-12d %-20s %v\n", deviceID, operation, err)
 }
 
 func (u *UHPPOTED) send(ctx context.Context, message interface{}) {

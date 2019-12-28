@@ -302,7 +302,7 @@ func TestConcurrentRequestsWithBoundPort(t *testing.T) {
 	}
 }
 
-func listen(deviceId uint32, address string, delay time.Duration, closed chan int, t *testing.T) *net.UDPConn {
+func listen(deviceID uint32, address string, delay time.Duration, closed chan int, t *testing.T) *net.UDPConn {
 	addr, err := net.ResolveUDPAddr("udp", address)
 	if err != nil {
 		t.Fatalf("Error setting up test UDP device: %v", err)
@@ -324,7 +324,7 @@ func listen(deviceId uint32, address string, delay time.Duration, closed chan in
 			}
 
 			response := messages.DeleteCardResponse{
-				SerialNumber: types.SerialNumber(deviceId),
+				SerialNumber: types.SerialNumber(deviceID),
 				Succeeded:    true,
 			}
 

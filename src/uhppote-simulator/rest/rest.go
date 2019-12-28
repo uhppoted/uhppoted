@@ -12,7 +12,7 @@ import (
 )
 
 type Device struct {
-	DeviceId   uint32 `json:"device-id"`
+	DeviceID   uint32 `json:"device-id"`
 	DeviceType string `json:"device-type"`
 }
 
@@ -21,7 +21,7 @@ type DeviceList struct {
 }
 
 type NewDeviceRequest struct {
-	DeviceId   uint32 `json:"device-id"`
+	DeviceID   uint32 `json:"device-id"`
 	DeviceType string `json:"device-type"`
 	Compressed bool   `json:"compressed"`
 }
@@ -123,7 +123,7 @@ func list(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 
 	ctx.DeviceList.Apply(func(s simulator.Simulator) {
 		devices = append(devices, Device{
-			DeviceId:   s.DeviceID(),
+			DeviceID:   s.DeviceID(),
 			DeviceType: s.DeviceType(),
 		})
 	})
@@ -153,7 +153,7 @@ func create(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if request.DeviceId < 1 {
+	if request.DeviceID < 1 {
 		http.Error(w, "Missing device ID", http.StatusBadRequest)
 		return
 	}
@@ -163,14 +163,14 @@ func create(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	created, err := ctx.DeviceList.Add(request.DeviceId, request.Compressed, ctx.Directory)
+	created, err := ctx.DeviceList.Add(request.DeviceID, request.Compressed, ctx.Directory)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error creating device %d: %v", request.DeviceId, err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Error creating device %d: %v", request.DeviceID, err), http.StatusInternalServerError)
 		return
 	}
 
 	if created {
-		w.Header().Set("Location", fmt.Sprintf("/uhppote/simulator/%d", request.DeviceId))
+		w.Header().Set("Location", fmt.Sprintf("/uhppote/simulator/%d", request.DeviceID))
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		return
@@ -182,7 +182,7 @@ func create(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 func delete(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 	url := r.URL.Path
 	matches := regexp.MustCompile("^/uhppote/simulator/([0-9]+)$").FindStringSubmatch(url)
-	deviceId, err := strconv.ParseUint(matches[1], 10, 32)
+	deviceID, err := strconv.ParseUint(matches[1], 10, 32)
 	if err != nil {
 		http.Error(w, "Error reading request", http.StatusInternalServerError)
 		return
@@ -194,12 +194,12 @@ func delete(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if s := ctx.DeviceList.Find(uint32(deviceId)); s == nil {
-		http.Error(w, fmt.Sprintf("No device with ID %d", deviceId), http.StatusNotFound)
+	if s := ctx.DeviceList.Find(uint32(deviceID)); s == nil {
+		http.Error(w, fmt.Sprintf("No device with ID %d", deviceID), http.StatusNotFound)
 		return
 	}
 
-	ctx.DeviceList.Delete(uint32(deviceId))
+	ctx.DeviceList.Delete(uint32(deviceID))
 
 	w.Header().Set("Content-Type", "application/json")
 }
@@ -212,7 +212,7 @@ func swipe(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 
 	url := r.URL.Path
 	matches := regexp.MustCompile("^/uhppote/simulator/([0-9]+)/swipe$").FindStringSubmatch(url)
-	deviceId, err := strconv.ParseUint(matches[1], 10, 32)
+	deviceID, err := strconv.ParseUint(matches[1], 10, 32)
 	if err != nil {
 		http.Error(w, "Error reading request", http.StatusInternalServerError)
 		return
@@ -231,13 +231,13 @@ func swipe(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s := ctx.DeviceList.Find(uint32(deviceId))
+	s := ctx.DeviceList.Find(uint32(deviceID))
 	if s == nil {
-		http.Error(w, fmt.Sprintf("No device with ID %d", deviceId), http.StatusNotFound)
+		http.Error(w, fmt.Sprintf("No device with ID %d", deviceID), http.StatusNotFound)
 		return
 	}
 
-	granted, eventId := s.Swipe(uint32(deviceId), request.CardNumber, request.Door)
+	granted, eventID := s.Swipe(uint32(deviceID), request.CardNumber, request.Door)
 	opened := false
 	message := "Access denied"
 
@@ -259,6 +259,6 @@ func swipe(ctx *simulator.Context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Location", fmt.Sprintf("/uhppote/simulator/%d/events/%d", s.DeviceID(), eventId))
+	w.Header().Set("Location", fmt.Sprintf("/uhppote/simulator/%d/events/%d", s.DeviceID(), eventID))
 	w.Write(b)
 }

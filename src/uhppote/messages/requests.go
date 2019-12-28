@@ -18,7 +18,7 @@ var requests = map[byte]func() Request{
 	0x52: func() Request { return new(DeleteCardRequest) },
 	0x54: func() Request { return new(DeleteCardsRequest) },
 	0x58: func() Request { return new(GetCardsRequest) },
-	0x5a: func() Request { return new(GetCardByIdRequest) },
+	0x5a: func() Request { return new(GetCardByIDRequest) },
 	0x5c: func() Request { return new(GetCardByIndexRequest) },
 	0x80: func() Request { return new(SetDoorControlStateRequest) },
 	0x82: func() Request { return new(GetDoorControlStateRequest) },

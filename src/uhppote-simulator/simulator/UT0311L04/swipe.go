@@ -6,13 +6,13 @@ import (
 	"uhppote/types"
 )
 
-func (s *UT0311L04) Swipe(deviceId uint32, cardNumber uint32, door uint8) (bool, uint32) {
+func (s *UT0311L04) Swipe(deviceID uint32, cardNumber uint32, door uint8) (bool, uint32) {
 	granted := false
 	opened := false
 	eventType := uint8(0x01)
 	result := uint8(0x06)
 
-	if s.SerialNumber == types.SerialNumber(deviceId) {
+	if s.SerialNumber == types.SerialNumber(deviceID) {
 		for _, c := range s.Cards {
 			if c.CardNumber == cardNumber {
 				if c.Doors[door] {
@@ -31,12 +31,12 @@ func (s *UT0311L04) Swipe(deviceId uint32, cardNumber uint32, door uint8) (bool,
 		Granted:    granted,
 		Door:       door,
 		DoorOpened: opened,
-		UserId:     cardNumber,
+		UserID:     cardNumber,
 		Timestamp:  types.DateTime(datetime),
 		Result:     result,
 	}
 
-	eventId := s.add(&event)
+	eventID := s.add(&event)
 
-	return granted && opened, eventId
+	return granted && opened, eventID
 }

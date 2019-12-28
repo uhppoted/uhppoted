@@ -12,7 +12,7 @@ type Status struct {
 	Granted        bool
 	Door           byte
 	DoorOpened     bool
-	UserId         uint32
+	UserID         uint32
 	EventTimestamp DateTime
 	EventResult    byte
 	DoorState      []bool
@@ -35,7 +35,7 @@ func (s *Status) String() string {
 	b.WriteString(fmt.Sprintf(" %-5v", s.Granted))
 	b.WriteString(fmt.Sprintf(" %d", s.Door))
 	b.WriteString(fmt.Sprintf(" %-5v", s.DoorOpened))
-	b.WriteString(fmt.Sprintf(" %-10d", s.UserId))
+	b.WriteString(fmt.Sprintf(" %-10d", s.UserID))
 	b.WriteString(fmt.Sprintf(" %s", s.EventTimestamp.String()))
 	b.WriteString(fmt.Sprintf(" %-3d", s.EventResult))
 	b.WriteString(fmt.Sprintf(" %-5v %-5v %-5v %-5v", s.DoorState[0], s.DoorState[1], s.DoorState[2], s.DoorState[3]))

@@ -18,7 +18,7 @@ func (c *GetCardCommand) Execute(ctx Context) error {
 		return err
 	}
 
-	record, err := ctx.uhppote.GetCardById(serialNumber, cardNumber)
+	record, err := ctx.uhppote.GetCardByID(serialNumber, cardNumber)
 	if err != nil {
 		return err
 	}

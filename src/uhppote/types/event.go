@@ -20,7 +20,7 @@ type Event struct {
 	Granted      bool
 	Door         byte
 	DoorOpened   bool
-	UserId       uint32
+	UserID       uint32
 	Timestamp    DateTime
 	Result       byte
 }
@@ -34,5 +34,5 @@ func (s *EventIndexResult) String() string {
 }
 
 func (s *Event) String() string {
-	return fmt.Sprintf("%s %-4d %s %-12d %1d %-5v %-4d", s.SerialNumber, s.Index, s.Timestamp.String(), s.UserId, s.Door, s.Granted, s.Result)
+	return fmt.Sprintf("%s %-4d %s %-12d %1d %-5v %-4d", s.SerialNumber, s.Index, s.Timestamp.String(), s.UserID, s.Door, s.Granted, s.Result)
 }
