@@ -11,10 +11,8 @@ import (
 )
 
 type DeviceSummary struct {
-	Device struct {
-		ID      uint32  `json:"id"`
-		Summary summary `json:"info"`
-	} `json:"device"`
+	DeviceID   uint32 `json:"device-id"`
+	DeviceType string `json:"device-type"`
 }
 
 type DeviceDetail struct {
@@ -22,11 +20,6 @@ type DeviceDetail struct {
 		ID     uint32 `json:"id"`
 		Detail detail `json:"info"`
 	} `json:"device"`
-}
-
-type summary struct {
-	SerialNumber types.SerialNumber `json:"serial-number"`
-	DeviceType   string             `json:"device-type"`
 }
 
 type detail struct {
@@ -40,41 +33,39 @@ type detail struct {
 	Date         types.Date         `json:"date"`
 }
 
-func (u *UHPPOTED) GetDevices(ctx context.Context, rq Request) {
-	u.debug(ctx, "get-devices", rq)
+type GetDevicesRequest struct {
+	DeviceID uint32
+}
+
+type GetDevicesResponse struct {
+	Devices []DeviceSummary `json:"devices"`
+}
+
+func (u *UHPPOTED) GetDevices(ctx context.Context, request GetDevicesRequest) (*GetDevicesResponse, int, error) {
+	u.debug(ctx, "get-devices", fmt.Sprintf("request  %v", request))
 
 	devices, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevices()
 	if err != nil {
-		u.warn(ctx, 0, "get-devices", err)
-		u.oops(ctx, "get-devices", "Error retrieving device list", StatusInternalServerError)
-		return
+		return nil, StatusInternalServerError, err
 	}
 
 	list := make([]DeviceSummary, 0)
 	for _, d := range devices {
 		item := DeviceSummary{
-			struct {
-				ID      uint32  `json:"id"`
-				Summary summary `json:"info"`
-			}{
-				ID: uint32(d.SerialNumber),
-				Summary: summary{
-					SerialNumber: d.SerialNumber,
-					DeviceType:   identify(d.SerialNumber),
-				},
-			},
+			DeviceID:   uint32(d.SerialNumber),
+			DeviceType: identify(d.SerialNumber),
 		}
 
 		list = append(list, item)
 	}
 
-	response := struct {
-		Devices []DeviceSummary `json:"devices"`
-	}{
+	response := GetDevicesResponse{
 		Devices: list,
 	}
 
-	u.reply(ctx, response)
+	u.debug(ctx, "get-devices", fmt.Sprintf("response %v", response))
+
+	return &response, StatusOK, nil
 }
 
 func (u *UHPPOTED) GetDevice(ctx context.Context, rq Request) {

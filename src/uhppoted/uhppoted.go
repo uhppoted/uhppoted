@@ -28,6 +28,9 @@ type Request interface {
 	DeviceDoorControl() (*uint32, *uint8, *string, error)
 }
 
+type Response interface {
+}
+
 type UHPPOTED struct {
 	Service Service
 }

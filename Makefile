@@ -214,7 +214,8 @@ uhppoted-mqtt-version: build
 	./bin/uhppoted-mqtt version
 
 uhppoted-mqtt-get-devices:
-	mqtt publish --topic 'twystd/uhppoted/gateway/devices:get' --message '{}'
+	mqtt publish --topic 'twystd/uhppoted/gateway/devices:get' \
+                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }}'
 
 uhppoted-mqtt-get-device:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' --message '{ "device-id": 405419896 }'

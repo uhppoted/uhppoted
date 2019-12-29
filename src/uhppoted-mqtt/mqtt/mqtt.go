@@ -48,6 +48,11 @@ type request struct {
 	HOTP      *string `json:"hotp"`
 }
 
+type metainfo struct {
+	RequestID string `json:"request-id,omitempty"`
+	ClientID  string `json:"client-id,omitempty"`
+}
+
 func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	MQTT.CRITICAL = l
 	MQTT.ERROR = l
@@ -68,7 +73,6 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		log:      l,
 		topic:    m.Topic,
 		table: map[string]fdispatch{
-			m.Topic + "/devices:get":             (*uhppoted.UHPPOTED).GetDevices,
 			m.Topic + "/device:get":              (*uhppoted.UHPPOTED).GetDevice,
 			m.Topic + "/device/status:get":       (*uhppoted.UHPPOTED).GetStatus,
 			m.Topic + "/device/time:get":         (*uhppoted.UHPPOTED).GetTime,
@@ -79,6 +83,8 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/door/control:set": (*uhppoted.UHPPOTED).SetDoorControl,
 		},
 		tablex: map[string]fdispatchx{
+			m.Topic + "/devices:get": (*MQTTD).getDevices,
+
 			m.Topic + "/device/cards:get":    (*MQTTD).getCards,
 			m.Topic + "/device/cards:delete": (*MQTTD).deleteCards,
 			m.Topic + "/device/card:get":     (*MQTTD).getCard,
@@ -281,9 +287,26 @@ func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 		panic("MQTT root topic not included in context")
 	}
 
+	replyTo := "reply"
+	if rq, ok := ctx.Value("request").(request); ok {
+		if rq.ReplyTo != nil {
+			replyTo = *rq.ReplyTo
+		}
+	}
+
+	b, err := json.Marshal(response)
+	if err != nil {
+		oops(ctx, "encoding/json", "Error encoding response", uhppoted.StatusInternalServerError)
+		return
+	}
+
+	token := client.Publish(topic+"/"+replyTo, 0, false, string(b))
+	token.Wait()
+}
+
+func getMetaInfo(ctx context.Context) *metainfo {
 	requestID := ""
 	clientID := ""
-	replyTo := "reply"
 
 	rq, ok := ctx.Value("request").(request)
 	if ok {
@@ -295,47 +318,14 @@ func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 			clientID = *rq.ClientID
 		}
 
-		if rq.ReplyTo != nil {
-			replyTo = *rq.ReplyTo
+		return &metainfo{
+			RequestID: requestID,
+			ClientID:  clientID,
 		}
+
 	}
 
-	meta := struct {
-		RequestID string `json:"request-id,omitempty"`
-		ClientID  string `json:"client-id,omitempty"`
-	}{
-		RequestID: requestID,
-		ClientID:  clientID,
-	}
-
-	reply := inject(response, meta)
-
-	b, err := json.Marshal(reply)
-	if err != nil {
-		oops(ctx, "encoding/json", "Error encoding response", uhppoted.StatusInternalServerError)
-		return
-	}
-
-	token := client.Publish(topic+"/"+replyTo, 0, false, string(b))
-	token.Wait()
-}
-
-// TODO: interim implementation, pending a rework using reflection and/or custom marshaler
-func inject(response interface{}, meta interface{}) interface{} {
-	b, err := json.Marshal(response)
-	if err != nil {
-		return response
-	}
-
-	r := map[string]interface{}{}
-	err = json.Unmarshal(b, &r)
-	if err != nil {
-		return response
-	}
-
-	r["meta-info"] = meta
-
-	return r
+	return nil
 }
 
 func (m *MQTTD) Oops(ctx context.Context, operation string, message string, errorCode int) {
