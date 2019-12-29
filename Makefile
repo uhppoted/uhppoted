@@ -218,7 +218,9 @@ uhppoted-mqtt-get-devices:
                  --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }}'
 
 uhppoted-mqtt-get-device:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' --message '{ "device-id": 405419896 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
+                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
+	                          "device-id": 405419896 }'
 
 uhppoted-mqtt-get-status:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/status:get' --message '{ "device-id": 405419896 }'

@@ -34,7 +34,6 @@ type detail struct {
 }
 
 type GetDevicesRequest struct {
-	DeviceID uint32
 }
 
 type GetDevicesResponse struct {
@@ -68,49 +67,47 @@ func (u *UHPPOTED) GetDevices(ctx context.Context, request GetDevicesRequest) (*
 	return &response, StatusOK, nil
 }
 
-func (u *UHPPOTED) GetDevice(ctx context.Context, rq Request) {
-	u.debug(ctx, "get-device", rq)
+type GetDeviceRequest struct {
+	DeviceID uint32
+}
 
-	id, err := rq.DeviceID()
-	if err != nil {
-		u.warn(ctx, 0, "get-device", err)
-		u.oops(ctx, "get-device", "Error retrieving device list (invalid device ID)", StatusBadRequest)
-		return
-	}
+type GetDeviceResponse struct {
+	DeviceID   uint32           `json:"device-id"`
+	DeviceType string           `json:"device-type"`
+	IpAddress  net.IP           `json:"ip-address"`
+	SubnetMask net.IP           `json:"subnet-mask"`
+	Gateway    net.IP           `json:"gateway-address"`
+	MacAddress types.MacAddress `json:"mac-address"`
+	Version    types.Version    `json:"version"`
+	Date       types.Date       `json:"date"`
+}
 
-	device, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevice(*id)
+func (u *UHPPOTED) GetDevice(ctx context.Context, request GetDeviceRequest) (*GetDeviceResponse, int, error) {
+	u.debug(ctx, "get-device", request)
+
+	device, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevice(request.DeviceID)
 	if err != nil {
-		u.warn(ctx, *id, "get-device", err)
-		u.oops(ctx, "get-device", fmt.Sprintf("Error retrieving device summary for '%d'", *id), StatusInternalServerError)
-		return
+		return nil, StatusInternalServerError, err
 	}
 
 	if device == nil {
-		u.warn(ctx, *id, "get-device", fmt.Errorf("No device with ID '%v'", *id))
-		u.oops(ctx, "get-device", fmt.Sprintf("Error retrieving device summary for '%d'", id), StatusNotFound)
-		return
+		return nil, StatusNotFound, fmt.Errorf("No device found for device ID %d", request.DeviceID)
 	}
 
-	response := DeviceDetail{
-		struct {
-			ID     uint32 `json:"id"`
-			Detail detail `json:"info"`
-		}{
-			ID: *id,
-			Detail: detail{
-				SerialNumber: device.SerialNumber,
-				DeviceType:   identify(device.SerialNumber),
-				IpAddress:    device.IpAddress,
-				SubnetMask:   device.SubnetMask,
-				Gateway:      device.Gateway,
-				MacAddress:   device.MacAddress,
-				Version:      device.Version,
-				Date:         device.Date,
-			},
-		},
+	response := GetDeviceResponse{
+		DeviceID:   uint32(device.SerialNumber),
+		DeviceType: identify(device.SerialNumber),
+		IpAddress:  device.IpAddress,
+		SubnetMask: device.SubnetMask,
+		Gateway:    device.Gateway,
+		MacAddress: device.MacAddress,
+		Version:    device.Version,
+		Date:       device.Date,
 	}
 
-	u.reply(ctx, response)
+	u.debug(ctx, "get-device", fmt.Sprintf("response %v", response))
+
+	return &response, StatusOK, nil
 }
 
 func identify(deviceID types.SerialNumber) string {
