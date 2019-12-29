@@ -161,16 +161,16 @@ func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Sig
 
 	// ... REST task
 
-	restd := rest.RestD{
-		HttpEnabled:        c.REST.HttpEnabled,
-		HttpPort:           c.REST.HttpPort,
-		HttpsEnabled:       c.REST.HttpsEnabled,
-		HttpsPort:          c.REST.HttpsPort,
+	restd := rest.RESTD{
+		HTTPEnabled:        c.REST.HttpEnabled,
+		HTTPPort:           c.REST.HttpPort,
+		HTTPSEnabled:       c.REST.HttpsEnabled,
+		HTTPSPort:          c.REST.HttpsPort,
 		TLSKeyFile:         c.REST.TLSKeyFile,
 		TLSCertificateFile: c.REST.TLSCertificateFile,
 		CACertificateFile:  c.REST.CACertificateFile,
 		CORSEnabled:        c.REST.CORSEnabled,
-		OpenApi: rest.OpenApi{
+		OpenAPI: rest.OpenAPI{
 			Enabled:   c.OpenApi.Enabled,
 			Directory: c.OpenApi.Directory,
 		},

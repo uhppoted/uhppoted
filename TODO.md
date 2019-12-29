@@ -44,7 +44,7 @@
 - [ ] wrap request handling in go routine
 - [x] TLS connection
 - [x] TLS connection: client authentication
-- [ ] Exit on error when multiple mqttd's are started
+- [ ] Exit on error when multiple mqttd's are started (or generate unique client ID???)
 - [ ] Encrypt &| sign
 - [ ] Implement retry + backoff for connection to broker
 - [ ] Implement retry + backoff for 'listen'
