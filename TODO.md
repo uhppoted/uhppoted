@@ -44,6 +44,7 @@
 - [ ] wrap request handling in go routine
 - [x] TLS connection
 - [x] TLS connection: client authentication
+- [ ] Exit on error when multiple mqttd's are started
 - [ ] Encrypt &| sign
 - [ ] Implement retry + backoff for connection to broker
 - [ ] Implement retry + backoff for 'listen'
@@ -175,4 +176,6 @@
 20. [Ballerina](https://ballerina.io)
 21. [Eclipse Kura](https://www.eclipse.org/kura)
 22. [Klee](https://klee.github.io)
+23. [Fernet](https://github.com/fernet/spec/blob/master/Spec.md)
+     - [cryptography.io:fernet](https://cryptography.io/en/latest/fernet)
 
