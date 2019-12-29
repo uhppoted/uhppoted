@@ -114,7 +114,7 @@ func (l *Console) openNew() error {
 
 func (l *Console) archive() error {
 	name := l.filename()
-	info, err := os_Stat(name)
+	info, err := stat(name)
 
 	if err == nil {
 		newname := backupName(name, l.LocalTime)
@@ -184,7 +184,7 @@ func (l *Console) compress(filepath string) error {
 
 func (l *Console) openExistingOrNew(writeLen int) error {
 	filename := l.filename()
-	info, err := os_Stat(filename)
+	info, err := stat(filename)
 
 	if os.IsNotExist(err) {
 		return l.openNew()

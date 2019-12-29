@@ -2,7 +2,6 @@ package plist
 
 import (
 	"encoding/xml"
-	"errors"
 	"fmt"
 	"io"
 	"reflect"
@@ -80,9 +79,9 @@ func (e *Encoder) Encode(p interface{}) error {
 
 	if v.Type().Kind() == reflect.Ptr {
 		return e.encode(v.Elem())
-	} else {
-		return e.encode(reflect.Indirect(v))
 	}
+
+	return e.encode(reflect.Indirect(v))
 }
 
 func (e *Encoder) encode(s reflect.Value) error {
@@ -118,7 +117,7 @@ func (e *Encoder) encode(s reflect.Value) error {
 					return err
 				}
 			} else {
-				panic(errors.New(fmt.Sprintf("Cannot encode plist field '%s' with type '%v'", k, t.Type)))
+				panic(fmt.Errorf("Cannot encode plist field '%s' with type '%v'", k, t.Type))
 			}
 		}
 
@@ -127,7 +126,7 @@ func (e *Encoder) encode(s reflect.Value) error {
 		}
 
 	} else {
-		panic(errors.New(fmt.Sprintf("Expecting struct, got '%v'", s.Kind())))
+		panic(fmt.Errorf("Expecting struct, got '%v'", s.Kind()))
 	}
 
 	if err := e.encoder.EncodeToken(body.End()); err != nil {

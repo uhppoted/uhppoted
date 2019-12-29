@@ -63,7 +63,7 @@ func getDevice(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	response := struct {
 		SerialNumber types.SerialNumber `json:"serial-number"`
 		DeviceType   string             `json:"device-type"`
-		IpAddress    net.IP             `json:"ip-address"`
+		IPAddress    net.IP             `json:"ip-address"`
 		SubnetMask   net.IP             `json:"subnet-mask"`
 		Gateway      net.IP             `json:"gateway-address"`
 		MacAddress   types.MacAddress   `json:"mac-address"`
@@ -72,7 +72,7 @@ func getDevice(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	}{
 		SerialNumber: device.SerialNumber,
 		DeviceType:   identify(device.SerialNumber),
-		IpAddress:    device.IpAddress,
+		IPAddress:    device.IpAddress,
 		SubnetMask:   device.SubnetMask,
 		Gateway:      device.Gateway,
 		MacAddress:   device.MacAddress,

@@ -17,21 +17,21 @@ import (
 	"uhppote"
 )
 
-type OpenApi struct {
+type OpenAPI struct {
 	Enabled   bool
 	Directory string
 }
 
-type RestD struct {
-	HttpEnabled        bool
-	HttpPort           uint16
-	HttpsEnabled       bool
-	HttpsPort          uint16
+type RESTD struct {
+	HTTPEnabled        bool
+	HTTPPort           uint16
+	HTTPSEnabled       bool
+	HTTPSPort          uint16
 	TLSKeyFile         string
 	TLSCertificateFile string
 	CACertificateFile  string
 	CORSEnabled        bool
-	OpenApi
+	OpenAPI
 }
 
 type handlerfn func(context.Context, http.ResponseWriter, *http.Request)
@@ -50,7 +50,7 @@ type dispatcher struct {
 	openapi     http.Handler
 }
 
-func (r *RestD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
+func (r *RESTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	d := dispatcher{
 		uhppote: u,
 		handlers: []handler{
@@ -75,26 +75,26 @@ func (r *RestD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		openapi:     http.NotFoundHandler(),
 	}
 
-	if r.OpenApi.Enabled {
-		d.openapi = http.StripPrefix("/openapi", http.FileServer(http.Dir(r.OpenApi.Directory)))
+	if r.OpenAPI.Enabled {
+		d.openapi = http.StripPrefix("/openapi", http.FileServer(http.Dir(r.OpenAPI.Directory)))
 	}
 
 	var wg sync.WaitGroup
 
-	if r.HttpEnabled {
+	if r.HTTPEnabled {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			log.Printf("... listening on port %d\n", r.HttpPort)
-			log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", r.HttpPort), &d))
+			log.Printf("... listening on port %d\n", r.HTTPPort)
+			log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", r.HTTPPort), &d))
 		}()
 	}
 
-	if r.HttpsEnabled {
+	if r.HTTPSEnabled {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			log.Printf("... listening on port %d\n", r.HttpsPort)
+			log.Printf("... listening on port %d\n", r.HTTPSPort)
 
 			ca, err := ioutil.ReadFile(r.CACertificateFile)
 			if err != nil {
@@ -122,7 +122,7 @@ func (r *RestD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			tlsConfig.BuildNameToCertificate()
 
 			httpsd := &http.Server{
-				Addr:      fmt.Sprintf(":%d", r.HttpsPort),
+				Addr:      fmt.Sprintf(":%d", r.HTTPSPort),
 				Handler:   &d,
 				TLSConfig: &tlsConfig,
 			}

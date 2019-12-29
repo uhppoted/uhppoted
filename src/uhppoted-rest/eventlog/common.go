@@ -13,7 +13,7 @@ const (
 
 var (
 	currentTime = time.Now
-	os_Stat     = os.Stat
+	stat        = os.Stat
 	megabyte    = 1024 * 1024
 )
 
