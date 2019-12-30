@@ -9,12 +9,11 @@ import (
 )
 
 func (m *MQTTD) getDevices(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
-	operation := "get-devices"
 	rq := uhppoted.GetDevicesRequest{}
 
 	response, status, err := impl.GetDevices(ctx, rq)
 	if err != nil {
-		m.OnError(ctx, operation, "Error retrieving list of devices", status, err)
+		m.OnError(ctx, "Error retrieving list of devices", status, err)
 		return
 	}
 
@@ -23,7 +22,7 @@ func (m *MQTTD) getDevices(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQT
 			MetaInfo *metainfo `json:"meta-info,omitempty"`
 			uhppoted.GetDevicesResponse
 		}{
-			MetaInfo:           getMetaInfo(ctx, operation),
+			MetaInfo:           getMetaInfo(ctx),
 			GetDevicesResponse: *response,
 		}
 
@@ -32,18 +31,17 @@ func (m *MQTTD) getDevices(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQT
 }
 
 func (m *MQTTD) getDevice(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
-	operation := "get-device"
 	body := struct {
 		DeviceID *uint32 `json:"device-id"`
 	}{}
 
 	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
-		m.OnError(ctx, operation, "Cannot parse request", uhppoted.StatusBadRequest, err)
+		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 		return
 	}
 
 	if body.DeviceID == nil || *body.DeviceID == 0 {
-		m.OnError(ctx, operation, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
 		return
 	}
 
@@ -53,7 +51,7 @@ func (m *MQTTD) getDevice(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT
 
 	response, status, err := impl.GetDevice(ctx, rq)
 	if err != nil {
-		m.OnError(ctx, operation, "Error retrieving device", status, err)
+		m.OnError(ctx, "Error retrieving device", status, err)
 		return
 	}
 
@@ -62,7 +60,7 @@ func (m *MQTTD) getDevice(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT
 			MetaInfo *metainfo `json:"meta-info,omitempty"`
 			uhppoted.GetDeviceResponse
 		}{
-			MetaInfo:          getMetaInfo(ctx, operation),
+			MetaInfo:          getMetaInfo(ctx),
 			GetDeviceResponse: *response,
 		}
 

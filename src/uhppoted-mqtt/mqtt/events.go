@@ -21,13 +21,13 @@ func (m *MQTTD) getEvents(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT
 	}{}
 
 	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
-		m.OnError(ctx, "get-events", "Cannot parse request", uhppoted.StatusBadRequest, err)
+		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 	} else if body.DeviceID == nil {
-		m.OnError(ctx, "get-events", "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
 	} else if *body.DeviceID == 0 {
-		m.OnError(ctx, "get-events", "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
 	} else if body.Start != nil && body.End != nil && time.Time(*body.End).Before(time.Time(*body.Start)) {
-		m.OnError(ctx, "get-events", "Invalid date range", uhppoted.StatusBadRequest, fmt.Errorf("Invalid date range '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Invalid date range", uhppoted.StatusBadRequest, fmt.Errorf("Invalid date range '%s'", string(msg.Payload())))
 	} else {
 		rq := uhppoted.GetEventsRequest{
 			DeviceID: *body.DeviceID,
@@ -36,7 +36,7 @@ func (m *MQTTD) getEvents(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT
 		}
 
 		if response, status, err := impl.GetEvents(ctx, rq); err != nil {
-			m.OnError(ctx, "get-events", "Error retrieving events", status, err)
+			m.OnError(ctx, "Error retrieving events", status, err)
 		} else if response != nil {
 			m.Reply(ctx, response)
 		}
@@ -50,15 +50,15 @@ func (m *MQTTD) getEvent(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.
 	}{}
 
 	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
-		m.OnError(ctx, "get-event", "Cannot parse request", uhppoted.StatusBadRequest, err)
+		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 	} else if body.DeviceID == nil {
-		m.OnError(ctx, "get-event", "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
 	} else if *body.DeviceID == 0 {
-		m.OnError(ctx, "get-event", "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
 	} else if body.EventID == nil {
-		m.OnError(ctx, "get-event", "Missing/invalid event ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid event ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid event ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid event ID '%s'", string(msg.Payload())))
 	} else if *body.EventID == 0 {
-		m.OnError(ctx, "get-event", "Missing/invalid event ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid event ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid event ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid event ID '%s'", string(msg.Payload())))
 	} else {
 		rq := uhppoted.GetEventRequest{
 			DeviceID: *body.DeviceID,
@@ -66,7 +66,7 @@ func (m *MQTTD) getEvent(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.
 		}
 
 		if response, status, err := impl.GetEvent(ctx, rq); err != nil {
-			m.OnError(ctx, "get-event", "Error retrieving events", status, err)
+			m.OnError(ctx, "Error retrieving events", status, err)
 		} else if response != nil {
 			m.Reply(ctx, response)
 		}

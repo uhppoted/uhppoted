@@ -9,18 +9,17 @@ import (
 )
 
 func (m *MQTTD) getTime(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
-	operation := "get-time"
 	body := struct {
 		DeviceID *uint32 `json:"device-id"`
 	}{}
 
 	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
-		m.OnError(ctx, operation, "Cannot parse request", uhppoted.StatusBadRequest, err)
+		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 		return
 	}
 
 	if body.DeviceID == nil || *body.DeviceID == 0 {
-		m.OnError(ctx, operation, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
 		return
 	}
 
@@ -30,7 +29,7 @@ func (m *MQTTD) getTime(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.M
 
 	response, status, err := impl.GetTime(ctx, rq)
 	if err != nil {
-		m.OnError(ctx, operation, "Error retrieving current device time", status, err)
+		m.OnError(ctx, "Error retrieving current device time", status, err)
 		return
 	}
 
@@ -39,7 +38,7 @@ func (m *MQTTD) getTime(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.M
 			MetaInfo *metainfo `json:"meta-info,omitempty"`
 			uhppoted.GetTimeResponse
 		}{
-			MetaInfo:        getMetaInfo(ctx, operation),
+			MetaInfo:        getMetaInfo(ctx),
 			GetTimeResponse: *response,
 		}
 
