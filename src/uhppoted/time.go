@@ -3,6 +3,7 @@ package uhppoted
 import (
 	"context"
 	"fmt"
+	"time"
 	"uhppote"
 	"uhppote/types"
 )
@@ -41,39 +42,30 @@ func (u *UHPPOTED) GetTime(ctx context.Context, request GetTimeRequest) (*GetTim
 	return &response, StatusOK, nil
 }
 
-func (u *UHPPOTED) SetTime(ctx context.Context, rq Request) {
-	u.debug(ctx, "set-time", rq)
+type SetTimeRequest struct {
+	DeviceID uint32
+	DateTime types.DateTime
+}
 
-	id, err := rq.DeviceID()
+type SetTimeResponse struct {
+	DeviceID uint32         `json:"device-id"`
+	DateTime types.DateTime `json:"date-time"`
+}
+
+func (u *UHPPOTED) SetTime(ctx context.Context, request SetTimeRequest) (*SetTimeResponse, int, error) {
+	u.debug(ctx, "set-time", request)
+
+	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).SetTime(request.DeviceID, time.Time(request.DateTime))
 	if err != nil {
-		u.warn(ctx, 0, "set-time", err)
-		u.oops(ctx, "set-time", "Error setting device time (invalid device ID)", StatusBadRequest)
-		return
+		return nil, StatusInternalServerError, err
 	}
 
-	datetime, err := rq.DateTime()
-	if err != nil || datetime == nil {
-		u.warn(ctx, *id, "set-time", err)
-		u.oops(ctx, "set-time", "Error setting device time (invalid date-time)", StatusBadRequest)
-		return
+	response := SetTimeResponse{
+		DeviceID: uint32(result.SerialNumber),
+		DateTime: result.DateTime,
 	}
 
-	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).SetTime(*id, *datetime)
-	if err != nil {
-		u.warn(ctx, *id, "set-time", err)
-		u.oops(ctx, "set-time", "Error setting device time", StatusInternalServerError)
-		return
-	}
+	u.debug(ctx, "set-time", fmt.Sprintf("response %v", response))
 
-	response := DeviceTime{
-		struct {
-			ID       uint32         `json:"id"`
-			DateTime types.DateTime `json:"date-time"`
-		}{
-			ID:       *id,
-			DateTime: result.DateTime,
-		},
-	}
-
-	u.reply(ctx, response)
+	return &response, StatusOK, nil
 }
