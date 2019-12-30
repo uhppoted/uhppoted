@@ -51,6 +51,7 @@ type request struct {
 type metainfo struct {
 	RequestID string `json:"request-id,omitempty"`
 	ClientID  string `json:"client-id,omitempty"`
+	Operation string `json:"operation,omitempty"`
 }
 
 func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
@@ -73,7 +74,6 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		log:      l,
 		topic:    m.Topic,
 		table: map[string]fdispatch{
-			m.Topic + "/device/status:get":       (*uhppoted.UHPPOTED).GetStatus,
 			m.Topic + "/device/time:get":         (*uhppoted.UHPPOTED).GetTime,
 			m.Topic + "/device/time:set":         (*uhppoted.UHPPOTED).SetTime,
 			m.Topic + "/device/door/delay:get":   (*uhppoted.UHPPOTED).GetDoorDelay,
@@ -82,8 +82,9 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/door/control:set": (*uhppoted.UHPPOTED).SetDoorControl,
 		},
 		tablex: map[string]fdispatchx{
-			m.Topic + "/devices:get": (*MQTTD).getDevices,
-			m.Topic + "/device:get":  (*MQTTD).getDevice,
+			m.Topic + "/devices:get":       (*MQTTD).getDevices,
+			m.Topic + "/device:get":        (*MQTTD).getDevice,
+			m.Topic + "/device/status:get": (*MQTTD).getStatus,
 
 			m.Topic + "/device/cards:get":    (*MQTTD).getCards,
 			m.Topic + "/device/cards:delete": (*MQTTD).deleteCards,
@@ -304,7 +305,7 @@ func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 	token.Wait()
 }
 
-func getMetaInfo(ctx context.Context) *metainfo {
+func getMetaInfo(ctx context.Context, operation string) *metainfo {
 	requestID := ""
 	clientID := ""
 
@@ -321,6 +322,7 @@ func getMetaInfo(ctx context.Context) *metainfo {
 		return &metainfo{
 			RequestID: requestID,
 			ClientID:  clientID,
+			Operation: operation,
 		}
 
 	}
