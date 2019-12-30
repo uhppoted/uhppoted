@@ -29,7 +29,10 @@ type MQTTD struct {
 }
 
 type fdispatch func(*uhppoted.UHPPOTED, context.Context, uhppoted.Request)
-type fdispatchx func(*MQTTD, *uhppoted.UHPPOTED, context.Context, MQTT.Message)
+type fdispatchx struct {
+	operation string
+	f         func(*MQTTD, *uhppoted.UHPPOTED, context.Context, MQTT.Message)
+}
 
 type dispatcher struct {
 	mqttd    *MQTTD
@@ -81,18 +84,18 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/door/control:set": (*uhppoted.UHPPOTED).SetDoorControl,
 		},
 		tablex: map[string]fdispatchx{
-			m.Topic + "/devices:get":       (*MQTTD).getDevices,
-			m.Topic + "/device:get":        (*MQTTD).getDevice,
-			m.Topic + "/device/status:get": (*MQTTD).getStatus,
-			m.Topic + "/device/time:get":   (*MQTTD).getTime,
+			m.Topic + "/devices:get":       fdispatchx{"get-devices", (*MQTTD).getDevices},
+			m.Topic + "/device:get":        fdispatchx{"get-device", (*MQTTD).getDevice},
+			m.Topic + "/device/status:get": fdispatchx{"get-status", (*MQTTD).getStatus},
+			m.Topic + "/device/time:get":   fdispatchx{"get-time", (*MQTTD).getTime},
 
-			m.Topic + "/device/cards:get":    (*MQTTD).getCards,
-			m.Topic + "/device/cards:delete": (*MQTTD).deleteCards,
-			m.Topic + "/device/card:get":     (*MQTTD).getCard,
-			m.Topic + "/device/card:put":     (*MQTTD).putCard,
-			m.Topic + "/device/card:delete":  (*MQTTD).deleteCard,
-			m.Topic + "/device/events:get":   (*MQTTD).getEvents,
-			m.Topic + "/device/event:get":    (*MQTTD).getEvent,
+			m.Topic + "/device/cards:get":    fdispatchx{"get-cards", (*MQTTD).getCards},
+			m.Topic + "/device/cards:delete": fdispatchx{"delete-cards", (*MQTTD).deleteCards},
+			m.Topic + "/device/card:get":     fdispatchx{"get-card", (*MQTTD).getCard},
+			m.Topic + "/device/card:put":     fdispatchx{"put-card", (*MQTTD).putCard},
+			m.Topic + "/device/card:delete":  fdispatchx{"delete-card", (*MQTTD).deleteCard},
+			m.Topic + "/device/events:get":   fdispatchx{"get-events", (*MQTTD).getEvents},
+			m.Topic + "/device/event:get":    fdispatchx{"get-event", (*MQTTD).getEvent},
 		},
 	}
 
@@ -220,8 +223,9 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		}
 
 		ctx = context.WithValue(ctx, "request", body.Request)
+		ctx = context.WithValue(ctx, "operation", fnx.operation)
 
-		fnx(d.mqttd, d.uhppoted, ctx, msg)
+		fnx.f(d.mqttd, d.uhppoted, ctx, msg)
 	}
 }
 
@@ -305,39 +309,44 @@ func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 	token.Wait()
 }
 
-func getMetaInfo(ctx context.Context, operation string) *metainfo {
-	requestID := ""
-	clientID := ""
+func getMetaInfo(ctx context.Context) *metainfo {
+	metainfo := metainfo{
+		RequestID: "",
+		ClientID:  "",
+		Operation: "",
+	}
 
-	rq, ok := ctx.Value("request").(request)
-	if ok {
+	if operation, ok := ctx.Value("operation").(string); ok {
+		metainfo.Operation = operation
+	}
+
+	if rq, ok := ctx.Value("request").(request); ok {
 		if rq.RequestID != nil {
-			requestID = *rq.RequestID
+			metainfo.RequestID = *rq.RequestID
 		}
 
 		if rq.ClientID != nil {
-			clientID = *rq.ClientID
+			metainfo.ClientID = *rq.ClientID
 		}
-
-		return &metainfo{
-			RequestID: requestID,
-			ClientID:  clientID,
-			Operation: operation,
-		}
-
 	}
 
-	return nil
+	return &metainfo
 }
 
 func (m *MQTTD) Oops(ctx context.Context, operation string, message string, errorCode int) {
 	oops(ctx, operation, message, errorCode)
 }
 
-func (m *MQTTD) OnError(ctx context.Context, operation string, message string, errorCode int, err error) {
-	ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %v\n", operation, err)
+func (m *MQTTD) OnError(ctx context.Context, message string, errorCode int, err error) {
 
-	oops(ctx, operation, message, errorCode)
+	if operation, ok := ctx.Value("operation").(string); ok {
+		ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %v\n", operation, err)
+		oops(ctx, operation, message, errorCode)
+		return
+	}
+
+	ctx.Value("log").(*log.Logger).Printf("WARN  %v\n", err)
+	oops(ctx, "???", message, errorCode)
 }
 
 func oops(ctx context.Context, operation string, msg string, errorCode int) {
