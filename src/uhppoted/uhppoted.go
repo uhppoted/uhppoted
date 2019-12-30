@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"time"
 )
 
 const (
@@ -22,13 +21,9 @@ type Service interface {
 
 type Request interface {
 	DeviceID() (*uint32, error)
-	DateTime() (*time.Time, error)
 	DeviceDoor() (*uint32, *uint8, error)
 	DeviceDoorDelay() (*uint32, *uint8, *uint8, error)
 	DeviceDoorControl() (*uint32, *uint8, *string, error)
-}
-
-type Response interface {
 }
 
 type UHPPOTED struct {

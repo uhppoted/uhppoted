@@ -8,13 +8,6 @@ import (
 	"uhppote/types"
 )
 
-type DeviceTime struct {
-	Device struct {
-		ID       uint32         `json:"id"`
-		DateTime types.DateTime `json:"date-time"`
-	} `json:"device"`
-}
-
 type GetTimeRequest struct {
 	DeviceID uint32
 }
