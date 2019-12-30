@@ -2,6 +2,7 @@ package uhppoted
 
 import (
 	"context"
+	"fmt"
 	"uhppote"
 	"uhppote/types"
 )
@@ -13,34 +14,31 @@ type DeviceTime struct {
 	} `json:"device"`
 }
 
-func (u *UHPPOTED) GetTime(ctx context.Context, rq Request) {
-	u.debug(ctx, "get-time", rq)
+type GetTimeRequest struct {
+	DeviceID uint32
+}
 
-	id, err := rq.DeviceID()
+type GetTimeResponse struct {
+	DeviceID uint32         `json:"device-id"`
+	DateTime types.DateTime `json:"date-time"`
+}
+
+func (u *UHPPOTED) GetTime(ctx context.Context, request GetTimeRequest) (*GetTimeResponse, int, error) {
+	u.debug(ctx, "get-time", request)
+
+	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetTime(request.DeviceID)
 	if err != nil {
-		u.warn(ctx, 0, "get-time", err)
-		u.oops(ctx, "get-time", "Error retrieving device time (invalid device ID)", StatusBadRequest)
-		return
+		return nil, StatusInternalServerError, err
 	}
 
-	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetTime(*id)
-	if err != nil {
-		u.warn(ctx, *id, "get-time", err)
-		u.oops(ctx, "get-status", "Error retrieving device time", StatusInternalServerError)
-		return
+	response := GetTimeResponse{
+		DeviceID: uint32(result.SerialNumber),
+		DateTime: result.DateTime,
 	}
 
-	response := DeviceTime{
-		struct {
-			ID       uint32         `json:"id"`
-			DateTime types.DateTime `json:"date-time"`
-		}{
-			ID:       *id,
-			DateTime: result.DateTime,
-		},
-	}
+	u.debug(ctx, "get-time", fmt.Sprintf("response %v", response))
 
-	u.reply(ctx, response)
+	return &response, StatusOK, nil
 }
 
 func (u *UHPPOTED) SetTime(ctx context.Context, rq Request) {

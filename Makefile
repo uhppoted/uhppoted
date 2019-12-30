@@ -228,7 +228,9 @@ uhppoted-mqtt-get-status:
 	                          "device-id": 405419896 }'
 
 uhppoted-mqtt-get-time:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/time:get' --message '{ "device-id": 405419896 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/time:get' \
+                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
+	                          "device-id": 405419896 }'
 
 uhppoted-mqtt-set-time:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/time:set' --message "{ \"device-id\": 405419896, \"datetime\": \"$(DATETIME)\" }"
