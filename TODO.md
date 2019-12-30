@@ -30,7 +30,7 @@
 - [x] file watch on HOTP, user and permissions files
 - [x] listen/events: retrieve and send actual events
 - [ ] clean up 'Request' implementation
-- [ ] command protocol: rework response JSON marshaling
+- [x] command protocol: rework response JSON marshaling
 - [ ] command protocol: add 'operation' to response meta-info
 - [ ] move incoming requests to /requests subtopic
 - [ ] publish add/delete card, etc to event stream
@@ -61,7 +61,7 @@
 - [ ] uhppoted-rest: PUT card
 - [ ] uhppoted-rest: DELETE card
 - [ ] uhppoted-rest: get-events date/id range
-- [ ] commonalise functionality with uhppoted-rest
+- [ ] commonalise functionality with uhppoted-mqttd
 
 - [x] Fix go vet errors
 - [ ] Fix golint errors

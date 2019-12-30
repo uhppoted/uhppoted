@@ -2,6 +2,7 @@ package uhppoted
 
 import (
 	"context"
+	"fmt"
 	"uhppote"
 	"uhppote/types"
 )
@@ -33,50 +34,47 @@ type DeviceStatus struct {
 	} `json:"device"`
 }
 
-func (u *UHPPOTED) GetStatus(ctx context.Context, rq Request) {
-	u.debug(ctx, "get-status", rq)
+type GetStatusRequest struct {
+	DeviceID uint32
+}
 
-	id, err := rq.DeviceID()
+type GetStatusResponse struct {
+	DeviceID uint32 `json:"device-id"`
+	Status   Status `json:"status"`
+}
+
+func (u *UHPPOTED) GetStatus(ctx context.Context, request GetStatusRequest) (*GetStatusResponse, int, error) {
+	u.debug(ctx, "get-status", request)
+
+	status, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetStatus(request.DeviceID)
 	if err != nil {
-		u.warn(ctx, 0, "get-status", err)
-		u.oops(ctx, "get-status", "Error retrieving device status (invalid device ID)", StatusBadRequest)
-		return
+		return nil, StatusInternalServerError, err
 	}
 
-	status, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetStatus(*id)
-	if err != nil {
-		u.warn(ctx, *id, "get-status", err)
-		u.oops(ctx, "get-status", "Error retrieving device status", StatusInternalServerError)
-		return
-	}
-
-	response := DeviceStatus{
-		struct {
-			ID     uint32 `json:"id"`
-			Status Status `json:"status"`
-		}{
-			ID: *id,
-			Status: Status{
-				LastEventIndex: status.LastIndex,
-				EventType:      status.EventType,
-				Granted:        status.Granted,
-				Door:           status.Door,
-				DoorOpened:     status.DoorOpened,
-				UserID:         status.UserID,
-				EventTimestamp: status.EventTimestamp,
-				EventResult:    status.EventResult,
-				DoorState:      status.DoorState,
-				DoorButton:     status.DoorButton,
-				SystemState:    status.SystemState,
-				SystemDateTime: status.SystemDateTime,
-				PacketNumber:   status.PacketNumber,
-				Backup:         status.Backup,
-				SpecialMessage: status.SpecialMessage,
-				Battery:        status.Battery,
-				FireAlarm:      status.FireAlarm,
-			},
+	response := GetStatusResponse{
+		DeviceID: uint32(status.SerialNumber),
+		Status: Status{
+			LastEventIndex: status.LastIndex,
+			EventType:      status.EventType,
+			Granted:        status.Granted,
+			Door:           status.Door,
+			DoorOpened:     status.DoorOpened,
+			UserID:         status.UserID,
+			EventTimestamp: status.EventTimestamp,
+			EventResult:    status.EventResult,
+			DoorState:      status.DoorState,
+			DoorButton:     status.DoorButton,
+			SystemState:    status.SystemState,
+			SystemDateTime: status.SystemDateTime,
+			PacketNumber:   status.PacketNumber,
+			Backup:         status.Backup,
+			SpecialMessage: status.SpecialMessage,
+			Battery:        status.Battery,
+			FireAlarm:      status.FireAlarm,
 		},
 	}
 
-	u.reply(ctx, response)
+	u.debug(ctx, "get-status", fmt.Sprintf("response %v", response))
+
+	return &response, StatusOK, nil
 }
