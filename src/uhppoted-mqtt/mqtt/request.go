@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
-	"time"
-	"uhppote/types"
 )
 
 type Request struct {
@@ -30,20 +28,6 @@ func (rq *Request) DeviceID() (*uint32, error) {
 	}
 
 	return body.DeviceID, nil
-}
-
-func (rq *Request) DateTime() (*time.Time, error) {
-	body := struct {
-		DateTime *types.DateTime `json:"datetime"`
-	}{}
-
-	if err := json.Unmarshal(rq.Message.Payload(), &body); err != nil {
-		return nil, err
-	} else if body.DateTime == nil {
-		return nil, errors.New("Missing date/time")
-	}
-
-	return (*time.Time)(body.DateTime), nil
 }
 
 func (rq *Request) DeviceDoor() (*uint32, *uint8, error) {

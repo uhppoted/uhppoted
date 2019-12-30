@@ -27,13 +27,6 @@ type Status struct {
 	FireAlarm      byte           `json:"fire-alarm-status"`
 }
 
-// type DeviceStatus struct {
-// 	Device struct {
-// 		ID     uint32 `json:"id"`
-// 		Status Status `json:"status"`
-// 	} `json:"device"`
-// }
-
 type GetStatusRequest struct {
 	DeviceID uint32
 }
