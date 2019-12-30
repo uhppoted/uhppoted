@@ -17,20 +17,43 @@ import (
 	"uhppote"
 )
 
+// OpenAPI is a container for the runtime flags for the Open API user interface
+// implementation. Intended for development use only.
 type OpenAPI struct {
-	Enabled   bool
+	// Enabled enables the Open API user interface if true. Should be false in production.
+	Enabled bool
+	// Directory sets the directory for the Open API user interface HTTP resources.
 	Directory string
 }
 
+// RESTD is a container for the runtime information for the REST daemon. Isn't really exported
+// but (temporarily) capitalized here pending a better name.
 type RESTD struct {
-	HTTPEnabled        bool
-	HTTPPort           uint16
-	HTTPSEnabled       bool
-	HTTPSPort          uint16
-	TLSKeyFile         string
+	// HTTPEnabled enables HTTP connections to the REST daemon.
+	HTTPEnabled bool
+
+	//HTTPPort is the HTTP port assigned to the REST daemon.
+	HTTPPort uint16
+
+	// HTTPSEnabled enables HTTPS connections to the REST daemon.
+	HTTPSEnabled bool
+
+	//HTTPSPort is the HTTPS port assigned to the REST daemon.
+	HTTPSPort uint16
+
+	//TLSKeyFile is the path the the HTTPS server key PEM file.
+	TLSKeyFile string
+
+	//TLSKeyFile is the path the the HTTPS server certificate PEM file.
 	TLSCertificateFile string
-	CACertificateFile  string
-	CORSEnabled        bool
+
+	//CACertificateFile is the path the the HTTPS CA certificate PEM file used to verify client certificates.
+	CACertificateFile string
+
+	//CORSEnabled allows CORS requests if true. Should be false in production.
+	CORSEnabled bool
+
+	//OpenAPI runtime flags.
 	OpenAPI
 }
 
@@ -50,6 +73,8 @@ type dispatcher struct {
 	openapi     http.Handler
 }
 
+// Run configures and starts the REST daemon HTTP and HTTPS request listeners. It returns once the listen
+// connections have been closed.
 func (r *RESTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	d := dispatcher{
 		uhppote: u,
@@ -134,6 +159,8 @@ func (r *RESTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	wg.Wait()
 }
 
+// Close gracefully releases any long-held resources on terminating the REST daemon. The current
+// implementation is a placeholder.
 func Close() {
 }
 
