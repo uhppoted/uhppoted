@@ -2,6 +2,7 @@ package uhppoted
 
 import (
 	"context"
+	"fmt"
 	"uhppote"
 )
 
@@ -21,36 +22,35 @@ type DoorControl struct {
 	} `json:"device"`
 }
 
-func (u *UHPPOTED) GetDoorDelay(ctx context.Context, rq Request) {
-	u.debug(ctx, "get-door-delay", rq)
+type GetDoorDelayRequest struct {
+	DeviceID uint32
+	Door     uint8
+}
 
-	id, door, err := rq.DeviceDoor()
+type GetDoorDelayResponse struct {
+	DeviceID uint32 `json:"device-id"`
+	Door     uint8  `json:"door"`
+	Delay    uint8  `json:"delay"`
+}
+
+func (u *UHPPOTED) GetDoorDelay(ctx context.Context, request GetDoorDelayRequest) (*GetDoorDelayResponse, int, error) {
+	u.debug(ctx, "get-door-delay", request)
+
+	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(request.DeviceID, request.Door)
 	if err != nil {
-		u.warn(ctx, 0, "get-door-delay", err)
-		u.oops(ctx, "get-door-delay", "Error retrieving door delay (invalid device/door)", StatusBadRequest)
-		return
+		return nil, StatusInternalServerError, err
 	}
 
-	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(*id, *door)
-	if err != nil {
-		u.warn(ctx, *id, "get-door-delay", err)
-		u.oops(ctx, "get-door-delay", "Error retrieving door delay", StatusInternalServerError)
-		return
+	response := GetDoorDelayResponse{
+		DeviceID: uint32(result.SerialNumber),
+		Door:     result.Door,
+		Delay:    result.Delay,
 	}
 
-	response := DoorDelay{
-		struct {
-			ID    uint32 `json:"id"`
-			Door  uint8  `json:"door"`
-			Delay uint8  `json:"delay"`
-		}{
-			ID:    *id,
-			Door:  result.Door,
-			Delay: result.Delay,
-		},
-	}
+	u.debug(ctx, "get-door-delay", fmt.Sprintf("response %v", response))
 
-	u.reply(ctx, response)
+	return &response, StatusOK, nil
+
 }
 
 func (u *UHPPOTED) SetDoorDelay(ctx context.Context, rq Request) {
