@@ -2,16 +2,48 @@ package uhppoted
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"uhppote"
 )
 
-type DoorControl struct {
-	Device struct {
-		ID           uint32 `json:"id"`
-		Door         uint8  `json:"door"`
-		ControlState string `json:"control"`
-	} `json:"device"`
+type ControlState uint8
+
+const (
+	NormallyOpen   ControlState = 1
+	NormallyClosed ControlState = 2
+	Controlled     ControlState = 3
+)
+
+func (s ControlState) MarshalJSON() ([]byte, error) {
+	switch s {
+	case NormallyOpen:
+		return json.Marshal("normally open")
+	case NormallyClosed:
+		return json.Marshal("normally closed")
+	case Controlled:
+		return json.Marshal("controlled")
+	}
+
+	return []byte("???"), fmt.Errorf("Invalid ControlState: %v", s)
+}
+
+func (s *ControlState) UnmarshalJSON(bytes []byte) (err error) {
+	v := ""
+	if err = json.Unmarshal(bytes, &v); err == nil {
+		switch v {
+		case "normally open":
+			*s = NormallyOpen
+		case "normally closed":
+			*s = NormallyClosed
+		case "controlled":
+			*s = Controlled
+		default:
+			err = fmt.Errorf("Invalid DoorControlState: %s", string(bytes))
+		}
+	}
+
+	return
 }
 
 type GetDoorDelayRequest struct {
@@ -86,9 +118,9 @@ type GetDoorControlRequest struct {
 }
 
 type GetDoorControlResponse struct {
-	DeviceID uint32 `json:"device-id"`
-	Door     uint8  `json:"door"`
-	Control  string `json:"control"`
+	DeviceID uint32       `json:"device-id"`
+	Door     uint8        `json:"door"`
+	Control  ControlState `json:"control"`
 }
 
 func (u *UHPPOTED) GetDoorControl(ctx context.Context, request GetDoorControlRequest) (*GetDoorControlResponse, int, error) {
@@ -99,16 +131,10 @@ func (u *UHPPOTED) GetDoorControl(ctx context.Context, request GetDoorControlReq
 		return nil, StatusInternalServerError, err
 	}
 
-	lookup := map[uint8]string{
-		1: "normally open",
-		2: "normally closed",
-		3: "controlled",
-	}
-
 	response := GetDoorControlResponse{
 		DeviceID: uint32(result.SerialNumber),
 		Door:     result.Door,
-		Control:  lookup[result.ControlState],
+		Control:  ControlState(result.ControlState),
 	}
 
 	u.debug(ctx, "get-door-control", fmt.Sprintf("response %+v", response))
@@ -116,53 +142,38 @@ func (u *UHPPOTED) GetDoorControl(ctx context.Context, request GetDoorControlReq
 	return &response, StatusOK, nil
 }
 
-func (u *UHPPOTED) SetDoorControl(ctx context.Context, rq Request) {
-	u.debug(ctx, "set-door-control", rq)
+type SetDoorControlRequest struct {
+	DeviceID uint32
+	Door     uint8
+	Control  ControlState
+}
 
-	id, door, control, err := rq.DeviceDoorControl()
+type SetDoorControlResponse struct {
+	DeviceID uint32       `json:"device-id"`
+	Door     uint8        `json:"door"`
+	Control  ControlState `json:"control"`
+}
+
+func (u *UHPPOTED) SetDoorControl(ctx context.Context, request SetDoorControlRequest) (*SetDoorControlResponse, int, error) {
+	u.debug(ctx, "set-door-control", fmt.Sprintf("request  %+v", request))
+
+	state, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(request.DeviceID, request.Door)
 	if err != nil {
-		u.warn(ctx, 0, "set-door-control", err)
-		u.oops(ctx, "set-door-control", "Invalid device/door/state)", StatusBadRequest)
-		return
+		return nil, StatusInternalServerError, err
 	}
 
-	state, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(*id, *door)
+	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).SetDoorControlState(request.DeviceID, request.Door, uint8(request.Control), state.Delay)
 	if err != nil {
-		u.warn(ctx, *id, "set-door-control", err)
-		u.oops(ctx, "set-door-control", "Error setting door control", StatusInternalServerError)
-		return
+		return nil, StatusInternalServerError, err
 	}
 
-	states := map[string]uint8{
-		"normally open":   1,
-		"normally closed": 2,
-		"controlled":      3,
+	response := SetDoorControlResponse{
+		DeviceID: uint32(result.SerialNumber),
+		Door:     result.Door,
+		Control:  ControlState(result.ControlState),
 	}
 
-	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).SetDoorControlState(*id, *door, states[*control], state.Delay)
-	if err != nil {
-		u.warn(ctx, *id, "set-door-control", err)
-		u.oops(ctx, "set-door-control", "Error setting door control", StatusInternalServerError)
-		return
-	}
+	u.debug(ctx, "set-door-control", fmt.Sprintf("response %+v", response))
 
-	lookup := map[uint8]string{
-		1: "normally open",
-		2: "normally closed",
-		3: "controlled",
-	}
-
-	response := DoorControl{
-		struct {
-			ID           uint32 `json:"id"`
-			Door         uint8  `json:"door"`
-			ControlState string `json:"control"`
-		}{
-			ID:           *id,
-			Door:         result.Door,
-			ControlState: lookup[result.ControlState],
-		},
-	}
-
-	u.reply(ctx, response)
+	return &response, StatusOK, nil
 }
