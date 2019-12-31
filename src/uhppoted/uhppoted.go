@@ -22,7 +22,6 @@ type Service interface {
 type Request interface {
 	DeviceID() (*uint32, error)
 	DeviceDoor() (*uint32, *uint8, error)
-	DeviceDoorDelay() (*uint32, *uint8, *uint8, error)
 	DeviceDoorControl() (*uint32, *uint8, *string, error)
 }
 
