@@ -42,6 +42,6 @@ func (m *MQTTD) getStatus(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT
 			GetStatusResponse: *response,
 		}
 
-		m.Reply(ctx, reply)
+		m.reply(ctx, reply)
 	}
 }

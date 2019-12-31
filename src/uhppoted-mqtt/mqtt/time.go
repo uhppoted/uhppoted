@@ -43,7 +43,7 @@ func (m *MQTTD) getTime(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.M
 			GetTimeResponse: *response,
 		}
 
-		m.Reply(ctx, reply)
+		m.reply(ctx, reply)
 	}
 }
 
@@ -88,6 +88,6 @@ func (m *MQTTD) setTime(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.M
 			SetTimeResponse: *response,
 		}
 
-		m.Reply(ctx, reply)
+		m.reply(ctx, reply)
 	}
 }

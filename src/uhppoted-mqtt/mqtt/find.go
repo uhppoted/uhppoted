@@ -26,7 +26,7 @@ func (m *MQTTD) getDevices(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQT
 			GetDevicesResponse: *response,
 		}
 
-		m.Reply(ctx, reply)
+		m.reply(ctx, reply)
 	}
 }
 
@@ -64,6 +64,6 @@ func (m *MQTTD) getDevice(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT
 			GetDeviceResponse: *response,
 		}
 
-		m.Reply(ctx, reply)
+		m.reply(ctx, reply)
 	}
 }

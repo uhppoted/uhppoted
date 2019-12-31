@@ -43,7 +43,7 @@ func (m *MQTTD) getCards(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.
 			GetCardsResponse: *response,
 		}
 
-		m.Reply(ctx, reply)
+		m.reply(ctx, reply)
 	}
 }
 
@@ -81,7 +81,7 @@ func (m *MQTTD) deleteCards(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQ
 			DeleteCardsResponse: *response,
 		}
 
-		m.Reply(ctx, reply)
+		m.reply(ctx, reply)
 	}
 }
 
@@ -126,7 +126,7 @@ func (m *MQTTD) getCard(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.M
 			GetCardResponse: *response,
 		}
 
-		m.Reply(ctx, reply)
+		m.reply(ctx, reply)
 	}
 }
 
@@ -170,7 +170,7 @@ func (m *MQTTD) putCard(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.M
 			PutCardResponse: *response,
 		}
 
-		m.Reply(ctx, reply)
+		m.reply(ctx, reply)
 	}
 }
 
@@ -214,6 +214,6 @@ func (m *MQTTD) deleteCard(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQT
 			DeleteCardResponse: *response,
 		}
 
-		m.Reply(ctx, reply)
+		m.reply(ctx, reply)
 	}
 }

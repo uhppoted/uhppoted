@@ -38,7 +38,7 @@ func (m *MQTTD) getEvents(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT
 		if response, status, err := impl.GetEvents(ctx, rq); err != nil {
 			m.OnError(ctx, "Error retrieving events", status, err)
 		} else if response != nil {
-			m.Reply(ctx, response)
+			m.reply(ctx, response)
 		}
 	}
 }
@@ -68,7 +68,7 @@ func (m *MQTTD) getEvent(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.
 		if response, status, err := impl.GetEvent(ctx, rq); err != nil {
 			m.OnError(ctx, "Error retrieving events", status, err)
 		} else if response != nil {
-			m.Reply(ctx, response)
+			m.reply(ctx, response)
 		}
 	}
 }

@@ -58,7 +58,7 @@ type GetDoorDelayResponse struct {
 }
 
 func (u *UHPPOTED) GetDoorDelay(ctx context.Context, request GetDoorDelayRequest) (*GetDoorDelayResponse, int, error) {
-	u.debug(ctx, "get-door-delay", fmt.Sprintf("request  %+v", request))
+	u.debug("get-door-delay", fmt.Sprintf("request  %+v", request))
 
 	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(request.DeviceID, request.Door)
 	if err != nil {
@@ -71,7 +71,7 @@ func (u *UHPPOTED) GetDoorDelay(ctx context.Context, request GetDoorDelayRequest
 		Delay:    result.Delay,
 	}
 
-	u.debug(ctx, "get-door-delay", fmt.Sprintf("response %+v", response))
+	u.debug("get-door-delay", fmt.Sprintf("response %+v", response))
 
 	return &response, StatusOK, nil
 }
@@ -89,7 +89,7 @@ type SetDoorDelayResponse struct {
 }
 
 func (u *UHPPOTED) SetDoorDelay(ctx context.Context, request SetDoorDelayRequest) (*SetDoorDelayResponse, int, error) {
-	u.debug(ctx, "set-door-delay", fmt.Sprintf("request  %+v", request))
+	u.debug("set-door-delay", fmt.Sprintf("request  %+v", request))
 
 	state, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(request.DeviceID, request.Door)
 	if err != nil {
@@ -107,7 +107,7 @@ func (u *UHPPOTED) SetDoorDelay(ctx context.Context, request SetDoorDelayRequest
 		Delay:    result.Delay,
 	}
 
-	u.debug(ctx, "get-door-delay", fmt.Sprintf("response %+v", response))
+	u.debug("get-door-delay", fmt.Sprintf("response %+v", response))
 
 	return &response, StatusOK, nil
 }
@@ -124,7 +124,7 @@ type GetDoorControlResponse struct {
 }
 
 func (u *UHPPOTED) GetDoorControl(ctx context.Context, request GetDoorControlRequest) (*GetDoorControlResponse, int, error) {
-	u.debug(ctx, "get-door-control", fmt.Sprintf("request  %+v", request))
+	u.debug("get-door-control", fmt.Sprintf("request  %+v", request))
 
 	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(request.DeviceID, request.Door)
 	if err != nil {
@@ -137,7 +137,7 @@ func (u *UHPPOTED) GetDoorControl(ctx context.Context, request GetDoorControlReq
 		Control:  ControlState(result.ControlState),
 	}
 
-	u.debug(ctx, "get-door-control", fmt.Sprintf("response %+v", response))
+	u.debug("get-door-control", fmt.Sprintf("response %+v", response))
 
 	return &response, StatusOK, nil
 }
@@ -155,7 +155,7 @@ type SetDoorControlResponse struct {
 }
 
 func (u *UHPPOTED) SetDoorControl(ctx context.Context, request SetDoorControlRequest) (*SetDoorControlResponse, int, error) {
-	u.debug(ctx, "set-door-control", fmt.Sprintf("request  %+v", request))
+	u.debug("set-door-control", fmt.Sprintf("request  %+v", request))
 
 	state, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(request.DeviceID, request.Door)
 	if err != nil {
@@ -173,7 +173,7 @@ func (u *UHPPOTED) SetDoorControl(ctx context.Context, request SetDoorControlReq
 		Control:  ControlState(result.ControlState),
 	}
 
-	u.debug(ctx, "set-door-control", fmt.Sprintf("response %+v", response))
+	u.debug("set-door-control", fmt.Sprintf("response %+v", response))
 
 	return &response, StatusOK, nil
 }

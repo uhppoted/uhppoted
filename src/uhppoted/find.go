@@ -41,7 +41,7 @@ type GetDevicesResponse struct {
 }
 
 func (u *UHPPOTED) GetDevices(ctx context.Context, request GetDevicesRequest) (*GetDevicesResponse, int, error) {
-	u.debug(ctx, "get-devices", fmt.Sprintf("request  %+v", request))
+	u.debug("get-devices", fmt.Sprintf("request  %+v", request))
 
 	devices, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevices()
 	if err != nil {
@@ -62,7 +62,7 @@ func (u *UHPPOTED) GetDevices(ctx context.Context, request GetDevicesRequest) (*
 		Devices: list,
 	}
 
-	u.debug(ctx, "get-devices", fmt.Sprintf("response %+v", response))
+	u.debug("get-devices", fmt.Sprintf("response %+v", response))
 
 	return &response, StatusOK, nil
 }
@@ -83,7 +83,7 @@ type GetDeviceResponse struct {
 }
 
 func (u *UHPPOTED) GetDevice(ctx context.Context, request GetDeviceRequest) (*GetDeviceResponse, int, error) {
-	u.debug(ctx, "get-device", fmt.Sprintf("request  %+v", request))
+	u.debug("get-device", fmt.Sprintf("request  %+v", request))
 
 	device, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevice(request.DeviceID)
 	if err != nil {
@@ -105,7 +105,7 @@ func (u *UHPPOTED) GetDevice(ctx context.Context, request GetDeviceRequest) (*Ge
 		Date:       device.Date,
 	}
 
-	u.debug(ctx, "get-device", fmt.Sprintf("response %+v", response))
+	u.debug("get-device", fmt.Sprintf("response %+v", response))
 
 	return &response, StatusOK, nil
 }
