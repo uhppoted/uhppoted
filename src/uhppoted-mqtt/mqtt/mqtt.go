@@ -28,8 +28,7 @@ type MQTTD struct {
 	interrupt  chan os.Signal
 }
 
-type fdispatch func(*uhppoted.UHPPOTED, context.Context, uhppoted.Request)
-type fdispatchx struct {
+type fdispatch struct {
 	operation string
 	f         func(*MQTTD, *uhppoted.UHPPOTED, context.Context, MQTT.Message)
 }
@@ -41,7 +40,6 @@ type dispatcher struct {
 	log      *log.Logger
 	topic    string
 	table    map[string]fdispatch
-	tablex   map[string]fdispatchx
 }
 
 type request struct {
@@ -67,6 +65,7 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	}
 
 	api := uhppoted.UHPPOTED{
+		Log:     l,
 		Service: m,
 	}
 
@@ -76,24 +75,23 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		uhppote:  u,
 		log:      l,
 		topic:    m.Topic,
-		table:    map[string]fdispatch{},
-		tablex: map[string]fdispatchx{
-			m.Topic + "/devices:get":             fdispatchx{"get-devices", (*MQTTD).getDevices},
-			m.Topic + "/device:get":              fdispatchx{"get-device", (*MQTTD).getDevice},
-			m.Topic + "/device/status:get":       fdispatchx{"get-status", (*MQTTD).getStatus},
-			m.Topic + "/device/time:get":         fdispatchx{"get-time", (*MQTTD).getTime},
-			m.Topic + "/device/time:set":         fdispatchx{"set-time", (*MQTTD).setTime},
-			m.Topic + "/device/door/delay:get":   fdispatchx{"get-door-delay", (*MQTTD).getDoorDelay},
-			m.Topic + "/device/door/delay:set":   fdispatchx{"set-door-delay", (*MQTTD).setDoorDelay},
-			m.Topic + "/device/door/control:get": fdispatchx{"get-door-control", (*MQTTD).getDoorControl},
-			m.Topic + "/device/door/control:set": fdispatchx{"set-door-control", (*MQTTD).setDoorControl},
-			m.Topic + "/device/cards:get":        fdispatchx{"get-cards", (*MQTTD).getCards},
-			m.Topic + "/device/cards:delete":     fdispatchx{"delete-cards", (*MQTTD).deleteCards},
-			m.Topic + "/device/card:get":         fdispatchx{"get-card", (*MQTTD).getCard},
-			m.Topic + "/device/card:put":         fdispatchx{"put-card", (*MQTTD).putCard},
-			m.Topic + "/device/card:delete":      fdispatchx{"delete-card", (*MQTTD).deleteCard},
-			m.Topic + "/device/events:get":       fdispatchx{"get-events", (*MQTTD).getEvents},
-			m.Topic + "/device/event:get":        fdispatchx{"get-event", (*MQTTD).getEvent},
+		table: map[string]fdispatch{
+			m.Topic + "/devices:get":             fdispatch{"get-devices", (*MQTTD).getDevices},
+			m.Topic + "/device:get":              fdispatch{"get-device", (*MQTTD).getDevice},
+			m.Topic + "/device/status:get":       fdispatch{"get-status", (*MQTTD).getStatus},
+			m.Topic + "/device/time:get":         fdispatch{"get-time", (*MQTTD).getTime},
+			m.Topic + "/device/time:set":         fdispatch{"set-time", (*MQTTD).setTime},
+			m.Topic + "/device/door/delay:get":   fdispatch{"get-door-delay", (*MQTTD).getDoorDelay},
+			m.Topic + "/device/door/delay:set":   fdispatch{"set-door-delay", (*MQTTD).setDoorDelay},
+			m.Topic + "/device/door/control:get": fdispatch{"get-door-control", (*MQTTD).getDoorControl},
+			m.Topic + "/device/door/control:set": fdispatch{"set-door-control", (*MQTTD).setDoorControl},
+			m.Topic + "/device/cards:get":        fdispatch{"get-cards", (*MQTTD).getCards},
+			m.Topic + "/device/cards:delete":     fdispatch{"delete-cards", (*MQTTD).deleteCards},
+			m.Topic + "/device/card:get":         fdispatch{"get-card", (*MQTTD).getCard},
+			m.Topic + "/device/card:put":         fdispatch{"put-card", (*MQTTD).putCard},
+			m.Topic + "/device/card:delete":      fdispatch{"delete-card", (*MQTTD).deleteCard},
+			m.Topic + "/device/events:get":       fdispatch{"get-events", (*MQTTD).getEvents},
+			m.Topic + "/device/event:get":        fdispatch{"get-event", (*MQTTD).getEvent},
 		},
 	}
 
@@ -184,23 +182,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 	ctx = context.WithValue(ctx, "log", d.log)
 	ctx = context.WithValue(ctx, "topic", d.topic)
 
-	// TODO (in progress) replace with local wrapper functions
 	if fn, ok := d.table[msg.Topic()]; ok {
-		rq := Request{
-			Message: msg,
-		}
-
-		if err := json.Unmarshal(msg.Payload(), &rq); err != nil {
-			d.log.Printf("WARN  %-20s %v\n", "dispatch", fmt.Errorf("Invalid message: %v <%s>", err, string(msg.Payload())))
-			return
-		}
-
-		fn(d.uhppoted, ctx, &rq)
-		return
-	}
-	// ----
-
-	if fnx, ok := d.tablex[msg.Topic()]; ok {
 		body := struct {
 			Request request `json:"request"`
 		}{}
@@ -221,9 +203,9 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		}
 
 		ctx = context.WithValue(ctx, "request", body.Request)
-		ctx = context.WithValue(ctx, "operation", fnx.operation)
+		ctx = context.WithValue(ctx, "operation", fn.operation)
 
-		fnx.f(d.mqttd, d.uhppoted, ctx, msg)
+		fn.f(d.mqttd, d.uhppoted, ctx, msg)
 	}
 }
 
@@ -279,7 +261,7 @@ func (m *MQTTD) Send(ctx context.Context, message interface{}) {
 	token.Wait()
 }
 
-func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
+func (m *MQTTD) reply(ctx context.Context, response interface{}) {
 	client, ok := ctx.Value("client").(MQTT.Client)
 	if !ok {
 		panic("MQTT client not included in context")
@@ -330,10 +312,6 @@ func getMetaInfo(ctx context.Context) *metainfo {
 	}
 
 	return &metainfo
-}
-
-func (m *MQTTD) Oops(ctx context.Context, operation string, message string, errorCode int) {
-	oops(ctx, operation, message, errorCode)
 }
 
 func (m *MQTTD) OnError(ctx context.Context, message string, errorCode int, err error) {

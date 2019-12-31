@@ -39,12 +39,12 @@ func (u *UHPPOTED) Listen(ctx context.Context, received *EventMap, q chan os.Sig
 	for device, index := range received.retrieved {
 		event, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, 0xffffffff)
 		if err != nil {
-			u.warn(ctx, 0, "listen", err)
+			u.warn(0, "listen", err)
 		} else {
 			if retrieved := u.fetch(ctx, device, index+1, event.Index); retrieved != 0 {
 				received.retrieved[device] = retrieved
 				if err := received.store(); err != nil {
-					u.warn(ctx, 0, "listen", err)
+					u.warn(0, "listen", err)
 				}
 			}
 		}
@@ -58,7 +58,7 @@ func (u *UHPPOTED) listen(ctx context.Context, received *EventMap, q chan os.Sig
 
 	go func() {
 		if err := ctx.Value("uhppote").(*uhppote.UHPPOTE).Listen(p, q); err != nil {
-			u.warn(ctx, 0, "listen", err)
+			u.warn(0, "listen", err)
 		}
 	}()
 
@@ -68,7 +68,7 @@ func (u *UHPPOTED) listen(ctx context.Context, received *EventMap, q chan os.Sig
 			break
 		}
 
-		u.log(ctx, "EVENT", uint32(event.SerialNumber), fmt.Sprintf("%v", event))
+		u.log("EVENT", uint32(event.SerialNumber), fmt.Sprintf("%v", event))
 
 		device := uint32(event.SerialNumber)
 		last := event.LastIndex
@@ -81,7 +81,7 @@ func (u *UHPPOTED) listen(ctx context.Context, received *EventMap, q chan os.Sig
 		if retrieved := u.fetch(ctx, device, first, last); retrieved != 0 {
 			received.retrieved[device] = retrieved
 			if err := received.store(); err != nil {
-				u.warn(ctx, 0, "listen", err)
+				u.warn(0, "listen", err)
 			}
 		}
 	}
@@ -93,17 +93,17 @@ func (u *UHPPOTED) fetch(ctx context.Context, device uint32, first uint32, last 
 	for index := first; index <= last; index++ {
 		record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, index)
 		if err != nil {
-			u.warn(ctx, device, "listen", fmt.Errorf("Failed to retrieve event ID %d", index))
+			u.warn(device, "listen", fmt.Errorf("Failed to retrieve event ID %d", index))
 			continue
 		}
 
 		if record == nil {
-			u.warn(ctx, device, "listen", fmt.Errorf("No event record for ID %d", index))
+			u.warn(device, "listen", fmt.Errorf("No event record for ID %d", index))
 			continue
 		}
 
 		if record.Index != index {
-			u.warn(ctx, device, "listen", fmt.Errorf("No event record for ID %d", index))
+			u.warn(device, "listen", fmt.Errorf("No event record for ID %d", index))
 			continue
 		}
 
@@ -122,7 +122,7 @@ func (u *UHPPOTED) fetch(ctx context.Context, device uint32, first uint32, last 
 			},
 		}
 
-		u.debug(ctx, "listen", fmt.Sprintf("event %v", message))
+		u.debug("listen", fmt.Sprintf("event %v", message))
 		u.send(ctx, message)
 	}
 

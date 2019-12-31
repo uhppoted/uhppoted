@@ -49,7 +49,7 @@ func (m *MQTTD) getDoorDelay(impl *uhppoted.UHPPOTED, ctx context.Context, msg M
 			GetDoorDelayResponse: *response,
 		}
 
-		m.Reply(ctx, reply)
+		m.reply(ctx, reply)
 	}
 }
 
@@ -100,7 +100,7 @@ func (m *MQTTD) setDoorDelay(impl *uhppoted.UHPPOTED, ctx context.Context, msg M
 			SetDoorDelayResponse: *response,
 		}
 
-		m.Reply(ctx, reply)
+		m.reply(ctx, reply)
 	}
 }
 
@@ -146,7 +146,7 @@ func (m *MQTTD) getDoorControl(impl *uhppoted.UHPPOTED, ctx context.Context, msg
 			GetDoorControlResponse: *response,
 		}
 
-		m.Reply(ctx, reply)
+		m.reply(ctx, reply)
 	}
 }
 
@@ -197,6 +197,6 @@ func (m *MQTTD) setDoorControl(impl *uhppoted.UHPPOTED, ctx context.Context, msg
 			SetDoorControlResponse: *response,
 		}
 
-		m.Reply(ctx, reply)
+		m.reply(ctx, reply)
 	}
 }

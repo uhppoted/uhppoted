@@ -18,7 +18,7 @@ type GetTimeResponse struct {
 }
 
 func (u *UHPPOTED) GetTime(ctx context.Context, request GetTimeRequest) (*GetTimeResponse, int, error) {
-	u.debug(ctx, "get-time", fmt.Sprintf("request  %+v", request))
+	u.debug("get-time", fmt.Sprintf("request  %+v", request))
 
 	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetTime(request.DeviceID)
 	if err != nil {
@@ -30,7 +30,7 @@ func (u *UHPPOTED) GetTime(ctx context.Context, request GetTimeRequest) (*GetTim
 		DateTime: result.DateTime,
 	}
 
-	u.debug(ctx, "get-time", fmt.Sprintf("response %+v", response))
+	u.debug("get-time", fmt.Sprintf("response %+v", response))
 
 	return &response, StatusOK, nil
 }
@@ -46,7 +46,7 @@ type SetTimeResponse struct {
 }
 
 func (u *UHPPOTED) SetTime(ctx context.Context, request SetTimeRequest) (*SetTimeResponse, int, error) {
-	u.debug(ctx, "set-time", fmt.Sprintf("request  %+v", request))
+	u.debug("set-time", fmt.Sprintf("request  %+v", request))
 
 	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).SetTime(request.DeviceID, time.Time(request.DateTime))
 	if err != nil {
@@ -58,7 +58,7 @@ func (u *UHPPOTED) SetTime(ctx context.Context, request SetTimeRequest) (*SetTim
 		DateTime: result.DateTime,
 	}
 
-	u.debug(ctx, "set-time", fmt.Sprintf("response %+v", response))
+	u.debug("set-time", fmt.Sprintf("response %+v", response))
 
 	return &response, StatusOK, nil
 }

@@ -29,9 +29,10 @@
 - [x] command protocol: add 'client-id' to response meta-info (?)
 - [x] file watch on HOTP, user and permissions files
 - [x] listen/events: retrieve and send actual events
-- [ ] clean up 'Request' implementation
+- [x] clean up 'Request' implementation
 - [x] command protocol: rework response JSON marshaling
-- [ ] command protocol: add 'operation' to response meta-info
+- [x] command protocol: add 'operation' to response meta-info
+- [ ] wrap request handling in go routine
 - [ ] move incoming requests to /requests subtopic
 - [ ] publish add/delete card, etc to event stream
 - [ ] move ACL and events to separate API's
@@ -41,7 +42,6 @@
 - [x] 'reply'
 - [ ] CLI/events: retrieve and show actual events
 - [ ] CLI: generate OTP secret
-- [ ] wrap request handling in go routine
 - [x] TLS connection
 - [x] TLS connection: client authentication
 - [ ] Exit on error when multiple mqttd's are started (or generate unique client ID???)
