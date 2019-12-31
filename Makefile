@@ -248,7 +248,9 @@ uhppoted-mqtt-set-door-delay:
                               "device-id": 405419896, "door": 3, "delay": 8 }'
 
 uhppoted-mqtt-get-door-control:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/control:get' --message '{ "device-id": 405419896, "door": 3 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/control:get' \
+                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
+                              "device-id": 405419896, "door": 3, "delay": 8 }'
 
 uhppoted-mqtt-set-door-control:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/control:set' --message '{ "device-id": 405419896, "door": 3, "control": "normally closed" }'

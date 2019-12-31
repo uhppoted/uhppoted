@@ -103,3 +103,48 @@ func (m *MQTTD) setDoorDelay(impl *uhppoted.UHPPOTED, ctx context.Context, msg M
 		m.Reply(ctx, reply)
 	}
 }
+
+func (m *MQTTD) getDoorControl(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
+	body := struct {
+		DeviceID *uint32 `json:"device-id"`
+		Door     *uint8  `json:"door"`
+	}{}
+
+	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
+		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
+		return
+	}
+
+	if body.DeviceID == nil || *body.DeviceID == 0 {
+		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		return
+	}
+
+	if body.Door == nil || *body.Door < 1 || *body.Door > 4 {
+		m.OnError(ctx, "Missing/invalid device door", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device door '%s'", string(msg.Payload())))
+		return
+	}
+
+	rq := uhppoted.GetDoorControlRequest{
+		DeviceID: *body.DeviceID,
+		Door:     *body.Door,
+	}
+
+	response, status, err := impl.GetDoorControl(ctx, rq)
+	if err != nil {
+		m.OnError(ctx, "Error retrieving device door control", status, err)
+		return
+	}
+
+	if response != nil {
+		reply := struct {
+			MetaInfo *metainfo `json:"meta-info,omitempty"`
+			uhppoted.GetDoorControlResponse
+		}{
+			MetaInfo:               getMetaInfo(ctx),
+			GetDoorControlResponse: *response,
+		}
+
+		m.Reply(ctx, reply)
+	}
+}

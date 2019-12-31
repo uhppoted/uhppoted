@@ -80,21 +80,23 @@ func (u *UHPPOTED) SetDoorDelay(ctx context.Context, request SetDoorDelayRequest
 	return &response, StatusOK, nil
 }
 
-func (u *UHPPOTED) GetDoorControl(ctx context.Context, rq Request) {
-	u.debug(ctx, "get-door-control", rq)
+type GetDoorControlRequest struct {
+	DeviceID uint32
+	Door     uint8
+}
 
-	id, door, err := rq.DeviceDoor()
-	if err != nil {
-		u.warn(ctx, 0, "get-door-control", err)
-		u.oops(ctx, "get-door-control", "Error retrieving door control (invalid device/door)", StatusBadRequest)
-		return
-	}
+type GetDoorControlResponse struct {
+	DeviceID uint32 `json:"device-id"`
+	Door     uint8  `json:"door"`
+	Control  string `json:"control"`
+}
 
-	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(*id, *door)
+func (u *UHPPOTED) GetDoorControl(ctx context.Context, request GetDoorControlRequest) (*GetDoorControlResponse, int, error) {
+	u.debug(ctx, "get-door-control", fmt.Sprintf("request  %+v", request))
+
+	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(request.DeviceID, request.Door)
 	if err != nil {
-		u.warn(ctx, *id, "get-door-control", err)
-		u.oops(ctx, "get-door-control", "Error retrieving door control", StatusInternalServerError)
-		return
+		return nil, StatusInternalServerError, err
 	}
 
 	lookup := map[uint8]string{
@@ -103,19 +105,15 @@ func (u *UHPPOTED) GetDoorControl(ctx context.Context, rq Request) {
 		3: "controlled",
 	}
 
-	response := DoorControl{
-		struct {
-			ID           uint32 `json:"id"`
-			Door         uint8  `json:"door"`
-			ControlState string `json:"control"`
-		}{
-			ID:           *id,
-			Door:         result.Door,
-			ControlState: lookup[result.ControlState],
-		},
+	response := GetDoorControlResponse{
+		DeviceID: uint32(result.SerialNumber),
+		Door:     result.Door,
+		Control:  lookup[result.ControlState],
 	}
 
-	u.reply(ctx, response)
+	u.debug(ctx, "get-door-control", fmt.Sprintf("response %+v", response))
+
+	return &response, StatusOK, nil
 }
 
 func (u *UHPPOTED) SetDoorControl(ctx context.Context, rq Request) {

@@ -55,38 +55,6 @@ func (rq *Request) DeviceDoor() (*uint32, *uint8, error) {
 	return body.DeviceID, body.Door, nil
 }
 
-func (rq *Request) DeviceDoorDelay() (*uint32, *uint8, *uint8, error) {
-	body := struct {
-		DeviceID *uint32 `json:"device-id"`
-		Door     *uint8  `json:"door"`
-		Delay    *uint8  `json:"delay"`
-	}{}
-
-	if err := json.Unmarshal(rq.Message.Payload(), &body); err != nil {
-		return nil, nil, nil, err
-	}
-
-	if body.DeviceID == nil {
-		return nil, nil, nil, errors.New("Missing device ID")
-	} else if *body.DeviceID == 0 {
-		return nil, nil, nil, errors.New("Missing device ID")
-	}
-
-	if body.Door == nil {
-		return nil, nil, nil, errors.New("Invalid door")
-	} else if *body.Door < 1 || *body.Door > 4 {
-		return nil, nil, nil, errors.New("Invalid door")
-	}
-
-	if body.Delay == nil {
-		return nil, nil, nil, errors.New("Invalid door delay")
-	} else if *body.Delay == 0 || *body.Delay > 60 {
-		return nil, nil, nil, errors.New("Invalid door delay")
-	}
-
-	return body.DeviceID, body.Door, body.Delay, nil
-}
-
 func (rq *Request) DeviceDoorControl() (*uint32, *uint8, *string, error) {
 	body := struct {
 		DeviceID     *uint32 `json:"device-id"`
