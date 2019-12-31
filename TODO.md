@@ -32,14 +32,15 @@
 - [x] clean up 'Request' implementation
 - [x] command protocol: rework response JSON marshaling
 - [x] command protocol: add 'operation' to response meta-info
-- [ ] wrap request handling in go routine
+- [x] wrap request handling in go routine
+- [ ] rework GetDevices to also find 'known' devices
 - [ ] move incoming requests to /requests subtopic
-- [ ] publish add/delete card, etc to event stream
-- [ ] move ACL and events to separate API's
 
 - [x] subscribe
 - [x] error handling
 - [x] 'reply'
+- [ ] move ACL and events to separate API's
+- [ ] publish add/delete card, etc to event stream
 - [ ] CLI/events: retrieve and show actual events
 - [ ] CLI: generate OTP secret
 - [x] TLS connection
