@@ -238,7 +238,9 @@ uhppoted-mqtt-set-time:
                               \"device-id\": 405419896, \"date-time\": \"$(DATETIME)\" }"
 
 uhppoted-mqtt-get-door-delay:
-	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/delay:get' --message '{ "device-id": 405419896, "door": 3 }'
+	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/delay:get' \
+                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
+	                          "device-id": 405419896, "door": 3  }'
 
 uhppoted-mqtt-set-door-delay:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/delay:set' --message '{ "device-id": 405419896, "door": 3, "delay": 8 }'
