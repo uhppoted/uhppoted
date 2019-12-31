@@ -205,7 +205,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		ctx = context.WithValue(ctx, "request", body.Request)
 		ctx = context.WithValue(ctx, "operation", fn.operation)
 
-		fn.f(d.mqttd, d.uhppoted, ctx, msg)
+		go fn.f(d.mqttd, d.uhppoted, ctx, msg)
 	}
 }
 
