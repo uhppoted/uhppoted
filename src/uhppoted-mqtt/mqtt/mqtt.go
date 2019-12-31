@@ -76,9 +76,7 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		uhppote:  u,
 		log:      l,
 		topic:    m.Topic,
-		table: map[string]fdispatch{
-			m.Topic + "/device/door/control:set": (*uhppoted.UHPPOTED).SetDoorControl,
-		},
+		table:    map[string]fdispatch{},
 		tablex: map[string]fdispatchx{
 			m.Topic + "/devices:get":             fdispatchx{"get-devices", (*MQTTD).getDevices},
 			m.Topic + "/device:get":              fdispatchx{"get-device", (*MQTTD).getDevice},
@@ -88,14 +86,14 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/door/delay:get":   fdispatchx{"get-door-delay", (*MQTTD).getDoorDelay},
 			m.Topic + "/device/door/delay:set":   fdispatchx{"set-door-delay", (*MQTTD).setDoorDelay},
 			m.Topic + "/device/door/control:get": fdispatchx{"get-door-control", (*MQTTD).getDoorControl},
-
-			m.Topic + "/device/cards:get":    fdispatchx{"get-cards", (*MQTTD).getCards},
-			m.Topic + "/device/cards:delete": fdispatchx{"delete-cards", (*MQTTD).deleteCards},
-			m.Topic + "/device/card:get":     fdispatchx{"get-card", (*MQTTD).getCard},
-			m.Topic + "/device/card:put":     fdispatchx{"put-card", (*MQTTD).putCard},
-			m.Topic + "/device/card:delete":  fdispatchx{"delete-card", (*MQTTD).deleteCard},
-			m.Topic + "/device/events:get":   fdispatchx{"get-events", (*MQTTD).getEvents},
-			m.Topic + "/device/event:get":    fdispatchx{"get-event", (*MQTTD).getEvent},
+			m.Topic + "/device/door/control:set": fdispatchx{"set-door-control", (*MQTTD).setDoorControl},
+			m.Topic + "/device/cards:get":        fdispatchx{"get-cards", (*MQTTD).getCards},
+			m.Topic + "/device/cards:delete":     fdispatchx{"delete-cards", (*MQTTD).deleteCards},
+			m.Topic + "/device/card:get":         fdispatchx{"get-card", (*MQTTD).getCard},
+			m.Topic + "/device/card:put":         fdispatchx{"put-card", (*MQTTD).putCard},
+			m.Topic + "/device/card:delete":      fdispatchx{"delete-card", (*MQTTD).deleteCard},
+			m.Topic + "/device/events:get":       fdispatchx{"get-events", (*MQTTD).getEvents},
+			m.Topic + "/device/event:get":        fdispatchx{"get-event", (*MQTTD).getEvent},
 		},
 	}
 
@@ -301,6 +299,7 @@ func (m *MQTTD) Reply(ctx context.Context, response interface{}) {
 
 	b, err := json.Marshal(response)
 	if err != nil {
+		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
 		oops(ctx, "encoding/json", "Error encoding response", uhppoted.StatusInternalServerError)
 		return
 	}
@@ -338,14 +337,13 @@ func (m *MQTTD) Oops(ctx context.Context, operation string, message string, erro
 }
 
 func (m *MQTTD) OnError(ctx context.Context, message string, errorCode int, err error) {
-
 	if operation, ok := ctx.Value("operation").(string); ok {
-		ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %v\n", operation, err)
+		ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %v", operation, err)
 		oops(ctx, operation, message, errorCode)
 		return
 	}
 
-	ctx.Value("log").(*log.Logger).Printf("WARN  %v\n", err)
+	ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
 	oops(ctx, "???", message, errorCode)
 }
 
