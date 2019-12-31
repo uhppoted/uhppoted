@@ -37,7 +37,7 @@ type GetStatusResponse struct {
 }
 
 func (u *UHPPOTED) GetStatus(ctx context.Context, request GetStatusRequest) (*GetStatusResponse, int, error) {
-	u.debug(ctx, "get-status", request)
+	u.debug(ctx, "get-status", fmt.Sprintf("request  %+v", request))
 
 	status, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetStatus(request.DeviceID)
 	if err != nil {
@@ -67,7 +67,7 @@ func (u *UHPPOTED) GetStatus(ctx context.Context, request GetStatusRequest) (*Ge
 		},
 	}
 
-	u.debug(ctx, "get-status", fmt.Sprintf("response %v", response))
+	u.debug(ctx, "get-status", fmt.Sprintf("response %+v", response))
 
 	return &response, StatusOK, nil
 }
