@@ -6,13 +6,14 @@ import (
 	"net"
 	"strconv"
 	"strings"
+	"sync"
 	"uhppote"
 	"uhppote/types"
 )
 
 type DeviceSummary struct {
-	DeviceID   uint32 `json:"device-id"`
 	DeviceType string `json:"device-type"`
+	Address    net.IP `json:"ip-address"`
 }
 
 type DeviceDetail struct {
@@ -37,30 +38,56 @@ type GetDevicesRequest struct {
 }
 
 type GetDevicesResponse struct {
-	Devices []DeviceSummary `json:"devices"`
+	Devices map[uint32]DeviceSummary `json:"devices"`
 }
 
 func (u *UHPPOTED) GetDevices(ctx context.Context, request GetDevicesRequest) (*GetDevicesResponse, int, error) {
 	u.debug("get-devices", fmt.Sprintf("request  %+v", request))
 
-	devices, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevices()
-	if err != nil {
-		return nil, StatusInternalServerError, err
+	wg := sync.WaitGroup{}
+	list := sync.Map{}
+
+	for id, _ := range ctx.Value("uhppote").(*uhppote.UHPPOTE).Devices {
+		deviceID := id
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if device, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevice(deviceID); err != nil {
+				u.warn(deviceID, "get-devices", err)
+			} else if device != nil {
+				list.Store(uint32(device.SerialNumber), DeviceSummary{
+					DeviceType: identify(device.SerialNumber),
+					Address:    device.IpAddress,
+				})
+			}
+		}()
 	}
 
-	list := make([]DeviceSummary, 0)
-	for _, d := range devices {
-		item := DeviceSummary{
-			DeviceID:   uint32(d.SerialNumber),
-			DeviceType: identify(d.SerialNumber),
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		if devices, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevices(); err != nil {
+			u.warn(0, "get-devices", err)
+		} else {
+			for _, d := range devices {
+				list.Store(uint32(d.SerialNumber), DeviceSummary{
+					DeviceType: identify(d.SerialNumber),
+					Address:    d.IpAddress,
+				})
+			}
 		}
+	}()
 
-		list = append(list, item)
-	}
+	wg.Wait()
 
 	response := GetDevicesResponse{
-		Devices: list,
+		Devices: map[uint32]DeviceSummary{},
 	}
+
+	list.Range(func(key, value interface{}) bool {
+		response.Devices[key.(uint32)] = value.(DeviceSummary)
+		return true
+	})
 
 	u.debug("get-devices", fmt.Sprintf("response %+v", response))
 
