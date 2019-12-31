@@ -77,7 +77,6 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		log:      l,
 		topic:    m.Topic,
 		table: map[string]fdispatch{
-			m.Topic + "/device/door/delay:set":   (*uhppoted.UHPPOTED).SetDoorDelay,
 			m.Topic + "/device/door/control:get": (*uhppoted.UHPPOTED).GetDoorControl,
 			m.Topic + "/device/door/control:set": (*uhppoted.UHPPOTED).SetDoorControl,
 		},
@@ -88,6 +87,7 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/time:get":       fdispatchx{"get-time", (*MQTTD).getTime},
 			m.Topic + "/device/time:set":       fdispatchx{"set-time", (*MQTTD).setTime},
 			m.Topic + "/device/door/delay:get": fdispatchx{"get-door-delay", (*MQTTD).getDoorDelay},
+			m.Topic + "/device/door/delay:set": fdispatchx{"set-door-delay", (*MQTTD).setDoorDelay},
 
 			m.Topic + "/device/cards:get":    fdispatchx{"get-cards", (*MQTTD).getCards},
 			m.Topic + "/device/cards:delete": fdispatchx{"delete-cards", (*MQTTD).deleteCards},

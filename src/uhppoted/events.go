@@ -56,7 +56,7 @@ type event struct {
 }
 
 func (u *UHPPOTED) GetEvents(ctx context.Context, request GetEventsRequest) (*GetEventsResponse, int, error) {
-	u.debug(ctx, "get-events", fmt.Sprintf("request  %v", request))
+	u.debug(ctx, "get-events", fmt.Sprintf("request  %+v", request))
 
 	device := request.DeviceID
 	start := request.Start
@@ -127,13 +127,13 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, request GetEventsRequest) (*Ge
 		},
 	}
 
-	u.debug(ctx, "get-events", fmt.Sprintf("response %v", response))
+	u.debug(ctx, "get-events", fmt.Sprintf("response %+v", response))
 
 	return &response, StatusOK, nil
 }
 
 func (u *UHPPOTED) GetEvent(ctx context.Context, request GetEventRequest) (*GetEventResponse, int, error) {
-	u.debug(ctx, "get-events", fmt.Sprintf("request  %v", request))
+	u.debug(ctx, "get-events", fmt.Sprintf("request  %+v", request))
 
 	device := request.DeviceID
 	eventID := request.EventID
@@ -170,7 +170,7 @@ func (u *UHPPOTED) GetEvent(ctx context.Context, request GetEventRequest) (*GetE
 		},
 	}
 
-	u.debug(ctx, "get-event", fmt.Sprintf("response %v", response))
+	u.debug(ctx, "get-event", fmt.Sprintf("response %+v", response))
 
 	return &response, StatusOK, nil
 }

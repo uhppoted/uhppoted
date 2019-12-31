@@ -17,7 +17,7 @@ type GetCardsResponse struct {
 }
 
 func (u *UHPPOTED) GetCards(ctx context.Context, request GetCardsRequest) (*GetCardsResponse, int, error) {
-	u.debug(ctx, "get-cards", fmt.Sprintf("request  %v", request))
+	u.debug(ctx, "get-cards", fmt.Sprintf("request  %+v", request))
 
 	device := request.DeviceID
 
@@ -42,7 +42,7 @@ func (u *UHPPOTED) GetCards(ctx context.Context, request GetCardsRequest) (*GetC
 		Cards:    cards,
 	}
 
-	u.debug(ctx, "get-cards", fmt.Sprintf("response %v", response))
+	u.debug(ctx, "get-cards", fmt.Sprintf("response %+v", response))
 
 	return &response, StatusOK, nil
 }
@@ -57,7 +57,7 @@ type DeleteCardsResponse struct {
 }
 
 func (u *UHPPOTED) DeleteCards(ctx context.Context, request DeleteCardsRequest) (*DeleteCardsResponse, int, error) {
-	u.debug(ctx, "delete-cards", fmt.Sprintf("request  %v", request))
+	u.debug(ctx, "delete-cards", fmt.Sprintf("request  %+v", request))
 
 	device := request.DeviceID
 
@@ -71,7 +71,7 @@ func (u *UHPPOTED) DeleteCards(ctx context.Context, request DeleteCardsRequest) 
 		Deleted:  deleted.Succeeded,
 	}
 
-	u.debug(ctx, "delete-cards", fmt.Sprintf("response %v", response))
+	u.debug(ctx, "delete-cards", fmt.Sprintf("response %+v", response))
 
 	return &response, StatusOK, nil
 }
@@ -87,7 +87,7 @@ type GetCardResponse struct {
 }
 
 func (u *UHPPOTED) GetCard(ctx context.Context, request GetCardRequest) (*GetCardResponse, int, error) {
-	u.debug(ctx, "get-card", fmt.Sprintf("request  %v", request))
+	u.debug(ctx, "get-card", fmt.Sprintf("request  %+v", request))
 
 	device := request.DeviceID
 	cardID := request.CardNumber
@@ -106,7 +106,7 @@ func (u *UHPPOTED) GetCard(ctx context.Context, request GetCardRequest) (*GetCar
 		Card:     *card,
 	}
 
-	u.debug(ctx, "get-card", fmt.Sprintf("response %v", response))
+	u.debug(ctx, "get-card", fmt.Sprintf("response %+v", response))
 
 	return &response, StatusOK, nil
 }
@@ -122,7 +122,7 @@ type PutCardResponse struct {
 }
 
 func (u *UHPPOTED) PutCard(ctx context.Context, request PutCardRequest) (*PutCardResponse, int, error) {
-	u.debug(ctx, "put-card", fmt.Sprintf("request  %v", request))
+	u.debug(ctx, "put-card", fmt.Sprintf("request  %+v", request))
 
 	device := request.DeviceID
 	card := request.Card
@@ -141,7 +141,7 @@ func (u *UHPPOTED) PutCard(ctx context.Context, request PutCardRequest) (*PutCar
 		Card:     card,
 	}
 
-	u.debug(ctx, "put-card", fmt.Sprintf("response %v", response))
+	u.debug(ctx, "put-card", fmt.Sprintf("response %+v", response))
 
 	return &response, StatusOK, nil
 }
@@ -158,7 +158,7 @@ type DeleteCardResponse struct {
 }
 
 func (u *UHPPOTED) DeleteCard(ctx context.Context, request DeleteCardRequest) (*DeleteCardResponse, int, error) {
-	u.debug(ctx, "delete-card", fmt.Sprintf("request  %v", request))
+	u.debug(ctx, "delete-card", fmt.Sprintf("request  %+v", request))
 
 	device := request.DeviceID
 	cardNo := request.CardNumber
@@ -174,7 +174,7 @@ func (u *UHPPOTED) DeleteCard(ctx context.Context, request DeleteCardRequest) (*
 		Deleted:    deleted.Succeeded,
 	}
 
-	u.debug(ctx, "delete-card", fmt.Sprintf("response %v", response))
+	u.debug(ctx, "delete-card", fmt.Sprintf("response %+v", response))
 
 	return &response, StatusOK, nil
 }
