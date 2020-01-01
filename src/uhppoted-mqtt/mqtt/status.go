@@ -10,16 +10,16 @@ import (
 
 func (m *MQTTD) getStatus(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
 	body := struct {
-		DeviceID *uint32 `json:"device-id"`
+		DeviceID *uhppoted.DeviceID `json:"device-id"`
 	}{}
 
 	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
-		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
+		m.OnError(ctx, string(msg.Payload()), uhppoted.StatusBadRequest, err)
 		return
 	}
 
-	if body.DeviceID == nil || *body.DeviceID == 0 {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+	if body.DeviceID == nil {
+		m.OnError(ctx, string(msg.Payload()), uhppoted.StatusBadRequest, fmt.Errorf("Missing device ID"))
 		return
 	}
 

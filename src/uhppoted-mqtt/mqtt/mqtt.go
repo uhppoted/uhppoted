@@ -316,12 +316,12 @@ func getMetaInfo(ctx context.Context) *metainfo {
 
 func (m *MQTTD) OnError(ctx context.Context, message string, errorCode int, err error) {
 	if operation, ok := ctx.Value("operation").(string); ok {
-		ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %v", operation, err)
+		ctx.Value("log").(*log.Logger).Printf("WARN  %-20s [%v] %s", operation, err, message)
 		oops(ctx, operation, message, errorCode)
 		return
 	}
 
-	ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
+	ctx.Value("log").(*log.Logger).Printf("WARN  %-20s [%v] %s", "", err, message)
 	oops(ctx, "???", message, errorCode)
 }
 

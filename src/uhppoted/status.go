@@ -28,7 +28,7 @@ type Status struct {
 }
 
 type GetStatusRequest struct {
-	DeviceID uint32
+	DeviceID DeviceID
 }
 
 type GetStatusResponse struct {
@@ -39,7 +39,7 @@ type GetStatusResponse struct {
 func (u *UHPPOTED) GetStatus(ctx context.Context, request GetStatusRequest) (*GetStatusResponse, int, error) {
 	u.debug("get-status", fmt.Sprintf("request  %+v", request))
 
-	status, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetStatus(request.DeviceID)
+	status, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetStatus(uint32(request.DeviceID))
 	if err != nil {
 		return nil, StatusInternalServerError, err
 	}
