@@ -183,6 +183,8 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 	ctx = context.WithValue(ctx, "topic", d.topic)
 
 	if fn, ok := d.table[msg.Topic()]; ok {
+		msg.Ack()
+
 		body := struct {
 			Request request `json:"request"`
 		}{}
