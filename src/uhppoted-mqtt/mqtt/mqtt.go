@@ -16,13 +16,15 @@ import (
 )
 
 type MQTTD struct {
-	Broker      string
-	TLS         *tls.Config
-	Topic       string
-	HOTP        auth.HOTP
-	Permissions auth.Permissions
-	EventMap    string
-	Debug       bool
+	Broker         string
+	TLS            *tls.Config
+	Topic          string
+	Authentication string
+	HOTP           *auth.HOTP
+	RSA            *auth.RSA
+	Permissions    auth.Permissions
+	EventMap       string
+	Debug          bool
 
 	connection MQTT.Client
 	interrupt  chan os.Signal
@@ -212,14 +214,24 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 }
 
 func (m *MQTTD) authenticate(rq request) error {
-	if m.HOTP.Enabled {
+	if m.Authentication == "HOTP" {
 		if rq.ClientID == nil {
 			return errors.New("Request without client-id")
-		} else if rq.HOTP == nil {
+		}
+
+		if rq.HOTP == nil {
 			return errors.New("Request without HOTP")
 		}
 
 		return m.HOTP.Validate(*rq.ClientID, *rq.HOTP)
+	}
+
+	if m.Authentication == "RSA" {
+		if rq.ClientID == nil {
+			return errors.New("Request without client-id")
+		}
+
+		return m.RSA.Validate(*rq.ClientID, []byte{}, []byte{})
 	}
 
 	return nil

@@ -16,7 +16,6 @@ import (
 )
 
 type HOTP struct {
-	Enabled   bool
 	increment uint64
 	secrets   *kvs.KeyValueStore
 	counters  struct {
@@ -28,7 +27,7 @@ type HOTP struct {
 
 const DIGITS = 6
 
-func NewHOTP(enabled bool, increment uint64, secrets string, counters string, logger *log.Logger) (*HOTP, error) {
+func NewHOTP(increment uint64, secrets string, counters string, logger *log.Logger) (*HOTP, error) {
 	u := func(value string) (interface{}, error) {
 		return value, nil
 	}
@@ -38,7 +37,6 @@ func NewHOTP(enabled bool, increment uint64, secrets string, counters string, lo
 	}
 
 	hotp := HOTP{
-		Enabled:   enabled,
 		increment: increment,
 		secrets:   kvs.NewKeyValueStore("hotp:secrets", u),
 		counters: struct {
@@ -52,17 +50,15 @@ func NewHOTP(enabled bool, increment uint64, secrets string, counters string, lo
 		},
 	}
 
-	if enabled {
-		if err := hotp.secrets.LoadFromFile(secrets); err != nil {
-			return nil, err
-		}
-
-		if err := hotp.counters.LoadFromFile(counters); err != nil {
-			log.Printf("WARN: %v", err)
-		}
-
-		hotp.secrets.Watch(secrets, logger)
+	if err := hotp.secrets.LoadFromFile(secrets); err != nil {
+		return nil, err
 	}
+
+	if err := hotp.counters.LoadFromFile(counters); err != nil {
+		log.Printf("WARN: %v", err)
+	}
+
+	hotp.secrets.Watch(secrets, logger)
 
 	return &hotp, nil
 }
