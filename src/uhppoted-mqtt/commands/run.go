@@ -129,17 +129,6 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 		}
 	}
 
-	hotp, err := auth.NewHOTP(
-		c.MQTT.HOTP.Enabled,
-		c.MQTT.HOTP.Range,
-		c.MQTT.HOTP.Secrets,
-		c.MQTT.HOTP.Counters,
-		logger)
-	if err != nil {
-		log.Printf("ERROR: %v", err)
-		return
-	}
-
 	permissions, err := auth.NewPermissions(
 		c.MQTT.Permissions.Enabled,
 		c.MQTT.Permissions.Users,
@@ -151,14 +140,17 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 	}
 
 	mqttd := mqtt.MQTTD{
-		Broker:      fmt.Sprintf(c.Broker),
-		TLS:         &tls.Config{},
-		Topic:       c.Topic,
-		HOTP:        *hotp,
-		Permissions: *permissions,
-		EventMap:    c.EventIDs,
-		Debug:       r.debug,
+		Broker:         fmt.Sprintf(c.Broker),
+		TLS:            &tls.Config{},
+		Topic:          c.Topic,
+		Authentication: c.Authentication,
+		HOTP:           nil,
+		Permissions:    *permissions,
+		EventMap:       c.EventIDs,
+		Debug:          r.debug,
 	}
+
+	// ... TLS
 
 	if strings.HasPrefix(mqttd.Broker, "tls:") {
 		pem, err := ioutil.ReadFile(c.BrokerCertificate)
@@ -179,6 +171,32 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 		} else {
 			mqttd.TLS.Certificates = []tls.Certificate{certificate}
 		}
+	}
+
+	// ... authentication
+
+	if mqttd.Authentication == "HOTP" {
+		hotp, err := auth.NewHOTP(
+			c.MQTT.HOTP.Range,
+			c.MQTT.HOTP.Secrets,
+			c.MQTT.HOTP.Counters,
+			logger)
+		if err != nil {
+			log.Printf("ERROR: %v", err)
+			return
+		}
+
+		mqttd.HOTP = hotp
+	}
+
+	if mqttd.Authentication == "RSA" {
+		rsa, err := auth.NewRSA()
+		if err != nil {
+			log.Printf("ERROR: %v", err)
+			return
+		}
+
+		mqttd.RSA = rsa
 	}
 
 	// ... listen forever

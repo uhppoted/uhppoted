@@ -24,13 +24,13 @@ type MQTT struct {
 	ClientCertificate string      `conf:"client.certificate"`
 	ClientKey         string      `conf:"client.key"`
 	Topic             string      `conf:"topic"`
+	Authentication    string      `conf:"authentication"`
 	HOTP              HOTP        `conf:"hotp"`
 	Permissions       Permissions `conf:"permissions"`
 	EventIDs          string      `conf:"events.index.filepath"`
 }
 
 type HOTP struct {
-	Enabled  bool   `conf:"enabled"`
 	Range    uint64 `conf:"range"`
 	Secrets  string `conf:"secrets"`
 	Counters string `conf:"counters"`
@@ -63,8 +63,8 @@ func NewConfig() *Config {
 			ClientCertificate: clientCertificate,
 			ClientKey:         clientKey,
 			Topic:             "twystd/uhppoted/gateway",
+			Authentication:    "",
 			HOTP: HOTP{
-				Enabled:  false,
 				Range:    8,
 				Secrets:  secrets,
 				Counters: counters,
