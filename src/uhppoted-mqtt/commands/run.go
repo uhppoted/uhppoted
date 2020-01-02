@@ -155,19 +155,19 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 	if strings.HasPrefix(mqttd.Broker, "tls:") {
 		pem, err := ioutil.ReadFile(c.BrokerCertificate)
 		if err != nil {
-			log.Printf("ERROR: %v", err)
+			logger.Printf("ERROR: %v", err)
 		} else {
 			mqttd.TLS.InsecureSkipVerify = false
 			mqttd.TLS.RootCAs = x509.NewCertPool()
 
 			if ok := mqttd.TLS.RootCAs.AppendCertsFromPEM(pem); !ok {
-				log.Printf("ERROR: Could not initialise MQTTD CA certificates")
+				logger.Printf("ERROR: Could not initialise MQTTD CA certificates")
 			}
 		}
 
 		certificate, err := tls.LoadX509KeyPair(c.ClientCertificate, c.ClientKey)
 		if err != nil {
-			log.Printf("ERROR: %v", err)
+			logger.Printf("ERROR: %v", err)
 		} else {
 			mqttd.TLS.Certificates = []tls.Certificate{certificate}
 		}
@@ -182,7 +182,7 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 			c.MQTT.HOTP.Counters,
 			logger)
 		if err != nil {
-			log.Printf("ERROR: %v", err)
+			logger.Printf("ERROR: %v", err)
 			return
 		}
 
@@ -190,9 +190,9 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 	}
 
 	if mqttd.Authentication == "RSA" {
-		rsa, err := auth.NewRSA()
+		rsa, err := auth.NewRSA(c.RSA.ClientKeys, logger)
 		if err != nil {
-			log.Printf("ERROR: %v", err)
+			logger.Printf("ERROR: %v", err)
 			return
 		}
 
@@ -204,11 +204,11 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 	for {
 		err := r.listen(&u, &mqttd, logger, interrupt)
 		if err != nil {
-			log.Printf("ERROR: %v", err)
+			logger.Printf("ERROR: %v", err)
 			continue
 		}
 
-		log.Printf("exit\n")
+		logger.Printf("exit\n")
 		break
 	}
 

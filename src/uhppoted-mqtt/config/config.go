@@ -26,6 +26,7 @@ type MQTT struct {
 	Topic             string      `conf:"topic"`
 	Authentication    string      `conf:"authentication"`
 	HOTP              HOTP        `conf:"hotp"`
+	RSA               RSA         `conf:"rsa"`
 	Permissions       Permissions `conf:"permissions"`
 	EventIDs          string      `conf:"events.index.filepath"`
 }
@@ -34,6 +35,10 @@ type HOTP struct {
 	Range    uint64 `conf:"range"`
 	Secrets  string `conf:"secrets"`
 	Counters string `conf:"counters"`
+}
+
+type RSA struct {
+	ClientKeys string `conf:"clients.keys"`
 }
 
 type Permissions struct {
@@ -59,15 +64,18 @@ func NewConfig() *Config {
 		ListenAddress:    &listen,
 		MQTT: MQTT{
 			Broker:            "tcp://127.0.0.1:1883",
-			BrokerCertificate: brokerCertificate,
-			ClientCertificate: clientCertificate,
-			ClientKey:         clientKey,
+			BrokerCertificate: mqttBrokerCertificate,
+			ClientCertificate: mqttClientCertificate,
+			ClientKey:         mqttClientKey,
 			Topic:             "twystd/uhppoted/gateway",
 			Authentication:    "",
 			HOTP: HOTP{
 				Range:    8,
 				Secrets:  secrets,
 				Counters: counters,
+			},
+			RSA: RSA{
+				ClientKeys: rsaClientKeys,
 			},
 			Permissions: Permissions{
 				Enabled: false,
