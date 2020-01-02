@@ -217,14 +217,13 @@ uhppoted-mqtt-get-devices:
 #	mqtt publish --topic 'twystd/uhppoted/gateway/devices:get' \
 #                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }}'
 	mqtt publish --topic 'twystd/uhppoted/gateway/devices:get' \
-                 --message '{ "client-id": "QWERTY54",                  \
-                              "signature": "TJgGun7unbRL+sLrAfqY6tRp9GKbj4yPpvgyVbLJtwP77g1RYVICPWIauSVT+zuI58/y2J9aGFveFHurIihARC6iFFD5IJqPpEcNpxrbKSnUDbAsx+VcuknZIUdNJbu4OtzdoKyTpgoge3cJlysczoseYAuQ+vQ7Vl4Tqjsttnc=", \
-                              "request": { "request-id": "AH173635G3",  \
+                 --message '{ "client-id": "QWERTY54", \
+                              "signature": "ka3kvjni01XFzznkYgmpYg2aHm82eMjoM/FF5JqYh1MhLBt0pmob59I0gWRM4EMZ4UVeOABryM0tmE4w2XAJH5B0MW9Hf4/+z2i5TIFm+8Fztb98OPFinWCineM7VD5VrZ82IzKDjjibl3mRtu/ixGfZWNzb0L4obgF8mzgmsCc=",\
+                              "request": { "request-id": "AH173635G3", \
                                            "reply-to":   "reply/97531", \
-                                           "counter":    7,             \
-	                                       "device-id":  405419896      \
-	                                     }                              \
-	                        }'
+                                           "hotp":       "586787", \
+                                           "counter":    7, \
+                                           "device-id":  405419896 }}'
 
 uhppoted-mqtt-get-device:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
