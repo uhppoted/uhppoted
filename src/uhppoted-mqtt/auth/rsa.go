@@ -11,18 +11,31 @@ import (
 	"log"
 	"os"
 	"path"
+	"strconv"
 	"strings"
+	"uhppoted/kvs"
 )
 
 type RSA struct {
 	clientKeys map[string]*rsa.PublicKey
-	log        *log.Logger
+	counters   struct {
+		*kvs.KeyValueStore
+		filepath string
+	}
+	log *log.Logger
 }
 
-func NewRSA(keys string, logger *log.Logger) (*RSA, error) {
+func NewRSA(keys, counters string, logger *log.Logger) (*RSA, error) {
 	rsa := RSA{
 		clientKeys: map[string]*rsa.PublicKey{},
-		log:        logger,
+		counters: struct {
+			*kvs.KeyValueStore
+			filepath string
+		}{
+			kvs.NewKeyValueStore("rsa:counters", func(value string) (interface{}, error) { return strconv.ParseUint(value, 10, 64) }),
+			counters,
+		},
+		log: logger,
 	}
 
 	if err := rsa.load(keys); err != nil {
@@ -32,7 +45,7 @@ func NewRSA(keys string, logger *log.Logger) (*RSA, error) {
 	return &rsa, nil
 }
 
-func (r *RSA) Validate(clientID string, request []byte, signature []byte) error {
+func (r *RSA) Validate(clientID string, request []byte, signature []byte, counter uint64) error {
 	pubkey, ok := r.clientKeys[clientID]
 	if !ok || pubkey == nil {
 		return fmt.Errorf("%s: no RSA public key", clientID)
@@ -43,6 +56,17 @@ func (r *RSA) Validate(clientID string, request []byte, signature []byte) error 
 	if err != nil {
 		return fmt.Errorf("Invalid RSA signature (%v)", err)
 	}
+
+	c, ok := r.counters.Get(clientID)
+	if !ok {
+		c = uint64(0)
+	}
+
+	if counter <= c.(uint64) {
+		return fmt.Errorf("Reused RSA counter (%d)", counter)
+	}
+
+	r.counters.Store(clientID, counter, r.counters.filepath, r.log)
 
 	return nil
 }
