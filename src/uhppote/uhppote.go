@@ -45,13 +45,13 @@ func (u *UHPPOTE) Send(serialNumber uint32, request interface{}) (messages.Respo
 
 	err = c.SetDeadline(time.Now().Add(5000 * time.Millisecond))
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Failed to set UDP timeout [%v]", err))
+		return nil, fmt.Errorf("Failed to set UDP timeout [%v]", err)
 	}
 
 	m := make([]byte, 2048)
 	N, remote, err := c.ReadFromUDP(m)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Failed to read from UDP socket [%v]", err))
+		return nil, fmt.Errorf("Failed to read from UDP socket [%v]", err)
 	}
 
 	if u.Debug {
@@ -118,7 +118,7 @@ func (u *UHPPOTE) DirectedBroadcast(serialNumber uint32, request, replies interf
 func (u *UHPPOTE) open(addr *net.UDPAddr) (*net.UDPConn, error) {
 	connection, err := net.ListenUDP("udp", addr)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Failed to open UDP socket [%v]", err))
+		return nil, fmt.Errorf("Failed to open UDP socket [%v]", err)
 	}
 
 	return connection, nil
@@ -137,7 +137,7 @@ func (u *UHPPOTE) send(connection *net.UDPConn, addr *net.UDPAddr, request inter
 	N, err := connection.WriteTo(m, addr)
 
 	if err != nil {
-		return errors.New(fmt.Sprintf("Failed to write to UDP socket [%v]", err))
+		return fmt.Errorf("Failed to write to UDP socket [%v]", err)
 	}
 
 	if u.Debug {
@@ -160,7 +160,7 @@ func (u *UHPPOTE) broadcast(request interface{}, addr *net.UDPAddr) ([][]byte, e
 	bind := u.bindAddress()
 	connection, err := net.ListenUDP("udp", bind)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Failed to open UDP socket [%v]", err))
+		return nil, fmt.Errorf("Failed to open UDP socket [%v]", err)
 	}
 
 	defer func() {
@@ -170,7 +170,7 @@ func (u *UHPPOTE) broadcast(request interface{}, addr *net.UDPAddr) ([][]byte, e
 	N, err := connection.WriteTo(m, addr)
 
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Failed to write to UDP socket [%v]", err))
+		return nil, fmt.Errorf("Failed to write to UDP socket [%v]", err)
 	}
 
 	if u.Debug {
@@ -208,12 +208,12 @@ func (u *UHPPOTE) receive(c *net.UDPConn, reply interface{}) error {
 
 	err := c.SetDeadline(time.Now().Add(5000 * time.Millisecond))
 	if err != nil {
-		return errors.New(fmt.Sprintf("Failed to set UDP timeout [%v]", err))
+		return fmt.Errorf("Failed to set UDP timeout [%v]", err)
 	}
 
 	N, remote, err := c.ReadFromUDP(m)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Failed to read from UDP socket [%v]", err))
+		return fmt.Errorf("Failed to read from UDP socket [%v]", err)
 	}
 
 	if u.Debug {
@@ -258,7 +258,7 @@ func (u *UHPPOTE) listen(p chan *Event, q chan os.Signal) error {
 				return nil
 			}
 
-			return errors.New(fmt.Sprintf("Failed to read from UDP socket [%v]", err))
+			return fmt.Errorf("Failed to read from UDP socket [%v]", err)
 		}
 
 		if u.Debug {
@@ -268,7 +268,7 @@ func (u *UHPPOTE) listen(p chan *Event, q chan os.Signal) error {
 		event := Event{}
 		err = codec.Unmarshal(m[:N], &event)
 		if err != nil {
-			return errors.New(fmt.Sprintf("Error unmarshalling event [%v]", err))
+			return fmt.Errorf("Error unmarshalling event [%v]", err)
 		}
 
 		p <- &event
