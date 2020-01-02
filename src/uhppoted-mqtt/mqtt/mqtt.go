@@ -279,6 +279,10 @@ func (m *MQTTD) authenticatex(clientID *string, request []byte, signature *strin
 	//	}
 
 	if m.Authentication == "RSA" {
+		rq := struct {
+			Counter *uint64 `json:"counter"`
+		}{}
+
 		if clientID == nil {
 			return errors.New("Invalid request: missing client-id")
 		}
@@ -292,7 +296,15 @@ func (m *MQTTD) authenticatex(clientID *string, request []byte, signature *strin
 			return fmt.Errorf("Invalid request: undecodable RSA signature (%v)", err)
 		}
 
-		return m.RSA.Validate(*clientID, request, s)
+		if err := json.Unmarshal(request, &rq); err != nil {
+			return err
+		}
+
+		if rq.Counter == nil {
+			return errors.New("Invalid request: missing counter")
+		}
+
+		return m.RSA.Validate(*clientID, request, s, *rq.Counter)
 	}
 
 	return nil
