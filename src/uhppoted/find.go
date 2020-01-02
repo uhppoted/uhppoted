@@ -95,7 +95,7 @@ func (u *UHPPOTED) GetDevices(ctx context.Context, request GetDevicesRequest) (*
 }
 
 type GetDeviceRequest struct {
-	DeviceID uint32
+	DeviceID DeviceID
 }
 
 type GetDeviceResponse struct {
@@ -112,7 +112,7 @@ type GetDeviceResponse struct {
 func (u *UHPPOTED) GetDevice(ctx context.Context, request GetDeviceRequest) (*GetDeviceResponse, int, error) {
 	u.debug("get-device", fmt.Sprintf("request  %+v", request))
 
-	device, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevice(request.DeviceID)
+	device, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevice(uint32(request.DeviceID))
 	if err != nil {
 		return nil, StatusInternalServerError, err
 	}
