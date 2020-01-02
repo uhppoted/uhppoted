@@ -3,6 +3,7 @@ package mqtt
 import (
 	"context"
 	"crypto/tls"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -42,6 +43,7 @@ type dispatcher struct {
 	log      *log.Logger
 	topic    string
 	table    map[string]fdispatch
+	tablex   map[string]fdispatch
 }
 
 type request struct {
@@ -78,7 +80,6 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		log:      l,
 		topic:    m.Topic,
 		table: map[string]fdispatch{
-			m.Topic + "/devices:get":             fdispatch{"get-devices", (*MQTTD).getDevices},
 			m.Topic + "/device:get":              fdispatch{"get-device", (*MQTTD).getDevice},
 			m.Topic + "/device/status:get":       fdispatch{"get-status", (*MQTTD).getStatus},
 			m.Topic + "/device/time:get":         fdispatch{"get-time", (*MQTTD).getTime},
@@ -94,6 +95,9 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/card:delete":      fdispatch{"delete-card", (*MQTTD).deleteCard},
 			m.Topic + "/device/events:get":       fdispatch{"get-events", (*MQTTD).getEvents},
 			m.Topic + "/device/event:get":        fdispatch{"get-event", (*MQTTD).getEvent},
+		},
+		tablex: map[string]fdispatch{
+			m.Topic + "/devices:get": fdispatch{"get-devices", (*MQTTD).getDevices},
 		},
 	}
 
@@ -210,28 +214,85 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		ctx = context.WithValue(ctx, "operation", fn.operation)
 
 		go fn.f(d.mqttd, d.uhppoted, ctx, msg)
+		return
+	}
+
+	if fn, ok := d.tablex[msg.Topic()]; ok {
+		msg.Ack()
+
+		body := struct {
+			ClientID  *string         `json:"client-id"`
+			Signature *string         `json:"signature"`
+			Request   json.RawMessage `json:"request"`
+		}{}
+
+		if err := json.Unmarshal(msg.Payload(), &body); err != nil {
+			d.log.Printf("WARN  %-20s %v %s\n", "dispatch", err, string(msg.Payload()))
+			return
+		}
+
+		if err := d.mqttd.authenticatex(body.ClientID, body.Request, body.Signature); err != nil {
+			d.log.Printf("WARN  %-20s %v %s\n", "dispatch", err, string(msg.Payload()))
+			return
+		}
+
+		//		if err := d.mqttd.authorise(body.Request, msg.Topic()); err != nil {
+		//			d.log.Printf("WARN  %-20s %v %s\n", "dispatch", err, string(msg.Payload()))
+		//			return
+		//		}
+
+		ctx = context.WithValue(ctx, "request", body.Request)
+		ctx = context.WithValue(ctx, "operation", fn.operation)
+
+		go fn.f(d.mqttd, d.uhppoted, ctx, msg)
+		return
 	}
 }
 
 func (m *MQTTD) authenticate(rq request) error {
 	if m.Authentication == "HOTP" {
 		if rq.ClientID == nil {
-			return errors.New("Request without client-id")
+			return errors.New("Invalid request: missing client-id")
 		}
 
 		if rq.HOTP == nil {
-			return errors.New("Request without HOTP")
+			return errors.New("Invalid request: missing HOTP token")
 		}
 
 		return m.HOTP.Validate(*rq.ClientID, *rq.HOTP)
 	}
 
+	return nil
+}
+
+func (m *MQTTD) authenticatex(clientID *string, request []byte, signature *string) error {
+	//	if m.Authentication == "HOTP" {
+	//		if clientID == nil {
+	//			return errors.New("Invalid request: missing client-id")
+	//		}
+	//
+	//		if rq.HOTP == nil {
+	//			return errors.New("Invalid request: missing HOTP token")
+	//		}
+	//
+	//		return m.HOTP.Validate(*rq.ClientID, *rq.HOTP)
+	//	}
+
 	if m.Authentication == "RSA" {
-		if rq.ClientID == nil {
-			return errors.New("Request without client-id")
+		if clientID == nil {
+			return errors.New("Invalid request: missing client-id")
 		}
 
-		return m.RSA.Validate(*rq.ClientID, []byte{}, []byte{})
+		if signature == nil {
+			return errors.New("Invalid request: missing RSA signature")
+		}
+
+		s, err := base64.StdEncoding.DecodeString(*signature)
+		if err != nil {
+			return fmt.Errorf("Invalid request: undecodable RSA signature (%v)", err)
+		}
+
+		return m.RSA.Validate(*clientID, request, s)
 	}
 
 	return nil
