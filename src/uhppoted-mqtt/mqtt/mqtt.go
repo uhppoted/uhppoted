@@ -205,7 +205,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 			return
 		}
 
-		if err := d.mqttd.authorise(body.Request, msg.Topic()); err != nil {
+		if err := d.mqttd.authorise(body.Request.ClientID, msg.Topic()); err != nil {
 			d.log.Printf("WARN  %-20s %v %s\n", "dispatch", err, string(msg.Payload()))
 			return
 		}
@@ -236,10 +236,10 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 			return
 		}
 
-		//		if err := d.mqttd.authorise(body.Request, msg.Topic()); err != nil {
-		//			d.log.Printf("WARN  %-20s %v %s\n", "dispatch", err, string(msg.Payload()))
-		//			return
-		//		}
+		if err := d.mqttd.authorise(body.ClientID, msg.Topic()); err != nil {
+			d.log.Printf("WARN  %-20s %v %s\n", "dispatch", err, string(msg.Payload()))
+			return
+		}
 
 		ctx = context.WithValue(ctx, "request", body.Request)
 		ctx = context.WithValue(ctx, "operation", fn.operation)
@@ -318,9 +318,9 @@ func (m *MQTTD) authenticatex(clientID *string, request []byte, signature *strin
 	return nil
 }
 
-func (m *MQTTD) authorise(rq request, topic string) error {
+func (m *MQTTD) authorise(clientID *string, topic string) error {
 	if m.Permissions.Enabled {
-		if rq.ClientID == nil {
+		if clientID == nil {
 			return errors.New("Request without client-id")
 		}
 
@@ -329,7 +329,7 @@ func (m *MQTTD) authorise(rq request, topic string) error {
 			return fmt.Errorf("Invalid resource:action (%s)", topic)
 		}
 
-		return m.Permissions.Validate(*rq.ClientID, match[1], match[2])
+		return m.Permissions.Validate(*clientID, match[1], match[2])
 	}
 
 	return nil
