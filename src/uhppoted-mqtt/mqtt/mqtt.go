@@ -266,17 +266,25 @@ func (m *MQTTD) authenticate(rq request) error {
 }
 
 func (m *MQTTD) authenticatex(clientID *string, request []byte, signature *string) error {
-	//	if m.Authentication == "HOTP" {
-	//		if clientID == nil {
-	//			return errors.New("Invalid request: missing client-id")
-	//		}
-	//
-	//		if rq.HOTP == nil {
-	//			return errors.New("Invalid request: missing HOTP token")
-	//		}
-	//
-	//		return m.HOTP.Validate(*rq.ClientID, *rq.HOTP)
-	//	}
+	if m.Authentication == "HOTP" {
+		rq := struct {
+			HOTP *string `json:"hotp"`
+		}{}
+
+		if clientID == nil {
+			return errors.New("Invalid request: missing client-id")
+		}
+
+		if err := json.Unmarshal(request, &rq); err != nil {
+			return err
+		}
+
+		if rq.HOTP == nil {
+			return errors.New("Invalid request: missing HOTP token")
+		}
+
+		return m.HOTP.Validate(*clientID, *rq.HOTP)
+	}
 
 	if m.Authentication == "RSA" {
 		rq := struct {

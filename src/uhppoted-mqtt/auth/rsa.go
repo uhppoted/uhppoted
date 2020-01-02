@@ -42,6 +42,10 @@ func NewRSA(keys, counters string, logger *log.Logger) (*RSA, error) {
 		log.Printf("WARN: %v", err)
 	}
 
+	if err := rsa.counters.LoadFromFile(counters); err != nil {
+		log.Printf("WARN: %v", err)
+	}
+
 	return &rsa, nil
 }
 
@@ -54,7 +58,7 @@ func (r *RSA) Validate(clientID string, request []byte, signature []byte, counte
 	hash := sha256.Sum256(request)
 	err := rsa.VerifyPKCS1v15(pubkey, crypto.SHA256, hash[:], signature)
 	if err != nil {
-		return fmt.Errorf("Invalid RSA signature (%v)", err)
+		return fmt.Errorf("%s: invalid RSA signature (%v)", clientID, err)
 	}
 
 	c, ok := r.counters.Get(clientID)
@@ -63,7 +67,7 @@ func (r *RSA) Validate(clientID string, request []byte, signature []byte, counte
 	}
 
 	if counter <= c.(uint64) {
-		return fmt.Errorf("Reused RSA counter (%d)", counter)
+		return fmt.Errorf("%s: RSA counter reused (%d)", clientID, counter)
 	}
 
 	r.counters.Store(clientID, counter, r.counters.filepath, r.log)
