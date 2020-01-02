@@ -32,7 +32,7 @@ func (m *MQTTD) getDevices(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQT
 
 func (m *MQTTD) getDevice(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
 	body := struct {
-		DeviceID *uint32 `json:"device-id"`
+		DeviceID *uhppoted.DeviceID `json:"device-id"`
 	}{}
 
 	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
