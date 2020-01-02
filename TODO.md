@@ -34,6 +34,7 @@
 - [x] command protocol: add 'operation' to response meta-info
 - [x] wrap request handling in go routine
 - [ ] rework GetDevices to also find 'known' devices
+- [ ] sign &| encrypt
 - [ ] move incoming requests to /requests subtopic
 
 - [x] subscribe
@@ -46,7 +47,6 @@
 - [x] TLS connection
 - [x] TLS connection: client authentication
 - [ ] Exit on error when multiple mqttd's are started (or generate unique client ID???)
-- [ ] Encrypt &| sign
 - [ ] Implement retry + backoff for connection to broker
 - [ ] Implement retry + backoff for 'listen'
 - [ ] Rework listen logic to handle errors robustly
