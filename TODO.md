@@ -109,6 +109,7 @@
 - [ ] Interactive shell (https://drewdevault.com/2019/09/02/Interactive-SSH-programs.html)
 - [ ] use flag.FlagSet for commands
 - [ ] Default to commmon config file
+- [ ] Use (loadable) text/template for output formats
 
 ### simulator
 - [ ] concurrent requests
@@ -179,4 +180,6 @@
 22. [Klee](https://klee.github.io)
 23. [Fernet](https://github.com/fernet/spec/blob/master/Spec.md)
      - [cryptography.io:fernet](https://cryptography.io/en/latest/fernet)
+24. [AsyncAPI](https://www.asyncapi.coms)
+     - https://modeling-languages.com/asyncapi-modeling-editor-code-generator/
 

@@ -11,7 +11,7 @@ import (
 
 func (m *MQTTD) getTime(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
 	body := struct {
-		DeviceID *uint32 `json:"device-id"`
+		DeviceID *uhppoted.DeviceID `json:"device-id"`
 	}{}
 
 	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
