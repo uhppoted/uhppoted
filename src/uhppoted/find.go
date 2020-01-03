@@ -16,23 +16,23 @@ type DeviceSummary struct {
 	Address    net.IP `json:"ip-address"`
 }
 
-type DeviceDetail struct {
-	Device struct {
-		ID     uint32 `json:"id"`
-		Detail detail `json:"info"`
-	} `json:"device"`
-}
+// type DeviceDetail struct {
+// 	Device struct {
+// 		ID     DeviceID `json:"id"`
+// 		Detail detail `json:"info"`
+// 	} `json:"device"`
+// }
 
-type detail struct {
-	SerialNumber types.SerialNumber `json:"serial-number"`
-	DeviceType   string             `json:"device-type"`
-	IpAddress    net.IP             `json:"ip-address"`
-	SubnetMask   net.IP             `json:"subnet-mask"`
-	Gateway      net.IP             `json:"gateway-address"`
-	MacAddress   types.MacAddress   `json:"mac-address"`
-	Version      types.Version      `json:"version"`
-	Date         types.Date         `json:"date"`
-}
+// type detail struct {
+// 	DeviceType   string             `json:"device-type"`
+// 	SerialNumber types.SerialNumber `json:"serial-number"`
+// 	IpAddress    net.IP             `json:"ip-address"`
+// 	SubnetMask   net.IP             `json:"subnet-mask"`
+// 	Gateway      net.IP             `json:"gateway-address"`
+// 	MacAddress   types.MacAddress   `json:"mac-address"`
+// 	Version      types.Version      `json:"version"`
+// 	Date         types.Date         `json:"date"`
+// }
 
 type GetDevicesRequest struct {
 }
@@ -99,8 +99,8 @@ type GetDeviceRequest struct {
 }
 
 type GetDeviceResponse struct {
-	DeviceID   uint32           `json:"device-id"`
 	DeviceType string           `json:"device-type"`
+	DeviceID   DeviceID         `json:"device-id"`
 	IpAddress  net.IP           `json:"ip-address"`
 	SubnetMask net.IP           `json:"subnet-mask"`
 	Gateway    net.IP           `json:"gateway-address"`
@@ -122,7 +122,7 @@ func (u *UHPPOTED) GetDevice(ctx context.Context, request GetDeviceRequest) (*Ge
 	}
 
 	response := GetDeviceResponse{
-		DeviceID:   uint32(device.SerialNumber),
+		DeviceID:   DeviceID(device.SerialNumber),
 		DeviceType: identify(device.SerialNumber),
 		IpAddress:  device.IpAddress,
 		SubnetMask: device.SubnetMask,
