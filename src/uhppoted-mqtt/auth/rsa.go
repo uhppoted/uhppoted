@@ -67,7 +67,8 @@ func (r *RSA) Validate(clientID string, request []byte, signature []byte, counte
 	}
 
 	if counter <= c.(uint64) {
-		return fmt.Errorf("%s: RSA counter reused (%d)", clientID, counter)
+		r.log.Printf("DEBUG: %s: RSA counter reused (%d)", clientID, counter)
+		//		return fmt.Errorf("%s: RSA counter reused (%d)", clientID, counter)
 	}
 
 	r.counters.Store(clientID, counter, r.counters.filepath, r.log)

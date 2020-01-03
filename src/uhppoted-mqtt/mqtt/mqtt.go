@@ -80,7 +80,6 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		log:      l,
 		topic:    m.Topic,
 		table: map[string]fdispatch{
-			m.Topic + "/device:get":              fdispatch{"get-device", (*MQTTD).getDevice},
 			m.Topic + "/device/status:get":       fdispatch{"get-status", (*MQTTD).getStatus},
 			m.Topic + "/device/time:get":         fdispatch{"get-time", (*MQTTD).getTime},
 			m.Topic + "/device/time:set":         fdispatch{"set-time", (*MQTTD).setTime},
@@ -98,6 +97,7 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		},
 		tablex: map[string]fdispatch{
 			m.Topic + "/devices:get": fdispatch{"get-devices", (*MQTTD).getDevices},
+			m.Topic + "/device:get":  fdispatch{"get-device", (*MQTTD).getDevice},
 		},
 	}
 
@@ -247,7 +247,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 			return
 		}
 
-		ctx = context.WithValue(ctx, "request", body.Request)
+		ctx = context.WithValue(ctx, "request", []byte(body.Request))
 		ctx = context.WithValue(ctx, "operation", fn.operation)
 
 		go fn.f(d.mqttd, d.uhppoted, ctx, msg)

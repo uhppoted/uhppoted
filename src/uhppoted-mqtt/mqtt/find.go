@@ -35,12 +35,18 @@ func (m *MQTTD) getDevice(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT
 		DeviceID *uhppoted.DeviceID `json:"device-id"`
 	}{}
 
-	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
+	request, ok := ctx.Value("request").([]byte)
+	if !ok {
+		m.OnError(ctx, "Message payload does not contain 'request' field", uhppoted.StatusBadRequest, fmt.Errorf("Bad Request"))
+		return
+	}
+
+	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 		return
 	}
 
-	if body.DeviceID == nil || *body.DeviceID == 0 {
+	if body.DeviceID == nil {
 		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
 		return
 	}
