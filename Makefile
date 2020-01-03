@@ -75,11 +75,6 @@ usage: build
 
 debug: build
 	go test src/uhppoted/kvs/*.go
-#	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' \
-#                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
-#                              "device-id": 405419896, \
-#                              "start": "2019-08-05" , \
-#                              "end": "2019-08-09" }'
 
 help: build
 	$(CLI)       help
@@ -90,14 +85,6 @@ help: build
 version: build
 	$(CLI)       version
 	$(SIMULATOR) version
-
-run: build
-	$(CLI) --bind $(LOCAL) $(DEBUG) get-devices
-#	$(CLI) --bind $(LOCAL) $(DEBUG) set-address    $(SERIALNO) '192.168.1.125' '255.255.255.0' '0.0.0.0'
-	$(CLI) --bind $(LOCAL) $(DEBUG) get-cards      $(SERIALNO)
-	$(CLI) --bind $(LOCAL) $(DEBUG) get-door-delay $(SERIALNO) $(DOOR)
-	$(CLI) --bind $(LOCAL) $(DEBUG) set-time       $(SERIALNO)
-	$(CLI) --bind $(LOCAL) $(DEBUG) revoke         $(SERIALNO) $(CARD)
 
 get-devices: build
 	$(CLI) --bind $(LOCAL) $(DEBUG) get-devices
@@ -218,17 +205,24 @@ uhppoted-mqtt-get-devices:
 #                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }}'
 	mqtt publish --topic 'twystd/uhppoted/gateway/devices:get' \
                  --message '{ "client-id": "QWERTY54", \
-                              "signature": "ka3kvjni01XFzznkYgmpYg2aHm82eMjoM/FF5JqYh1MhLBt0pmob59I0gWRM4EMZ4UVeOABryM0tmE4w2XAJH5B0MW9Hf4/+z2i5TIFm+8Fztb98OPFinWCineM7VD5VrZ82IzKDjjibl3mRtu/ixGfZWNzb0L4obgF8mzgmsCc=",\
+                              "signature": "Epu7/Cw/I4JfX8y09HcIR8yeawPU7v21iLXxVLbVy9ReyJ/VhNEhQODk2HrGALNvWhdKUQHI1oBdbNxOOhra2r9VW8w9u/OHEgFD/sMIPNxr479RdP9r9HYL8Br/x1JpED5zoMPq9wzpfU6gGM+F8OcBeLFpjEQDAJkv33l0pHs=",\
                               "request": { "request-id": "AH173635G3", \
                                            "reply-to":   "reply/97531", \
                                            "hotp":       "586787", \
-                                           "counter":    7, \
-                                           "device-id":  405419896 }}'
+                                           "counter":    7 }}'
 
 uhppoted-mqtt-get-device:
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
+#                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
+#	                          "device-id": 405419896 }'
 	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
-                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
-	                          "device-id": 405419896 }'
+                 --message '{ "client-id": "QWERTY54", \
+                              "signature": "kTyz5eUzde5fqUeHG3jHvDRIpZdk1Yv0A+9YGuhmJVk8B0otyaNsSueuTv9RxSl4hCgAljpAwh8HqeTFSs982U89VqlpK9jzLzjI06h9+5zcufY54144iSlslUN0fcEYCRECX8Ufdew+Y1y27BB9mxaNKFO3Qn8spgASSJQJ/Uk=",\
+                              "request": { "request-id": "AH173635G3", \
+                                           "reply-to":   "reply/97531", \
+                                           "hotp":       "586787", \
+                                           "counter":    8, \
+                                           "device-id":  405419896 }}'
 
 uhppoted-mqtt-get-status:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/status:get' \
