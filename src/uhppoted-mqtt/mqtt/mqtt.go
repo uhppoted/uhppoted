@@ -241,14 +241,17 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 
 		request := []byte(body.Request)
 
-		if body.Key != nil {
-			if plaintext, err := d.mqttd.decrypt(request, *body.IV, *body.Key); err != nil {
-				d.log.Printf("WARN  %-20s %v", "dispatch", err)
-			} else if plaintext == nil {
-				d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Invalid plaintext"))
-			} else {
-				request = plaintext
+		// TODO HMAC
+
+		if body.Key != nil && body.IV != nil && isBase64(body.Request) {
+			plaintext, err := d.mqttd.decrypt(request, *body.IV, *body.Key)
+			if err != nil || plaintext == nil {
+				d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
+				d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("could not decrypt message (%v:%v)", err, plaintext))
+				return
 			}
+
+			request = plaintext
 		}
 
 		if err := d.mqttd.authenticatex(body.ClientID, request, body.Signature); err != nil {
@@ -267,8 +270,11 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		ctx = context.WithValue(ctx, "operation", fn.operation)
 
 		go fn.f(d.mqttd, d.uhppoted, ctx, msg)
-		return
 	}
+}
+
+func isBase64(request []byte) bool {
+	return regexp.MustCompile(`^"[A-Za-z0-9+/]*[=]{0,2}"$`).Match(request)
 }
 
 func (m *MQTTD) decrypt(request []byte, iv string, key string) ([]byte, error) {
@@ -279,8 +285,7 @@ func (m *MQTTD) decrypt(request []byte, iv string, key string) ([]byte, error) {
 		return nil, err
 	}
 
-	// Because the standard library base64 implementation does not ignore whitespace
-	ciphertext, err := base64.StdEncoding.DecodeString(strings.ReplaceAll(crypttext, " ", ""))
+	ciphertext, err := base64.StdEncoding.DecodeString(crypttext)
 	if err != nil {
 		return nil, err
 	}
