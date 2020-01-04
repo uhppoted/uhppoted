@@ -2,6 +2,8 @@ package auth
 
 import (
 	"crypto"
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/x509"
@@ -17,6 +19,7 @@ import (
 )
 
 type RSA struct {
+	key        *rsa.PrivateKey
 	clientKeys map[string]*rsa.PublicKey
 	counters   struct {
 		*kvs.KeyValueStore
@@ -25,8 +28,9 @@ type RSA struct {
 	log *log.Logger
 }
 
-func NewRSA(keys, counters string, logger *log.Logger) (*RSA, error) {
+func NewRSA(privateKey, clientKeys, counters string, logger *log.Logger) (*RSA, error) {
 	rsa := RSA{
+		key:        nil,
 		clientKeys: map[string]*rsa.PublicKey{},
 		counters: struct {
 			*kvs.KeyValueStore
@@ -38,13 +42,19 @@ func NewRSA(keys, counters string, logger *log.Logger) (*RSA, error) {
 		log: logger,
 	}
 
-	if err := rsa.load(keys); err != nil {
+	if err := rsa.loadPrivateKey(privateKey); err != nil {
+		log.Printf("WARN: %v", err)
+	}
+
+	if err := rsa.loadClientKeys(clientKeys); err != nil {
 		log.Printf("WARN: %v", err)
 	}
 
 	if err := rsa.counters.LoadFromFile(counters); err != nil {
 		log.Printf("WARN: %v", err)
 	}
+
+	// TODO 'watch' client key directory
 
 	return &rsa, nil
 }
@@ -67,8 +77,8 @@ func (r *RSA) Validate(clientID string, request []byte, signature []byte, counte
 	}
 
 	if counter <= c.(uint64) {
-		r.log.Printf("DEBUG: %s: RSA counter reused (%d)", clientID, counter)
-		//		return fmt.Errorf("%s: RSA counter reused (%d)", clientID, counter)
+		// r.log.Printf("TODO:  %s: RSA counter reused (%d)", clientID, counter)
+		return fmt.Errorf("%s: RSA counter reused (%d)", clientID, counter)
 	}
 
 	r.counters.Store(clientID, counter, r.counters.filepath, r.log)
@@ -76,7 +86,66 @@ func (r *RSA) Validate(clientID string, request []byte, signature []byte, counte
 	return nil
 }
 
-func (r *RSA) load(dir string) error {
+func (r *RSA) Decrypt(ciphertext []byte, iv []byte, key []byte) ([]byte, error) {
+	secretKey, err := rsa.DecryptPKCS1v15(nil, r.key, key)
+	if err != nil {
+		return nil, err
+	}
+
+	block, err := aes.NewCipher(secretKey)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(ciphertext) < aes.BlockSize {
+		return nil, fmt.Errorf("ciphertext missing IV (%d bytes)", len(ciphertext))
+	}
+
+	if len(ciphertext)%aes.BlockSize != 0 {
+		return nil, fmt.Errorf("ciphertext not a multiple of AES block size (%d bytes)", len(ciphertext))
+	}
+
+	plaintext := make([]byte, len(ciphertext))
+
+	cipher.NewCBCDecrypter(block, iv).CryptBlocks(plaintext, ciphertext)
+
+	N := len(plaintext)
+	padding := int(plaintext[N-1])
+	N -= padding
+
+	if N < 0 {
+		return nil, fmt.Errorf("invalid padding")
+	}
+
+	return plaintext[:N], nil
+}
+
+func (r *RSA) loadPrivateKey(filepath string) error {
+	bytes, err := ioutil.ReadFile(filepath)
+	if err != nil {
+		return err
+	}
+
+	block, _ := pem.Decode(bytes)
+	if block == nil || block.Type != "PRIVATE KEY" {
+		return fmt.Errorf("%s is not a valid RSA private key", filepath)
+	}
+
+	key, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+	if err != nil {
+		return fmt.Errorf("%s is not a valid RSA private key", filepath)
+	}
+
+	pk, ok := key.(*rsa.PrivateKey)
+	if !ok {
+		return fmt.Errorf("%s is not a valid RSA private key", filepath)
+	}
+
+	r.key = pk
+
+	return nil
+}
+func (r *RSA) loadClientKeys(dir string) error {
 	filemode, err := os.Stat(dir)
 	if err != nil {
 		return err

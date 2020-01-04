@@ -30,3 +30,19 @@
   ...
   subjectAltName = DNS:<hostname>,IP:<IP address>
 ```
+
+#### Encryption/Signing
+
+The current MQTTD sign-then-encrypt implementation knowingly allows for *surreptitious forwarding* - MQTT 3.1x does not provide
+a way to identify the actual sender of a message. This does somewhat impact system security e.g.:
+
+- a geo-fenced access control system that requires a user to be present in an area to open a door can be co-operatively 
+  circumvented if the authorised user not inside the geo-fenced area sends a signed 'OPEN' request to a 
+  non-authorised user inside the geo-fenced area who then forwards it to the access control system.
+
+References:
+
+1. https://crypto.stackexchange.com/questions/8139/secure-encrypt-then-sign-with-rsa
+2. http://world.std.com/~dtd/sign_encrypt/sign_encrypt7.html
+3. https://askubuntu.com/questions/1093591/how-should-i-change-encryption-according-to-warning-deprecated-key-derivat
+

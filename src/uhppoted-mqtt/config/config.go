@@ -38,6 +38,7 @@ type HOTP struct {
 }
 
 type RSA struct {
+	PrivateKey string `conf:"key"`
 	ClientKeys string `conf:"clients.keys"`
 	Counters   string `conf:"clients.counters"`
 }
@@ -76,6 +77,7 @@ func NewConfig() *Config {
 				Counters: hotpCounters,
 			},
 			RSA: RSA{
+				PrivateKey: rsaPrivateKey,
 				ClientKeys: rsaClientKeys,
 				Counters:   rsaCounters,
 			},
