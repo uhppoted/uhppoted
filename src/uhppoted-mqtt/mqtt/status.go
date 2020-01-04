@@ -13,8 +13,14 @@ func (m *MQTTD) getStatus(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT
 		DeviceID *uhppoted.DeviceID `json:"device-id"`
 	}{}
 
-	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
-		m.OnError(ctx, string(msg.Payload()), uhppoted.StatusBadRequest, err)
+	request, ok := ctx.Value("request").([]byte)
+	if !ok {
+		m.OnError(ctx, "Message payload does not contain 'request' field", uhppoted.StatusBadRequest, fmt.Errorf("Bad Request"))
+		return
+	}
+
+	if err := json.Unmarshal(request, &body); err != nil {
+		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 		return
 	}
 

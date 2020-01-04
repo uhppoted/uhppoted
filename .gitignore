@@ -21,6 +21,7 @@ docker/uhppoted-rest/uhppoted-rest
 example.tsv
 rq.*
 key.*
+notes
 
 # Test binary, build with `go test -c`
 *.test

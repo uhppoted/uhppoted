@@ -82,7 +82,6 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		log:      l,
 		topic:    m.Topic,
 		table: map[string]fdispatch{
-			m.Topic + "/device/status:get":       fdispatch{"get-status", (*MQTTD).getStatus},
 			m.Topic + "/device/time:get":         fdispatch{"get-time", (*MQTTD).getTime},
 			m.Topic + "/device/time:set":         fdispatch{"set-time", (*MQTTD).setTime},
 			m.Topic + "/device/door/delay:get":   fdispatch{"get-door-delay", (*MQTTD).getDoorDelay},
@@ -98,8 +97,9 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/event:get":        fdispatch{"get-event", (*MQTTD).getEvent},
 		},
 		tablex: map[string]fdispatch{
-			m.Topic + "/devices:get": fdispatch{"get-devices", (*MQTTD).getDevices},
-			m.Topic + "/device:get":  fdispatch{"get-device", (*MQTTD).getDevice},
+			m.Topic + "/devices:get":       fdispatch{"get-devices", (*MQTTD).getDevices},
+			m.Topic + "/device:get":        fdispatch{"get-device", (*MQTTD).getDevice},
+			m.Topic + "/device/status:get": fdispatch{"get-status", (*MQTTD).getStatus},
 		},
 	}
 
@@ -247,7 +247,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 			plaintext, err := d.mqttd.decrypt(request, *body.IV, *body.Key)
 			if err != nil || plaintext == nil {
 				d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
-				d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("could not decrypt message (%v:%v)", err, plaintext))
+				d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("%v::%v", err, plaintext))
 				return
 			}
 
@@ -287,17 +287,17 @@ func (m *MQTTD) decrypt(request []byte, iv string, key string) ([]byte, error) {
 
 	ciphertext, err := base64.StdEncoding.DecodeString(crypttext)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Invalid ciphertext (%v)", err)
 	}
 
 	keyb, err := base64.StdEncoding.DecodeString(strings.ReplaceAll(key, " ", ""))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Invalid key (%v)", err)
 	}
 
 	ivb, err := hex.DecodeString(iv)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Invalid IV (%v)", err)
 	}
 
 	return m.RSA.Decrypt(ciphertext, ivb, keyb)
@@ -342,7 +342,7 @@ func (m *MQTTD) authenticatex(clientID *string, request []byte, signature *strin
 
 	if m.Authentication == "RSA" {
 		rq := struct {
-			Counter *uint64 `json:"counter"`
+			SequenceNo *uint64 `json:"sequence-no"`
 		}{}
 
 		if clientID == nil {
@@ -362,11 +362,11 @@ func (m *MQTTD) authenticatex(clientID *string, request []byte, signature *strin
 			return err
 		}
 
-		if rq.Counter == nil {
-			return errors.New("Invalid request: missing counter")
+		if rq.SequenceNo == nil {
+			return errors.New("Invalid request: missing sequence number")
 		}
 
-		return m.RSA.Validate(*clientID, request, s, *rq.Counter)
+		return m.RSA.Validate(*clientID, request, s, *rq.SequenceNo)
 	}
 
 	return nil
