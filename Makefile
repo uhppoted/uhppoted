@@ -215,14 +215,21 @@ uhppoted-mqtt-get-device:
 #	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
 #                 --message '{ "request": { "request-id": "AH173635G3", "reply-to": "reply/97531", "client-id": "QWERTY54", "hotp": "586787" }, \
 #	                          "device-id": 405419896 }'
+#
+#	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
+#                 --message '{ "client-id": "QWERTY54", \
+#                              "signature": "kTyz5eUzde5fqUeHG3jHvDRIpZdk1Yv0A+9YGuhmJVk8B0otyaNsSueuTv9RxSl4hCgAljpAwh8HqeTFSs982U89VqlpK9jzLzjI06h9+5zcufY54144iSlslUN0fcEYCRECX8Ufdew+Y1y27BB9mxaNKFO3Qn8spgASSJQJ/Uk=",\
+#                              "request": { "request-id": "AH173635G3", \
+#                                           "reply-to":   "reply/97531", \
+#                                           "hotp":       "586787", \
+#                                           "counter":    8, \
+#                                           "device-id":  405419896 }}'
 	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
                  --message '{ "client-id": "QWERTY54", \
                               "signature": "kTyz5eUzde5fqUeHG3jHvDRIpZdk1Yv0A+9YGuhmJVk8B0otyaNsSueuTv9RxSl4hCgAljpAwh8HqeTFSs982U89VqlpK9jzLzjI06h9+5zcufY54144iSlslUN0fcEYCRECX8Ufdew+Y1y27BB9mxaNKFO3Qn8spgASSJQJ/Uk=",\
-                              "request": { "request-id": "AH173635G3", \
-                                           "reply-to":   "reply/97531", \
-                                           "hotp":       "586787", \
-                                           "counter":    8, \
-                                           "device-id":  405419896 }}'
+                              "key":       "MXT7MsGXxyQxkulgJ1EisdVfPnlJkaFQMW+/j5u5sMC3Yeg6FM3ocXRX2H2CiMC/qpdhKsJlR4D9DWVoqmYvG8CFgddrfZ2KmUmUNHzmDfbhqWxRQeybfkjBuh3k0VgiaxLZD31bjK3updbSh49Hjlge1MbdWpbxcKlicxwG2FfgoCfPP3pcqVCD2NlZUQnVM7W4HKOdPNsSRgk9TVZ/IB+XtAvIR+GgrrN2ttwv9RLwv0JsqqlKWs0txx9DnmOpf2YxU4CQwOucURdtd4idYi352VjfpvrN2mSuRwRUXyXDoD3ykjNTBeAbqb4cQRTLFWOFLRuMYEVOcmhawhnuqQ==",\
+                              "iv":        "4CE3CFB38F43761A5A53CD6BEAFE50B5",\
+                              "request":   "Iw4TOA6Y/IYCm8nEt+lgfS6vSGKLf69f2uY7wP6qcZGTuT75gDPXxsD3xCBGaBWmgCyJe6uYresxYqveX15iymkXtEwYWH35mCM4UiapUZEtDHfuVE6QSnbNrK8lDc30q+aJCpuWMNZVY0KceXwf58z7cAarJGTuUoZRcsTmiLFmAlMjMJhlwpQwyUtz42Bf8X+WmqfQAJTShdaFpOm42VRxPPqnpWL1D8wF/4w2rgo1kev1eZ5h3izXxNFxBbnDrAJEwU/hKYozv7SbGBajuwPamt66MFqlRwlcmX4q4ot3W3YF/LdVk+lXbKWVgWqRrPgN0dFwX0V1F+JyO3ZhE6aXz0Og/b50z6+DjE74fAxXkYLK6RSqyDqwQBRNBjL33a32bvGnU30AZdMP8ObxXw==" }'
 
 uhppoted-mqtt-get-status:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/status:get' \

@@ -19,7 +19,8 @@ docker/uhppoted-rest/uhppoted-rest
 # Working files
 .local
 example.tsv
-rq.txt
+rq.*
+key.*
 
 # Test binary, build with `go test -c`
 *.test

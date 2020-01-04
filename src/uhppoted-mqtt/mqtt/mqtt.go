@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,6 +12,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strings"
 	"uhppote"
 	"uhppoted"
 	"uhppoted-mqtt/auth"
@@ -226,6 +228,8 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		body := struct {
 			ClientID  *string         `json:"client-id"`
 			Signature *string         `json:"signature"`
+			Key       *string         `json:"key"`
+			IV        *string         `json:"iv"`
 			Request   json.RawMessage `json:"request"`
 		}{}
 
@@ -235,7 +239,19 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 			return
 		}
 
-		if err := d.mqttd.authenticatex(body.ClientID, body.Request, body.Signature); err != nil {
+		request := []byte(body.Request)
+
+		if body.Key != nil {
+			if plaintext, err := d.mqttd.decrypt(request, *body.IV, *body.Key); err != nil {
+				d.log.Printf("WARN  %-20s %v", "dispatch", err)
+			} else if plaintext == nil {
+				d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Invalid plaintext"))
+			} else {
+				request = plaintext
+			}
+		}
+
+		if err := d.mqttd.authenticatex(body.ClientID, request, body.Signature); err != nil {
 			d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
 			d.log.Printf("WARN  %-20s %v", "dispatch", err)
 			return
@@ -247,12 +263,39 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 			return
 		}
 
-		ctx = context.WithValue(ctx, "request", []byte(body.Request))
+		ctx = context.WithValue(ctx, "request", request)
 		ctx = context.WithValue(ctx, "operation", fn.operation)
 
 		go fn.f(d.mqttd, d.uhppoted, ctx, msg)
 		return
 	}
+}
+
+func (m *MQTTD) decrypt(request []byte, iv string, key string) ([]byte, error) {
+	var crypttext string = ""
+
+	err := json.Unmarshal(request, &crypttext)
+	if err != nil {
+		return nil, err
+	}
+
+	// Because the standard library base64 implementation does not ignore whitespace
+	ciphertext, err := base64.StdEncoding.DecodeString(strings.ReplaceAll(crypttext, " ", ""))
+	if err != nil {
+		return nil, err
+	}
+
+	keyb, err := base64.StdEncoding.DecodeString(strings.ReplaceAll(key, " ", ""))
+	if err != nil {
+		return nil, err
+	}
+
+	ivb, err := hex.DecodeString(iv)
+	if err != nil {
+		return nil, err
+	}
+
+	return m.RSA.Decrypt(ciphertext, ivb, keyb)
 }
 
 func (m *MQTTD) authenticate(rq request) error {
