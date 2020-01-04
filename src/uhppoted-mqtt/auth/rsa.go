@@ -105,9 +105,16 @@ func (r *RSA) Decrypt(ciphertext []byte, iv []byte, key []byte) ([]byte, error) 
 		return nil, fmt.Errorf("ciphertext not a multiple of AES block size (%d bytes)", len(ciphertext))
 	}
 
-	plaintext := make([]byte, len(ciphertext))
+	// Shouldn't really need this but using openssl AES on the command with the -salt option prepends the
+	// actual ciphertext with 'Salted__<salt>'
+	// Ref. http://justsolve.archiveteam.org/wiki/OpenSSL_salted_format
+	offset := 0
+	if strings.HasPrefix(string(ciphertext), "Salted__") {
+		offset = 16
+	}
 
-	cipher.NewCBCDecrypter(block, iv).CryptBlocks(plaintext, ciphertext)
+	plaintext := make([]byte, len(ciphertext[offset:]))
+	cipher.NewCBCDecrypter(block, iv).CryptBlocks(plaintext, ciphertext[offset:])
 
 	N := len(plaintext)
 	padding := int(plaintext[N-1])
