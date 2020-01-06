@@ -51,7 +51,7 @@ func NewHOTP(increment uint64, secrets string, counters string, logger *log.Logg
 	}
 
 	if err := hotp.secrets.LoadFromFile(secrets); err != nil {
-		return nil, err
+		return &hotp, err
 	}
 
 	if err := hotp.counters.LoadFromFile(counters); err != nil {

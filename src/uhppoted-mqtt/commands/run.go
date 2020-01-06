@@ -175,29 +175,27 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 
 	// ... authentication
 
-	if mqttd.Authentication == "HOTP" {
-		hotp, err := auth.NewHOTP(
-			c.MQTT.HOTP.Range,
-			c.MQTT.HOTP.Secrets,
-			c.MQTT.HOTP.Counters,
-			logger)
-		if err != nil {
-			logger.Printf("ERROR: %v", err)
-			return
-		}
-
-		mqttd.HOTP = hotp
+	hmac, err := auth.NewHMAC(c.HMAC.Required, c.HMAC.Key)
+	if c.HMAC.Required && err != nil {
+		logger.Printf("ERROR: %v", err)
+		return
 	}
 
-	if mqttd.Authentication == "RSA" {
-		rsa, err := auth.NewRSA(c.RSA.PrivateKey, c.RSA.ClientKeys, c.RSA.Counters, logger)
-		if err != nil {
-			logger.Printf("ERROR: %v", err)
-			return
-		}
-
-		mqttd.RSA = rsa
+	hotp, err := auth.NewHOTP(c.MQTT.HOTP.Range, c.MQTT.HOTP.Secrets, c.MQTT.HOTP.Counters, logger)
+	if mqttd.Authentication == "HOTP" && err != nil {
+		logger.Printf("ERROR: %v", err)
+		return
 	}
+
+	rsa, err := auth.NewRSA(c.RSA.PrivateKey, c.RSA.ClientKeys, c.RSA.Counters, logger)
+	if mqttd.Authentication == "RSA" && err != nil {
+		logger.Printf("ERROR: %v", err)
+		return
+	}
+
+	mqttd.HMAC = *hmac
+	mqttd.HOTP = hotp
+	mqttd.RSA = rsa
 
 	// ... listen forever
 
