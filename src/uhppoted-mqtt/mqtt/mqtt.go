@@ -22,6 +22,7 @@ type MQTTD struct {
 	Broker         string
 	TLS            *tls.Config
 	Topic          string
+	HMAC           auth.HMAC
 	Authentication string
 	HOTP           *auth.HOTP
 	RSA            *auth.RSA
@@ -225,6 +226,23 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 	if fn, ok := d.tablex[msg.Topic()]; ok {
 		msg.Ack()
 
+		message := struct {
+			Message json.RawMessage `json:"message"`
+			HMAC    *string         `json:"hmac"`
+		}{}
+
+		if err := json.Unmarshal(msg.Payload(), &message); err != nil {
+			d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
+			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error unmarshaling message (%v)", err))
+			return
+		}
+
+		if err := d.mqttd.verify(message.Message, message.HMAC); err != nil {
+			d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
+			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Invalid message (%v)", err))
+			return
+		}
+
 		body := struct {
 			ClientID  *string         `json:"client-id"`
 			Signature *string         `json:"signature"`
@@ -233,20 +251,18 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 			Request   json.RawMessage `json:"request"`
 		}{}
 
-		if err := json.Unmarshal(msg.Payload(), &body); err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
+		if err := json.Unmarshal(message.Message, &body); err != nil {
+			d.log.Printf("DEBUG %-20s %s", "dispatch", string(message.Message))
 			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error unmarshaling message body (%v)", err))
 			return
 		}
 
 		request := []byte(body.Request)
 
-		// TODO HMAC
-
 		if body.Key != nil && body.IV != nil && isBase64(body.Request) {
 			plaintext, err := d.mqttd.decrypt(request, *body.IV, *body.Key)
 			if err != nil || plaintext == nil {
-				d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
+				d.log.Printf("DEBUG %-20s %s", "dispatch", string(message.Message))
 				d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error decrypting message (%v::%v)", err, plaintext))
 				return
 			}
@@ -255,13 +271,13 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		}
 
 		if err := d.mqttd.authenticatex(body.ClientID, request, body.Signature); err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
+			d.log.Printf("DEBUG %-20s %s", "dispatch", string(message.Message))
 			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error authenticating request (%v)", err))
 			return
 		}
 
 		if err := d.mqttd.authorise(body.ClientID, msg.Topic()); err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
+			d.log.Printf("DEBUG %-20s %s", "dispatch", string(message.Message))
 			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error authorising request (%v)", err))
 			return
 		}
@@ -277,6 +293,25 @@ func isBase64(request []byte) bool {
 	return regexp.MustCompile(`^"[A-Za-z0-9+/]*[=]{0,2}"$`).Match(request)
 }
 
+func (m *MQTTD) verify(message []byte, mac *string) error {
+	if m.HMAC.Required && mac == nil {
+		return errors.New("HMAC required but not present")
+	}
+
+	if mac != nil {
+		hmac, err := hex.DecodeString(*mac)
+		if err != nil {
+			return err
+		}
+
+		if !m.HMAC.Verify(message, hmac) {
+			return errors.New("incorrect HMAC")
+		}
+	}
+
+	return nil
+}
+
 func (m *MQTTD) decrypt(request []byte, iv string, key string) ([]byte, error) {
 	var crypttext string = ""
 
@@ -290,17 +325,17 @@ func (m *MQTTD) decrypt(request []byte, iv string, key string) ([]byte, error) {
 		return nil, fmt.Errorf("Invalid ciphertext (%v)", err)
 	}
 
-	keyb, err := base64.StdEncoding.DecodeString(strings.ReplaceAll(key, " ", ""))
+	keyv, err := base64.StdEncoding.DecodeString(strings.ReplaceAll(key, " ", ""))
 	if err != nil {
 		return nil, fmt.Errorf("Invalid key (%v)", err)
 	}
 
-	ivb, err := hex.DecodeString(iv)
+	ivv, err := hex.DecodeString(iv)
 	if err != nil {
 		return nil, fmt.Errorf("Invalid IV (%v)", err)
 	}
 
-	return m.RSA.Decrypt(ciphertext, ivb, keyb)
+	return m.RSA.Decrypt(ciphertext, ivv, keyv)
 }
 
 func (m *MQTTD) authenticate(rq request) error {
