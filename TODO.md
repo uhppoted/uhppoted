@@ -33,36 +33,29 @@
 - [x] command protocol: rework response JSON marshaling
 - [x] command protocol: add 'operation' to response meta-info
 - [x] wrap request handling in go routine
-- [ ] rework GetDevices to also find 'known' devices
+- [x] rework GetDevices to also find 'known' devices
 - [ ] sign &| encrypt
 - [ ] move incoming requests to /requests subtopic
+- [ ] health check
+- [ ] watchdog
 
 - [x] subscribe
 - [x] error handling
 - [x] 'reply'
 - [ ] move ACL and events to separate API's
 - [ ] publish add/delete card, etc to event stream
-- [ ] CLI/events: retrieve and show actual events
-- [ ] CLI: generate OTP secret
 - [x] TLS connection
 - [x] TLS connection: client authentication
 - [ ] Exit on error when multiple mqttd's are started (or generate unique client ID???)
 - [ ] Implement retry + backoff for connection to broker
 - [ ] Implement retry + backoff for 'listen'
 - [ ] Rework listen logic to handle errors robustly
-- [ ] health check
 - [ ] Include get-listener in health check
 - [ ] Make health check interval configurable 
-- [ ] watchdog
 - [ ] Make events consistent across everything
 - [ ] Rework UHPPOTE response messages to use factory
 - [ ] Add ARM7 target to build
 - [x] Identify UTO311-L01..L04 based on serial number prefix
-
-- [ ] uhppoted-rest: PUT card
-- [ ] uhppoted-rest: DELETE card
-- [ ] uhppoted-rest: get-events date/id range
-- [ ] commonalise functionality with uhppoted-mqttd
 
 - [x] Fix go vet errors
 - [ ] Fix golint errors
@@ -97,6 +90,11 @@
 ### uhppoted-rest
 - [ ] Get events after XXX
 - [ ] Client certificate revocation list
+- [ ] Rework GetDevices to also find 'known' devices
+- [ ] uhppoted-rest: PUT card
+- [ ] uhppoted-rest: DELETE card
+- [ ] uhppoted-rest: get-events date/id range
+- [ ] commonalise functionality with uhppoted-mqttd
 
 ### uhppoted-mqtt
 - [ ] MQTT v5.0
@@ -110,6 +108,9 @@
 - [ ] use flag.FlagSet for commands
 - [ ] Default to commmon config file
 - [ ] Use (loadable) text/template for output formats
+- [ ] Rework GetDevices to also find 'known' devices
+- [ ] events: retrieve and show actual events
+- [ ] Generate OTP secret + QR code
 
 ### simulator
 - [ ] concurrent requests

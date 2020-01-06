@@ -10,8 +10,8 @@ import (
 
 func (m *MQTTD) getDoorDelay(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
 	body := struct {
-		DeviceID *uint32 `json:"device-id"`
-		Door     *uint8  `json:"door"`
+		DeviceID *uhppoted.DeviceID `json:"device-id"`
+		Door     *uint8             `json:"door"`
 	}{}
 
 	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
@@ -19,7 +19,7 @@ func (m *MQTTD) getDoorDelay(impl *uhppoted.UHPPOTED, ctx context.Context, msg M
 		return
 	}
 
-	if body.DeviceID == nil || *body.DeviceID == 0 {
+	if body.DeviceID == nil {
 		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
 		return
 	}
@@ -55,9 +55,9 @@ func (m *MQTTD) getDoorDelay(impl *uhppoted.UHPPOTED, ctx context.Context, msg M
 
 func (m *MQTTD) setDoorDelay(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
 	body := struct {
-		DeviceID *uint32 `json:"device-id"`
-		Door     *uint8  `json:"door"`
-		Delay    *uint8  `json:"delay"`
+		DeviceID *uhppoted.DeviceID `json:"device-id"`
+		Door     *uint8             `json:"door"`
+		Delay    *uint8             `json:"delay"`
 	}{}
 
 	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
@@ -65,7 +65,7 @@ func (m *MQTTD) setDoorDelay(impl *uhppoted.UHPPOTED, ctx context.Context, msg M
 		return
 	}
 
-	if body.DeviceID == nil || *body.DeviceID == 0 {
+	if body.DeviceID == nil {
 		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
 		return
 	}
@@ -106,8 +106,8 @@ func (m *MQTTD) setDoorDelay(impl *uhppoted.UHPPOTED, ctx context.Context, msg M
 
 func (m *MQTTD) getDoorControl(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
 	body := struct {
-		DeviceID *uint32 `json:"device-id"`
-		Door     *uint8  `json:"door"`
+		DeviceID *uhppoted.DeviceID `json:"device-id"`
+		Door     *uint8             `json:"door"`
 	}{}
 
 	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
@@ -115,7 +115,7 @@ func (m *MQTTD) getDoorControl(impl *uhppoted.UHPPOTED, ctx context.Context, msg
 		return
 	}
 
-	if body.DeviceID == nil || *body.DeviceID == 0 {
+	if body.DeviceID == nil {
 		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
 		return
 	}
@@ -152,7 +152,7 @@ func (m *MQTTD) getDoorControl(impl *uhppoted.UHPPOTED, ctx context.Context, msg
 
 func (m *MQTTD) setDoorControl(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
 	body := struct {
-		DeviceID *uint32                `json:"device-id"`
+		DeviceID *uhppoted.DeviceID     `json:"device-id"`
 		Door     *uint8                 `json:"door"`
 		Control  *uhppoted.ControlState `json:"control"`
 	}{}
@@ -162,7 +162,7 @@ func (m *MQTTD) setDoorControl(impl *uhppoted.UHPPOTED, ctx context.Context, msg
 		return
 	}
 
-	if body.DeviceID == nil || *body.DeviceID == 0 {
+	if body.DeviceID == nil {
 		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
 		return
 	}
