@@ -235,7 +235,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 
 		if err := json.Unmarshal(msg.Payload(), &body); err != nil {
 			d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
-			d.log.Printf("WARN  %-20s %v", "dispatch", err)
+			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error unmarshaling message body (%v)", err))
 			return
 		}
 
@@ -247,7 +247,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 			plaintext, err := d.mqttd.decrypt(request, *body.IV, *body.Key)
 			if err != nil || plaintext == nil {
 				d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
-				d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("%v::%v", err, plaintext))
+				d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error decrypting message (%v::%v)", err, plaintext))
 				return
 			}
 
@@ -256,13 +256,13 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 
 		if err := d.mqttd.authenticatex(body.ClientID, request, body.Signature); err != nil {
 			d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
-			d.log.Printf("WARN  %-20s %v", "dispatch", err)
+			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error authenticating request (%v)", err))
 			return
 		}
 
 		if err := d.mqttd.authorise(body.ClientID, msg.Topic()); err != nil {
 			d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
-			d.log.Printf("WARN  %-20s %v", "dispatch", err)
+			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error authorising request (%v)", err))
 			return
 		}
 
