@@ -4,23 +4,22 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"uhppote/types"
 	"uhppoted"
 )
 
-func (m *MQTTD) getTime(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
+func (m *MQTTD) getTime(impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) {
 	body := struct {
 		DeviceID *uhppoted.DeviceID `json:"device-id"`
 	}{}
 
-	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
+	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 		return
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing device ID: %s", string(request)))
 		return
 	}
 
@@ -47,24 +46,24 @@ func (m *MQTTD) getTime(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.M
 	}
 }
 
-func (m *MQTTD) setTime(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
+func (m *MQTTD) setTime(impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) {
 	body := struct {
 		DeviceID *uhppoted.DeviceID `json:"device-id"`
 		DateTime *types.DateTime    `json:"date-time"`
 	}{}
 
-	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
+	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 		return
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing device ID: %s", string(request)))
 		return
 	}
 
 	if body.DateTime == nil {
-		m.OnError(ctx, "Missing/invalid device time", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device time '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device time", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device time '%s'", string(request)))
 		return
 	}
 

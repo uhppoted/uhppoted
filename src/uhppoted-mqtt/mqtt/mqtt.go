@@ -39,6 +39,11 @@ type fdispatch struct {
 	f         func(*MQTTD, *uhppoted.UHPPOTED, context.Context, MQTT.Message)
 }
 
+type fdispatchx struct {
+	operation string
+	f         func(*MQTTD, *uhppoted.UHPPOTED, context.Context, []byte)
+}
+
 type dispatcher struct {
 	mqttd    *MQTTD
 	uhppoted *uhppoted.UHPPOTED
@@ -46,7 +51,7 @@ type dispatcher struct {
 	log      *log.Logger
 	topic    string
 	table    map[string]fdispatch
-	tablex   map[string]fdispatch
+	tablex   map[string]fdispatchx
 }
 
 type request struct {
@@ -61,6 +66,8 @@ type metainfo struct {
 	ClientID  string `json:"client-id,omitempty"`
 	Operation string `json:"operation,omitempty"`
 }
+
+var clean *regexp.Regexp = regexp.MustCompile(`\s+`)
 
 func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	MQTT.CRITICAL = l
@@ -83,8 +90,6 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		log:      l,
 		topic:    m.Topic,
 		table: map[string]fdispatch{
-			m.Topic + "/device/time:get":         fdispatch{"get-time", (*MQTTD).getTime},
-			m.Topic + "/device/time:set":         fdispatch{"set-time", (*MQTTD).setTime},
 			m.Topic + "/device/door/delay:get":   fdispatch{"get-door-delay", (*MQTTD).getDoorDelay},
 			m.Topic + "/device/door/delay:set":   fdispatch{"set-door-delay", (*MQTTD).setDoorDelay},
 			m.Topic + "/device/door/control:get": fdispatch{"get-door-control", (*MQTTD).getDoorControl},
@@ -97,10 +102,12 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/events:get":       fdispatch{"get-events", (*MQTTD).getEvents},
 			m.Topic + "/device/event:get":        fdispatch{"get-event", (*MQTTD).getEvent},
 		},
-		tablex: map[string]fdispatch{
-			m.Topic + "/devices:get":       fdispatch{"get-devices", (*MQTTD).getDevices},
-			m.Topic + "/device:get":        fdispatch{"get-device", (*MQTTD).getDevice},
-			m.Topic + "/device/status:get": fdispatch{"get-status", (*MQTTD).getStatus},
+		tablex: map[string]fdispatchx{
+			m.Topic + "/devices:get":       fdispatchx{"get-devices", (*MQTTD).getDevices},
+			m.Topic + "/device:get":        fdispatchx{"get-device", (*MQTTD).getDevice},
+			m.Topic + "/device/status:get": fdispatchx{"get-status", (*MQTTD).getStatus},
+			m.Topic + "/device/time:get":   fdispatchx{"get-time", (*MQTTD).getTime},
+			m.Topic + "/device/time:set":   fdispatchx{"set-time", (*MQTTD).setTime},
 		},
 	}
 
@@ -259,6 +266,10 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 
 		request := []byte(body.Request)
 
+		//		println("----")
+		//		println(string(request))
+		//		println("----")
+
 		if body.Key != nil && body.IV != nil && isBase64(body.Request) {
 			plaintext, err := d.mqttd.decrypt(request, *body.IV, *body.Key)
 			if err != nil || plaintext == nil {
@@ -285,7 +296,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		ctx = context.WithValue(ctx, "request", request)
 		ctx = context.WithValue(ctx, "operation", fn.operation)
 
-		go fn.f(d.mqttd, d.uhppoted, ctx, msg)
+		go fn.f(d.mqttd, d.uhppoted, ctx, request)
 	}
 }
 
@@ -500,7 +511,8 @@ func getMetaInfo(ctx context.Context) *metainfo {
 
 func (m *MQTTD) OnError(ctx context.Context, message string, errorCode int, err error) {
 	if operation, ok := ctx.Value("operation").(string); ok {
-		ctx.Value("log").(*log.Logger).Printf("WARN  %-20s [%v] %s", operation, err, message)
+		errmsg := clean.ReplaceAllString(fmt.Sprintf("%v", err), " ")
+		ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %s", operation, errmsg)
 		oops(ctx, operation, message, errorCode)
 		return
 	}
