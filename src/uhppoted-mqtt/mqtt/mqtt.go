@@ -473,7 +473,24 @@ func (m *MQTTD) reply(ctx context.Context, response interface{}) {
 		}
 	}
 
-	b, err := json.Marshal(response)
+	msg, err := json.Marshal(response)
+	if err != nil {
+		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
+		oops(ctx, "encoding/json", "Error encoding response", uhppoted.StatusInternalServerError)
+		return
+	}
+
+	hmac := hex.EncodeToString(m.HMAC.MAC(msg))
+
+	message := struct {
+		Message json.RawMessage `json:"message"`
+		HMAC    string          `json:"hmac,omitempty"`
+	}{
+		Message: msg,
+		HMAC:    hmac,
+	}
+
+	b, err := json.Marshal(message)
 	if err != nil {
 		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
 		oops(ctx, "encoding/json", "Error encoding response", uhppoted.StatusInternalServerError)

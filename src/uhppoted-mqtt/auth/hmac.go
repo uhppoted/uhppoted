@@ -19,7 +19,20 @@ func NewHMAC(required bool, key string) (*HMAC, error) {
 
 func (h *HMAC) Verify(message []byte, mac []byte) bool {
 	hash := hmac.New(sha256.New, h.secret)
+
 	hash.Write(message)
 
 	return hmac.Equal(mac, hash.Sum(nil))
+}
+
+func (h *HMAC) MAC(message []byte) []byte {
+	if len(h.secret) != 0 {
+		hash := hmac.New(sha256.New, h.secret)
+
+		hash.Write(message)
+
+		return hash.Sum(nil)
+	}
+
+	return []byte{}
 }
