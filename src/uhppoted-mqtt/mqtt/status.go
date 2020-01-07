@@ -4,20 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"uhppoted"
 )
 
-func (m *MQTTD) getStatus(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
+func (m *MQTTD) getStatus(impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) {
 	body := struct {
 		DeviceID *uhppoted.DeviceID `json:"device-id"`
 	}{}
-
-	request, ok := ctx.Value("request").([]byte)
-	if !ok {
-		m.OnError(ctx, "Message payload does not contain 'request' field", uhppoted.StatusBadRequest, fmt.Errorf("Bad Request"))
-		return
-	}
 
 	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
@@ -25,7 +18,7 @@ func (m *MQTTD) getStatus(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, string(msg.Payload()), uhppoted.StatusBadRequest, fmt.Errorf("Missing device ID"))
+		m.OnError(ctx, "Missing device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing device ID: %s", string(request)))
 		return
 	}
 
