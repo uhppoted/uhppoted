@@ -231,14 +231,13 @@ uhppoted-mqtt-get-devices-encrypted:
                                            "request":   "gOfqOIK77RttZTQs4OFM9XlUwqd0YYrEwByfMkMdhrN06+UNUwIpuNQPZo0xNmWsvPkwjynHdvuYcVpDOLJJOz+/jwo2ifm/7ss1fCdzYd3eDy3hifdIoZ+PEc6fHo6K8Mq2HA4EYj7uOqc5hU84ZBRe4I6V9MOeClOxvJdJgUYeDOBtZCIoP8NUUMir2OPmH7TJHR8XaEl21WQ9r90yuVRBbzN6IqEKKDqkYFVaTSI/fxCGsEgdlHsqPdJIR/Nt" \
                                          }, \
                               "hmac": "7006a543cf4bb7c7f9f2273149431b82c05704306db12aac961c8d9171b2630f" }'
-
+ 
 uhppoted-mqtt-get-device:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
                  --message '{ "message": { "client-id": "QWERTY54",\
                                            "request": { "request-id":  "AH173635G3", \
                                                         "reply-to":    "reply/97531", \
-                                                        "device-id":   405419896 } \
-                                         }}}'
+                                                        "device-id":   405419896 }}}'
 
 uhppoted-mqtt-get-device-hotp:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
