@@ -67,7 +67,10 @@ type metainfo struct {
 	Operation string `json:"operation,omitempty"`
 }
 
-var clean *regexp.Regexp = regexp.MustCompile(`\s+`)
+var regex map[string]*regexp.Regexp = map[string]*regexp.Regexp{
+	"clean":  regexp.MustCompile(`\s+`),
+	"base64": regexp.MustCompile(`^"[A-Za-z0-9+/]*[=]{0,2}"$`),
+}
 
 func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	MQTT.CRITICAL = l
@@ -300,10 +303,6 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 	}
 }
 
-func isBase64(request []byte) bool {
-	return regexp.MustCompile(`^"[A-Za-z0-9+/]*[=]{0,2}"$`).Match(request)
-}
-
 func (m *MQTTD) verify(message []byte, mac *string) error {
 	if m.HMAC.Required && mac == nil {
 		return errors.New("HMAC required but not present")
@@ -511,7 +510,7 @@ func getMetaInfo(ctx context.Context) *metainfo {
 
 func (m *MQTTD) OnError(ctx context.Context, message string, errorCode int, err error) {
 	if operation, ok := ctx.Value("operation").(string); ok {
-		errmsg := clean.ReplaceAllString(fmt.Sprintf("%v", err), " ")
+		errmsg := clean(fmt.Sprintf("%v", err))
 		ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %s", operation, errmsg)
 		oops(ctx, operation, message, errorCode)
 		return
@@ -583,4 +582,12 @@ func oops(ctx context.Context, operation string, msg string, errorCode int) {
 
 func debug(ctx context.Context, operation string, msg interface{}) {
 	ctx.Value("log").(*log.Logger).Printf("DEBUG %-20s %v\n", operation, msg)
+}
+
+func isBase64(request []byte) bool {
+	return regex["base64"].Match(request)
+}
+
+func clean(s string) string {
+	return regex["clean"].ReplaceAllString(s, " ")
 }
