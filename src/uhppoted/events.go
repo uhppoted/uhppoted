@@ -9,28 +9,28 @@ import (
 )
 
 type GetEventsRequest struct {
-	DeviceID uint32
+	DeviceID DeviceID
 	Start    *types.DateTime
 	End      *types.DateTime
 }
 
 type GetEventsResponse struct {
 	Device struct {
-		ID     uint32      `json:"id"`
+		ID     DeviceID    `json:"id"`
 		Dates  *DateRange  `json:"dates,omitempty"`
 		Events *EventRange `json:"events,omitempty"`
 	} `json:"device"`
 }
 
 type GetEventRequest struct {
-	DeviceID uint32
+	DeviceID DeviceID
 	EventID  uint32
 }
 
 type GetEventResponse struct {
 	Device struct {
-		ID    uint32 `json:"id"`
-		Event event  `json:"event"`
+		ID    DeviceID `json:"id"`
+		Event event    `json:"event"`
 	} `json:"device"`
 }
 
@@ -58,7 +58,7 @@ type event struct {
 func (u *UHPPOTED) GetEvents(ctx context.Context, request GetEventsRequest) (*GetEventsResponse, int, error) {
 	u.debug("get-events", fmt.Sprintf("request  %+v", request))
 
-	device := request.DeviceID
+	device := uint32(request.DeviceID)
 	start := request.Start
 	end := request.End
 
@@ -117,11 +117,11 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, request GetEventsRequest) (*Ge
 
 	response := GetEventsResponse{
 		Device: struct {
-			ID     uint32      `json:"id"`
+			ID     DeviceID    `json:"id"`
 			Dates  *DateRange  `json:"dates,omitempty"`
 			Events *EventRange `json:"events,omitempty"`
 		}{
-			ID:     device,
+			ID:     DeviceID(device),
 			Dates:  dates,
 			Events: events,
 		},
@@ -135,7 +135,7 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, request GetEventsRequest) (*Ge
 func (u *UHPPOTED) GetEvent(ctx context.Context, request GetEventRequest) (*GetEventResponse, int, error) {
 	u.debug("get-events", fmt.Sprintf("request  %+v", request))
 
-	device := request.DeviceID
+	device := uint32(request.DeviceID)
 	eventID := request.EventID
 
 	record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, eventID)
@@ -153,10 +153,10 @@ func (u *UHPPOTED) GetEvent(ctx context.Context, request GetEventRequest) (*GetE
 
 	response := GetEventResponse{
 		Device: struct {
-			ID    uint32 `json:"id"`
-			Event event  `json:"event"`
+			ID    DeviceID `json:"id"`
+			Event event    `json:"event"`
 		}{
-			ID: device,
+			ID: DeviceID(record.SerialNumber),
 			Event: event{
 				Index:      record.Index,
 				Type:       record.Type,

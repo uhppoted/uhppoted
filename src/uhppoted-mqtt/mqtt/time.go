@@ -19,7 +19,7 @@ func (m *MQTTD) getTime(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.M
 		return
 	}
 
-	if body.DeviceID == nil || *body.DeviceID == 0 {
+	if body.DeviceID == nil {
 		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
 		return
 	}
@@ -49,8 +49,8 @@ func (m *MQTTD) getTime(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.M
 
 func (m *MQTTD) setTime(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
 	body := struct {
-		DeviceID *uint32         `json:"device-id"`
-		DateTime *types.DateTime `json:"date-time"`
+		DeviceID *uhppoted.DeviceID `json:"device-id"`
+		DateTime *types.DateTime    `json:"date-time"`
 	}{}
 
 	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
@@ -58,7 +58,7 @@ func (m *MQTTD) setTime(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.M
 		return
 	}
 
-	if body.DeviceID == nil || *body.DeviceID == 0 {
+	if body.DeviceID == nil {
 		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
 		return
 	}

@@ -20,7 +20,7 @@ type EventMap struct {
 }
 
 type ListenEvent struct {
-	DeviceID   uint32         `json:"device-id"`
+	DeviceID   DeviceID       `json:"device-id"`
 	EventID    uint32         `json:"event-id"`
 	Type       uint8          `json:"event-type"`
 	Granted    bool           `json:"access-granted"`
@@ -110,7 +110,7 @@ func (u *UHPPOTED) fetch(ctx context.Context, device uint32, first uint32, last 
 		retrieved = record.Index
 		message := EventMessage{
 			Event: ListenEvent{
-				DeviceID:   device,
+				DeviceID:   DeviceID(record.SerialNumber),
 				EventID:    record.Index,
 				Type:       record.Type,
 				Granted:    record.Granted,

@@ -16,24 +16,6 @@ type DeviceSummary struct {
 	Address    net.IP `json:"ip-address"`
 }
 
-// type DeviceDetail struct {
-// 	Device struct {
-// 		ID     DeviceID `json:"id"`
-// 		Detail detail `json:"info"`
-// 	} `json:"device"`
-// }
-
-// type detail struct {
-// 	DeviceType   string             `json:"device-type"`
-// 	SerialNumber types.SerialNumber `json:"serial-number"`
-// 	IpAddress    net.IP             `json:"ip-address"`
-// 	SubnetMask   net.IP             `json:"subnet-mask"`
-// 	Gateway      net.IP             `json:"gateway-address"`
-// 	MacAddress   types.MacAddress   `json:"mac-address"`
-// 	Version      types.Version      `json:"version"`
-// 	Date         types.Date         `json:"date"`
-// }
-
 type GetDevicesRequest struct {
 }
 

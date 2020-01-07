@@ -32,8 +32,8 @@ type GetStatusRequest struct {
 }
 
 type GetStatusResponse struct {
-	DeviceID uint32 `json:"device-id"`
-	Status   Status `json:"status"`
+	DeviceID DeviceID `json:"device-id"`
+	Status   Status   `json:"status"`
 }
 
 func (u *UHPPOTED) GetStatus(ctx context.Context, request GetStatusRequest) (*GetStatusResponse, int, error) {
@@ -45,7 +45,7 @@ func (u *UHPPOTED) GetStatus(ctx context.Context, request GetStatusRequest) (*Ge
 	}
 
 	response := GetStatusResponse{
-		DeviceID: uint32(status.SerialNumber),
+		DeviceID: DeviceID(status.SerialNumber),
 		Status: Status{
 			LastEventIndex: status.LastIndex,
 			EventType:      status.EventType,
