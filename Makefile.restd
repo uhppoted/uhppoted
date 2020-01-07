@@ -1,0 +1,25 @@
+include Makefile
+
+uhppoted-rest-linux: build
+	mkdir -p ./dist/development/linux
+	env GOOS=linux GOARCH=amd64 go build -o dist/development/linux/uhppoted-rest uhppoted-rest
+
+uhppoted-rest-windows: build
+	mkdir -p ./dist/development/windows
+	env GOOS=windows GOARCH=amd64 go build -o dist/development/windows/uhppoted-rest.exe uhppoted-rest
+
+uhppoted-rest-version: build
+	./bin/uhppoted-rest version
+
+uhppoted-rest-help: build
+	./bin/uhppoted-rest help
+	./bin/uhppoted-rest help commands
+	./bin/uhppoted-rest help version
+	./bin/uhppoted-rest help help
+
+uhppoted-rest-daemonize: build
+	sudo ./bin/uhppoted-rest daemonize
+
+uhppoted-rest-undaemonize: build
+	sudo ./bin/uhppoted-rest undaemonize
+
