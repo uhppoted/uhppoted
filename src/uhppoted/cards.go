@@ -8,18 +8,18 @@ import (
 )
 
 type GetCardsRequest struct {
-	DeviceID uint32
+	DeviceID DeviceID
 }
 
 type GetCardsResponse struct {
-	DeviceID uint32   `json:"device-id"`
+	DeviceID DeviceID `json:"device-id"`
 	Cards    []uint32 `json:"cards"`
 }
 
 func (u *UHPPOTED) GetCards(ctx context.Context, request GetCardsRequest) (*GetCardsResponse, int, error) {
 	u.debug("get-cards", fmt.Sprintf("request  %+v", request))
 
-	device := request.DeviceID
+	device := uint32(request.DeviceID)
 
 	N, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCards(device)
 	if err != nil {
@@ -38,7 +38,7 @@ func (u *UHPPOTED) GetCards(ctx context.Context, request GetCardsRequest) (*GetC
 	}
 
 	response := GetCardsResponse{
-		DeviceID: device,
+		DeviceID: DeviceID(N.SerialNumber),
 		Cards:    cards,
 	}
 
@@ -48,18 +48,18 @@ func (u *UHPPOTED) GetCards(ctx context.Context, request GetCardsRequest) (*GetC
 }
 
 type DeleteCardsRequest struct {
-	DeviceID uint32
+	DeviceID DeviceID
 }
 
 type DeleteCardsResponse struct {
-	DeviceID uint32 `json:"device-id"`
-	Deleted  bool   `json:"deleted"`
+	DeviceID DeviceID `json:"device-id"`
+	Deleted  bool     `json:"deleted"`
 }
 
 func (u *UHPPOTED) DeleteCards(ctx context.Context, request DeleteCardsRequest) (*DeleteCardsResponse, int, error) {
 	u.debug("delete-cards", fmt.Sprintf("request  %+v", request))
 
-	device := request.DeviceID
+	device := uint32(request.DeviceID)
 
 	deleted, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).DeleteCards(device)
 	if err != nil {
@@ -67,7 +67,7 @@ func (u *UHPPOTED) DeleteCards(ctx context.Context, request DeleteCardsRequest) 
 	}
 
 	response := DeleteCardsResponse{
-		DeviceID: device,
+		DeviceID: DeviceID(deleted.SerialNumber),
 		Deleted:  deleted.Succeeded,
 	}
 
@@ -77,19 +77,19 @@ func (u *UHPPOTED) DeleteCards(ctx context.Context, request DeleteCardsRequest) 
 }
 
 type GetCardRequest struct {
-	DeviceID   uint32
+	DeviceID   DeviceID
 	CardNumber uint32
 }
 
 type GetCardResponse struct {
-	DeviceID uint32     `json:"device-id"`
+	DeviceID DeviceID   `json:"device-id"`
 	Card     types.Card `json:"card"`
 }
 
 func (u *UHPPOTED) GetCard(ctx context.Context, request GetCardRequest) (*GetCardResponse, int, error) {
 	u.debug("get-card", fmt.Sprintf("request  %+v", request))
 
-	device := request.DeviceID
+	device := uint32(request.DeviceID)
 	cardID := request.CardNumber
 
 	card, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetCardByID(device, cardID)
@@ -102,7 +102,7 @@ func (u *UHPPOTED) GetCard(ctx context.Context, request GetCardRequest) (*GetCar
 	}
 
 	response := GetCardResponse{
-		DeviceID: device,
+		DeviceID: DeviceID(device),
 		Card:     *card,
 	}
 
@@ -112,19 +112,19 @@ func (u *UHPPOTED) GetCard(ctx context.Context, request GetCardRequest) (*GetCar
 }
 
 type PutCardRequest struct {
-	DeviceID uint32
+	DeviceID DeviceID
 	Card     types.Card
 }
 
 type PutCardResponse struct {
-	DeviceID uint32     `json:"device-id"`
+	DeviceID DeviceID   `json:"device-id"`
 	Card     types.Card `json:"card"`
 }
 
 func (u *UHPPOTED) PutCard(ctx context.Context, request PutCardRequest) (*PutCardResponse, int, error) {
 	u.debug("put-card", fmt.Sprintf("request  %+v", request))
 
-	device := request.DeviceID
+	device := uint32(request.DeviceID)
 	card := request.Card
 
 	authorised, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).PutCard(device, card)
@@ -137,7 +137,7 @@ func (u *UHPPOTED) PutCard(ctx context.Context, request PutCardRequest) (*PutCar
 	}
 
 	response := PutCardResponse{
-		DeviceID: device,
+		DeviceID: DeviceID(authorised.SerialNumber),
 		Card:     card,
 	}
 
@@ -147,20 +147,20 @@ func (u *UHPPOTED) PutCard(ctx context.Context, request PutCardRequest) (*PutCar
 }
 
 type DeleteCardRequest struct {
-	DeviceID   uint32
+	DeviceID   DeviceID
 	CardNumber uint32
 }
 
 type DeleteCardResponse struct {
-	DeviceID   uint32 `json:"device-id"`
-	CardNumber uint32 `json:"card-number"`
-	Deleted    bool   `json:"deleted"`
+	DeviceID   DeviceID `json:"device-id"`
+	CardNumber uint32   `json:"card-number"`
+	Deleted    bool     `json:"deleted"`
 }
 
 func (u *UHPPOTED) DeleteCard(ctx context.Context, request DeleteCardRequest) (*DeleteCardResponse, int, error) {
 	u.debug("delete-card", fmt.Sprintf("request  %+v", request))
 
-	device := request.DeviceID
+	device := uint32(request.DeviceID)
 	cardNo := request.CardNumber
 
 	deleted, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).DeleteCard(device, cardNo)
@@ -169,7 +169,7 @@ func (u *UHPPOTED) DeleteCard(ctx context.Context, request DeleteCardRequest) (*
 	}
 
 	response := DeleteCardResponse{
-		DeviceID:   device,
+		DeviceID:   DeviceID(deleted.SerialNumber),
 		CardNumber: cardNo,
 		Deleted:    deleted.Succeeded,
 	}

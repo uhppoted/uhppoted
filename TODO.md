@@ -182,5 +182,6 @@
 23. [Fernet](https://github.com/fernet/spec/blob/master/Spec.md)
      - [cryptography.io:fernet](https://cryptography.io/en/latest/fernet)
 24. [AsyncAPI](https://www.asyncapi.coms)
-     - https://modeling-languages.com/asyncapi-modeling-editor-code-generator/
+     - https://modeling-languages.com/asyncapi-modeling-editor-code-generator
+25. go-fuzz
 
