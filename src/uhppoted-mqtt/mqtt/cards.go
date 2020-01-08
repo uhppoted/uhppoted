@@ -4,23 +4,22 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"uhppote/types"
 	"uhppoted"
 )
 
-func (m *MQTTD) getCards(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
+func (m *MQTTD) getCards(impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) {
 	body := struct {
 		DeviceID *uhppoted.DeviceID `json:"device-id"`
 	}{}
 
-	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
+	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 		return
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(request)))
 		return
 	}
 
@@ -47,18 +46,18 @@ func (m *MQTTD) getCards(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.
 	}
 }
 
-func (m *MQTTD) deleteCards(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
+func (m *MQTTD) deleteCards(impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) {
 	body := struct {
 		DeviceID *uhppoted.DeviceID `json:"device-id"`
 	}{}
 
-	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
+	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 		return
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(request)))
 		return
 	}
 
@@ -85,24 +84,24 @@ func (m *MQTTD) deleteCards(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQ
 	}
 }
 
-func (m *MQTTD) getCard(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
+func (m *MQTTD) getCard(impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) {
 	body := struct {
 		DeviceID   *uhppoted.DeviceID `json:"device-id"`
 		CardNumber *uint32            `json:"card-number"`
 	}{}
 
-	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
+	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 		return
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(request)))
 		return
 	}
 
 	if body.CardNumber == nil {
-		m.OnError(ctx, "Missing/invalid card number", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid card number '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid card number", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid card number '%s'", string(request)))
 		return
 	}
 
@@ -130,24 +129,24 @@ func (m *MQTTD) getCard(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.M
 	}
 }
 
-func (m *MQTTD) putCard(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
+func (m *MQTTD) putCard(impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) {
 	body := struct {
 		DeviceID *uhppoted.DeviceID `json:"device-id"`
 		Card     *types.Card        `json:"card"`
 	}{}
 
-	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
+	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 		return
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(request)))
 		return
 	}
 
 	if body.Card == nil {
-		m.OnError(ctx, "Missing/invalid card", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid card'%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid card", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid card'%s'", string(request)))
 		return
 	}
 
@@ -174,24 +173,24 @@ func (m *MQTTD) putCard(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.M
 	}
 }
 
-func (m *MQTTD) deleteCard(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
+func (m *MQTTD) deleteCard(impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) {
 	body := struct {
 		DeviceID   *uhppoted.DeviceID `json:"device-id"`
 		CardNumber *uint32            `json:"card-number"`
 	}{}
 
-	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
+	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 		return
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(request)))
 		return
 	}
 
 	if body.CardNumber == nil {
-		m.OnError(ctx, "Missing/invalid card number", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid card number '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid card number", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid card number '%s'", string(request)))
 		return
 	}
 	rq := uhppoted.DeleteCardRequest{

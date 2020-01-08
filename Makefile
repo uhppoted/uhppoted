@@ -46,7 +46,7 @@ integration-tests: build
 	go fmt src/integration-tests/cli/*.go
 	go fmt src/integration-tests/mqttd/*.go
 #	go test src/integration-tests/cli/*.go
-	go test src/integration-tests/mqttd/*.go
+	go clean -testcache && go test -count=1 src/integration-tests/mqttd/*.go
 
 release: test vet
 	mkdir -p dist/$(DIST)/windows
