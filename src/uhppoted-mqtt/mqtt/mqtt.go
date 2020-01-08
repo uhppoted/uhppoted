@@ -240,7 +240,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 			request = plaintext
 		}
 
-		if err := d.mqttd.authenticatex(body.ClientID, request, body.Signature); err != nil {
+		if err := d.mqttd.authenticate(body.ClientID, request, body.Signature); err != nil {
 			d.log.Printf("DEBUG %-20s %s", "dispatch", string(message.Message))
 			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error authenticating request (%v)", err))
 			return
@@ -304,23 +304,7 @@ func (m *MQTTD) decrypt(request []byte, iv string, key string) ([]byte, error) {
 	return m.RSA.Decrypt(ciphertext, ivv, keyv)
 }
 
-func (m *MQTTD) authenticate(rq request) error {
-	if m.Authentication == "HOTP" {
-		if rq.ClientID == nil {
-			return errors.New("Invalid request: missing client-id")
-		}
-
-		if rq.HOTP == nil {
-			return errors.New("Invalid request: missing HOTP token")
-		}
-
-		return m.HOTP.Validate(*rq.ClientID, *rq.HOTP)
-	}
-
-	return nil
-}
-
-func (m *MQTTD) authenticatex(clientID *string, request []byte, signature *string) error {
+func (m *MQTTD) authenticate(clientID *string, request []byte, signature *string) error {
 	if m.Authentication == "HOTP" {
 		rq := struct {
 			HOTP *string `json:"hotp"`
