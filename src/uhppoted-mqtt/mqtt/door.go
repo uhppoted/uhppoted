@@ -4,28 +4,27 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"uhppoted"
 )
 
-func (m *MQTTD) getDoorDelay(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
+func (m *MQTTD) getDoorDelay(impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) {
 	body := struct {
 		DeviceID *uhppoted.DeviceID `json:"device-id"`
 		Door     *uint8             `json:"door"`
 	}{}
 
-	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
+	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 		return
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing device ID: %s", string(request)))
 		return
 	}
 
 	if body.Door == nil || *body.Door < 1 || *body.Door > 4 {
-		m.OnError(ctx, "Missing/invalid device door", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device door '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device door", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device door '%s'", string(request)))
 		return
 	}
 
@@ -53,30 +52,30 @@ func (m *MQTTD) getDoorDelay(impl *uhppoted.UHPPOTED, ctx context.Context, msg M
 	}
 }
 
-func (m *MQTTD) setDoorDelay(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
+func (m *MQTTD) setDoorDelay(impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) {
 	body := struct {
 		DeviceID *uhppoted.DeviceID `json:"device-id"`
 		Door     *uint8             `json:"door"`
 		Delay    *uint8             `json:"delay"`
 	}{}
 
-	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
+	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 		return
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing device ID: %s", string(request)))
 		return
 	}
 
 	if body.Door == nil || *body.Door < 1 || *body.Door > 4 {
-		m.OnError(ctx, "Missing/invalid device door", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device door '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device door", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device door '%s'", string(request)))
 		return
 	}
 
 	if body.Delay == nil || *body.Delay == 0 || *body.Delay > 60 {
-		m.OnError(ctx, "Missing/invalid device door delay value", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device door delay value '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device door delay value", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device door delay value '%s'", string(request)))
 	}
 
 	rq := uhppoted.SetDoorDelayRequest{
@@ -104,24 +103,24 @@ func (m *MQTTD) setDoorDelay(impl *uhppoted.UHPPOTED, ctx context.Context, msg M
 	}
 }
 
-func (m *MQTTD) getDoorControl(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
+func (m *MQTTD) getDoorControl(impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) {
 	body := struct {
 		DeviceID *uhppoted.DeviceID `json:"device-id"`
 		Door     *uint8             `json:"door"`
 	}{}
 
-	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
+	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 		return
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(request)))
 		return
 	}
 
 	if body.Door == nil || *body.Door < 1 || *body.Door > 4 {
-		m.OnError(ctx, "Missing/invalid device door", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device door '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device door", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device door '%s'", string(request)))
 		return
 	}
 
@@ -150,30 +149,30 @@ func (m *MQTTD) getDoorControl(impl *uhppoted.UHPPOTED, ctx context.Context, msg
 	}
 }
 
-func (m *MQTTD) setDoorControl(impl *uhppoted.UHPPOTED, ctx context.Context, msg MQTT.Message) {
+func (m *MQTTD) setDoorControl(impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) {
 	body := struct {
 		DeviceID *uhppoted.DeviceID     `json:"device-id"`
 		Door     *uint8                 `json:"door"`
 		Control  *uhppoted.ControlState `json:"control"`
 	}{}
 
-	if err := json.Unmarshal(msg.Payload(), &body); err != nil {
+	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
 		return
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(request)))
 		return
 	}
 
 	if body.Door == nil || *body.Door < 1 || *body.Door > 4 {
-		m.OnError(ctx, "Missing/invalid device door", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device door '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device door", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device door '%s'", string(request)))
 		return
 	}
 
 	if body.Control == nil || *body.Control < 1 || *body.Control > 3 {
-		m.OnError(ctx, "Missing/invalid device door control value", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device door control value '%s'", string(msg.Payload())))
+		m.OnError(ctx, "Missing/invalid device door control value", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device door control value '%s'", string(request)))
 	}
 
 	rq := uhppoted.SetDoorControlRequest{

@@ -36,11 +36,6 @@ type MQTTD struct {
 
 type fdispatch struct {
 	operation string
-	f         func(*MQTTD, *uhppoted.UHPPOTED, context.Context, MQTT.Message)
-}
-
-type fdispatchx struct {
-	operation string
 	f         func(*MQTTD, *uhppoted.UHPPOTED, context.Context, []byte)
 }
 
@@ -51,7 +46,6 @@ type dispatcher struct {
 	log      *log.Logger
 	topic    string
 	table    map[string]fdispatch
-	tablex   map[string]fdispatchx
 }
 
 type request struct {
@@ -93,6 +87,11 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		log:      l,
 		topic:    m.Topic,
 		table: map[string]fdispatch{
+			m.Topic + "/devices:get":             fdispatch{"get-devices", (*MQTTD).getDevices},
+			m.Topic + "/device:get":              fdispatch{"get-device", (*MQTTD).getDevice},
+			m.Topic + "/device/status:get":       fdispatch{"get-status", (*MQTTD).getStatus},
+			m.Topic + "/device/time:get":         fdispatch{"get-time", (*MQTTD).getTime},
+			m.Topic + "/device/time:set":         fdispatch{"set-time", (*MQTTD).setTime},
 			m.Topic + "/device/door/delay:get":   fdispatch{"get-door-delay", (*MQTTD).getDoorDelay},
 			m.Topic + "/device/door/delay:set":   fdispatch{"set-door-delay", (*MQTTD).setDoorDelay},
 			m.Topic + "/device/door/control:get": fdispatch{"get-door-control", (*MQTTD).getDoorControl},
@@ -104,13 +103,6 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/card:delete":      fdispatch{"delete-card", (*MQTTD).deleteCard},
 			m.Topic + "/device/events:get":       fdispatch{"get-events", (*MQTTD).getEvents},
 			m.Topic + "/device/event:get":        fdispatch{"get-event", (*MQTTD).getEvent},
-		},
-		tablex: map[string]fdispatchx{
-			m.Topic + "/devices:get":       fdispatchx{"get-devices", (*MQTTD).getDevices},
-			m.Topic + "/device:get":        fdispatchx{"get-device", (*MQTTD).getDevice},
-			m.Topic + "/device/status:get": fdispatchx{"get-status", (*MQTTD).getStatus},
-			m.Topic + "/device/time:get":   fdispatchx{"get-time", (*MQTTD).getTime},
-			m.Topic + "/device/time:set":   fdispatchx{"set-time", (*MQTTD).setTime},
 		},
 	}
 
@@ -204,38 +196,6 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 	if fn, ok := d.table[msg.Topic()]; ok {
 		msg.Ack()
 
-		body := struct {
-			Request request `json:"request"`
-		}{}
-
-		if err := json.Unmarshal(msg.Payload(), &body); err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
-			d.log.Printf("WARN  %-20s %v", "dispatch", err)
-			return
-		}
-
-		if err := d.mqttd.authenticate(body.Request); err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
-			d.log.Printf("WARN  %-20s %v", "dispatch", err)
-			return
-		}
-
-		if err := d.mqttd.authorise(body.Request.ClientID, msg.Topic()); err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
-			d.log.Printf("WARN  %-20s %v", "dispatch", err)
-			return
-		}
-
-		ctx = context.WithValue(ctx, "request", body.Request)
-		ctx = context.WithValue(ctx, "operation", fn.operation)
-
-		go fn.f(d.mqttd, d.uhppoted, ctx, msg)
-		return
-	}
-
-	if fn, ok := d.tablex[msg.Topic()]; ok {
-		msg.Ack()
-
 		message := struct {
 			Message json.RawMessage `json:"message"`
 			HMAC    *string         `json:"hmac"`
@@ -268,10 +228,6 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		}
 
 		request := []byte(body.Request)
-
-		//		println("----")
-		//		println(string(request))
-		//		println("----")
 
 		if body.Key != nil && body.IV != nil && isBase64(body.Request) {
 			plaintext, err := d.mqttd.decrypt(request, *body.IV, *body.Key)

@@ -15,11 +15,9 @@ type GetEventsRequest struct {
 }
 
 type GetEventsResponse struct {
-	Device struct {
-		ID     DeviceID    `json:"id"`
-		Dates  *DateRange  `json:"dates,omitempty"`
-		Events *EventRange `json:"events,omitempty"`
-	} `json:"device"`
+	DeviceID DeviceID    `json:"device-id,omitempty"`
+	Dates    *DateRange  `json:"dates,omitempty"`
+	Events   *EventRange `json:"events,omitempty"`
 }
 
 type GetEventRequest struct {
@@ -28,10 +26,8 @@ type GetEventRequest struct {
 }
 
 type GetEventResponse struct {
-	Device struct {
-		ID    DeviceID `json:"id"`
-		Event event    `json:"event"`
-	} `json:"device"`
+	DeviceID DeviceID `json:"device-id"`
+	Event    event    `json:"event"`
 }
 
 type DateRange struct {
@@ -39,9 +35,29 @@ type DateRange struct {
 	End   *types.DateTime `json:"end,omitempty"`
 }
 
+func (d *DateRange) String() string {
+	if d.Start != nil && d.End != nil {
+		return fmt.Sprintf("{ Start:%v, End:%v }", d.Start, d.End)
+	}
+
+	if d.Start != nil {
+		return fmt.Sprintf("{ Start:%v }", d.Start)
+	}
+
+	if d.End != nil {
+		return fmt.Sprintf("{ End:%v }", d.End)
+	}
+
+	return "{}"
+}
+
 type EventRange struct {
 	First uint32 `json:"first"`
 	Last  uint32 `json:"last"`
+}
+
+func (e *EventRange) String() string {
+	return fmt.Sprintf("{ First:%v, Last:%v }", e.First, e.Last)
 }
 
 type event struct {
@@ -116,15 +132,9 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, request GetEventsRequest) (*Ge
 	}
 
 	response := GetEventsResponse{
-		Device: struct {
-			ID     DeviceID    `json:"id"`
-			Dates  *DateRange  `json:"dates,omitempty"`
-			Events *EventRange `json:"events,omitempty"`
-		}{
-			ID:     DeviceID(device),
-			Dates:  dates,
-			Events: events,
-		},
+		DeviceID: DeviceID(device),
+		Dates:    dates,
+		Events:   events,
 	}
 
 	u.debug("get-events", fmt.Sprintf("response %+v", response))
@@ -152,21 +162,16 @@ func (u *UHPPOTED) GetEvent(ctx context.Context, request GetEventRequest) (*GetE
 	}
 
 	response := GetEventResponse{
-		Device: struct {
-			ID    DeviceID `json:"id"`
-			Event event    `json:"event"`
-		}{
-			ID: DeviceID(record.SerialNumber),
-			Event: event{
-				Index:      record.Index,
-				Type:       record.Type,
-				Granted:    record.Granted,
-				Door:       record.Door,
-				DoorOpened: record.DoorOpened,
-				UserID:     record.UserID,
-				Timestamp:  record.Timestamp,
-				Result:     record.Result,
-			},
+		DeviceID: DeviceID(record.SerialNumber),
+		Event: event{
+			Index:      record.Index,
+			Type:       record.Type,
+			Granted:    record.Granted,
+			Door:       record.Door,
+			DoorOpened: record.DoorOpened,
+			UserID:     record.UserID,
+			Timestamp:  record.Timestamp,
+			Result:     record.Result,
 		},
 	}
 
