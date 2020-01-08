@@ -44,9 +44,8 @@ type HOTP struct {
 }
 
 type RSA struct {
-	PrivateKey string `conf:"key"`
-	ClientKeys string `conf:"clients.keys"`
-	Counters   string `conf:"clients.counters"`
+	KeyDir   string `conf:"keys"`
+	Counters string `conf:"clients.counters"`
 }
 
 type Permissions struct {
@@ -87,9 +86,8 @@ func NewConfig() *Config {
 				Counters: hotpCounters,
 			},
 			RSA: RSA{
-				PrivateKey: rsaPrivateKey,
-				ClientKeys: rsaClientKeys,
-				Counters:   rsaCounters,
+				KeyDir:   rsaKeyDir,
+				Counters: rsaCounters,
 			},
 			Permissions: Permissions{
 				Enabled: false,
