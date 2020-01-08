@@ -187,7 +187,7 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 		return
 	}
 
-	rsa, err := auth.NewRSA(c.RSA.PrivateKey, c.RSA.ClientKeys, c.RSA.Counters, logger)
+	rsa, err := auth.NewRSA(c.RSA.KeyDir, c.RSA.Counters, logger)
 	if mqttd.Authentication == "RSA" && err != nil {
 		logger.Printf("ERROR: %v", err)
 		return

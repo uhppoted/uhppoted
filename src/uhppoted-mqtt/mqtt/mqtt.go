@@ -413,27 +413,49 @@ func (m *MQTTD) reply(ctx context.Context, response interface{}) {
 		}
 	}
 
-	msg, err := json.Marshal(response)
+	r, err := json.Marshal(response)
 	if err != nil {
 		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
-		oops(ctx, "encoding/json", "Error encoding response", uhppoted.StatusInternalServerError)
 		return
 	}
 
-	hmac := hex.EncodeToString(m.HMAC.MAC(msg))
+	signature, err := m.RSA.Sign(r)
+	if err != nil {
+		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
+		return
+	}
+
+	msg := struct {
+		ServerID  string          `json:"server-id,omitempty"`
+		Signature string          `json:"signature,omitempty"`
+		Key       string          `json:"key,omitempty"`
+		IV        string          `json:"iv,omitempty"`
+		Reply     json.RawMessage `json:"reply,omitempty"`
+	}{
+		ServerID:  "twystd-uhppoted",
+		Signature: hex.EncodeToString(signature),
+		Reply:     r,
+	}
+
+	msgbytes, err := json.Marshal(msg)
+	if err != nil {
+		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
+		return
+	}
+
+	hmac := hex.EncodeToString(m.HMAC.MAC(msgbytes))
 
 	message := struct {
 		Message json.RawMessage `json:"message"`
 		HMAC    string          `json:"hmac,omitempty"`
 	}{
-		Message: msg,
+		Message: msgbytes,
 		HMAC:    hmac,
 	}
 
 	b, err := json.Marshal(message)
 	if err != nil {
 		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
-		oops(ctx, "encoding/json", "Error encoding response", uhppoted.StatusInternalServerError)
 		return
 	}
 

@@ -4,6 +4,7 @@ import (
 	"crypto"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/x509"
@@ -18,20 +19,33 @@ import (
 	"uhppoted/kvs"
 )
 
-type RSA struct {
+type keyset struct {
 	key        *rsa.PrivateKey
 	clientKeys map[string]*rsa.PublicKey
-	counters   struct {
+}
+
+type RSA struct {
+	signingKeys    keyset
+	encryptionKeys keyset
+	counters       struct {
 		*kvs.KeyValueStore
 		filepath string
 	}
 	log *log.Logger
 }
 
-func NewRSA(privateKey, clientKeys, counters string, logger *log.Logger) (*RSA, error) {
-	rsa := RSA{
-		key:        nil,
-		clientKeys: map[string]*rsa.PublicKey{},
+func NewRSA(keydir string, counters string, logger *log.Logger) (*RSA, error) {
+	var err error
+
+	r := RSA{
+		signingKeys: keyset{
+			key:        nil,
+			clientKeys: map[string]*rsa.PublicKey{},
+		},
+		encryptionKeys: keyset{
+			key:        nil,
+			clientKeys: map[string]*rsa.PublicKey{},
+		},
 		counters: struct {
 			*kvs.KeyValueStore
 			filepath string
@@ -42,25 +56,37 @@ func NewRSA(privateKey, clientKeys, counters string, logger *log.Logger) (*RSA, 
 		log: logger,
 	}
 
-	if err := rsa.loadPrivateKey(privateKey); err != nil {
+	r.signingKeys.key, err = loadPrivateKey(path.Join(keydir, "signing", "private.key"))
+	if err != nil {
 		log.Printf("WARN: %v", err)
 	}
 
-	if err := rsa.loadClientKeys(clientKeys); err != nil {
+	r.signingKeys.clientKeys, err = loadPublicKeys(path.Join(keydir, "signing"), logger)
+	if err != nil {
 		log.Printf("WARN: %v", err)
 	}
 
-	if err := rsa.counters.LoadFromFile(counters); err != nil {
+	r.encryptionKeys.key, err = loadPrivateKey(path.Join(keydir, "encryption", "private.key"))
+	if err != nil {
+		log.Printf("WARN: %v", err)
+	}
+
+	r.encryptionKeys.clientKeys, err = loadPublicKeys(path.Join(keydir, "encryption"), logger)
+	if err != nil {
+		log.Printf("WARN: %v", err)
+	}
+
+	if err = r.counters.LoadFromFile(counters); err != nil {
 		log.Printf("WARN: %v", err)
 	}
 
 	// TODO 'watch' client key directory
 
-	return &rsa, nil
+	return &r, nil
 }
 
 func (r *RSA) Validate(clientID string, request []byte, signature []byte, counter uint64) error {
-	pubkey, ok := r.clientKeys[clientID]
+	pubkey, ok := r.signingKeys.clientKeys[clientID]
 	if !ok || pubkey == nil {
 		return fmt.Errorf("%s: no RSA public key", clientID)
 	}
@@ -86,8 +112,20 @@ func (r *RSA) Validate(clientID string, request []byte, signature []byte, counte
 	return nil
 }
 
+func (r *RSA) Sign(message []byte) ([]byte, error) {
+	key := r.signingKeys.key
+	if key != nil {
+		rng := rand.Reader
+		hashed := sha256.Sum256(message)
+
+		return rsa.SignPKCS1v15(rng, key, crypto.SHA256, hashed[:])
+	}
+
+	return []byte{}, nil
+}
+
 func (r *RSA) Decrypt(ciphertext []byte, iv []byte, key []byte) ([]byte, error) {
-	secretKey, err := rsa.DecryptPKCS1v15(nil, r.key, key)
+	secretKey, err := rsa.DecryptPKCS1v15(nil, r.encryptionKeys.key, key)
 	if err != nil {
 		return nil, err
 	}
@@ -127,75 +165,78 @@ func (r *RSA) Decrypt(ciphertext []byte, iv []byte, key []byte) ([]byte, error) 
 	return plaintext[:N], nil
 }
 
-func (r *RSA) loadPrivateKey(filepath string) error {
+func loadPrivateKey(filepath string) (*rsa.PrivateKey, error) {
 	bytes, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	block, _ := pem.Decode(bytes)
 	if block == nil || block.Type != "PRIVATE KEY" {
-		return fmt.Errorf("%s is not a valid RSA private key", filepath)
+		return nil, fmt.Errorf("%s is not a valid RSA private key", filepath)
 	}
 
 	key, err := x509.ParsePKCS8PrivateKey(block.Bytes)
 	if err != nil {
-		return fmt.Errorf("%s is not a valid RSA private key", filepath)
+		return nil, fmt.Errorf("%s is not a valid RSA private key", filepath)
 	}
 
 	pk, ok := key.(*rsa.PrivateKey)
 	if !ok {
-		return fmt.Errorf("%s is not a valid RSA private key", filepath)
+		return nil, fmt.Errorf("%s is not a valid RSA private key", filepath)
 	}
 
-	r.key = pk
-
-	return nil
+	return pk, nil
 }
-func (r *RSA) loadClientKeys(dir string) error {
+
+func loadPublicKeys(dir string, log *log.Logger) (map[string]*rsa.PublicKey, error) {
+	keys := map[string]*rsa.PublicKey{}
 	filemode, err := os.Stat(dir)
 	if err != nil {
-		return err
+		return keys, err
 	}
 
 	if !filemode.IsDir() {
-		return fmt.Errorf("%s is not a directory", dir)
+		return keys, fmt.Errorf("%s is not a directory", dir)
 	}
 
 	list, err := ioutil.ReadDir(dir)
 	if err != nil {
-		return err
+		return keys, err
 	}
 
 	for _, f := range list {
 		filename := f.Name()
-		clientID := strings.TrimSuffix(filename, path.Ext(filename))
+		ext := path.Ext(filename)
+		if ext == ".pub" {
+			clientID := strings.TrimSuffix(filename, ext)
 
-		bytes, err := ioutil.ReadFile(path.Join(dir, filename))
-		if err != nil {
-			r.log.Printf("WARN: %v", err)
+			bytes, err := ioutil.ReadFile(path.Join(dir, filename))
+			if err != nil {
+				log.Printf("WARN: %v", err)
+			}
+
+			block, _ := pem.Decode(bytes)
+			if block == nil || block.Type != "PUBLIC KEY" {
+				log.Printf("WARN: %s is not a valid RSA public key", filename)
+				continue
+			}
+
+			key, err := x509.ParsePKIXPublicKey(block.Bytes)
+			if err != nil {
+				log.Printf("WARN: %s is not a valid RSA public key (%v)", filename, err)
+				continue
+			}
+
+			pubkey, ok := key.(*rsa.PublicKey)
+			if !ok {
+				log.Printf("WARN: %s is not a valid RSA public key", filename)
+				continue
+			}
+
+			keys[clientID] = pubkey
 		}
-
-		block, _ := pem.Decode(bytes)
-		if block == nil || block.Type != "PUBLIC KEY" {
-			r.log.Printf("WARN: %s is not a valid RSA public key", filename)
-			continue
-		}
-
-		key, err := x509.ParsePKIXPublicKey(block.Bytes)
-		if err != nil {
-			r.log.Printf("WARN: %s is not a valid RSA public key (%v)", filename, err)
-			continue
-		}
-
-		pubkey, ok := key.(*rsa.PublicKey)
-		if !ok {
-			r.log.Printf("WARN: %s is not a valid RSA public key", filename)
-			continue
-		}
-
-		r.clientKeys[clientID] = pubkey
 	}
 
-	return nil
+	return keys, nil
 }
