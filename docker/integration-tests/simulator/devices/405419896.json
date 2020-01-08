@@ -1,0 +1,144 @@
+{
+  "serial-number": 405419896,
+  "address": "192.168.1.100",
+  "subnet": "255.255.255.0",
+  "gateway": "192.168.1.1",
+  "MAC": "ea:12:23:7c:45:56",
+  "version": "0892",
+  "offset": "-8h0m0.06912s",
+  "doors": {
+    "1": {
+      "delay": "5s"
+    },
+    "2": {
+      "delay": "5s"
+    },
+    "3": {
+      "delay": "7s"
+    },
+    "4": {
+      "delay": "5s"
+    }
+  },
+  "listener": {
+    "IP": "192.168.1.100",
+    "Port": 40000,
+    "Zone": ""
+  },
+  "state": 0,
+  "packet-number": 0,
+  "backup": 0,
+  "special-message": 0,
+  "battery": 0,
+  "fire-alarm": 0,
+  "cards": [
+    {
+      "number": 165537,
+      "from": "2019-01-01",
+      "to": "2019-12-31",
+      "doors": {
+        "1": true,
+        "2": false,
+        "3": false,
+        "4": false
+      }
+    },
+    {
+      "number": 165538,
+      "from": "2019-01-01",
+      "to": "2019-12-31",
+      "doors": {
+        "1": true,
+        "2": false,
+        "3": false,
+        "4": true
+      }
+    },
+    {
+      "number": 165539,
+      "from": "2019-01-01",
+      "to": "2019-12-31",
+      "doors": {
+        "1": false,
+        "2": false,
+        "3": false,
+        "4": false
+      }
+    }
+  ],
+  "events": {
+    "index": 8,
+    "events": [
+      {
+        "record-number": 1,
+        "type": 2,
+        "granted": true,
+        "door": 1,
+        "door-opened": true,
+        "user-id": 3922570474,
+        "timestamp": "2019-07-09 21:00:55",
+        "result": 0
+      },
+      {
+        "record-number": 2,
+        "type": 2,
+        "granted": true,
+        "door": 1,
+        "door-opened": true,
+        "user-id": 3922570474,
+        "timestamp": "2019-07-09 21:00:57",
+        "result": 0
+      },
+      {
+        "record-number": 3,
+        "type": 2,
+        "granted": true,
+        "door": 1,
+        "door-opened": true,
+        "user-id": 3922570474,
+        "timestamp": "2019-07-11 20:23:33",
+        "result": 0
+      },
+      {
+        "record-number": 4,
+        "type": 2,
+        "granted": true,
+        "door": 1,
+        "door-opened": true,
+        "user-id": 3922570474,
+        "timestamp": "2019-07-12 18:17:25",
+        "result": 0
+      },
+      {
+        "record-number": 5,
+        "type": 2,
+        "granted": true,
+        "door": 1,
+        "door-opened": true,
+        "user-id": 3922570474,
+        "timestamp": "2019-07-12 18:17:42",
+        "result": 0
+      },
+      {
+        "record-number": 6,
+        "type": 2,
+        "granted": true,
+        "door": 1,
+        "door-opened": true,
+        "user-id": 3922570474,
+        "timestamp": "2019-07-12 18:17:52",
+        "result": 0
+      },
+      {
+        "record-number": 7,
+        "type": 2,
+        "granted": true,
+        "door": 1,
+        "door-opened": true,
+        "user-id": 3922570474,
+        "timestamp": "2019-07-12 18:21:03",
+        "result": 0
+      }
+    ]
+  }
+}

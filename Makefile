@@ -92,11 +92,13 @@ docker: build
 	env GOOS=linux GOARCH=amd64 go build -o docker/simulator/uhppote-simulator     uhppote-simulator
 	env GOOS=linux GOARCH=amd64 go build -o docker/uhppoted-rest/uhppote-simulator uhppote-simulator
 	env GOOS=linux GOARCH=amd64 go build -o docker/uhppoted-rest/uhppoted-rest     uhppoted-rest
+	env GOOS=linux GOARCH=amd64 go build -o docker/integration-tests/simulator/uhppote-simulator uhppote-simulator
 	docker image     prune -f
 	docker container prune -f
 	docker build -f ./docker/simulator/Dockerfile     -t simulator       . 
 	docker build -f ./docker/uhppoted-rest/Dockerfile -t uhppoted        . 
 	docker build -f ./docker/hivemq/Dockerfile        -t hivemq/uhppoted . 
+	docker build -f ./docker/integration-tests/simulator/Dockerfile -t integration-tests/simulator . 
 
 docker-simulator:
 	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --rm simulator
@@ -106,6 +108,9 @@ docker-hivemq:
 
 docker-rest:
 	docker run --detach --publish 8080:8080 --rm uhppoted
+
+docker-integration-tests:
+	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --name qwerty --rm integration-tests/simulator
 
 hivemq-listen:
 	mqtt subscribe --topic 'twystd/uhppoted/#'

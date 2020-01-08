@@ -1,79 +1,62 @@
 package uhppote
 
 import (
-	"context"
 	"fmt"
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/client"
 	"os"
-	"strings"
+	"os/exec"
 	"testing"
 )
 
 func TestMain(m *testing.M) {
-	containers := setup()
+	if err := setup(); err != nil {
+		fmt.Printf("ERROR: %v\n", err)
+		os.Exit(1)
+	}
+
 	code := m.Run()
-	teardown(containers)
+
+	if err := teardown(); err != nil {
+		fmt.Printf("ERROR: %v\n", err)
+		os.Exit(1)
+	}
 
 	os.Exit(code)
 }
 
-func setup() []*types.Container {
-	containers := []*types.Container{}
-
-	ctx := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv)
+func setup() error {
+	cmd := exec.Command("docker", "run", "--detach", "--publish", "8000:8000", "--publish", "60000:60000/udp", "--name", "qwerty", "--rm", "integration-tests/simulator")
+	out, err := cmd.CombinedOutput()
+	fmt.Printf("   > %s", out)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("Failed to start Docker simulator instance (%v)", err)
 	}
 
-	cli.NegotiateAPIVersion(ctx)
-
-	container, err := cli.ContainerCreate(ctx, &container.Config{Image: "simulator"}, nil, nil, "")
+	cmd = exec.Command("docker", "run", "--detach", "--publish", "8081:8080", "--publish", "1883:1883", "--publish", "8883:8883", "--name", "uiop", "--rm", "hivemq/uhppoted")
+	out, err = cmd.CombinedOutput()
+	fmt.Printf("   > %s", out)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("Failed to start Docker HiveMQ instance (%v)", err)
 	}
 
-	if err := cli.ContainerStart(ctx, container.ID, types.ContainerStartOptions{}); err != nil {
-		panic(err)
-	}
-
-	list, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
-	if err != nil {
-		panic(err)
-	}
-
-	for _, c := range list {
-		if c.ID == c.ID {
-			fmt.Printf(" ... started Docker 'simulator' container %s\n", strings.TrimPrefix(c.Names[0], "/"))
-			containers = append(containers, &c)
-		}
-	}
-
-	return containers
+	return nil
 }
 
-func teardown(containers []*types.Container) {
-	ctx := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv)
+func teardown() error {
+	cmd := exec.Command("docker", "stop", "qwerty")
+	out, err := cmd.CombinedOutput()
+	fmt.Printf("   > %s", out)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("Failed to stop Docker simulator instance (%v)", err)
 	}
 
-	cli.NegotiateAPIVersion(ctx)
-
-	for _, c := range containers {
-		fmt.Printf(" ... stopping Docker 'simulator' container %s\n", strings.TrimPrefix(c.Names[0], "/"))
-
-		if err := cli.ContainerStop(ctx, c.ID, nil); err != nil {
-			panic(err)
-		}
-
-		if err := cli.ContainerRemove(ctx, c.ID, types.ContainerRemoveOptions{}); err != nil {
-			panic(err)
-		}
+	cmd = exec.Command("docker", "stop", "uiop")
+	out, err = cmd.CombinedOutput()
+	fmt.Printf("   > %s", out)
+	if err != nil {
+		return fmt.Errorf("Failed to stop Docker HiveMQ instance (%v)", err)
 	}
+
+	return nil
 }
 
 func TestMQTTD(t *testing.T) {

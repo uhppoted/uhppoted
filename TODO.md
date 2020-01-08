@@ -42,6 +42,7 @@
 - [x] subscribe
 - [x] error handling
 - [x] 'reply'
+- [ ] user/open permissions require matching card number 
 - [ ] move ACL and events to separate API's
 - [ ] publish add/delete card, etc to event stream
 - [x] TLS connection
