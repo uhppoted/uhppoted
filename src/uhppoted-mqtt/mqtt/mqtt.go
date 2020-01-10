@@ -12,23 +12,24 @@ import (
 	"log"
 	"os"
 	"regexp"
-	"strings"
 	"uhppote"
 	"uhppoted"
 	"uhppoted-mqtt/auth"
 )
 
 type MQTTD struct {
-	Broker         string
-	TLS            *tls.Config
-	Topic          string
-	HMAC           auth.HMAC
-	Authentication string
-	HOTP           *auth.HOTP
-	RSA            *auth.RSA
-	Permissions    auth.Permissions
-	EventMap       string
-	Debug          bool
+	Broker          string
+	TLS             *tls.Config
+	Topic           string
+	HMAC            auth.HMAC
+	Authentication  string
+	HOTP            *auth.HOTP
+	RSA             *auth.RSA
+	Permissions     auth.Permissions
+	EventMap        string
+	SignOutgoing    bool
+	EncryptOutgoing bool
+	Debug           bool
 
 	connection MQTT.Client
 	interrupt  chan os.Signal
@@ -241,7 +242,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		}
 
 		if err := d.mqttd.authenticate(body.ClientID, request, body.Signature); err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(message.Message))
+			d.log.Printf("DEBUG %-20s %s", "dispatch", string(request))
 			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error authenticating request (%v)", err))
 			return
 		}
@@ -257,104 +258,6 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 
 		go fn.f(d.mqttd, d.uhppoted, ctx, request)
 	}
-}
-
-func (m *MQTTD) verify(message []byte, mac *string) error {
-	if m.HMAC.Required && mac == nil {
-		return errors.New("HMAC required but not present")
-	}
-
-	if mac != nil {
-		hmac, err := hex.DecodeString(*mac)
-		if err != nil {
-			return err
-		}
-
-		if !m.HMAC.Verify(message, hmac) {
-			return errors.New("incorrect HMAC")
-		}
-	}
-
-	return nil
-}
-
-func (m *MQTTD) decrypt(request []byte, iv string, key string) ([]byte, error) {
-	var crypttext string = ""
-
-	err := json.Unmarshal(request, &crypttext)
-	if err != nil {
-		return nil, err
-	}
-
-	ciphertext, err := base64.StdEncoding.DecodeString(crypttext)
-	if err != nil {
-		return nil, fmt.Errorf("Invalid ciphertext (%v)", err)
-	}
-
-	keyv, err := base64.StdEncoding.DecodeString(strings.ReplaceAll(key, " ", ""))
-	if err != nil {
-		return nil, fmt.Errorf("Invalid key (%v)", err)
-	}
-
-	ivv, err := hex.DecodeString(iv)
-	if err != nil {
-		return nil, fmt.Errorf("Invalid IV (%v)", err)
-	}
-
-	return m.RSA.Decrypt(ciphertext, ivv, keyv)
-}
-
-func (m *MQTTD) authenticate(clientID *string, request []byte, signature *string) error {
-	if m.Authentication == "HOTP" {
-		rq := struct {
-			HOTP *string `json:"hotp"`
-		}{}
-
-		if clientID == nil {
-			return errors.New("Invalid request: missing client-id")
-		}
-
-		if err := json.Unmarshal(request, &rq); err != nil {
-			return err
-		}
-
-		if rq.HOTP == nil {
-			return errors.New("Invalid request: missing HOTP token")
-		}
-
-		return m.HOTP.Validate(*clientID, *rq.HOTP)
-	}
-
-	if m.Authentication == "RSA" {
-		rq := struct {
-			SequenceNo *uint64 `json:"sequence-no"`
-		}{}
-
-		if clientID == nil {
-			return errors.New("Invalid request: missing client-id")
-		}
-
-		if signature == nil {
-			return errors.New("Invalid request: missing RSA signature")
-		}
-
-		s, err := base64.StdEncoding.DecodeString(*signature)
-		if err != nil {
-			return fmt.Errorf("Invalid request: undecodable RSA signature (%v)", err)
-		}
-
-		if err := json.Unmarshal(request, &rq); err != nil {
-			return err
-		}
-
-		if rq.SequenceNo == nil {
-			return errors.New("Invalid request: missing sequence number")
-		}
-
-		return m.RSA.Validate(*clientID, request, s, *rq.SequenceNo)
-	}
-
-	return nil
 }
 
 func (m *MQTTD) authorise(clientID *string, topic string) error {
@@ -419,7 +322,13 @@ func (m *MQTTD) reply(ctx context.Context, response interface{}) {
 		return
 	}
 
-	signature, err := m.RSA.Sign(r)
+	signature, err := m.sign(r)
+	if err != nil {
+		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
+		return
+	}
+
+	crypttext, iv, key, err := m.encrypt(r)
 	if err != nil {
 		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
 		return
@@ -434,7 +343,9 @@ func (m *MQTTD) reply(ctx context.Context, response interface{}) {
 	}{
 		ServerID:  "twystd-uhppoted",
 		Signature: hex.EncodeToString(signature),
-		Reply:     r,
+		Key:       base64.StdEncoding.EncodeToString(key),
+		IV:        hex.EncodeToString(iv),
+		Reply:     crypttext,
 	}
 
 	msgbytes, err := json.Marshal(msg)

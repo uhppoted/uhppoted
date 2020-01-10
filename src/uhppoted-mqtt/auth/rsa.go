@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"bytes"
 	"crypto"
 	"crypto/aes"
 	"crypto/cipher"
@@ -122,6 +123,38 @@ func (r *RSA) Sign(message []byte) ([]byte, error) {
 	}
 
 	return []byte{}, nil
+}
+
+func (r *RSA) Encrypt(plaintext []byte) ([]byte, []byte, []byte, error) {
+	secretKey := make([]byte, 32)
+	if _, err := rand.Read(secretKey); err != nil {
+		return nil, nil, nil, err
+	}
+
+	iv := make([]byte, aes.BlockSize)
+	if _, err := rand.Read(iv); err != nil {
+		return nil, nil, nil, err
+	}
+
+	block, err := aes.NewCipher(secretKey)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	padding := aes.BlockSize - len(plaintext)%aes.BlockSize
+	ciphertext := make([]byte, len(plaintext)+padding)
+	mode := cipher.NewCBCEncrypter(block, iv)
+
+	mode.CryptBlocks(ciphertext, append(plaintext, bytes.Repeat([]byte{byte(padding)}, padding)...))
+
+	rng := rand.Reader
+	label := []byte{}
+	key, err := rsa.EncryptOAEP(sha256.New(), rng, r.encryptionKeys.clientKeys["QWERTY54"], secretKey, label)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return ciphertext, iv, key, nil
 }
 
 func (r *RSA) Decrypt(ciphertext []byte, iv []byte, key []byte) ([]byte, error) {
