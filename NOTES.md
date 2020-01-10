@@ -45,4 +45,7 @@ References:
 1. https://crypto.stackexchange.com/questions/8139/secure-encrypt-then-sign-with-rsa
 2. http://world.std.com/~dtd/sign_encrypt/sign_encrypt7.html
 3. https://askubuntu.com/questions/1093591/how-should-i-change-encryption-according-to-warning-deprecated-key-derivat
+4. https://superuser.com/questions/1016696/using-a-hash-other-than-sha1-for-oaep-with-openssl-cli
+5. https://security.stackexchange.com/questions/185083/specifying-rsa-oaep-label-via-openssl-command-line
+6. https://crypto.stackexchange.com/questions/202/should-we-mac-then-encrypt-or-encrypt-then-mac
 
