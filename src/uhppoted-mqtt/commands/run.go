@@ -140,6 +140,7 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 	}
 
 	mqttd := mqtt.MQTTD{
+		ServerID:        c.ServerID,
 		Broker:          fmt.Sprintf(c.Broker),
 		TLS:             &tls.Config{},
 		Topic:           c.Topic,

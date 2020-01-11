@@ -9,45 +9,22 @@ import (
 	"strings"
 )
 
-// func unwrap(mqttd *MQTTD, payload []byte) ([]byte, error) {
-// 	message := struct {
-// 		Message json.RawMessage `json:"message"`
-// 		HMAC    *string         `json:"hmac"`
-// 	}{}
-//
-// 	if err := json.Unmarshal(payload, &message); err != nil {
-// 		return nil, fmt.Errorf("Error unmarshaling message (%v)", err)
-// 	}
-//
-// 	if err := mqttd.verify(message.Message, message.HMAC); err != nil {
-// 		return nil, fmt.Errorf("Invalid message (%v)", err)
-// 	}
-//
-// 	body := struct {
-// 		ClientID  *string         `json:"client-id"`
-// 		Signature *string         `json:"signature"`
-// 		Key       *string         `json:"key"`
-// 		IV        *string         `json:"iv"`
-// 		Request   json.RawMessage `json:"request"`
-// 	}{}
-//
-// 	if err := json.Unmarshal(message.Message, &body); err != nil {
-// 		return nil, fmt.Errorf("Error unmarshaling message body (%v)", err)
-// 	}
-//
-// 	request := []byte(body.Request)
-//
-// 	if body.Key != nil && body.IV != nil && isBase64(body.Request) {
-// 		plaintext, err := mqttd.decrypt(request, *body.IV, *body.Key)
-// 		if err != nil || plaintext == nil {
-// 			return nil, fmt.Errorf("Error decrypting message (%v::%v)", err, plaintext)
-// 		}
-//
-// 		return plaintext, nil
-// 	}
-//
-// 	return request, nil
-// }
+func unwrap(mqttd *MQTTD, payload []byte) ([]byte, error) {
+	message := struct {
+		Message json.RawMessage `json:"message"`
+		HMAC    *string         `json:"hmac"`
+	}{}
+
+	if err := json.Unmarshal(payload, &message); err != nil {
+		return nil, fmt.Errorf("Error unmarshaling message (%v)", err)
+	}
+
+	if err := mqttd.verify(message.Message, message.HMAC); err != nil {
+		return nil, fmt.Errorf("Invalid message (%v)", err)
+	}
+
+	return message.Message, nil
+}
 
 func (m *MQTTD) verify(message []byte, mac *string) error {
 	if m.HMAC.Required && mac == nil {

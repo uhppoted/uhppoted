@@ -19,6 +19,7 @@ type Device struct {
 }
 
 type MQTT struct {
+	ServerID          string      `conf:"server.ID"`
 	Broker            string      `conf:"broker"`
 	BrokerCertificate string      `conf:"broker.certificate"`
 	ClientCertificate string      `conf:"client.certificate"`
@@ -72,6 +73,7 @@ func NewConfig() *Config {
 		BroadcastAddress: &broadcast,
 		ListenAddress:    &listen,
 		MQTT: MQTT{
+			ServerID:          "twystd-uhppoted",
 			Broker:            "tcp://127.0.0.1:1883",
 			BrokerCertificate: mqttBrokerCertificate,
 			ClientCertificate: mqttClientCertificate,
