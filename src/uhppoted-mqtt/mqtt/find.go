@@ -29,19 +29,20 @@ func (m *MQTTD) getDevices(impl *uhppoted.UHPPOTED, ctx context.Context, request
 	}
 }
 
-func (m *MQTTD) getDevice(impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) {
+func (m *MQTTD) getDevice(operation string, impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) interface{} {
 	body := struct {
-		DeviceID *uhppoted.DeviceID `json:"device-id"`
+		RequestID *string            `json:"request-id"`
+		DeviceID  *uhppoted.DeviceID `json:"device-id"`
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
-		return
+		return nil
 	}
 
 	if body.DeviceID == nil {
 		m.OnError(ctx, "Missing device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing device ID: %s", string(request)))
-		return
+		return nil
 	}
 
 	rq := uhppoted.GetDeviceRequest{
@@ -51,18 +52,20 @@ func (m *MQTTD) getDevice(impl *uhppoted.UHPPOTED, ctx context.Context, request 
 	response, status, err := impl.GetDevice(ctx, rq)
 	if err != nil {
 		m.OnError(ctx, "Error retrieving device", status, err)
-		return
+		return nil
+	} else if response == nil {
+		return nil
 	}
 
-	if response != nil {
-		reply := struct {
-			MetaInfo *metainfo `json:"meta-info,omitempty"`
-			uhppoted.GetDeviceResponse
-		}{
-			MetaInfo:          getMetaInfo(ctx),
-			GetDeviceResponse: *response,
-		}
-
-		m.reply(ctx, reply)
+	reply := struct {
+		RequestID *string `json:"request-id,omitempty"`
+		Operation string  `json:"operation,omitempty"`
+		uhppoted.GetDeviceResponse
+	}{
+		RequestID:         body.RequestID,
+		Operation:         operation,
+		GetDeviceResponse: *response,
 	}
+
+	return reply
 }
