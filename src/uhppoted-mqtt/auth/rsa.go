@@ -104,8 +104,7 @@ func (r *RSA) Validate(clientID string, request []byte, signature []byte, counte
 	}
 
 	if counter <= c.(uint64) {
-		r.log.Printf("TODO:  %s: RSA counter reused (%d)", clientID, counter)
-		//return fmt.Errorf("%s: RSA counter reused (%d)", clientID, counter)
+		return fmt.Errorf("%s: RSA counter reused (%d)", clientID, counter)
 	}
 
 	r.counters.Store(clientID, counter, r.counters.filepath, r.log)
@@ -125,7 +124,7 @@ func (r *RSA) Sign(message []byte) ([]byte, error) {
 	return []byte{}, nil
 }
 
-func (r *RSA) Encrypt(plaintext []byte) ([]byte, []byte, []byte, error) {
+func (r *RSA) Encrypt(plaintext []byte, clientID string) ([]byte, []byte, []byte, error) {
 	secretKey := make([]byte, 32)
 	if _, err := rand.Read(secretKey); err != nil {
 		return nil, nil, nil, err
@@ -149,7 +148,7 @@ func (r *RSA) Encrypt(plaintext []byte) ([]byte, []byte, []byte, error) {
 
 	rng := rand.Reader
 	label := []byte{}
-	key, err := rsa.EncryptOAEP(sha256.New(), rng, r.encryptionKeys.clientKeys["QWERTY54"], secretKey, label)
+	key, err := rsa.EncryptOAEP(sha256.New(), rng, r.encryptionKeys.clientKeys[clientID], secretKey, label)
 	if err != nil {
 		return nil, nil, nil, err
 	}

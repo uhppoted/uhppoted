@@ -9,182 +9,180 @@ mqttd-help: build
 mqttd-version: build
 	./bin/mqttd version
 
-mqttd-get-devices:
+smqttd-get-devices:
 	mqtt publish --topic 'twystd/uhppoted/gateway/devices:get' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id":  "AH173635G3", \
-                                                        "reply-to":    "reply/97531" }}}'
+                 --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                        "client-id":  "QWERTY54", \
+                                                        "reply-to":   "twystd/uhppoted/reply/97531" }}}'
 
 mqttd-get-devices-hotp:
 	mqtt publish --topic 'twystd/uhppoted/gateway/devices:get' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id":  "AH173635G3", \
-                                                        "reply-to":    "reply/97531", \
-                                                        "hotp":        "586787" }}}'
+                 --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                        "client-id":  "QWERTY54", \
+                                                        "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                        "hotp":       "586787" }}}'
 
 mqttd-get-devices-rsa:
 	mqtt publish --topic 'twystd/uhppoted/gateway/devices:get' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "signature": "RDtNHYn0WIvct/zygbl/WsQ2kPhHN1fZf3DfQ+x15LCuUhcoYLjrHjIV8GLnX+UbN3zoYif3VCDbk9R2gK4zmbh9NR9ze9dZ5MDLE8Za+9UGKBRNmg6OBbF1axyHczmoMSZgwZxgAg/Qu/3pzKEh+5/kRBRy/W8ILhbuYL+BDL4=",\
-                                           "request": { "sequence-no": 8, \
-                                                        "request-id":  "AH173635G3", \
-                                                        "reply-to":    "reply/97531" }}}'
+                 --message '{ "message": { "signature": "rADWqZScbEJBo/ODUViHYp+i2leLcTeOWF9NXtIHD2g4jYM2WAdGUkfHPxYTMnAt2OS0ZhJ4Pt6vwrdS9K4GHSGXq8DQpwX0Gffhu/bzBtTtg2Y1hy63uKq7DwNXdPh2vlDxFTBqwrbcPLNHkV3wTXj2nlutbcfbziItjAYjIpA=",\
+                                           "request": { "request-id": "AH173635G3", \
+                                                        "client-id":  "QWERTY54", \
+                                                        "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                        "sequence-no": 8 }}}'
 
 mqttd-get-devices-encrypted:
 	mqtt publish --topic 'twystd/uhppoted/gateway/devices:get' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "signature": "RDtNHYn0WIvct/zygbl/WsQ2kPhHN1fZf3DfQ+x15LCuUhcoYLjrHjIV8GLnX+UbN3zoYif3VCDbk9R2gK4zmbh9NR9ze9dZ5MDLE8Za+9UGKBRNmg6OBbF1axyHczmoMSZgwZxgAg/Qu/3pzKEh+5/kRBRy/W8ILhbuYL+BDL4=",\
-                                           "key":       "r5oJH7UFUj20kYucc4U5/I6byEq3+GPpkv989JlGPYKfyYRYyx9GAafdX0+oGJhZV5bMfy7nftFWB/MPQE2RHLUV3hCQNbz/tgrF3Jk1wDziubWsw9Ry6bVN1Py/iu6lOYu68kJSQqTn55OC7LY3QbBvCDVI0OQsVg0QilAP7tJalhXrl0Ig7Hj46Iq+VP1qjZ3zhGAXRmcP6J4FZgctjSZ/T5diOzifWMvNEMtcwYpKXwmgXo1a416i8k6GZ432dqA0NGJ27dTUNRU8YFYgntqWlcPgAn5wE/gIW9FdG2htfnRxz80PY2x6QN2B0Ktr9M8EaaK8qt/diHeq3G2vmg==",\
-                                           "iv":        "221CD7E3F03BBDDE46AAE1F272C9997C",\
-                                           "request":   "gOfqOIK77RttZTQs4OFM9XlUwqd0YYrEwByfMkMdhrN06+UNUwIpuNQPZo0xNmWsvPkwjynHdvuYcVpDOLJJOz+/jwo2ifm/7ss1fCdzYd3eDy3hifdIoZ+PEc6fHo6K8Mq2HA4EYj7uOqc5hU84ZBRe4I6V9MOeClOxvJdJgUYeDOBtZCIoP8NUUMir2OPmH7TJHR8XaEl21WQ9r90yuVRBbzN6IqEKKDqkYFVaTSI/fxCGsEgdlHsqPdJIR/Nt" \
+                 --message '{ "message": { "key":       "2SEEea9O7WqC3gRJAp2zBpGi2dAPu174hfWxCQ7+O1ZsyMgPEXoz70td1kdGqwvcH9QxLUm7KdRcgv48QcY5X2IwuVTP5nEs2RvtKusg0CdOmS1D9MZLDzPtXk2qqVltvFt5LSGeCPqcy8ozZ0drTmMrX3c9y5TQAkUE3nrfNHRS5eLdaVGN++wN1c/rTudHSkN4cbK9SQOV1k9id3DlKLmTiH4t9Af4JgbLgz0chp9L+bZFUFi94szy0w6YmcAHjJl4zwT9772KSAAri1ANHlPq5Yg/Q/ew9KsOIGf0fpoplOU/FrRvOYdEQ4rVStfnR1tobGrldNZGQXw9qEq0+A==",\
+                                           "iv":        "D3F977203D81BA43682841D3BE29E0F6",\
+                                           "signature": "rADWqZScbEJBo/ODUViHYp+i2leLcTeOWF9NXtIHD2g4jYM2WAdGUkfHPxYTMnAt2OS0ZhJ4Pt6vwrdS9K4GHSGXq8DQpwX0Gffhu/bzBtTtg2Y1hy63uKq7DwNXdPh2vlDxFTBqwrbcPLNHkV3wTXj2nlutbcfbziItjAYjIpA=",\
+                                           "request":   "xnaxFosCK+OGdBa0U6Xr2YcbIPQIlpCLkiwTOPU9b4H9dlN8K34immZtlYaUNOai8bA7ggg/QNRA6EbLtyssqgGvTZwkDFTtZlElOxDetYyXmVJE6y7r/l+lIxqlzrC3rCBPDYGMS7S77ejBlzugP2YwsEo7Q6DzrEdGmCPo66U7eC/xPnhv4aTbzcrvFhyzRp1+ZZtUlvigMe5sJKG4hjmMtcB5OGCRpftSHHNn10PeX//qoJkOK23ah2L/hcgJynIUVuocbIfKUVRW68UlR36sJHtDbV3GvB4FukGSwmy7kKYGqzXTPUZnkfuG5+A+H8v1P+Eeh9KoikMTgW+ISaU98C06jQ6rBWLUHUXIFPriY/WD4/k0uP9DKQXV1uaO" \
                                          }, \
-                              "hmac": "7006a543cf4bb7c7f9f2273149431b82c05704306db12aac961c8d9171b2630f" }'
+                              "hmac": "c4b2bd277db4dccaeac45e28f79e74ff1074e1729a5906942f167c57bd03d6ba" }'
  
 mqttd-get-device:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id":  "AH173635G3", \
-                                                        "reply-to":    "reply/97531", \
-                                                        "device-id":   405419896 }}}'
+                 --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                        "client-id":  "QWERTY54", \
+                                                        "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                        "device-id":  405419896 }}}'
 
 mqttd-get-device-hotp:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id":  "AH173635G3", \
-                                                        "reply-to":    "reply/97531", \
-                                                        "hotp":        "586787", \
-                                                        "device-id":   405419896 }}}'
+                 --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                        "client-id":  "QWERTY54", \
+                                                        "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                        "hotp":       "586787", \
+                                                        "device-id":  405419896 }}}'
 
 mqttd-get-device-rsa:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "signature": "K3cnznnLlpk5DLfjSviDktbUnNIWCPGzeUsxuIj84chdr6Oky3vz4tZJHC+dUIN9539aEFILv+EJYU7yYlMIc/wyvydxewgNj+rzKnuHLXidr7YS/pfMGhtb16gsPyLvq+CeD9OgB3m/DTxfEXF1kGEguVLR8uDnGxVNw1B1J10=",\
-                                           "request": { "sequence-no": 8, \
-                                                        "request-id":  "AH173635G3", \
-                                                        "reply-to":    "reply/97531", \
-                                                        "device-id":   405419896 }}}'
+                 --message '{ "message": { "signature": "WyIfFnU4aGgtrxHVnzNUZT4lkt13Crm9CEw74ziH+80tXR+kp0/S4lU5hJiyTeTuLSWY2iUHmJ+fR30Xv46C0rbu/Mea3nm6Dr8PFXp3HcyMuNpLg4V3eTwE+gMMLj1rQkDLUFgTxDHv21nOd61bjIL0/I/5qyil0PtePPvKPJ4=",\
+                                           "request": { "request-id":  "AH173635G3", \
+                                                        "client-id":  "QWERTY54", \
+                                                        "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                        "device-id":   405419896, \
+                                                        "sequence-no": 8 }}}'
 
 mqttd-get-device-encrypted:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "signature": "E+hiR6KlTi5sSKoV4Z9wm4pA1XoqYplgRYEc4uzAsUc8tnSXqs/ITcHKU8aPwRxB3i2T+8JIbPkKUg19Bub9UMu7B8Mm5+3yOHU/NX8TM/akk4Qj8fur5Ui2Szbg/hAVdo7GPwttg4BbN8Ejl5h6UEv6x5i03RHV4DbAY2TbB28=",\
-                                           "key":       "4ALW3VOHROywhvgyHlVbGo1B74FqEphcKxfLeug17GqV5igSP6f5oj4h6f+UzvJrVxCb4ekdU9aMBZ9yGmxNbhDZpLCBjFDGZB3sZfQ9WTmYswLLcYic5+om0PlxoegWnRtTsd+9f870ZyyPSGu/J6jei9QIXGqT3jwWiUCFn1ChOvWb5KQNEkAzirAJzQ9vXuxIb0M/kcLskCgM0dcldXYbeycnAPRoFxwjfWWytjN2FmgaF33ph6pF5Tzy+DavGciQ4tI5dVKUCtqfrvbp3yozk1ZZg8waKAcbnqXldRIZwFwFwmnG6ljtQl+2MrXUDG8VmJA+DjgI7aKJFq3bTA==",\
-                                           "iv":        "4CE3CFB38F43761A5A53CD6BEAFE50B5",\
-                                           "request":   "9K7hEqbZZjtAqwnsJMm2ZypTUJdt6W5qYPr/gVSB3WNxYOuj/ZDI8GeEL5nusdfCnkro/jbnKzGApsX/d7TNdl4210e5ryAvDQxc1HCYovxXalMRw+H8U6K4uSjrqNmgiEvWwL9iOEnsWfCw8LnArpep2bUIHQKWTaY6WyUhATYwQpdoMwZGhdPcH0Wh1aBdADzLr+LVCJqUGo0hKGfl0LZwiVi73KbJtqX1g+Sx+DT5rKLTEM2/SPXN7ic/RvHYp/7/Cegd9vkHh1U20qgAQ2xO288Cwexqodo0D35YcIitwwLTZEBD9P+hq5j/IypU" \
+                 --message '{ "message": { "key":       "UI+iTubr0REhqGb/PENiPTuRR+hjkI9Gkfy7EJ5DVwku1NW30skhs8yu+fVGx3HXCkYx/Yp6qsQBziL0pKPJS01FER3ubUdyiTL+H6Nma0SjNapOcy7qvD29kVFDr0nursQQLY43Gl3eCpamY5C2F9fM9+K3yodyBAYIlZwFclZQ4hzqkW2dFXO0cKO67QAFi34UIB8bxNtz2p22M8ReSu5Blx6eJrvnBqCjHabbn/CGqs0gKeMe5/ZVfCrP59InDJrcjzrdLfvM7w23/EqtVHKATk+0CbXsGk9HGoDf5kZ8PN2nQrVUXqh1tUbQ0k40dtYFeI4ZJAI3EOplHEBEXQ==",\
+                                           "iv":        "0143180F7D5A4BDD0C0194C9115F420C",\
+                                           "signature": "WyIfFnU4aGgtrxHVnzNUZT4lkt13Crm9CEw74ziH+80tXR+kp0/S4lU5hJiyTeTuLSWY2iUHmJ+fR30Xv46C0rbu/Mea3nm6Dr8PFXp3HcyMuNpLg4V3eTwE+gMMLj1rQkDLUFgTxDHv21nOd61bjIL0/I/5qyil0PtePPvKPJ4=",\
+                                           "request":   "pVflVMqEWJTw1VFIVTVvnJghNiCH5xJ9ZD9ldUoHqTe3ec7fFsI9wFAO9x3F51jVG41J8tB7ndH9pSeP8OmA/gT2A+xiAJ/PzcCdbZGbNJmeGgELRxtU2xxBJEUaKEHgj4kQnc5YXzX3q+q16ww2aRihbMdu2+cGuQ+svY1jVaLWwNkxcZnRH2Pm2Y2MrU9WF98FdYKwm+GiStIqELdIUbWbPec8FbR76/bHP5PwMiavZQH/AkrlyzAnhn6W2tjedw5vGZ7fX21c5vYnw8gwywyzSstLzsubeyGxY1BqwiYsBk91gi5cp8eVTIYn1Urk2Jnly2Yt1wxHZLpNL4JIxTi9yYMxPRtx/8XldQ8Axu5TY5gjnBz626bWu5NdrlV+Lcfh3gGbHAR1oDf0YBpoWIErsCzG+xjlWWQP9T8NFYUWtvju3hub3mrqKxS9NOMYEfdWVGoSzy+gEj5igshMNjq5XzhwszTWpn27lYZJt5j6x2yKRc1niGJJQFoyVBkD" \
                                          }, \
-                              "hmac": "d956cd830d972285255a293f16df36fb2e07b6c9cc39c3466ab3c448992840b3" }'
+                              "hmac": "fe25b5e82e6cf8ab693b5ac306b9dd066d0f9a70b2130a18e06f86665bcac6c9" }'
 
 mqttd-get-status:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/status:get' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id":  "AH173635G3", \
-                                                        "reply-to":    "reply/97531", \
-                                                        "device-id":   405419896 }}}'
+                 --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                        "client-id":  "QWERTY54", \
+                                                        "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                        "device-id":  405419896 }}}'
 
 mqttd-get-time:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/time:get' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id": "AH173635G3", \
-                                                        "reply-to":   "reply/97531", \
+                 --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                        "client-id":  "QWERTY54", \
+                                                        "reply-to":   "twystd/uhppoted/reply/97531", \
                                                         "device-id":  405419896 }}}'
 
 mqttd-set-time:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/time:set' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id": "AH173635G3", \
-                                                        "reply-to":   "reply/97531", \
+                 --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                        "client-id":  "QWERTY54", \
+                                                        "reply-to":   "twystd/uhppoted/reply/97531", \
                                                         "device-id":  405419896, \
                                                         "date-time":  "$(DATETIME)" }}}'
 
 mqttd-get-door-delay:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/delay:get' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id": "AH173635G3", \
-                                                        "reply-to":   "reply/97531", \
-                                                        "device-id":  405419896, \
-                                                        "door":       3 }}}'
+              --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                     "client-id":  "QWERTY54", \
+                                                     "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                     "device-id":  405419896, \
+                                                     "door":       3 }}}'
 
 mqttd-set-door-delay:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/delay:set' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id": "AH173635G3", \
-                                                        "reply-to":   "reply/97531", \
-                                                        "device-id":  405419896, \
-                                                        "door":       3, \
-                                                        "delay":      8 }}}'
+               --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                      "client-id":  "QWERTY54", \
+                                                      "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                      "device-id":  405419896, \
+                                                      "door":       3, \
+                                                      "delay":      8 }}}'
 
 mqttd-get-door-control:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/control:get' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id": "AH173635G3", \
-                                                        "reply-to":   "reply/97531", \
-                                                        "device-id":  405419896, \
+               --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                      "client-id":  "QWERTY54", \
+                                                      "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                      "device-id":  405419896, \
                                                         "door":       3 }}}'
 
 mqttd-set-door-control:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/door/control:set' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id": "AH173635G3", \
-                                                        "reply-to":   "reply/97531", \
-                                                        "device-id":  405419896, \
-                                                        "door":       3, \
-                                                        "control": "normally closed" }}}'
+              --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                     "client-id":  "QWERTY54", \
+                                                     "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                     "device-id":  405419896, \
+                                                     "door":       3, \
+                                                     "control":    "normally closed" }}}'
 
 mqttd-get-cards:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/cards:get' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id": "AH173635G3", \
-                                                        "reply-to":   "reply/97531", \
-                                                        "device-id":  405419896 }}}'
+               --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                       "client-id":  "QWERTY54", \
+                                                       "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                       "device-id":  405419896 }}}'
 
 mqttd-delete-cards:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/cards:delete' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id": "AH173635G3", \
-                                                        "reply-to":   "reply/97531", \
-                                                        "device-id":  405419896 }}}'
+               --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                      "client-id":  "QWERTY54", \
+                                                      "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                      "device-id":  405419896 }}}'
 
 mqttd-get-card:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:get' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id": "AH173635G3", \
-                                                        "reply-to":   "reply/97531", \
+                 --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                        "client-id":  "QWERTY54", \
+                                                        "reply-to":   "twystd/uhppoted/reply/97531", \
                                                         "device-id":  405419896, \
                                                         "card-number": 65537 }}}'
 
 mqttd-put-card:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:put' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id": "AH173635G3", \
-                                                        "reply-to":   "reply/97531", \
-                                                        "device-id":  405419896, \
-                                                        "card": { "card-number": 1327679, \
-                                                                  "valid-from": "2019-11-01", \
-                                                                  "valid-until": "2019-12-31", \
-                                                                  "doors": [true,false,false,true] } \
-                                                      }}}'
+               --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                      "client-id":  "QWERTY54", \
+                                                      "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                      "device-id":  405419896, \
+                                                      "card": { "card-number": 1327679, \
+                                                                "valid-from": "2019-11-01", \
+                                                                "valid-until": "2019-12-31", \
+                                                                "doors": [true,false,false,true] } \
+                                                    }}}'
 
 mqttd-delete-card:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/card:delete' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id": "AH173635G3", \
-                                                        "reply-to":   "reply/97531", \
-                                                        "device-id":  405419896, \
-                                                        "card-number": 1327679 }}}'
+               --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                      "client-id":  "QWERTY54", \
+                                                      "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                      "device-id":  405419896, \
+                                                      "card-number": 1327679 }}}'
 
 mqttd-get-events:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/events:get' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id": "AH173635G3", \
-                                                        "reply-to":   "reply/97531", \
-                                                        "device-id":  405419896, \
-                                                        "start":      "2019-08-05", \
-                                                        "end":        "2019-08-09" }}}'
+               --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                      "client-id":  "QWERTY54", \
+                                                      "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                      "device-id":  405419896, \
+                                                      "start":      "2019-08-05", \
+                                                      "end":        "2019-08-09" }}}'
 
 mqttd-get-event:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/event:get' \
-                 --message '{ "message": { "origin": "QWERTY54",\
-                                           "request": { "request-id": "AH173635G3", \
-                                                        "reply-to":   "reply/97531", \
-                                                        "device-id":  405419896, \
-                                                        "event-id": 50 }}}'
+               --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                      "client-id":  "QWERTY54", \
+                                                      "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                      "device-id":  405419896, \
+                                                      "event-id": 50 }}}'
