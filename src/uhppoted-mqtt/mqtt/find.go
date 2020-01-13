@@ -7,32 +7,31 @@ import (
 	"uhppoted"
 )
 
-func (m *MQTTD) getDevices(impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) {
+func (m *MQTTD) getDevices(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) interface{} {
 	rq := uhppoted.GetDevicesRequest{}
 
 	response, status, err := impl.GetDevices(ctx, rq)
 	if err != nil {
 		m.OnError(ctx, "Error retrieving list of devices", status, err)
-		return
+		return nil
 	}
 
-	if response != nil {
-		reply := struct {
-			MetaInfo *metainfo `json:"meta-info,omitempty"`
-			uhppoted.GetDevicesResponse
-		}{
-			MetaInfo:           getMetaInfo(ctx),
-			GetDevicesResponse: *response,
-		}
+	if response == nil {
+		return nil
+	}
 
-		m.reply(ctx, reply)
+	return struct {
+		metainfo
+		uhppoted.GetDevicesResponse
+	}{
+		metainfo:           meta,
+		GetDevicesResponse: *response,
 	}
 }
 
-func (m *MQTTD) getDevice(operation string, impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) interface{} {
+func (m *MQTTD) getDevice(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) interface{} {
 	body := struct {
-		RequestID *string            `json:"request-id"`
-		DeviceID  *uhppoted.DeviceID `json:"device-id"`
+		DeviceID *uhppoted.DeviceID `json:"device-id"`
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
@@ -53,17 +52,17 @@ func (m *MQTTD) getDevice(operation string, impl *uhppoted.UHPPOTED, ctx context
 	if err != nil {
 		m.OnError(ctx, "Error retrieving device", status, err)
 		return nil
-	} else if response == nil {
+	}
+
+	if response == nil {
 		return nil
 	}
 
 	reply := struct {
-		RequestID *string `json:"request-id,omitempty"`
-		Operation string  `json:"operation,omitempty"`
+		metainfo
 		uhppoted.GetDeviceResponse
 	}{
-		RequestID:         body.RequestID,
-		Operation:         operation,
+		metainfo:          meta,
 		GetDeviceResponse: *response,
 	}
 

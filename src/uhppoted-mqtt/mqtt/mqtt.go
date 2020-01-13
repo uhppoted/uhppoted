@@ -38,12 +38,7 @@ type MQTTD struct {
 
 type fdispatch struct {
 	operation string
-	f         func(*MQTTD, *uhppoted.UHPPOTED, context.Context, []byte)
-}
-
-type fdispatchx struct {
-	operation string
-	f         func(*MQTTD, string, *uhppoted.UHPPOTED, context.Context, []byte) interface{}
+	f         func(*MQTTD, metainfo, *uhppoted.UHPPOTED, context.Context, []byte) interface{}
 }
 
 type dispatcher struct {
@@ -53,7 +48,6 @@ type dispatcher struct {
 	log      *log.Logger
 	topic    string
 	table    map[string]fdispatch
-	tablex   map[string]fdispatchx
 }
 
 type request struct {
@@ -64,9 +58,10 @@ type request struct {
 }
 
 type metainfo struct {
-	RequestID string `json:"request-id,omitempty"`
-	ClientID  string `json:"client-id,omitempty"`
-	Operation string `json:"operation,omitempty"`
+	RequestID *string `json:"request-id,omitempty"`
+	ClientID  *string `json:"client-id,omitempty"`
+	ServerID  string  `json:"server-id,omitempty"`
+	Operation string  `json:"operation,omitempty"`
 }
 
 var regex map[string]*regexp.Regexp = map[string]*regexp.Regexp{
@@ -95,8 +90,8 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		log:      l,
 		topic:    m.Topic,
 		table: map[string]fdispatch{
-			m.Topic + "/devices:get": fdispatch{"get-devices", (*MQTTD).getDevices},
-			//	m.Topic + "/device:get":              fdispatch{"get-device", (*MQTTD).getDevice},
+			m.Topic + "/devices:get":             fdispatch{"get-devices", (*MQTTD).getDevices},
+			m.Topic + "/device:get":              fdispatch{"get-device", (*MQTTD).getDevice},
 			m.Topic + "/device/status:get":       fdispatch{"get-status", (*MQTTD).getStatus},
 			m.Topic + "/device/time:get":         fdispatch{"get-time", (*MQTTD).getTime},
 			m.Topic + "/device/time:set":         fdispatch{"set-time", (*MQTTD).setTime},
@@ -111,9 +106,6 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			m.Topic + "/device/card:delete":      fdispatch{"delete-card", (*MQTTD).deleteCard},
 			m.Topic + "/device/events:get":       fdispatch{"get-events", (*MQTTD).getEvents},
 			m.Topic + "/device/event:get":        fdispatch{"get-event", (*MQTTD).getEvent},
-		},
-		tablex: map[string]fdispatchx{
-			m.Topic + "/device:get": fdispatchx{"get-device", (*MQTTD).getDevice},
 		},
 	}
 
@@ -215,7 +207,6 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		}
 
 		body := struct {
-			ClientID  *string         `json:"origin"`
 			Signature *string         `json:"signature"`
 			Key       *string         `json:"key"`
 			IV        *string         `json:"iv"`
@@ -241,85 +232,27 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 			request = plaintext
 		}
 
-		if err := d.mqttd.authenticate(body.ClientID, request, body.Signature); err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(request))
-			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error authenticating request (%v)", err))
-			return
-		}
-
-		if err := d.mqttd.authorise(body.ClientID, msg.Topic()); err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(message))
-			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error authorising request (%v)", err))
-			return
-		}
-
-		ctx = context.WithValue(ctx, "request", request)
-		ctx = context.WithValue(ctx, "operation", fn.operation)
-
-		go fn.f(d.mqttd, d.uhppoted, ctx, request)
-		return
-	}
-
-	if fn, ok := d.tablex[msg.Topic()]; ok {
-		msg.Ack()
-
-		message, err := unwrap(d.mqttd, msg.Payload())
-		if err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
-			d.log.Printf("WARN  %-20s %v", "dispatch", err)
-			return
-		}
-
-		body := struct {
-			ClientID  *string         `json:"origin"`
-			Signature *string         `json:"signature"`
-			Key       *string         `json:"key"`
-			IV        *string         `json:"iv"`
-			Request   json.RawMessage `json:"request"`
+		misc := struct {
+			ClientID  *string `json:"client-id"`
+			RequestID *string `json:"request-id"`
+			ReplyTo   *string `json:"reply-to"`
 		}{}
 
-		if err := json.Unmarshal(message, &body); err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(message))
-			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error unmarshaling message body (%v)", err))
-			return
-		}
-
-		request := []byte(body.Request)
-
-		if body.Key != nil && body.IV != nil && isBase64(body.Request) {
-			plaintext, err := d.mqttd.decrypt(request, *body.IV, *body.Key)
-			if err != nil || plaintext == nil {
-				d.log.Printf("DEBUG %-20s %s", "dispatch", string(message))
-				d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error decrypting message (%v::%v)", err, plaintext))
-				return
-			}
-
-			request = plaintext
-		}
-
-		if err := d.mqttd.authenticate(body.ClientID, request, body.Signature); err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(request))
-			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error authenticating request (%v)", err))
-			return
-		}
-
-		if err := d.mqttd.authorise(body.ClientID, msg.Topic()); err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(message))
-			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error authorising request (%v)", err))
-			return
-		}
-
-		metainfo := struct {
-			ClientID *string `json:"origin"`
-			Request  struct {
-				RequestID *string `json:"request-id"`
-				ReplyTo   *string `json:"reply-to"`
-			} `json:"request"`
-		}{}
-
-		if err := json.Unmarshal(message, &metainfo); err != nil {
+		if err := json.Unmarshal(request, &misc); err != nil {
 			d.log.Printf("DEBUG %-20s %s", "dispatch", string(request))
 			d.mqttd.OnError(ctx, "Cannot parse request meta-info", uhppoted.StatusBadRequest, err)
+			return
+		}
+
+		if err := d.mqttd.authenticate(misc.ClientID, request, body.Signature); err != nil {
+			d.log.Printf("DEBUG %-20s %s", "dispatch", string(request))
+			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error authenticating request (%v)", err))
+			return
+		}
+
+		if err := d.mqttd.authorise(misc.ClientID, msg.Topic()); err != nil {
+			d.log.Printf("DEBUG %-20s %s", "dispatch", string(request))
+			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error authorising request (%v)", err))
 			return
 		}
 
@@ -327,14 +260,26 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		ctx = context.WithValue(ctx, "operation", fn.operation)
 
 		go func() {
-			replyTo := "reply"
-			if metainfo.Request.ReplyTo != nil {
-				replyTo = *metainfo.Request.ReplyTo
+			replyTo := d.mqttd.Topic + "/reply"
+
+			if misc.ClientID != nil {
+				replyTo = d.mqttd.Topic + "/reply/" + *misc.ClientID
 			}
 
-			reply := fn.f(d.mqttd, fn.operation, d.uhppoted, ctx, request)
+			if misc.ReplyTo != nil {
+				replyTo = *misc.ReplyTo
+			}
+
+			meta := metainfo{
+				RequestID: misc.RequestID,
+				ClientID:  misc.ClientID,
+				ServerID:  d.mqttd.ServerID,
+				Operation: fn.operation,
+			}
+
+			reply := fn.f(d.mqttd, meta, d.uhppoted, ctx, request)
 			if reply != nil {
-				d.mqttd.replyx(client, metainfo.ClientID, replyTo, ctx, reply)
+				d.mqttd.reply(client, misc.ClientID, replyTo, ctx, reply)
 			}
 		}()
 	}
@@ -378,24 +323,7 @@ func (m *MQTTD) Send(ctx context.Context, message interface{}) {
 	token.Wait()
 }
 
-func (m *MQTTD) reply(ctx context.Context, response interface{}) {
-	client, ok := ctx.Value("client").(MQTT.Client)
-	if !ok {
-		panic("MQTT client not included in context")
-	}
-
-	topic, ok := ctx.Value("topic").(string)
-	if !ok {
-		panic("MQTT root topic not included in context")
-	}
-
-	replyTo := "reply"
-	if rq, ok := ctx.Value("request").(request); ok {
-		if rq.ReplyTo != nil {
-			replyTo = *rq.ReplyTo
-		}
-	}
-
+func (m *MQTTD) reply(client MQTT.Client, clientID *string, replyTo string, ctx context.Context, response interface{}) {
 	r, err := json.Marshal(response)
 	if err != nil {
 		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
@@ -408,21 +336,18 @@ func (m *MQTTD) reply(ctx context.Context, response interface{}) {
 		return
 	}
 
-	crypttext, iv, key, err := m.encrypt(r)
+	crypttext, iv, key, err := m.encrypt(r, clientID)
 	if err != nil {
 		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
 		return
 	}
 
 	msg := struct {
-		ServerID  string          `json:"origin,omitempty"`
-		ClientID  string          `json:"destination,omitempty"`
 		Signature string          `json:"signature,omitempty"`
 		Key       string          `json:"key,omitempty"`
 		IV        string          `json:"iv,omitempty"`
 		Reply     json.RawMessage `json:"reply,omitempty"`
 	}{
-		ServerID:  m.ServerID,
 		Signature: hex.EncodeToString(signature),
 		Key:       base64.StdEncoding.EncodeToString(key),
 		IV:        hex.EncodeToString(iv),
@@ -451,75 +376,14 @@ func (m *MQTTD) reply(ctx context.Context, response interface{}) {
 		return
 	}
 
-	token := client.Publish(topic+"/"+replyTo, 0, false, string(b))
-	token.Wait()
-}
-
-func (m *MQTTD) replyx(client MQTT.Client, clientID *string, replyTo string, ctx context.Context, response interface{}) {
-	r, err := json.Marshal(response)
-	if err != nil {
-		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
-		return
-	}
-
-	signature, err := m.sign(r)
-	if err != nil {
-		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
-		return
-	}
-
-	crypttext, iv, key, err := m.encrypt(r)
-	if err != nil {
-		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
-		return
-	}
-
-	msg := struct {
-		ServerID  string          `json:"origin,omitempty"`
-		ClientID  *string         `json:"destination,omitempty"`
-		Signature string          `json:"signature,omitempty"`
-		Key       string          `json:"key,omitempty"`
-		IV        string          `json:"iv,omitempty"`
-		Reply     json.RawMessage `json:"reply,omitempty"`
-	}{
-		ServerID:  m.ServerID,
-		ClientID:  clientID,
-		Signature: hex.EncodeToString(signature),
-		Key:       base64.StdEncoding.EncodeToString(key),
-		IV:        hex.EncodeToString(iv),
-		Reply:     crypttext,
-	}
-
-	msgbytes, err := json.Marshal(msg)
-	if err != nil {
-		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
-		return
-	}
-
-	hmac := hex.EncodeToString(m.HMAC.MAC(msgbytes))
-
-	message := struct {
-		Message json.RawMessage `json:"message"`
-		HMAC    string          `json:"hmac,omitempty"`
-	}{
-		Message: msgbytes,
-		HMAC:    hmac,
-	}
-
-	b, err := json.Marshal(message)
-	if err != nil {
-		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
-		return
-	}
-
-	token := client.Publish(m.Topic+"/"+replyTo, 0, false, string(b))
+	token := client.Publish(replyTo, 0, false, string(b))
 	token.Wait()
 }
 
 func getMetaInfo(ctx context.Context) *metainfo {
 	metainfo := metainfo{
-		RequestID: "",
-		ClientID:  "",
+		RequestID: nil,
+		ClientID:  nil,
 		Operation: "",
 	}
 
@@ -529,11 +393,11 @@ func getMetaInfo(ctx context.Context) *metainfo {
 
 	if rq, ok := ctx.Value("request").(request); ok {
 		if rq.RequestID != nil {
-			metainfo.RequestID = *rq.RequestID
+			metainfo.RequestID = rq.RequestID
 		}
 
 		if rq.ClientID != nil {
-			metainfo.ClientID = *rq.ClientID
+			metainfo.ClientID = rq.ClientID
 		}
 	}
 

@@ -53,9 +53,13 @@ func (m *MQTTD) sign(reply []byte) ([]byte, error) {
 	return nil, nil
 }
 
-func (m *MQTTD) encrypt(plaintext []byte) ([]byte, []byte, []byte, error) {
+func (m *MQTTD) encrypt(plaintext []byte, clientID *string) ([]byte, []byte, []byte, error) {
 	if m.EncryptOutgoing {
-		ciphertext, iv, key, err := m.RSA.Encrypt(plaintext)
+		if clientID == nil {
+			return nil, nil, nil, fmt.Errorf("Missing client ID")
+		}
+
+		ciphertext, iv, key, err := m.RSA.Encrypt(plaintext, *clientID)
 		if err != nil {
 			return nil, nil, nil, err
 		}

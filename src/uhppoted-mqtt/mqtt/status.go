@@ -7,19 +7,19 @@ import (
 	"uhppoted"
 )
 
-func (m *MQTTD) getStatus(impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) {
+func (m *MQTTD) getStatus(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) interface{} {
 	body := struct {
 		DeviceID *uhppoted.DeviceID `json:"device-id"`
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
-		return
+		return nil
 	}
 
 	if body.DeviceID == nil {
 		m.OnError(ctx, "Missing device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing device ID: %s", string(request)))
-		return
+		return nil
 	}
 
 	rq := uhppoted.GetStatusRequest{
@@ -29,18 +29,18 @@ func (m *MQTTD) getStatus(impl *uhppoted.UHPPOTED, ctx context.Context, request 
 	response, status, err := impl.GetStatus(ctx, rq)
 	if err != nil {
 		m.OnError(ctx, "Error retrieving device status", status, err)
-		return
+		return nil
 	}
 
-	if response != nil {
-		reply := struct {
-			MetaInfo *metainfo `json:"meta-info,omitempty"`
-			uhppoted.GetStatusResponse
-		}{
-			MetaInfo:          getMetaInfo(ctx),
-			GetStatusResponse: *response,
-		}
+	if response == nil {
+		return nil
+	}
 
-		m.reply(ctx, reply)
+	return struct {
+		metainfo
+		uhppoted.GetStatusResponse
+	}{
+		metainfo:          meta,
+		GetStatusResponse: *response,
 	}
 }
