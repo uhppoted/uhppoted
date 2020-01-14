@@ -31,8 +31,9 @@ type MQTT struct {
 	Authentication    string      `conf:"security.authentication"`
 	HOTP              HOTP        `conf:"security.hotp"`
 	RSA               RSA         `conf:"security.rsa"`
-	SignOutgoing      bool        `conf:"security.sign.outgoing"`
-	EncryptOutgoing   bool        `conf:"security.encrypt.outgoing"`
+	Nonce             Nonce       `conf:"security.nonce"`
+	SignOutgoing      bool        `conf:"security.outgoing.sign"`
+	EncryptOutgoing   bool        `conf:"security.outgoing.encrypt"`
 }
 
 type HMAC struct {
@@ -47,8 +48,12 @@ type HOTP struct {
 }
 
 type RSA struct {
-	KeyDir   string `conf:"keys"`
-	Counters string `conf:"clients.counters"`
+	KeyDir string `conf:"keys"`
+}
+
+type Nonce struct {
+	Required bool   `conf:"required"`
+	Counters string `conf:"counters"`
 }
 
 type Permissions struct {
@@ -92,8 +97,11 @@ func NewConfig() *Config {
 				Counters: hotpCounters,
 			},
 			RSA: RSA{
-				KeyDir:   rsaKeyDir,
-				Counters: rsaCounters,
+				KeyDir: rsaKeyDir,
+			},
+			Nonce: Nonce{
+				Required: true,
+				Counters: nonceCounters,
 			},
 			Permissions: Permissions{
 				Enabled: false,

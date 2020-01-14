@@ -10,4 +10,4 @@ const rsaKeyDir string = "/etc/uhppoted/mqtt/rsa"
 
 const eventIDs string = "/var/uhppoted/mqtt.events.retrieved"
 const hotpCounters string = "/var/uhppoted/mqtt.hotp.counters"
-const rsaCounters string = "/var/uhppoted/mqtt.rsa.counters"
+const nonceCounters string = "/var/uhppoted/mqtt.nonce.counters"

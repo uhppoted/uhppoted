@@ -15,7 +15,7 @@ var rsaKeyDir string = filepath.Join(workdir(), "mqtt", "rsa")
 
 var eventIDs string = filepath.Join(workdir(), "mqtt.events.retrieved")
 var hotpCounters string = filepath.Join(workdir(), "mqtt.hotp.counters")
-var rsaCounters string = filepath.Join(workdir(), "mqtt.rsa.counters")
+var nonceCounters string = filepath.Join(workdir(), "mqtt.nonce.counters")
 
 func workdir() string {
 	programData, err := windows.KnownFolderPath(windows.FOLDERID_ProgramData, windows.KF_FLAG_DEFAULT)

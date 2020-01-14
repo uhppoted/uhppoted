@@ -49,14 +49,22 @@ func (mqttd *MQTTD) unwrap(payload []byte) ([]byte, error) {
 		ClientID  *string `json:"client-id"`
 		RequestID *string `json:"request-id"`
 		ReplyTo   *string `json:"reply-to"`
+		Nonce     *uint64 `json:"nonce"`
 	}{}
 
 	if err := json.Unmarshal(request, &misc); err != nil {
 		return nil, fmt.Errorf("Error unmarshaling request meta-info (%v)", err)
 	}
 
-	if err := mqttd.authenticate(misc.ClientID, request, body.Signature); err != nil {
+	authenticated, err := mqttd.authenticate(misc.ClientID, request, body.Signature)
+	if err != nil {
 		return nil, fmt.Errorf("Error authenticating request (%v)", err)
+	}
+
+	if authenticated {
+		if err := mqttd.Nonce.Validate(misc.ClientID, misc.Nonce); err != nil {
+			return nil, fmt.Errorf("Error validating nonce (%v)", err)
+		}
 	}
 
 	return request, nil
@@ -79,6 +87,81 @@ func (m *MQTTD) verify(message []byte, mac *string) error {
 	}
 
 	return nil
+}
+
+func (m *MQTTD) decrypt(request []byte, iv string, key string) ([]byte, error) {
+	var crypttext string = ""
+
+	err := json.Unmarshal(request, &crypttext)
+	if err != nil {
+		return nil, err
+	}
+
+	ciphertext, err := base64.StdEncoding.DecodeString(crypttext)
+	if err != nil {
+		return nil, fmt.Errorf("Invalid ciphertext (%v)", err)
+	}
+
+	keyv, err := base64.StdEncoding.DecodeString(strings.ReplaceAll(key, " ", ""))
+	if err != nil {
+		return nil, fmt.Errorf("Invalid key (%v)", err)
+	}
+
+	ivv, err := hex.DecodeString(iv)
+	if err != nil {
+		return nil, fmt.Errorf("Invalid IV (%v)", err)
+	}
+
+	return m.RSA.Decrypt(ciphertext, ivv, keyv)
+}
+
+func (m *MQTTD) authenticate(clientID *string, request []byte, signature *string) (bool, error) {
+	if m.Authentication == "HOTP" {
+		rq := struct {
+			HOTP *string `json:"hotp"`
+		}{}
+
+		if clientID == nil {
+			return false, errors.New("Invalid request: missing client-id")
+		}
+
+		if err := json.Unmarshal(request, &rq); err != nil {
+			return false, err
+		}
+
+		if rq.HOTP == nil {
+			return false, errors.New("Invalid request: missing HOTP token")
+		}
+
+		if err := m.HOTP.Validate(*clientID, *rq.HOTP); err != nil {
+			return false, err
+		}
+
+		return true, nil
+	}
+
+	if m.Authentication == "RSA" {
+		if clientID == nil {
+			return false, errors.New("Invalid request: missing client-id")
+		}
+
+		if signature == nil {
+			return false, errors.New("Invalid request: missing RSA signature")
+		}
+
+		s, err := base64.StdEncoding.DecodeString(*signature)
+		if err != nil {
+			return false, fmt.Errorf("Invalid request: undecodable RSA signature (%v)", err)
+		}
+
+		if err := m.RSA.Validate(*clientID, request, s); err != nil {
+			return false, err
+		}
+
+		return true, nil
+	}
+
+	return false, nil
 }
 
 func (m *MQTTD) sign(reply []byte) ([]byte, error) {
@@ -109,83 +192,4 @@ func (m *MQTTD) encrypt(plaintext []byte, clientID *string) ([]byte, []byte, []b
 	}
 
 	return plaintext, nil, nil, nil
-}
-
-func (m *MQTTD) decrypt(request []byte, iv string, key string) ([]byte, error) {
-	var crypttext string = ""
-
-	err := json.Unmarshal(request, &crypttext)
-	if err != nil {
-		return nil, err
-	}
-
-	ciphertext, err := base64.StdEncoding.DecodeString(crypttext)
-	if err != nil {
-		return nil, fmt.Errorf("Invalid ciphertext (%v)", err)
-	}
-
-	keyv, err := base64.StdEncoding.DecodeString(strings.ReplaceAll(key, " ", ""))
-	if err != nil {
-		return nil, fmt.Errorf("Invalid key (%v)", err)
-	}
-
-	ivv, err := hex.DecodeString(iv)
-	if err != nil {
-		return nil, fmt.Errorf("Invalid IV (%v)", err)
-	}
-
-	return m.RSA.Decrypt(ciphertext, ivv, keyv)
-}
-
-func (m *MQTTD) authenticate(clientID *string, request []byte, signature *string) error {
-	if m.Authentication == "HOTP" {
-		rq := struct {
-			HOTP *string `json:"hotp"`
-		}{}
-
-		if clientID == nil {
-			return errors.New("Invalid request: missing client-id")
-		}
-
-		if err := json.Unmarshal(request, &rq); err != nil {
-			return err
-		}
-
-		if rq.HOTP == nil {
-			return errors.New("Invalid request: missing HOTP token")
-		}
-
-		return m.HOTP.Validate(*clientID, *rq.HOTP)
-	}
-
-	if m.Authentication == "RSA" {
-		rq := struct {
-			SequenceNo *uint64 `json:"sequence-no"`
-		}{}
-
-		if clientID == nil {
-			return errors.New("Invalid request: missing client-id")
-		}
-
-		if signature == nil {
-			return errors.New("Invalid request: missing RSA signature")
-		}
-
-		s, err := base64.StdEncoding.DecodeString(*signature)
-		if err != nil {
-			return fmt.Errorf("Invalid request: undecodable RSA signature (%v)", err)
-		}
-
-		if err := json.Unmarshal(request, &rq); err != nil {
-			return err
-		}
-
-		if rq.SequenceNo == nil {
-			return errors.New("Invalid request: missing sequence number")
-		}
-
-		return m.RSA.Validate(*clientID, request, s, *rq.SequenceNo)
-	}
-
-	return nil
 }
