@@ -148,7 +148,7 @@ func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, l *log.Logger
 	ctx := context.WithValue(context.Background(), "uhppote", u)
 	ctx = context.WithValue(ctx, "client", m.connection)
 	ctx = context.WithValue(ctx, "log", l)
-	ctx = context.WithValue(ctx, "topic", m.Topic)
+	ctx = context.WithValue(ctx, "topic", d.topic)
 
 	last := uhppoted.NewEventMap(m.EventMap)
 	if err := last.Load(l); err != nil {
@@ -199,37 +199,11 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 	if fn, ok := d.table[msg.Topic()]; ok {
 		msg.Ack()
 
-		message, err := unwrap(d.mqttd, msg.Payload())
+		request, err := d.mqttd.unwrap(msg.Payload())
 		if err != nil {
 			d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
 			d.log.Printf("WARN  %-20s %v", "dispatch", err)
 			return
-		}
-
-		body := struct {
-			Signature *string         `json:"signature"`
-			Key       *string         `json:"key"`
-			IV        *string         `json:"iv"`
-			Request   json.RawMessage `json:"request"`
-		}{}
-
-		if err := json.Unmarshal(message, &body); err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(message))
-			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error unmarshaling message body (%v)", err))
-			return
-		}
-
-		request := []byte(body.Request)
-
-		if body.Key != nil && body.IV != nil && isBase64(body.Request) {
-			plaintext, err := d.mqttd.decrypt(request, *body.IV, *body.Key)
-			if err != nil || plaintext == nil {
-				d.log.Printf("DEBUG %-20s %s", "dispatch", string(message))
-				d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error decrypting message (%v::%v)", err, plaintext))
-				return
-			}
-
-			request = plaintext
 		}
 
 		misc := struct {
@@ -241,12 +215,6 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		if err := json.Unmarshal(request, &misc); err != nil {
 			d.log.Printf("DEBUG %-20s %s", "dispatch", string(request))
 			d.mqttd.OnError(ctx, "Cannot parse request meta-info", uhppoted.StatusBadRequest, err)
-			return
-		}
-
-		if err := d.mqttd.authenticate(misc.ClientID, request, body.Signature); err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(request))
-			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error authenticating request (%v)", err))
 			return
 		}
 
@@ -263,7 +231,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 			replyTo := d.mqttd.Topic + "/reply"
 
 			if misc.ClientID != nil {
-				replyTo = d.mqttd.Topic + "/reply/" + *misc.ClientID
+				replyTo = d.mqttd.Topic + "/" + *misc.ClientID
 			}
 
 			if misc.ReplyTo != nil {
