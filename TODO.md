@@ -34,7 +34,7 @@
 - [x] command protocol: add 'operation' to response meta-info
 - [x] wrap request handling in go routine
 - [x] rework GetDevices to also find 'known' devices
-- [ ] sign &| encrypt
+- [ ] sign & encrypt
 - [ ] move incoming requests to /requests subtopic
 - [ ] health check
 - [ ] watchdog
@@ -43,8 +43,6 @@
 - [x] error handling
 - [x] 'reply'
 - [ ] user/open permissions require matching card number 
-- [ ] move ACL and events to separate API's
-- [ ] publish add/delete card, etc to event stream
 - [x] TLS connection
 - [x] TLS connection: client authentication
 - [ ] Exit on error when multiple mqttd's are started (or generate unique client ID???)
@@ -53,17 +51,11 @@
 - [ ] Rework listen logic to handle errors robustly
 - [ ] Include get-listener in health check
 - [ ] Make health check interval configurable 
-- [ ] Make events consistent across everything
-- [ ] Rework UHPPOTE response messages to use factory
-- [ ] Add ARM7 target to build
 - [x] Identify UTO311-L01..L04 based on serial number prefix
 
 - [x] Fix go vet errors
-- [ ] Fix golint errors
 - [x] conf file decoder with reflection
 - [x] conf file decoder: embedded structs
-- [ ] Convert to 1.13 error handling
-- [ ] Rework uhppoted-xxx Run, etc to use [method expressions](https://talks.golang.org/2012/10things.slide#9)
 - [x] docker: simulator
 - [x] UT0311-L0x encoding: unmarshal arrays of structs (for broadcast)
 - [x] Move version to [LDFLAGS](https://stackoverflow.com/questions/28459102/golang-compile-environment-variable-into-binary)
@@ -77,6 +69,10 @@
 - [ ] commonalise configuration
 - [ ] make types consistent across API
 - [ ] Genericize message unit tests
+- [ ] Add ARM7 target to build
+- [ ] Convert to 1.13 error handling
+- [ ] Rework UHPPOTE response messages to use factory
+- [ ] Fix golint errors
 
 ### uhppoted
 - [ ] websocket + GraphQL (?)
@@ -87,6 +83,9 @@
 - [ ] conf file decoder: JSON
 - [ ] conf file encoder
 - [ ] Rework plist encoder
+- [ ] move ACL and events to separate API's
+- [ ] Make events consistent across everything
+- [ ] Rework uhppoted-xxx Run, etc to use [method expressions](https://talks.golang.org/2012/10things.slide#9)
 
 ### uhppoted-rest
 - [ ] Get events after XXX
@@ -98,9 +97,10 @@
 - [ ] commonalise functionality with uhppoted-mqttd
 
 ### uhppoted-mqtt
+- [ ] publish add/delete card, etc to event stream
 - [ ] MQTT v5.0
 - [ ] [JSON-RPC](https://en.wikipedia.org/wiki/JSON-RPC) (?)
-
+- [ ] Add to CLI
 
 ### CLI
 - [ ] Rework grant/revoke for individual doors (labelled)
