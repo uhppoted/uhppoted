@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func unwrap(mqttd *MQTTD, payload []byte) ([]byte, error) {
+func (mqttd *MQTTD) unwrap(payload []byte) ([]byte, error) {
 	message := struct {
 		Message json.RawMessage `json:"message"`
 		HMAC    *string         `json:"hmac"`
@@ -23,7 +23,43 @@ func unwrap(mqttd *MQTTD, payload []byte) ([]byte, error) {
 		return nil, fmt.Errorf("Invalid message (%v)", err)
 	}
 
-	return message.Message, nil
+	body := struct {
+		Signature *string         `json:"signature"`
+		Key       *string         `json:"key"`
+		IV        *string         `json:"iv"`
+		Request   json.RawMessage `json:"request"`
+	}{}
+
+	if err := json.Unmarshal(message.Message, &body); err != nil {
+		return nil, fmt.Errorf("Error unmarshaling message body (%v)", err)
+	}
+
+	request := []byte(body.Request)
+
+	if body.Key != nil && body.IV != nil && isBase64(body.Request) {
+		plaintext, err := mqttd.decrypt(request, *body.IV, *body.Key)
+		if err != nil || plaintext == nil {
+			return nil, fmt.Errorf("Error decrypting message (%v::%v)", err, plaintext)
+		}
+
+		request = plaintext
+	}
+
+	misc := struct {
+		ClientID  *string `json:"client-id"`
+		RequestID *string `json:"request-id"`
+		ReplyTo   *string `json:"reply-to"`
+	}{}
+
+	if err := json.Unmarshal(request, &misc); err != nil {
+		return nil, fmt.Errorf("Error unmarshaling request meta-info (%v)", err)
+	}
+
+	if err := mqttd.authenticate(misc.ClientID, request, body.Signature); err != nil {
+		return nil, fmt.Errorf("Error authenticating request (%v)", err)
+	}
+
+	return request, nil
 }
 
 func (m *MQTTD) verify(message []byte, mac *string) error {
@@ -153,71 +189,3 @@ func (m *MQTTD) authenticate(clientID *string, request []byte, signature *string
 
 	return nil
 }
-
-// func (m *MQTTD) reply(ctx context.Context, response interface{}) {
-// 	client, ok := ctx.Value("client").(MQTT.Client)
-// 	if !ok {
-// 		panic("MQTT client not included in context")
-// 	}
-//
-// 	topic, ok := ctx.Value("topic").(string)
-// 	if !ok {
-// 		panic("MQTT root topic not included in context")
-// 	}
-//
-// 	replyTo := "reply"
-// 	if rq, ok := ctx.Value("request").(request); ok {
-// 		if rq.ReplyTo != nil {
-// 			replyTo = *rq.ReplyTo
-// 		}
-// 	}
-//
-// 	r, err := json.Marshal(response)
-// 	if err != nil {
-// 		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
-// 		return
-// 	}
-//
-// 	signature, err := m.RSA.Sign(r)
-// 	if err != nil {
-// 		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
-// 		return
-// 	}
-//
-// 	msg := struct {
-// 		ServerID  string          `json:"server-id,omitempty"`
-// 		Signature string          `json:"signature,omitempty"`
-// 		Key       string          `json:"key,omitempty"`
-// 		IV        string          `json:"iv,omitempty"`
-// 		Reply     json.RawMessage `json:"reply,omitempty"`
-// 	}{
-// 		ServerID:  "twystd-uhppoted",
-// 		Signature: hex.EncodeToString(signature),
-// 		Reply:     r,
-// 	}
-//
-// 	msgbytes, err := json.Marshal(msg)
-// 	if err != nil {
-// 		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
-// 		return
-// 	}
-//
-// 	hmac := hex.EncodeToString(m.HMAC.MAC(msgbytes))
-//
-// 	message := struct {
-// 		Message json.RawMessage `json:"message"`
-// 		HMAC    string          `json:"hmac,omitempty"`
-// 	}{
-// 		Message: msgbytes,
-// 		HMAC:    hmac,
-// 	}
-//
-// 	b, err := json.Marshal(message)
-// 	if err != nil {
-// 		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
-// 		return
-// 	}
-//
-// 	token := client.Publish(topic+"/"+replyTo, 0, false, string(b))
-// 	token.Wait()
-// }

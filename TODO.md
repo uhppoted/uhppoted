@@ -99,6 +99,8 @@
 
 ### uhppoted-mqtt
 - [ ] MQTT v5.0
+- [ ] [JSON-RPC](https://en.wikipedia.org/wiki/JSON-RPC) (?)
+
 
 ### CLI
 - [ ] Rework grant/revoke for individual doors (labelled)
@@ -185,4 +187,4 @@
 24. [AsyncAPI](https://www.asyncapi.coms)
      - https://modeling-languages.com/asyncapi-modeling-editor-code-generator
 25. go-fuzz
-
+26. [OPA](https://github.com/open-policy-agent/opa) for permissions (?)

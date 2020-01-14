@@ -9,7 +9,7 @@ mqttd-help: build
 mqttd-version: build
 	./bin/mqttd version
 
-smqttd-get-devices:
+mqttd-get-devices:
 	mqtt publish --topic 'twystd/uhppoted/gateway/devices:get' \
                  --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                         "client-id":  "QWERTY54", \
