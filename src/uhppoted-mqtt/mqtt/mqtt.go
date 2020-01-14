@@ -37,8 +37,8 @@ type MQTTD struct {
 }
 
 type fdispatch struct {
-	operation string
-	f         func(*MQTTD, metainfo, *uhppoted.UHPPOTED, context.Context, []byte) interface{}
+	method string
+	f      func(*MQTTD, metainfo, *uhppoted.UHPPOTED, context.Context, []byte) interface{}
 }
 
 type dispatcher struct {
@@ -61,7 +61,7 @@ type metainfo struct {
 	RequestID *string `json:"request-id,omitempty"`
 	ClientID  *string `json:"client-id,omitempty"`
 	ServerID  string  `json:"server-id,omitempty"`
-	Operation string  `json:"operation,omitempty"`
+	Method    string  `json:"method,omitempty"`
 }
 
 var regex map[string]*regexp.Regexp = map[string]*regexp.Regexp{
@@ -148,7 +148,7 @@ func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, l *log.Logger
 	ctx := context.WithValue(context.Background(), "uhppote", u)
 	ctx = context.WithValue(ctx, "client", m.connection)
 	ctx = context.WithValue(ctx, "log", l)
-	ctx = context.WithValue(ctx, "topic", d.topic)
+	ctx = context.WithValue(ctx, "topic", m.Topic)
 
 	last := uhppoted.NewEventMap(m.EventMap)
 	if err := last.Load(l); err != nil {
@@ -225,7 +225,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		}
 
 		ctx = context.WithValue(ctx, "request", request)
-		ctx = context.WithValue(ctx, "operation", fn.operation)
+		ctx = context.WithValue(ctx, "method", fn.method)
 
 		go func() {
 			replyTo := d.mqttd.Topic + "/reply"
@@ -242,7 +242,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 				RequestID: misc.RequestID,
 				ClientID:  misc.ClientID,
 				ServerID:  d.mqttd.ServerID,
-				Operation: fn.operation,
+				Method:    fn.method,
 			}
 
 			reply := fn.f(d.mqttd, meta, d.uhppoted, ctx, request)
@@ -352,11 +352,11 @@ func getMetaInfo(ctx context.Context) *metainfo {
 	metainfo := metainfo{
 		RequestID: nil,
 		ClientID:  nil,
-		Operation: "",
+		Method:    "",
 	}
 
-	if operation, ok := ctx.Value("operation").(string); ok {
-		metainfo.Operation = operation
+	if method, ok := ctx.Value("method").(string); ok {
+		metainfo.Method = method
 	}
 
 	if rq, ok := ctx.Value("request").(request); ok {
@@ -373,10 +373,10 @@ func getMetaInfo(ctx context.Context) *metainfo {
 }
 
 func (m *MQTTD) OnError(ctx context.Context, message string, errorCode int, err error) {
-	if operation, ok := ctx.Value("operation").(string); ok {
+	if method, ok := ctx.Value("method").(string); ok {
 		errmsg := clean(fmt.Sprintf("%v", err))
-		ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %s", operation, errmsg)
-		oops(ctx, operation, message, errorCode)
+		ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %s", method, errmsg)
+		oops(ctx, method, message, errorCode)
 		return
 	}
 
@@ -384,7 +384,7 @@ func (m *MQTTD) OnError(ctx context.Context, message string, errorCode int, err 
 	oops(ctx, "???", message, errorCode)
 }
 
-func oops(ctx context.Context, operation string, msg string, errorCode int) {
+func oops(ctx context.Context, method string, msg string, errorCode int) {
 	client, ok := ctx.Value("client").(MQTT.Client)
 	if !ok {
 		panic("MQTT client not included in context")
@@ -413,8 +413,8 @@ func oops(ctx context.Context, operation string, msg string, errorCode int) {
 		Meta struct {
 			RequestID string `json:"request-id,omitempty"`
 		} `json:"meta-info"`
-		Operation string `json:"operation"`
-		Error     struct {
+		Method string `json:"method"`
+		Error  struct {
 			Message   string `json:"message"`
 			ErrorCode int    `json:"error-code"`
 		} `json:"error"`
@@ -424,7 +424,7 @@ func oops(ctx context.Context, operation string, msg string, errorCode int) {
 		}{
 			RequestID: requestID,
 		},
-		Operation: operation,
+		Method: method,
 		Error: struct {
 			Message   string `json:"message"`
 			ErrorCode int    `json:"error-code"`
