@@ -26,6 +26,7 @@ type MQTTD struct {
 	Authentication  string
 	HOTP            *auth.HOTP
 	RSA             *auth.RSA
+	Nonce           auth.Nonce
 	Permissions     auth.Permissions
 	EventMap        string
 	SignOutgoing    bool

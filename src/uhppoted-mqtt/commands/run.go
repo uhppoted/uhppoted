@@ -190,8 +190,14 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 		return
 	}
 
-	rsa, err := auth.NewRSA(c.RSA.KeyDir, c.RSA.Counters, logger)
+	rsa, err := auth.NewRSA(c.RSA.KeyDir, logger)
 	if mqttd.Authentication == "RSA" && err != nil {
+		logger.Printf("ERROR: %v", err)
+		return
+	}
+
+	nonce, err := auth.NewNonce(c.Nonce.Required, c.Nonce.Counters, logger)
+	if err != nil {
 		logger.Printf("ERROR: %v", err)
 		return
 	}
@@ -199,6 +205,7 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 	mqttd.HMAC = *hmac
 	mqttd.HOTP = hotp
 	mqttd.RSA = rsa
+	mqttd.Nonce = *nonce
 
 	// ... listen forever
 
