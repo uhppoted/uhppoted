@@ -35,7 +35,6 @@
 - [x] wrap request handling in go routine
 - [x] rework GetDevices to also find 'known' devices
 - [ ] sign & encrypt
-      - rework to use OAEP for requests
       - sign/encrypt/HMAC events and errors
       - 'watch' keys directory
       - allow for multiple authentication modes (HOTP/RSA/NONE)
@@ -195,3 +194,4 @@
      - https://modeling-languages.com/asyncapi-modeling-editor-code-generator
 25. go-fuzz
 26. [OPA](https://github.com/open-policy-agent/opa) for permissions (?)
+27. [Node-RED](https://hackaday.com/2020/01/15/automate-your-life-with-node-red-plus-a-dash-of-mqtt)
