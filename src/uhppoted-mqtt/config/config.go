@@ -53,7 +53,8 @@ type RSA struct {
 
 type Nonce struct {
 	Required bool   `conf:"required"`
-	Counters string `conf:"counters"`
+	Server   string `conf:"server"`
+	Clients  string `conf:"clients"`
 }
 
 type Permissions struct {
@@ -101,7 +102,8 @@ func NewConfig() *Config {
 			},
 			Nonce: Nonce{
 				Required: true,
-				Counters: nonceCounters,
+				Server:   nonceServer,
+				Clients:  nonceClients,
 			},
 			Permissions: Permissions{
 				Enabled: false,

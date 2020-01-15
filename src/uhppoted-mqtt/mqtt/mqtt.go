@@ -3,8 +3,6 @@ package mqtt
 import (
 	"context"
 	"crypto/tls"
-	"encoding/base64"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -51,18 +49,12 @@ type dispatcher struct {
 	table    map[string]fdispatch
 }
 
-type request struct {
-	RequestID *string `json:"request-id"`
-	ReplyTo   *string `json:"reply-to"`
-	ClientID  *string `json:"client-id"`
-	HOTP      *string `json:"hotp"`
-}
-
 type metainfo struct {
 	RequestID *string `json:"request-id,omitempty"`
 	ClientID  *string `json:"client-id,omitempty"`
 	ServerID  string  `json:"server-id,omitempty"`
 	Method    string  `json:"method,omitempty"`
+	Nonce     uint64  `json:"nonce,omitempty"`
 }
 
 var regex map[string]*regexp.Regexp = map[string]*regexp.Regexp{
@@ -143,28 +135,6 @@ func (m *MQTTD) Close(l *log.Logger) {
 	m.connection = nil
 }
 
-func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, l *log.Logger) error {
-	log.Printf("... listening on %v", u.ListenAddress)
-
-	ctx := context.WithValue(context.Background(), "uhppote", u)
-	ctx = context.WithValue(ctx, "client", m.connection)
-	ctx = context.WithValue(ctx, "log", l)
-	ctx = context.WithValue(ctx, "topic", m.Topic)
-
-	last := uhppoted.NewEventMap(m.EventMap)
-	if err := last.Load(l); err != nil {
-		l.Printf("WARN: Error loading event map [%v]", err)
-	}
-
-	m.interrupt = make(chan os.Signal)
-
-	go func() {
-		api.Listen(ctx, last, m.interrupt)
-	}()
-
-	return nil
-}
-
 func (m *MQTTD) subscribeAndServe(d *dispatcher) error {
 	var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
 		d.dispatch(client, msg)
@@ -191,6 +161,28 @@ func (m *MQTTD) subscribeAndServe(d *dispatcher) error {
 	return nil
 }
 
+func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, l *log.Logger) error {
+	log.Printf("... listening on %v", u.ListenAddress)
+
+	ctx := context.WithValue(context.Background(), "uhppote", u)
+	ctx = context.WithValue(ctx, "client", m.connection)
+	ctx = context.WithValue(ctx, "log", l)
+	ctx = context.WithValue(ctx, "topic", m.Topic)
+
+	last := uhppoted.NewEventMap(m.EventMap)
+	if err := last.Load(l); err != nil {
+		l.Printf("WARN: Error loading event map [%v]", err)
+	}
+
+	m.interrupt = make(chan os.Signal)
+
+	go func() {
+		api.Listen(ctx, last, m.interrupt)
+	}()
+
+	return nil
+}
+
 func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 	ctx := context.WithValue(context.Background(), "uhppote", d.uhppote)
 	ctx = context.WithValue(ctx, "client", client)
@@ -200,35 +192,35 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 	if fn, ok := d.table[msg.Topic()]; ok {
 		msg.Ack()
 
-		request, err := d.mqttd.unwrap(msg.Payload())
-		if err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
-			d.log.Printf("WARN  %-20s %v", "dispatch", err)
-			return
-		}
-
-		misc := struct {
-			ClientID  *string `json:"client-id"`
-			RequestID *string `json:"request-id"`
-			ReplyTo   *string `json:"reply-to"`
-		}{}
-
-		if err := json.Unmarshal(request, &misc); err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(request))
-			d.mqttd.OnError(ctx, "Cannot parse request meta-info", uhppoted.StatusBadRequest, err)
-			return
-		}
-
-		if err := d.mqttd.authorise(misc.ClientID, msg.Topic()); err != nil {
-			d.log.Printf("DEBUG %-20s %s", "dispatch", string(request))
-			d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error authorising request (%v)", err))
-			return
-		}
-
-		ctx = context.WithValue(ctx, "request", request)
-		ctx = context.WithValue(ctx, "method", fn.method)
-
 		go func() {
+			request, err := d.mqttd.unwrap(msg.Payload())
+			if err != nil {
+				d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
+				d.log.Printf("WARN  %-20s %v", "dispatch", err)
+				return
+			}
+
+			misc := struct {
+				ClientID  *string `json:"client-id"`
+				RequestID *string `json:"request-id"`
+				ReplyTo   *string `json:"reply-to"`
+			}{}
+
+			if err := json.Unmarshal(request, &misc); err != nil {
+				d.log.Printf("DEBUG %-20s %s", "dispatch", string(request))
+				d.mqttd.OnError(ctx, "Cannot parse request meta-info", uhppoted.StatusBadRequest, err)
+				return
+			}
+
+			if err := d.mqttd.authorise(misc.ClientID, msg.Topic()); err != nil {
+				d.log.Printf("DEBUG %-20s %s", "dispatch", string(request))
+				d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error authorising request (%v)", err))
+				return
+			}
+
+			ctx = context.WithValue(ctx, "request", request)
+			ctx = context.WithValue(ctx, "method", fn.method)
+
 			replyTo := d.mqttd.Topic + "/reply"
 
 			if misc.ClientID != nil {
@@ -244,11 +236,12 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 				ClientID:  misc.ClientID,
 				ServerID:  d.mqttd.ServerID,
 				Method:    fn.method,
+				Nonce:     d.mqttd.Nonce.Next(),
 			}
 
 			reply := fn.f(d.mqttd, meta, d.uhppoted, ctx, request)
 			if reply != nil {
-				d.mqttd.reply(client, misc.ClientID, replyTo, ctx, reply)
+				d.mqttd.reply(misc.ClientID, replyTo, reply, d.log)
 			}
 		}()
 	}
@@ -292,85 +285,16 @@ func (m *MQTTD) Send(ctx context.Context, message interface{}) {
 	token.Wait()
 }
 
-func (m *MQTTD) reply(client MQTT.Client, clientID *string, replyTo string, ctx context.Context, response interface{}) {
-	r, err := json.Marshal(response)
+func (m *MQTTD) reply(clientID *string, replyTo string, response interface{}, log *log.Logger) {
+	message, err := m.wrap(response, clientID)
 	if err != nil {
-		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
+		log.Printf("WARN  %v", err)
 		return
 	}
 
-	signature, err := m.sign(r)
-	if err != nil {
-		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
-		return
+	if message != nil {
+		m.connection.Publish(replyTo, 0, false, string(message)).Wait()
 	}
-
-	crypttext, iv, key, err := m.encrypt(r, clientID)
-	if err != nil {
-		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
-		return
-	}
-
-	msg := struct {
-		Signature string          `json:"signature,omitempty"`
-		Key       string          `json:"key,omitempty"`
-		IV        string          `json:"iv,omitempty"`
-		Reply     json.RawMessage `json:"reply,omitempty"`
-	}{
-		Signature: hex.EncodeToString(signature),
-		Key:       base64.StdEncoding.EncodeToString(key),
-		IV:        hex.EncodeToString(iv),
-		Reply:     crypttext,
-	}
-
-	msgbytes, err := json.Marshal(msg)
-	if err != nil {
-		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
-		return
-	}
-
-	hmac := hex.EncodeToString(m.HMAC.MAC(msgbytes))
-
-	message := struct {
-		Message json.RawMessage `json:"message"`
-		HMAC    string          `json:"hmac,omitempty"`
-	}{
-		Message: msgbytes,
-		HMAC:    hmac,
-	}
-
-	b, err := json.Marshal(message)
-	if err != nil {
-		ctx.Value("log").(*log.Logger).Printf("WARN  %v", err)
-		return
-	}
-
-	token := client.Publish(replyTo, 0, false, string(b))
-	token.Wait()
-}
-
-func getMetaInfo(ctx context.Context) *metainfo {
-	metainfo := metainfo{
-		RequestID: nil,
-		ClientID:  nil,
-		Method:    "",
-	}
-
-	if method, ok := ctx.Value("method").(string); ok {
-		metainfo.Method = method
-	}
-
-	if rq, ok := ctx.Value("request").(request); ok {
-		if rq.RequestID != nil {
-			metainfo.RequestID = rq.RequestID
-		}
-
-		if rq.ClientID != nil {
-			metainfo.ClientID = rq.ClientID
-		}
-	}
-
-	return &metainfo
 }
 
 func (m *MQTTD) OnError(ctx context.Context, message string, errorCode int, err error) {
@@ -399,16 +323,16 @@ func oops(ctx context.Context, method string, msg string, errorCode int) {
 	requestID := ""
 	replyTo := "errors"
 
-	rq, ok := ctx.Value("request").(request)
-	if ok {
-		if rq.RequestID != nil {
-			requestID = *rq.RequestID
-		}
+	// rq, ok := ctx.Value("request").(request)
+	// if ok {
+	// 	if rq.RequestID != nil {
+	// 		requestID = *rq.RequestID
+	// 	}
 
-		if rq.ReplyTo != nil {
-			replyTo = *rq.ReplyTo + "/errors"
-		}
-	}
+	// 	if rq.ReplyTo != nil {
+	// 		replyTo = *rq.ReplyTo + "/errors"
+	// 	}
+	// }
 
 	response := struct {
 		Meta struct {

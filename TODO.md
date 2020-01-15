@@ -35,6 +35,14 @@
 - [x] wrap request handling in go routine
 - [x] rework GetDevices to also find 'known' devices
 - [ ] sign & encrypt
+      - rework to use OAEP for requests
+      - sign/encrypt/HMAC events and errors
+      - 'watch' keys directory
+      - allow for multiple authentication modes (HOTP/RSA/NONE)
+      - default to signed+encrypted for outgoing
+      - default to RSA,HOTP for incoming
+      - fix potential out-of-order nonces on outgoing messages
+- [ ] user/open permissions require matching card number 
 - [ ] move incoming requests to /requests subtopic
 - [ ] health check
 - [ ] watchdog
@@ -42,7 +50,6 @@
 - [x] subscribe
 - [x] error handling
 - [x] 'reply'
-- [ ] user/open permissions require matching card number 
 - [x] TLS connection
 - [x] TLS connection: client authentication
 - [ ] Exit on error when multiple mqttd's are started (or generate unique client ID???)
