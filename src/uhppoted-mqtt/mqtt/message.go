@@ -9,6 +9,55 @@ import (
 	"strings"
 )
 
+func (mqttd *MQTTD) wrap(reply interface{}, clientID *string) ([]byte, error) {
+	bytes, err := json.Marshal(reply)
+	if err != nil {
+		return nil, err
+	}
+
+	signature, err := mqttd.sign(bytes)
+	if err != nil {
+		return nil, err
+	}
+
+	crypttext, iv, key, err := mqttd.encrypt(bytes, clientID)
+	if err != nil {
+		return nil, err
+	}
+
+	message := struct {
+		Signature string          `json:"signature,omitempty"`
+		Key       string          `json:"key,omitempty"`
+		IV        string          `json:"iv,omitempty"`
+		Reply     json.RawMessage `json:"reply,omitempty"`
+	}{
+		Signature: base64.StdEncoding.EncodeToString(signature),
+		Key:       base64.StdEncoding.EncodeToString(key),
+		IV:        hex.EncodeToString(iv),
+		Reply:     crypttext,
+	}
+
+	bytes, err = json.Marshal(message)
+	if err != nil {
+		return nil, err
+	}
+
+	payload := struct {
+		Message json.RawMessage `json:"message"`
+		HMAC    string          `json:"hmac,omitempty"`
+	}{
+		Message: bytes,
+		HMAC:    hex.EncodeToString(mqttd.HMAC.MAC(bytes)),
+	}
+
+	bytes, err = json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes, nil
+}
+
 func (mqttd *MQTTD) unwrap(payload []byte) ([]byte, error) {
 	message := struct {
 		Message json.RawMessage `json:"message"`

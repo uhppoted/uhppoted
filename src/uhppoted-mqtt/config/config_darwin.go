@@ -10,4 +10,5 @@ const rsaKeyDir string = "/usr/local/etc/com.github.twystd.uhppoted/mqtt/rsa"
 
 const eventIDs string = "/usr/local/var/com.github.twystd.uhppoted/mqtt.events.retrieved"
 const hotpCounters string = "/usr/local/var/com.github.twystd.uhppoted/mqtt.hotp.counters"
-const nonceCounters string = "/usr/local/var/com.github.twystd.uhppoted/mqtt.nonce.counters"
+const nonceServer string = "/usr/local/var/com.github.twystd.uhppoted/mqtt.nonce"
+const nonceClients string = "/usr/local/var/com.github.twystd.uhppoted/mqtt.nonce.counters"

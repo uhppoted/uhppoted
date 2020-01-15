@@ -9,7 +9,11 @@ import (
 )
 
 type Nonce struct {
-	ignore   bool
+	ignore bool
+	mqttd  struct {
+		*kvs.KeyValueStore
+		filepath string
+	}
 	counters struct {
 		*kvs.KeyValueStore
 		filepath string
@@ -17,7 +21,7 @@ type Nonce struct {
 	log *log.Logger
 }
 
-func NewNonce(verify bool, filepath string, logger *log.Logger) (*Nonce, error) {
+func NewNonce(verify bool, server, clients string, logger *log.Logger) (*Nonce, error) {
 	var err error
 
 	var f = func(value string) (interface{}, error) {
@@ -26,17 +30,28 @@ func NewNonce(verify bool, filepath string, logger *log.Logger) (*Nonce, error) 
 
 	nonce := Nonce{
 		ignore: !verify,
+		mqttd: struct {
+			*kvs.KeyValueStore
+			filepath string
+		}{
+			kvs.NewKeyValueStore("nonce:mqttd", f),
+			server,
+		},
 		counters: struct {
 			*kvs.KeyValueStore
 			filepath string
 		}{
-			kvs.NewKeyValueStore("nonce:counters", f),
-			filepath,
+			kvs.NewKeyValueStore("nonce:clients", f),
+			clients,
 		},
 		log: logger,
 	}
 
-	if err = nonce.counters.LoadFromFile(filepath); err != nil {
+	if err = nonce.mqttd.LoadFromFile(server); err != nil {
+		log.Printf("WARN: %v", err)
+	}
+
+	if err = nonce.counters.LoadFromFile(clients); err != nil {
 		log.Printf("WARN: %v", err)
 	}
 
@@ -66,4 +81,17 @@ func (n *Nonce) Validate(clientID *string, nonce *uint64) error {
 	}
 
 	return nil
+}
+
+func (n *Nonce) Next() uint64 {
+	c, ok := n.mqttd.Get("mqttd")
+	if !ok {
+		c = uint64(0)
+	}
+
+	nonce := c.(uint64) + 1
+
+	n.mqttd.Store("mqttd", nonce, n.mqttd.filepath, n.log)
+
+	return nonce
 }

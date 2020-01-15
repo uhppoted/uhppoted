@@ -196,7 +196,7 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 		return
 	}
 
-	nonce, err := auth.NewNonce(c.Nonce.Required, c.Nonce.Counters, logger)
+	nonce, err := auth.NewNonce(c.Nonce.Required, c.Nonce.Server, c.Nonce.Clients, logger)
 	if err != nil {
 		logger.Printf("ERROR: %v", err)
 		return
