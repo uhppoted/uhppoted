@@ -224,7 +224,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 
 			if err := json.Unmarshal(request, &misc); err != nil {
 				d.log.Printf("DEBUG %-20s %s", fn.method, string(request))
-				d.mqttd.OnError(ctx, "Cannot parse request meta-info", uhppoted.StatusBadRequest, err)
+				d.log.Printf("WARN  %-20s %v", fn.method, "Cannot parse request meta-info")
 				return
 			}
 
@@ -335,18 +335,6 @@ func (m *MQTTD) error(clientID *string, replyTo string, errx *errorx, log *log.L
 	}
 }
 
-func (m *MQTTD) OnError(ctx context.Context, message string, errorCode int, err error) {
-	if method, ok := ctx.Value("method").(string); ok {
-		errmsg := clean(fmt.Sprintf("%v", err))
-		ctx.Value("log").(*log.Logger).Printf("WARN  %-20s %s", method, errmsg)
-		oops(ctx, method, message, errorCode)
-		return
-	}
-
-	ctx.Value("log").(*log.Logger).Printf("WARN  %-20s [%v] %s", "", err, message)
-	oops(ctx, "???", message, errorCode)
-}
-
 func oops(ctx context.Context, method string, msg string, errorCode int) {
 	client, ok := ctx.Value("client").(MQTT.Client)
 	if !ok {
@@ -405,10 +393,6 @@ func oops(ctx context.Context, method string, msg string, errorCode int) {
 
 	token := client.Publish(topic+"/"+replyTo, 0, false, string(b))
 	token.Wait()
-}
-
-func debug(ctx context.Context, operation string, msg interface{}) {
-	ctx.Value("log").(*log.Logger).Printf("DEBUG %-20s %v\n", operation, msg)
 }
 
 func isBase64(request []byte) bool {

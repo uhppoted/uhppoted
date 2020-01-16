@@ -3,6 +3,7 @@ package mqtt
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"uhppoted"
 )
@@ -12,8 +13,11 @@ func (m *MQTTD) getDevices(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.C
 
 	response, status, err := impl.GetDevices(ctx, rq)
 	if err != nil {
-		m.OnError(ctx, "Error retrieving list of devices", status, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    status,
+			Message: "Error searching for active devices",
+		}
 	}
 
 	if response == nil {
@@ -35,13 +39,19 @@ func (m *MQTTD) getDevice(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Co
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Cannot parse request",
+		}
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing device ID: %s", string(request)))
-		return nil, nil
+		return nil, &errorx{
+			Err:     errors.New("Missing device ID"),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing device ID",
+		}
 	}
 
 	rq := uhppoted.GetDeviceRequest{
@@ -50,8 +60,11 @@ func (m *MQTTD) getDevice(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Co
 
 	response, status, err := impl.GetDevice(ctx, rq)
 	if err != nil {
-		m.OnError(ctx, "Error retrieving device", status, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    status,
+			Message: fmt.Sprintf("Could not retrieve device information for %d", *body.DeviceID),
+		}
 	}
 
 	if response == nil {
