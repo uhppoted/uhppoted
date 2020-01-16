@@ -35,7 +35,7 @@
 - [x] wrap request handling in go routine
 - [x] rework GetDevices to also find 'known' devices
 - [ ] sign & encrypt
-  - sign/encrypt/HMAC events and errors
+  - sign/encrypt/HMAC events
   - 'watch' keys directory
   - allow for multiple authentication modes (HOTP/RSA/NONE)
   - default to signed+encrypted for outgoing
