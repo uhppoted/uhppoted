@@ -36,12 +36,12 @@ type GetStatusResponse struct {
 	Status   Status   `json:"status"`
 }
 
-func (u *UHPPOTED) GetStatus(ctx context.Context, request GetStatusRequest) (*GetStatusResponse, int, error) {
+func (u *UHPPOTED) GetStatus(ctx context.Context, request GetStatusRequest) (*GetStatusResponse, error) {
 	u.debug("get-status", fmt.Sprintf("request  %+v", request))
 
 	status, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetStatus(uint32(request.DeviceID))
 	if err != nil {
-		return nil, StatusInternalServerError, err
+		return nil, err
 	}
 
 	response := GetStatusResponse{
@@ -69,5 +69,5 @@ func (u *UHPPOTED) GetStatus(ctx context.Context, request GetStatusRequest) (*Ge
 
 	u.debug("get-status", fmt.Sprintf("response %+v", response))
 
-	return &response, StatusOK, nil
+	return &response, nil
 }
