@@ -54,7 +54,13 @@ type metainfo struct {
 	ClientID  *string `json:"client-id,omitempty"`
 	ServerID  string  `json:"server-id,omitempty"`
 	Method    string  `json:"method,omitempty"`
-	Nonce     uint64  `json:"nonce,omitempty"`
+	Nonce     fnonce  `json:"nonce,omitempty"`
+}
+
+type fnonce func() uint64
+
+func (f fnonce) MarshalJSON() ([]byte, error) {
+	return json.Marshal(f())
 }
 
 var regex map[string]*regexp.Regexp = map[string]*regexp.Regexp{
@@ -236,7 +242,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 				ClientID:  misc.ClientID,
 				ServerID:  d.mqttd.ServerID,
 				Method:    fn.method,
-				Nonce:     d.mqttd.Nonce.Next(),
+				Nonce:     func() uint64 { return d.mqttd.Nonce.Next() },
 			}
 
 			reply := fn.f(d.mqttd, meta, d.uhppoted, ctx, request)
