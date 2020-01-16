@@ -3,7 +3,7 @@ package mqtt
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"uhppote/types"
 	"uhppoted"
 )
@@ -14,13 +14,19 @@ func (m *MQTTD) getTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Cannot parse request",
+		}
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing device ID: %s", string(request)))
-		return nil, nil
+		return nil, &errorx{
+			Err:     errors.New("Missing device ID"),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing device ID",
+		}
 	}
 
 	rq := uhppoted.GetTimeRequest{
@@ -29,8 +35,11 @@ func (m *MQTTD) getTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 
 	response, status, err := impl.GetTime(ctx, rq)
 	if err != nil {
-		m.OnError(ctx, "Error retrieving current device time", status, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    status,
+			Message: "Error retrieving device time",
+		}
 	}
 
 	if response == nil {
@@ -53,18 +62,27 @@ func (m *MQTTD) setTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Cannot parse request",
+		}
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing device ID: %s", string(request)))
-		return nil, nil
+		return nil, &errorx{
+			Err:     errors.New("Missing device ID"),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing device ID",
+		}
 	}
 
 	if body.DateTime == nil {
-		m.OnError(ctx, "Missing/invalid device time", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device time '%s'", string(request)))
-		return nil, nil
+		return nil, &errorx{
+			Err:     errors.New("Missing/invalid date-time"),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing/invalid date-time",
+		}
 	}
 
 	rq := uhppoted.SetTimeRequest{
@@ -74,8 +92,11 @@ func (m *MQTTD) setTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 
 	response, status, err := impl.SetTime(ctx, rq)
 	if err != nil {
-		m.OnError(ctx, "Error setting current device time", status, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    status,
+			Message: "Error setting device date/time",
+		}
 	}
 
 	if response == nil {

@@ -3,6 +3,7 @@ package mqtt
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"uhppote/types"
 	"uhppoted"
@@ -14,13 +15,19 @@ func (m *MQTTD) getCards(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Con
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Cannot parse request",
+		}
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(request)))
-		return nil, nil
+		return nil, &errorx{
+			Err:     errors.New("Missing device ID"),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing device ID",
+		}
 	}
 
 	rq := uhppoted.GetCardsRequest{
@@ -29,8 +36,11 @@ func (m *MQTTD) getCards(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Con
 
 	response, status, err := impl.GetCards(ctx, rq)
 	if err != nil {
-		m.OnError(ctx, "Error retrieving cards", status, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    status,
+			Message: fmt.Sprintf("Error retrieving card list for %v", *body.DeviceID),
+		}
 	}
 
 	if response == nil {
@@ -52,13 +62,19 @@ func (m *MQTTD) deleteCards(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Cannot parse request",
+		}
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(request)))
-		return nil, nil
+		return nil, &errorx{
+			Err:     errors.New("Missing device ID"),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing device ID",
+		}
 	}
 
 	rq := uhppoted.DeleteCardsRequest{
@@ -67,8 +83,11 @@ func (m *MQTTD) deleteCards(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.
 
 	response, status, err := impl.DeleteCards(ctx, rq)
 	if err != nil {
-		m.OnError(ctx, "Error deleting cards", status, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    status,
+			Message: fmt.Sprintf("Error deleting card list for %v", *body.DeviceID),
+		}
 	}
 
 	if response == nil {
@@ -91,18 +110,27 @@ func (m *MQTTD) getCard(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Cannot parse request",
+		}
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(request)))
-		return nil, nil
+		return nil, &errorx{
+			Err:     errors.New("Missing device ID"),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing device ID",
+		}
 	}
 
 	if body.CardNumber == nil {
-		m.OnError(ctx, "Missing/invalid card number", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid card number '%s'", string(request)))
-		return nil, nil
+		return nil, &errorx{
+			Err:     errors.New("Missing/invalid card number"),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing/invalid card number",
+		}
 	}
 
 	rq := uhppoted.GetCardRequest{
@@ -112,8 +140,11 @@ func (m *MQTTD) getCard(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 
 	response, status, err := impl.GetCard(ctx, rq)
 	if err != nil {
-		m.OnError(ctx, "Error retrieving card", status, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    status,
+			Message: fmt.Sprintf("Error retrieving card %v", *body.CardNumber),
+		}
 	}
 
 	if response == nil {
@@ -136,18 +167,27 @@ func (m *MQTTD) putCard(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Cannot parse request",
+		}
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(request)))
-		return nil, nil
+		return nil, &errorx{
+			Err:     errors.New("Missing device ID"),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing device ID",
+		}
 	}
 
 	if body.Card == nil {
-		m.OnError(ctx, "Missing/invalid card", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid card'%s'", string(request)))
-		return nil, nil
+		return nil, &errorx{
+			Err:     errors.New("Missing/invalid card number"),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing/invalid card number",
+		}
 	}
 
 	rq := uhppoted.PutCardRequest{
@@ -157,8 +197,11 @@ func (m *MQTTD) putCard(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 
 	response, status, err := impl.PutCard(ctx, rq)
 	if err != nil {
-		m.OnError(ctx, "Error storing card", status, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    status,
+			Message: fmt.Sprintf("Error storing card %v", body.Card.CardNumber),
+		}
 	}
 
 	if response == nil {
@@ -181,18 +224,27 @@ func (m *MQTTD) deleteCard(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.C
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Cannot parse request",
+		}
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(request)))
-		return nil, nil
+		return nil, &errorx{
+			Err:     errors.New("Missing device ID"),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing device ID",
+		}
 	}
 
 	if body.CardNumber == nil {
-		m.OnError(ctx, "Missing/invalid card number", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid card number '%s'", string(request)))
-		return nil, nil
+		return nil, &errorx{
+			Err:     errors.New("Missing/invalid card number"),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing/invalid card number",
+		}
 	}
 
 	rq := uhppoted.DeleteCardRequest{
@@ -202,8 +254,11 @@ func (m *MQTTD) deleteCard(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.C
 
 	response, status, err := impl.DeleteCard(ctx, rq)
 	if err != nil {
-		m.OnError(ctx, "Error deleting card", status, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    status,
+			Message: fmt.Sprintf("Error deleting card %v", *body.CardNumber),
+		}
 	}
 
 	if response == nil {

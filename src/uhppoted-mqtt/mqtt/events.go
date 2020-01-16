@@ -3,6 +3,7 @@ package mqtt
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 	"uhppote/types"
@@ -20,18 +21,27 @@ func (m *MQTTD) getEvents(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Co
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Cannot parse request",
+		}
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(request)))
-		return nil, nil
+		return nil, &errorx{
+			Err:     errors.New("Missing device ID"),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing device ID",
+		}
 	}
 
 	if body.Start != nil && body.End != nil && time.Time(*body.End).Before(time.Time(*body.Start)) {
-		m.OnError(ctx, "Invalid date range", uhppoted.StatusBadRequest, fmt.Errorf("Invalid date range '%s'", string(request)))
-		return nil, nil
+		return nil, &errorx{
+			Err:     fmt.Errorf("Invalid event date range: %v to %v", body.Start, body.End),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing event date range",
+		}
 	}
 
 	rq := uhppoted.GetEventsRequest{
@@ -42,8 +52,11 @@ func (m *MQTTD) getEvents(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Co
 
 	response, status, err := impl.GetEvents(ctx, rq)
 	if err != nil {
-		m.OnError(ctx, "Error retrieving events", status, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    status,
+			Message: fmt.Sprintf("Error retrieving events from %v", *body.DeviceID),
+		}
 	}
 
 	if response == nil {
@@ -66,23 +79,27 @@ func (m *MQTTD) getEvent(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Con
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Cannot parse request",
+		}
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing/invalid device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device ID '%s'", string(request)))
-		return nil, nil
+		return nil, &errorx{
+			Err:     errors.New("Missing device ID"),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing device ID",
+		}
 	}
 
-	if body.EventID == nil {
-		m.OnError(ctx, "Missing/invalid event ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid event ID '%s'", string(request)))
-		return nil, nil
-	}
-
-	if *body.EventID == 0 {
-		m.OnError(ctx, "Missing/invalid event ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid event ID '%s'", string(request)))
-		return nil, nil
+	if body.EventID == nil || *body.EventID == 0 {
+		return nil, &errorx{
+			Err:     errors.New("Missing/invalid event ID"),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing/invalid event ID",
+		}
 	}
 
 	rq := uhppoted.GetEventRequest{
@@ -92,8 +109,11 @@ func (m *MQTTD) getEvent(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Con
 
 	response, status, err := impl.GetEvent(ctx, rq)
 	if err != nil {
-		m.OnError(ctx, "Error retrieving events", status, err)
-		return nil, nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    status,
+			Message: fmt.Sprintf("Error retrieving events from %v", *body.DeviceID),
+		}
 	}
 
 	if response == nil {
