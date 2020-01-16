@@ -82,7 +82,7 @@ mqttd-get-status:
                  --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                         "client-id":  "QWERTY54", \
                                                         "reply-to":   "twystd/uhppoted/reply/97531", \
-                                                        "device-id":  405419896 }}}'
+                                                        "device-id":  405419897 }}}'
 
 mqttd-get-time:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device/time:get' \

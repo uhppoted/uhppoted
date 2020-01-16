@@ -3,37 +3,47 @@ package mqtt
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"uhppoted"
 )
 
-func (m *MQTTD) getStatus(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) interface{} {
+func (m *MQTTD) getStatus(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) (interface{}, error) {
 	body := struct {
 		DeviceID *uhppoted.DeviceID `json:"device-id"`
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
-		return nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Cannot parse request",
+		}
 	}
 
 	if body.DeviceID == nil {
-		m.OnError(ctx, "Missing device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing device ID: %s", string(request)))
-		return nil
+		return nil, &errorx{
+			Err:     errors.New("Missing device ID"),
+			Code:    uhppoted.StatusBadRequest,
+			Message: "Missing device ID",
+		}
 	}
 
 	rq := uhppoted.GetStatusRequest{
 		DeviceID: *body.DeviceID,
 	}
 
-	response, status, err := impl.GetStatus(ctx, rq)
+	response, err := impl.GetStatus(ctx, rq)
 	if err != nil {
-		m.OnError(ctx, "Error retrieving device status", status, err)
-		return nil
+		return nil, &errorx{
+			Err:     err,
+			Code:    uhppoted.StatusInternalServerError,
+			Message: fmt.Sprintf("Could not retrieve status for %d", *body.DeviceID),
+		}
 	}
 
-	if response == nil {
-		return nil
+	if response != nil {
+		return nil, nil
 	}
 
 	return struct {
@@ -42,5 +52,5 @@ func (m *MQTTD) getStatus(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Co
 	}{
 		metainfo:          meta,
 		GetStatusResponse: *response,
-	}
+	}, nil
 }

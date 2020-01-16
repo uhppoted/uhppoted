@@ -8,19 +8,19 @@ import (
 	"uhppoted"
 )
 
-func (m *MQTTD) getTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) interface{} {
+func (m *MQTTD) getTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) (interface{}, error) {
 	body := struct {
 		DeviceID *uhppoted.DeviceID `json:"device-id"`
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
-		return nil
+		return nil, nil
 	}
 
 	if body.DeviceID == nil {
 		m.OnError(ctx, "Missing device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing device ID: %s", string(request)))
-		return nil
+		return nil, nil
 	}
 
 	rq := uhppoted.GetTimeRequest{
@@ -30,11 +30,11 @@ func (m *MQTTD) getTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 	response, status, err := impl.GetTime(ctx, rq)
 	if err != nil {
 		m.OnError(ctx, "Error retrieving current device time", status, err)
-		return nil
+		return nil, nil
 	}
 
 	if response == nil {
-		return nil
+		return nil, nil
 	}
 
 	return struct {
@@ -43,10 +43,10 @@ func (m *MQTTD) getTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 	}{
 		metainfo:        meta,
 		GetTimeResponse: *response,
-	}
+	}, nil
 }
 
-func (m *MQTTD) setTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) interface{} {
+func (m *MQTTD) setTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) (interface{}, error) {
 	body := struct {
 		DeviceID *uhppoted.DeviceID `json:"device-id"`
 		DateTime *types.DateTime    `json:"date-time"`
@@ -54,17 +54,17 @@ func (m *MQTTD) setTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 
 	if err := json.Unmarshal(request, &body); err != nil {
 		m.OnError(ctx, "Cannot parse request", uhppoted.StatusBadRequest, err)
-		return nil
+		return nil, nil
 	}
 
 	if body.DeviceID == nil {
 		m.OnError(ctx, "Missing device ID", uhppoted.StatusBadRequest, fmt.Errorf("Missing device ID: %s", string(request)))
-		return nil
+		return nil, nil
 	}
 
 	if body.DateTime == nil {
 		m.OnError(ctx, "Missing/invalid device time", uhppoted.StatusBadRequest, fmt.Errorf("Missing/invalid device time '%s'", string(request)))
-		return nil
+		return nil, nil
 	}
 
 	rq := uhppoted.SetTimeRequest{
@@ -75,11 +75,11 @@ func (m *MQTTD) setTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 	response, status, err := impl.SetTime(ctx, rq)
 	if err != nil {
 		m.OnError(ctx, "Error setting current device time", status, err)
-		return nil
+		return nil, nil
 	}
 
 	if response == nil {
-		return nil
+		return nil, nil
 	}
 
 	return struct {
@@ -88,5 +88,5 @@ func (m *MQTTD) setTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 	}{
 		metainfo:        meta,
 		SetTimeResponse: *response,
-	}
+	}, nil
 }

@@ -37,7 +37,7 @@ type MQTTD struct {
 
 type fdispatch struct {
 	method string
-	f      func(*MQTTD, metainfo, *uhppoted.UHPPOTED, context.Context, []byte) interface{}
+	f      func(*MQTTD, metainfo, *uhppoted.UHPPOTED, context.Context, []byte) (interface{}, error)
 }
 
 type dispatcher struct {
@@ -55,6 +55,16 @@ type metainfo struct {
 	ServerID  string  `json:"server-id,omitempty"`
 	Method    string  `json:"method,omitempty"`
 	Nonce     fnonce  `json:"nonce,omitempty"`
+}
+
+type errorx struct {
+	Err     error  `json:"-"`
+	Code    int    `json:"error-code"`
+	Message string `json:"message"`
+}
+
+func (e *errorx) Error() string {
+	return fmt.Sprintf("%v", e.Err)
 }
 
 type fnonce func() uint64
@@ -213,14 +223,14 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 			}{}
 
 			if err := json.Unmarshal(request, &misc); err != nil {
-				d.log.Printf("DEBUG %-20s %s", "dispatch", string(request))
+				d.log.Printf("DEBUG %-20s %s", fn.method, string(request))
 				d.mqttd.OnError(ctx, "Cannot parse request meta-info", uhppoted.StatusBadRequest, err)
 				return
 			}
 
 			if err := d.mqttd.authorise(misc.ClientID, msg.Topic()); err != nil {
-				d.log.Printf("DEBUG %-20s %s", "dispatch", string(request))
-				d.log.Printf("WARN  %-20s %v", "dispatch", fmt.Errorf("Error authorising request (%v)", err))
+				d.log.Printf("DEBUG %-20s %s", fn.method, string(request))
+				d.log.Printf("WARN  %-20s %v", fn.method, fmt.Errorf("Error authorising request (%v)", err))
 				return
 			}
 
@@ -245,7 +255,17 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 				Nonce:     func() uint64 { return d.mqttd.Nonce.Next() },
 			}
 
-			reply := fn.f(d.mqttd, meta, d.uhppoted, ctx, request)
+			reply, err := fn.f(d.mqttd, meta, d.uhppoted, ctx, request)
+
+			if err != nil {
+				d.log.Printf("DEBUG %-20s %s", fn.method, string(request))
+				d.log.Printf("WARN  %-20s %v", fn.method, err)
+
+				if errx, ok := err.(*errorx); ok {
+					d.mqttd.error(misc.ClientID, replyTo, errx, d.log)
+				}
+			}
+
 			if reply != nil {
 				d.mqttd.reply(misc.ClientID, replyTo, reply, d.log)
 			}
@@ -293,6 +313,18 @@ func (m *MQTTD) Send(ctx context.Context, message interface{}) {
 
 func (m *MQTTD) reply(clientID *string, replyTo string, response interface{}, log *log.Logger) {
 	message, err := m.wrap(response, clientID)
+	if err != nil {
+		log.Printf("WARN  %v", err)
+		return
+	}
+
+	if message != nil {
+		m.connection.Publish(replyTo, 0, false, string(message)).Wait()
+	}
+}
+
+func (m *MQTTD) error(clientID *string, replyTo string, errx *errorx, log *log.Logger) {
+	message, err := m.wrapError(errx, clientID)
 	if err != nil {
 		log.Printf("WARN  %v", err)
 		return
