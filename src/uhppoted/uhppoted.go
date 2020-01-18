@@ -1,7 +1,6 @@
 package uhppoted
 
 import (
-	"context"
 	"log"
 	"net/http"
 )
@@ -13,13 +12,8 @@ const (
 	StatusInternalServerError = http.StatusInternalServerError
 )
 
-type Service interface {
-	Send(ctx context.Context, message interface{})
-}
-
 type UHPPOTED struct {
-	Log     *log.Logger
-	Service Service
+	Log *log.Logger
 }
 
 func (u *UHPPOTED) log(tag string, deviceID uint32, msg string) {
@@ -36,8 +30,4 @@ func (u *UHPPOTED) info(deviceID uint32, operation string, msg interface{}) {
 
 func (u *UHPPOTED) warn(deviceID uint32, operation string, err error) {
 	u.Log.Printf("WARN  %-12d %-20s %v", deviceID, operation, err)
-}
-
-func (u *UHPPOTED) send(ctx context.Context, message interface{}) {
-	u.Service.Send(ctx, message)
 }

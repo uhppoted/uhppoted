@@ -144,6 +144,8 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 		Broker:          fmt.Sprintf(c.Broker),
 		TLS:             &tls.Config{},
 		Topic:           c.Topic,
+		EventsTopic:     c.EventsTopic,
+		EventsKeyID:     c.EventsKeyID,
 		Authentication:  c.Authentication,
 		HOTP:            nil,
 		Permissions:     *permissions,

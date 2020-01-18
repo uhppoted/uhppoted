@@ -20,6 +20,8 @@ type MQTTD struct {
 	Broker          string
 	TLS             *tls.Config
 	Topic           string
+	EventsTopic     string
+	EventsKeyID     string
 	HMAC            auth.HMAC
 	Authentication  string
 	HOTP            *auth.HOTP
@@ -91,8 +93,7 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	}
 
 	api := uhppoted.UHPPOTED{
-		Log:     l,
-		Service: m,
+		Log: l,
 	}
 
 	d := dispatcher{
@@ -193,10 +194,14 @@ func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, l *log.Logger
 		l.Printf("WARN: Error loading event map [%v]", err)
 	}
 
+	handler := func(event uhppoted.EventMessage) {
+		m.send("listen", &m.EventsKeyID, m.EventsTopic, event, msgEvent, l)
+	}
+
 	m.interrupt = make(chan os.Signal)
 
 	go func() {
-		api.Listen(ctx, last, m.interrupt)
+		api.Listen(ctx, handler, last, m.interrupt)
 	}()
 
 	return nil
@@ -265,12 +270,12 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 				d.log.Printf("WARN  %-20s %v", fn.method, err)
 
 				if errx, ok := err.(*errorx); ok {
-					d.mqttd.error(misc.ClientID, replyTo, errx, d.log)
+					d.mqttd.send(fn.method, misc.ClientID, replyTo, errx, msgError, d.log)
 				}
 			}
 
 			if reply != nil {
-				d.mqttd.reply(misc.ClientID, replyTo, reply, d.log)
+				d.mqttd.send(fn.method, misc.ClientID, replyTo, reply, msgReply, d.log)
 			}
 		}()
 	}
@@ -293,109 +298,12 @@ func (m *MQTTD) authorise(clientID *string, topic string) error {
 	return nil
 }
 
-func (m *MQTTD) Send(ctx context.Context, message interface{}) {
-	b, err := json.Marshal(message)
-	if err != nil {
-		oops(ctx, "encoding/json", "Error encoding message", uhppoted.StatusInternalServerError)
-		return
+func (mqttd *MQTTD) send(method string, destID *string, topic string, message interface{}, msgtype msgType, log *log.Logger) {
+	if m, err := mqttd.wrap(msgtype, message, destID); err != nil {
+		log.Printf("WARN  %-20s %v", method, err)
+	} else if m != nil {
+		mqttd.connection.Publish(topic, 0, false, string(m)).Wait()
 	}
-
-	client, ok := ctx.Value("client").(MQTT.Client)
-	if !ok {
-		panic("MQTT client not included in context")
-	}
-
-	topic, ok := ctx.Value("topic").(string)
-	if !ok {
-		panic("MQTT root topic not included in context")
-	}
-
-	token := client.Publish(topic+"/events", 0, false, string(b))
-	token.Wait()
-}
-
-func (m *MQTTD) reply(clientID *string, replyTo string, response interface{}, log *log.Logger) {
-	message, err := m.wrap(msgReply, response, clientID)
-	if err != nil {
-		log.Printf("WARN  %v", err)
-		return
-	}
-
-	if message != nil {
-		m.connection.Publish(replyTo, 0, false, string(message)).Wait()
-	}
-}
-
-func (m *MQTTD) error(clientID *string, replyTo string, errx *errorx, log *log.Logger) {
-	message, err := m.wrap(msgError, errx, clientID)
-	if err != nil {
-		log.Printf("WARN  %v", err)
-		return
-	}
-
-	if message != nil {
-		m.connection.Publish(replyTo, 0, false, string(message)).Wait()
-	}
-}
-
-func oops(ctx context.Context, method string, msg string, errorCode int) {
-	client, ok := ctx.Value("client").(MQTT.Client)
-	if !ok {
-		panic("MQTT client not included in context")
-	}
-
-	topic, ok := ctx.Value("topic").(string)
-	if !ok {
-		panic("MQTT root topic not included in context")
-	}
-
-	requestID := ""
-	replyTo := "errors"
-
-	// rq, ok := ctx.Value("request").(request)
-	// if ok {
-	// 	if rq.RequestID != nil {
-	// 		requestID = *rq.RequestID
-	// 	}
-
-	// 	if rq.ReplyTo != nil {
-	// 		replyTo = *rq.ReplyTo + "/errors"
-	// 	}
-	// }
-
-	response := struct {
-		Meta struct {
-			RequestID string `json:"request-id,omitempty"`
-		} `json:"meta-info"`
-		Method string `json:"method"`
-		Error  struct {
-			Message   string `json:"message"`
-			ErrorCode int    `json:"error-code"`
-		} `json:"error"`
-	}{
-		Meta: struct {
-			RequestID string `json:"request-id,omitempty"`
-		}{
-			RequestID: requestID,
-		},
-		Method: method,
-		Error: struct {
-			Message   string `json:"message"`
-			ErrorCode int    `json:"error-code"`
-		}{
-			Message:   msg,
-			ErrorCode: errorCode,
-		},
-	}
-
-	b, err := json.Marshal(response)
-	if err != nil {
-		ctx.Value("log").(*log.Logger).Printf("ERROR: Error generating JSON response (%v)", err)
-		return
-	}
-
-	token := client.Publish(topic+"/"+replyTo, 0, false, string(b))
-	token.Wait()
 }
 
 func isBase64(request []byte) bool {

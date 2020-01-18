@@ -120,7 +120,12 @@ func (r *RSA) Encrypt(plaintext []byte, clientID string) ([]byte, []byte, []byte
 
 	rng := rand.Reader
 	label := []byte{}
-	key, err := rsa.EncryptOAEP(sha256.New(), rng, r.encryptionKeys.clientKeys[clientID], secretKey, label)
+	pubkey, ok := r.encryptionKeys.clientKeys[clientID]
+	if !ok {
+		return nil, nil, nil, fmt.Errorf("No public key for %s", clientID)
+	}
+
+	key, err := rsa.EncryptOAEP(sha256.New(), rng, pubkey, secretKey, label)
 	if err != nil {
 		return nil, nil, nil, err
 	}
