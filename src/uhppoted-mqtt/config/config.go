@@ -25,6 +25,8 @@ type MQTT struct {
 	ClientCertificate string      `conf:"client.certificate"`
 	ClientKey         string      `conf:"client.key"`
 	Topic             string      `conf:"topic"`
+	EventsTopic       string      `conf:"topic.events"`
+	EventsKeyID       string      `conf:"events.key"`
 	EventIDs          string      `conf:"events.index.filepath"`
 	Permissions       Permissions `conf:"permissions"`
 	HMAC              HMAC        `conf:"security.HMAC"`
@@ -85,6 +87,8 @@ func NewConfig() *Config {
 			ClientCertificate: mqttClientCertificate,
 			ClientKey:         mqttClientKey,
 			Topic:             "twystd/uhppoted/gateway",
+			EventsTopic:       "twystd/uhppoted/gateway/events",
+			EventsKeyID:       "events",
 			SignOutgoing:      false,
 			EncryptOutgoing:   false,
 			HMAC: HMAC{

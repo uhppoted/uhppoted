@@ -35,13 +35,15 @@ type EventMessage struct {
 	Event ListenEvent `json:"event"`
 }
 
-func (u *UHPPOTED) Listen(ctx context.Context, received *EventMap, q chan os.Signal) {
+type EventHandler func(EventMessage)
+
+func (u *UHPPOTED) Listen(ctx context.Context, handler EventHandler, received *EventMap, q chan os.Signal) {
 	for device, index := range received.retrieved {
 		event, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, 0xffffffff)
 		if err != nil {
 			u.warn(0, "listen", err)
 		} else {
-			if retrieved := u.fetch(ctx, device, index+1, event.Index); retrieved != 0 {
+			if retrieved := u.fetch(ctx, device, index+1, event.Index, handler); retrieved != 0 {
 				received.retrieved[device] = retrieved
 				if err := received.store(); err != nil {
 					u.warn(0, "listen", err)
@@ -50,10 +52,10 @@ func (u *UHPPOTED) Listen(ctx context.Context, received *EventMap, q chan os.Sig
 		}
 	}
 
-	u.listen(ctx, received, q)
+	u.listen(ctx, handler, received, q)
 }
 
-func (u *UHPPOTED) listen(ctx context.Context, received *EventMap, q chan os.Signal) {
+func (u *UHPPOTED) listen(ctx context.Context, handler EventHandler, received *EventMap, q chan os.Signal) {
 	p := make(chan *types.Status)
 
 	go func() {
@@ -78,7 +80,7 @@ func (u *UHPPOTED) listen(ctx context.Context, received *EventMap, q chan os.Sig
 			first = retrieved + 1
 		}
 
-		if retrieved := u.fetch(ctx, device, first, last); retrieved != 0 {
+		if retrieved := u.fetch(ctx, device, first, last, handler); retrieved != 0 {
 			received.retrieved[device] = retrieved
 			if err := received.store(); err != nil {
 				u.warn(0, "listen", err)
@@ -87,7 +89,7 @@ func (u *UHPPOTED) listen(ctx context.Context, received *EventMap, q chan os.Sig
 	}
 }
 
-func (u *UHPPOTED) fetch(ctx context.Context, device uint32, first uint32, last uint32) uint32 {
+func (u *UHPPOTED) fetch(ctx context.Context, device uint32, first uint32, last uint32, handler EventHandler) uint32 {
 	retrieved := uint32(0)
 
 	for index := first; index <= last; index++ {
@@ -123,7 +125,7 @@ func (u *UHPPOTED) fetch(ctx context.Context, device uint32, first uint32, last 
 		}
 
 		u.debug("listen", fmt.Sprintf("event %v", message))
-		u.send(ctx, message)
+		handler(message)
 	}
 
 	return retrieved
