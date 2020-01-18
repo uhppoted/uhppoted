@@ -9,8 +9,16 @@ import (
 	"strings"
 )
 
-func (mqttd *MQTTD) wrap(reply interface{}, clientID *string) ([]byte, error) {
-	bytes, err := json.Marshal(reply)
+type msgType int
+
+const (
+	msgReply msgType = iota + 1
+	msgError
+	msgEvent
+)
+
+func (mqttd *MQTTD) wrap(msgtype msgType, content interface{}, destID *string) ([]byte, error) {
+	bytes, err := json.Marshal(content)
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +28,7 @@ func (mqttd *MQTTD) wrap(reply interface{}, clientID *string) ([]byte, error) {
 		return nil, err
 	}
 
-	crypttext, iv, key, err := mqttd.encrypt(bytes, clientID)
+	crypttext, iv, key, err := mqttd.encrypt(bytes, destID)
 	if err != nil {
 		return nil, err
 	}
@@ -30,60 +38,21 @@ func (mqttd *MQTTD) wrap(reply interface{}, clientID *string) ([]byte, error) {
 		Key       string          `json:"key,omitempty"`
 		IV        string          `json:"iv,omitempty"`
 		Reply     json.RawMessage `json:"reply,omitempty"`
-	}{
-		Signature: base64.StdEncoding.EncodeToString(signature),
-		Key:       base64.StdEncoding.EncodeToString(key),
-		IV:        hex.EncodeToString(iv),
-		Reply:     crypttext,
-	}
-
-	bytes, err = json.Marshal(message)
-	if err != nil {
-		return nil, err
-	}
-
-	payload := struct {
-		Message json.RawMessage `json:"message"`
-		HMAC    string          `json:"hmac,omitempty"`
-	}{
-		Message: bytes,
-		HMAC:    hex.EncodeToString(mqttd.HMAC.MAC(bytes)),
-	}
-
-	bytes, err = json.Marshal(payload)
-	if err != nil {
-		return nil, err
-	}
-
-	return bytes, nil
-}
-
-func (mqttd *MQTTD) wrapError(errmsg interface{}, clientID *string) ([]byte, error) {
-	bytes, err := json.Marshal(errmsg)
-	if err != nil {
-		return nil, err
-	}
-
-	signature, err := mqttd.sign(bytes)
-	if err != nil {
-		return nil, err
-	}
-
-	crypttext, iv, key, err := mqttd.encrypt(bytes, clientID)
-	if err != nil {
-		return nil, err
-	}
-
-	message := struct {
-		Signature string          `json:"signature,omitempty"`
-		Key       string          `json:"key,omitempty"`
-		IV        string          `json:"iv,omitempty"`
 		Error     json.RawMessage `json:"error,omitempty"`
+		Event     json.RawMessage `json:"event,omitempty"`
 	}{
 		Signature: base64.StdEncoding.EncodeToString(signature),
 		Key:       base64.StdEncoding.EncodeToString(key),
 		IV:        hex.EncodeToString(iv),
-		Error:     crypttext,
+	}
+
+	switch msgtype {
+	case msgReply:
+		message.Reply = crypttext
+	case msgError:
+		message.Error = crypttext
+	case msgEvent:
+		message.Event = crypttext
 	}
 
 	bytes, err = json.Marshal(message)
