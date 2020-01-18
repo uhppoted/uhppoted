@@ -44,6 +44,8 @@
 - [ ] move incoming requests to /requests subtopic
 - [ ] health check
 - [ ] watchdog
+- [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status
+  - https://blog.golang.org/go1.13-errors
 
 - [x] subscribe
 - [x] error handling

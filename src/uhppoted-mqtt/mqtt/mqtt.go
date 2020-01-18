@@ -73,9 +73,12 @@ func (f fnonce) MarshalJSON() ([]byte, error) {
 	return json.Marshal(f())
 }
 
-var regex map[string]*regexp.Regexp = map[string]*regexp.Regexp{
-	"clean":  regexp.MustCompile(`\s+`),
-	"base64": regexp.MustCompile(`^"[A-Za-z0-9+/]*[=]{0,2}"$`),
+var regex = struct {
+	clean  *regexp.Regexp
+	base64 *regexp.Regexp
+}{
+	clean:  regexp.MustCompile(`\s+`),
+	base64: regexp.MustCompile(`^"[A-Za-z0-9+/]*[=]{0,2}"$`),
 }
 
 func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
@@ -312,7 +315,7 @@ func (m *MQTTD) Send(ctx context.Context, message interface{}) {
 }
 
 func (m *MQTTD) reply(clientID *string, replyTo string, response interface{}, log *log.Logger) {
-	message, err := m.wrap(response, clientID)
+	message, err := m.wrap(msgReply, response, clientID)
 	if err != nil {
 		log.Printf("WARN  %v", err)
 		return
@@ -324,7 +327,7 @@ func (m *MQTTD) reply(clientID *string, replyTo string, response interface{}, lo
 }
 
 func (m *MQTTD) error(clientID *string, replyTo string, errx *errorx, log *log.Logger) {
-	message, err := m.wrapError(errx, clientID)
+	message, err := m.wrap(msgError, errx, clientID)
 	if err != nil {
 		log.Printf("WARN  %v", err)
 		return
@@ -396,9 +399,9 @@ func oops(ctx context.Context, method string, msg string, errorCode int) {
 }
 
 func isBase64(request []byte) bool {
-	return regex["base64"].Match(request)
+	return regex.base64.Match(request)
 }
 
 func clean(s string) string {
-	return regex["clean"].ReplaceAllString(s, " ")
+	return regex.clean.ReplaceAllString(s, " ")
 }
