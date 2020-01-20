@@ -182,7 +182,7 @@ func (m *MQTTD) decrypt(request []byte, iv string, key string) ([]byte, error) {
 		return nil, fmt.Errorf("Invalid IV (%v)", err)
 	}
 
-	return m.RSA.Decrypt(append(ivv, ciphertext...), keyv)
+	return m.RSA.Decrypt(append(ivv, ciphertext...), keyv, "request")
 }
 
 func (m *MQTTD) authenticate(clientID *string, request []byte, signature *string) (bool, error) {
@@ -248,7 +248,7 @@ func (m *MQTTD) encrypt(plaintext []byte, clientID *string) ([]byte, []byte, []b
 			return nil, nil, nil, fmt.Errorf("Missing client ID")
 		}
 
-		ciphertext, key, err := m.RSA.Encrypt(plaintext, *clientID)
+		ciphertext, key, err := m.RSA.Encrypt(plaintext, *clientID, "request")
 		if err != nil {
 			return nil, nil, nil, err
 		}

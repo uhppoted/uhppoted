@@ -56,20 +56,20 @@ mqttd-get-device-rsa:
                                                         "nonce":       8 }}}'
 mqttd-get-device-encrypted:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
-                 --message '{ "message": { "key":       "FwLt7KyCCQkrpg6iCQd5eJW66oErvb1/ODXZ0NeSw5mhThYhk/U9GJVAyLiUDV0UlcRSn5r+I7gLWH5+2E5ihD+tv6kk32R8KDsaCDGzL97pLeHIigLivjVPsk0GV1H2M6N3yiPe1txQqzr8bmItaqwQOU0J3xHKD0TmSp2m2KzLCz9QMJxEnZ89M140yAPFFBlTsb/OA0gfggyZ1AXmj+/Du+36KL/0L+x2QPtgvuhvFuj5CtnRbHTEXpOG8u63C/qaT1pijvPFpXDptJvSzMZYd7pNyISg+0ea8eM1/RUd/1DIzBKIKjDeH5D94MBdTECCs2JcFXNtG4N/IPbzXQ==", \
+                 --message '{ "message": { "key":       "LRtq7KaKvsCP8VvaRXRsoc2+R5T8fhZ1x/cjFpknQmEbrtYmxe/5t1MSbRl2BxFRnEvCuGk6n64govDWcTvi58gU2Xn1XIQLOdBlg7Rk5bluEHdwM+nWRVqSBGTBe1UbvKbzeJ8Vm7jCFbYNVeBYDHRTgkfAnb4vpM/3KjYVDXlGLHO75ou16XPSNXyEvKwZUY5mKeAuS6O7igPkwkhdOgI4wUIBeqiKq5710pyOxitCv1b3CJvpo3lUIrwkGVNFn2fEUAEN3kCQUPpAxKeMOazEsRuQHJEm/thbFWIt0HrWE/XuqHtZZU17oAXiIgKioSUUJ6+cpXursNJWmI3nSQ==", \
                                            "signature": "G/3cEtzhZ+5iyms3sWYbh842ZbHYpJxKDrY8whkhlDmlXZis+P2l7PCfSH8l9hIeGvKUvIwL+wrkPkFwIZbNRJ0oYX9F1SXNVyEzjsKZZ6x4dJ57LnyK/YB8ygx/EBsESsSRo81QiBBD7XAHpKgVB/uqRTk9Tgq6J1YLYzyahv8=",\
                                            "request": "EJo5lNjfYl/aSBF2LodYrOpdWISCN4RfsFykVCu3K+OEeXI1r7QouxEwjLvZgsFUH2fK7qehUVyYtcoRdxdin0XS65t1P+Oc7dcrncyfHiJfRjbekEZqXpCG3Z02uTUtl4zss/Z8IAFxdjDmDB0NxsGALgCqhU70dioJgxeFqPyd3uHZi91dlvcWF2nf+Vb+6REEaSCCAEyQQ3BZ/NJUCQ==" \
                                          }, \
-                              "hmac": "18e050db4ad80ad51de7c5232edd7fca2a8f91a3069934ff2334f1bfd14bacf3" }'
+                              "hmac": "5a0d5ffdafc73f8f386e6673faf93b77ca64b8e9ec665a770efacb64258bba27" }'
 
 mqttd-get-device-encrypted-old:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
-                 --message '{ "message": { "key":       "FwLt7KyCCQkrpg6iCQd5eJW66oErvb1/ODXZ0NeSw5mhThYhk/U9GJVAyLiUDV0UlcRSn5r+I7gLWH5+2E5ihD+tv6kk32R8KDsaCDGzL97pLeHIigLivjVPsk0GV1H2M6N3yiPe1txQqzr8bmItaqwQOU0J3xHKD0TmSp2m2KzLCz9QMJxEnZ89M140yAPFFBlTsb/OA0gfggyZ1AXmj+/Du+36KL/0L+x2QPtgvuhvFuj5CtnRbHTEXpOG8u63C/qaT1pijvPFpXDptJvSzMZYd7pNyISg+0ea8eM1/RUd/1DIzBKIKjDeH5D94MBdTECCs2JcFXNtG4N/IPbzXQ==", \
+                 --message '{ "message": { "key":       "LRtq7KaKvsCP8VvaRXRsoc2+R5T8fhZ1x/cjFpknQmEbrtYmxe/5t1MSbRl2BxFRnEvCuGk6n64govDWcTvi58gU2Xn1XIQLOdBlg7Rk5bluEHdwM+nWRVqSBGTBe1UbvKbzeJ8Vm7jCFbYNVeBYDHRTgkfAnb4vpM/3KjYVDXlGLHO75ou16XPSNXyEvKwZUY5mKeAuS6O7igPkwkhdOgI4wUIBeqiKq5710pyOxitCv1b3CJvpo3lUIrwkGVNFn2fEUAEN3kCQUPpAxKeMOazEsRuQHJEm/thbFWIt0HrWE/XuqHtZZU17oAXiIgKioSUUJ6+cpXursNJWmI3nSQ==", \
                                            "iv":        "109A3994D8DF625FDA4811762E8758AC",\
                                            "signature": "G/3cEtzhZ+5iyms3sWYbh842ZbHYpJxKDrY8whkhlDmlXZis+P2l7PCfSH8l9hIeGvKUvIwL+wrkPkFwIZbNRJ0oYX9F1SXNVyEzjsKZZ6x4dJ57LnyK/YB8ygx/EBsESsSRo81QiBBD7XAHpKgVB/uqRTk9Tgq6J1YLYzyahv8=",\
                                            "request": "6l1YhII3hF+wXKRUK7cr44R5cjWvtCi7ETCMu9mCwVQfZ8rup6FRXJi1yhF3F2KfRdLrm3U/45zt1yudzJ8eIl9GNt6QRmpekIbdnTa5NS2XjOyz9nwgAXF2MOYMHQ3GwYAuAKqFTvR2KgmDF4Wo/J3e4dmL3V2W9xYXad/5Vv7pEQRpIIIATJBDcFn80lQJ" \
                                          }, \
-                              "hmac": "8e93ffaa6c9eb65074875eabae7093c1ad40519dfc935da1fb808e65fc1377a2" }'
+                              "hmac": "46410fe2d18183452982ed22cec52dedf843436263d1097074454c3c30caa75a" }'
 
 
 mqttd-get-status:
