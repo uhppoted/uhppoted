@@ -117,7 +117,7 @@ func (r *RSA) Sign(message []byte) ([]byte, error) {
 	return []byte{}, nil
 }
 
-func (r *RSA) Encrypt(plaintext []byte, clientID string) ([]byte, []byte, error) {
+func (r *RSA) Encrypt(plaintext []byte, clientID string, label string) ([]byte, []byte, error) {
 	secretKey := make([]byte, 32)
 	if _, err := rand.Read(secretKey); err != nil {
 		return nil, nil, err
@@ -140,13 +140,13 @@ func (r *RSA) Encrypt(plaintext []byte, clientID string) ([]byte, []byte, error)
 	mode.CryptBlocks(ciphertext, append(plaintext, bytes.Repeat([]byte{byte(padding)}, padding)...))
 
 	rng := rand.Reader
-	label := []byte{}
+	hash := sha256.Sum256([]byte(label))
 	pubkey, ok := r.encryptionKeys.clientKeys[clientID]
 	if !ok {
 		return nil, nil, fmt.Errorf("No public key for %s", clientID)
 	}
 
-	key, err := rsa.EncryptOAEP(sha256.New(), rng, pubkey, secretKey, label)
+	key, err := rsa.EncryptOAEP(sha256.New(), rng, pubkey, secretKey, hash[:16])
 	if err != nil {
 		return nil, nil, err
 	}
@@ -154,10 +154,10 @@ func (r *RSA) Encrypt(plaintext []byte, clientID string) ([]byte, []byte, error)
 	return append(iv, ciphertext...), key, nil
 }
 
-func (r *RSA) Decrypt(ciphertext []byte, key []byte) ([]byte, error) {
+func (r *RSA) Decrypt(ciphertext []byte, key []byte, label string) ([]byte, error) {
 	rng := rand.Reader
-	label := []byte{}
-	secretKey, err := rsa.DecryptOAEP(sha256.New(), rng, r.encryptionKeys.key, key, label)
+	hash := sha256.Sum256([]byte(label))
+	secretKey, err := rsa.DecryptOAEP(sha256.New(), rng, r.encryptionKeys.key, key, hash[:16])
 	if err != nil {
 		return nil, err
 	}
