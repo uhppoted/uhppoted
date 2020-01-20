@@ -34,11 +34,11 @@ func (mqttd *MQTTD) wrap(msgtype msgType, content interface{}, destID *string) (
 	}
 
 	message := struct {
-		Signature string `json:"signature,omitempty"`
-		Key       string `json:"key,omitempty"`
-		Reply json.RawMessage `json:"reply,omitempty"`
-		Error json.RawMessage `json:"error,omitempty"`
-		Event json.RawMessage `json:"event,omitempty"`
+		Signature string          `json:"signature,omitempty"`
+		Key       string          `json:"key,omitempty"`
+		Reply     json.RawMessage `json:"reply,omitempty"`
+		Error     json.RawMessage `json:"error,omitempty"`
+		Event     json.RawMessage `json:"event,omitempty"`
 	}{
 		Signature: base64.StdEncoding.EncodeToString(signature),
 		Key:       base64.StdEncoding.EncodeToString(key),

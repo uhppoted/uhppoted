@@ -35,7 +35,7 @@
 - [x] wrap request handling in go routine
 - [x] rework GetDevices to also find 'known' devices
 - [ ] sign & encrypt
-  - 'watch' keys directory
+  - add 'encrypt' or 'sign' label to OAEP so that clients can reuse private keys if they choose to
   - allow for multiple authentication modes (HOTP/RSA/NONE)
   - default to signed+encrypted for outgoing
   - default to RSA,HOTP for incoming
@@ -50,7 +50,7 @@
 - [x] 'reply'
 - [x] TLS connection
 - [x] TLS connection: client authentication
-- [ ] Exit on error when multiple mqttd's are started (or generate unique client ID???)
+- [ ] Exit on error when multiple mqttd's are started (or generate unique client ID??? or .. lockfile)
 - [ ] Implement retry + backoff for connection to broker
 - [ ] Implement retry + backoff for 'listen'
 - [ ] Rework listen logic to handle errors robustly
