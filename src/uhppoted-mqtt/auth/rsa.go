@@ -96,20 +96,20 @@ func (r *RSA) Sign(message []byte) ([]byte, error) {
 	return []byte{}, nil
 }
 
-func (r *RSA) Encrypt(plaintext []byte, clientID string) ([]byte, []byte, []byte, error) {
+func (r *RSA) Encrypt(plaintext []byte, clientID string) ([]byte, []byte, error) {
 	secretKey := make([]byte, 32)
 	if _, err := rand.Read(secretKey); err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 
 	iv := make([]byte, aes.BlockSize)
 	if _, err := rand.Read(iv); err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 
 	block, err := aes.NewCipher(secretKey)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 
 	padding := aes.BlockSize - len(plaintext)%aes.BlockSize
@@ -122,19 +122,21 @@ func (r *RSA) Encrypt(plaintext []byte, clientID string) ([]byte, []byte, []byte
 	label := []byte{}
 	pubkey, ok := r.encryptionKeys.clientKeys[clientID]
 	if !ok {
-		return nil, nil, nil, fmt.Errorf("No public key for %s", clientID)
+		return nil, nil, fmt.Errorf("No public key for %s", clientID)
 	}
 
 	key, err := rsa.EncryptOAEP(sha256.New(), rng, pubkey, secretKey, label)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 
-	return ciphertext, iv, key, nil
+	return append(iv, ciphertext...), key, nil
 }
 
-func (r *RSA) Decrypt(ciphertext []byte, iv []byte, key []byte) ([]byte, error) {
-	secretKey, err := rsa.DecryptPKCS1v15(nil, r.encryptionKeys.key, key)
+func (r *RSA) Decrypt(ciphertext []byte, key []byte) ([]byte, error) {
+	rng := rand.Reader
+	label := []byte{}
+	secretKey, err := rsa.DecryptOAEP(sha256.New(), rng, r.encryptionKeys.key, key, label)
 	if err != nil {
 		return nil, err
 	}
@@ -144,24 +146,31 @@ func (r *RSA) Decrypt(ciphertext []byte, iv []byte, key []byte) ([]byte, error) 
 		return nil, err
 	}
 
-	if len(ciphertext) < aes.BlockSize {
-		return nil, fmt.Errorf("ciphertext missing IV (%d bytes)", len(ciphertext))
+	if len(ciphertext) < 16 {
+		return nil, fmt.Errorf("missing IV (%d bytes)", len(ciphertext))
 	}
 
-	if len(ciphertext)%aes.BlockSize != 0 {
+	if len(ciphertext[16:]) < aes.BlockSize {
+		return nil, fmt.Errorf("invalid ciphertext length (%d bytes)", len(ciphertext))
+	}
+
+	if len(ciphertext[16:])%aes.BlockSize != 0 {
 		return nil, fmt.Errorf("ciphertext not a multiple of AES block size (%d bytes)", len(ciphertext))
 	}
 
-	// Shouldn't really need this but using openssl AES on the command with the -salt option prepends the
-	// actual ciphertext with 'Salted__<salt>'
+	// REMOVED: using openssl AES on the command with the -salt option prepends the ciphertext with 'Salted__<salt>'
 	// Ref. http://justsolve.archiveteam.org/wiki/OpenSSL_salted_format
-	offset := 0
-	if strings.HasPrefix(string(ciphertext), "Salted__") {
-		offset = 16
-	}
+	// offset := 0
+	// if strings.HasPrefix(string(ciphertext), "Salted__") {
+	// 	offset = 16
+	// }
+	//
+	// plaintext := make([]byte, len(ciphertext[offset:]))
+	// cipher.NewCBCDecrypter(block, iv).CryptBlocks(plaintext, ciphertext[offset:])
 
-	plaintext := make([]byte, len(ciphertext[offset:]))
-	cipher.NewCBCDecrypter(block, iv).CryptBlocks(plaintext, ciphertext[offset:])
+	iv := ciphertext[:16]
+	plaintext := make([]byte, len(ciphertext[16:]))
+	cipher.NewCBCDecrypter(block, iv).CryptBlocks(plaintext, ciphertext[16:])
 
 	N := len(plaintext)
 	padding := int(plaintext[N-1])
