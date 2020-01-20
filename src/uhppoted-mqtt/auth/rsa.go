@@ -16,11 +16,15 @@ import (
 	"os"
 	"path"
 	"strings"
+	"sync"
+	"time"
 )
 
 type keyset struct {
+	guard      sync.Mutex
 	key        *rsa.PrivateKey
 	clientKeys map[string]*rsa.PublicKey
+	directory  string
 }
 
 type RSA struct {
@@ -34,37 +38,54 @@ func NewRSA(keydir string, logger *log.Logger) (*RSA, error) {
 
 	r := RSA{
 		signingKeys: keyset{
+			guard:      sync.Mutex{},
 			key:        nil,
 			clientKeys: map[string]*rsa.PublicKey{},
+			directory:  path.Join(keydir, "signing"),
 		},
 		encryptionKeys: keyset{
+			guard:      sync.Mutex{},
 			key:        nil,
 			clientKeys: map[string]*rsa.PublicKey{},
+			directory:  path.Join(keydir, "encryption"),
 		},
 		log: logger,
 	}
 
-	r.signingKeys.key, err = loadPrivateKey(path.Join(keydir, "signing", "private.key"))
+	f := func(ks *keyset) error {
+		keys, err := loadPublicKeys(ks.directory, logger)
+		if err != nil {
+			return err
+		}
+
+		ks.guard.Lock()
+		defer ks.guard.Unlock()
+
+		ks.clientKeys = keys
+
+		return nil
+	}
+
+	r.signingKeys.key, err = loadPrivateKey(path.Join(r.signingKeys.directory, "private.key"))
 	if err != nil {
 		log.Printf("WARN: %v", err)
 	}
 
-	r.signingKeys.clientKeys, err = loadPublicKeys(path.Join(keydir, "signing"), logger)
+	r.encryptionKeys.key, err = loadPrivateKey(path.Join(r.encryptionKeys.directory, "private.key"))
 	if err != nil {
 		log.Printf("WARN: %v", err)
 	}
 
-	r.encryptionKeys.key, err = loadPrivateKey(path.Join(keydir, "encryption", "private.key"))
-	if err != nil {
+	if err := f(&r.signingKeys); err != nil {
 		log.Printf("WARN: %v", err)
 	}
 
-	r.encryptionKeys.clientKeys, err = loadPublicKeys(path.Join(keydir, "encryption"), logger)
-	if err != nil {
+	if err := f(&r.encryptionKeys); err != nil {
 		log.Printf("WARN: %v", err)
 	}
 
-	// TODO 'watch' client key directory
+	watch("signing keys", r.signingKeys.directory, func() error { return f(&r.signingKeys) }, logger)
+	watch("encryption keys", r.encryptionKeys.directory, func() error { return f(&r.encryptionKeys) }, logger)
 
 	return &r, nil
 }
@@ -257,4 +278,44 @@ func loadPublicKeys(dir string, log *log.Logger) (map[string]*rsa.PublicKey, err
 	}
 
 	return keys, nil
+}
+
+// NOTE: interim file watcher implementation pending fsnotify in Go 1.4
+func watch(name string, directory string, reload func() error, logger *log.Logger) {
+	go func() {
+		finfo, err := os.Stat(directory)
+		if err != nil {
+			logger.Printf("WARN Failed to get directory information for '%s': %v", directory, err)
+			return
+		}
+
+		lastModified := finfo.ModTime()
+		logged := false
+		for {
+			time.Sleep(2500 * time.Millisecond)
+			finfo, err := os.Stat(directory)
+			if err != nil {
+				if !logged {
+					logger.Printf("WARN Failed to get directory information for '%s': %v", directory, err)
+					logged = true
+				}
+
+				continue
+			}
+
+			logged = false
+			if finfo.ModTime() != lastModified {
+				log.Printf("INFO  Reloading information from %s\n", directory)
+
+				err := reload()
+				if err != nil {
+					log.Printf("ERROR Failed to reload information from %s: %v", directory, err)
+					continue
+				}
+
+				log.Printf("WARN  Updated %s from %s", name, directory)
+				lastModified = finfo.ModTime()
+			}
+		}
+	}()
 }
