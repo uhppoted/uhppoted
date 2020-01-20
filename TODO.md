@@ -39,7 +39,6 @@
   - allow for multiple authentication modes (HOTP/RSA/NONE)
   - default to signed+encrypted for outgoing
   - default to RSA,HOTP for incoming
-- [ ] user:open/get permissions require matching card number 
 - [ ] move incoming requests to /requests subtopic
 - [ ] health check
 - [ ] watchdog
@@ -108,6 +107,8 @@
 - [ ] MQTT v5.0
 - [ ] [JSON-RPC](https://en.wikipedia.org/wiki/JSON-RPC) (?)
 - [ ] Add to CLI
+- [ ] Non-ephemeral key transport:  https://tools.ietf.org/html/rfc5990#appendix-A
+- [ ] user:open/get permissions require matching card number 
 
 ### CLI
 - [ ] Rework grant/revoke for individual doors (labelled)

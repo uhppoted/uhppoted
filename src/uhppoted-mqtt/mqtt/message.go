@@ -28,22 +28,25 @@ func (mqttd *MQTTD) wrap(msgtype msgType, content interface{}, destID *string) (
 		return nil, err
 	}
 
-	crypttext, iv, key, err := mqttd.encrypt(bytes, destID)
+	ciphertext, iv, key, err := mqttd.encrypt(bytes, destID)
 	if err != nil {
 		return nil, err
 	}
 
 	message := struct {
-		Signature string          `json:"signature,omitempty"`
-		Key       string          `json:"key,omitempty"`
-		IV        string          `json:"iv,omitempty"`
-		Reply     json.RawMessage `json:"reply,omitempty"`
-		Error     json.RawMessage `json:"error,omitempty"`
-		Event     json.RawMessage `json:"event,omitempty"`
+		Signature string `json:"signature,omitempty"`
+		Key       string `json:"key,omitempty"`
+		Reply json.RawMessage `json:"reply,omitempty"`
+		Error json.RawMessage `json:"error,omitempty"`
+		Event json.RawMessage `json:"event,omitempty"`
 	}{
 		Signature: base64.StdEncoding.EncodeToString(signature),
 		Key:       base64.StdEncoding.EncodeToString(key),
-		IV:        hex.EncodeToString(iv),
+	}
+
+	crypttext, err := json.Marshal(base64.StdEncoding.EncodeToString(append(iv, ciphertext...)))
+	if err != nil {
+		return nil, err
 	}
 
 	switch msgtype {
@@ -93,7 +96,7 @@ func (mqttd *MQTTD) unwrap(payload []byte) ([]byte, error) {
 	body := struct {
 		Signature *string         `json:"signature"`
 		Key       *string         `json:"key"`
-		IV        *string         `json:"iv"`
+		IV        string          `json:"iv"`
 		Request   json.RawMessage `json:"request"`
 	}{}
 
@@ -103,8 +106,8 @@ func (mqttd *MQTTD) unwrap(payload []byte) ([]byte, error) {
 
 	request := []byte(body.Request)
 
-	if body.Key != nil && body.IV != nil && isBase64(body.Request) {
-		plaintext, err := mqttd.decrypt(request, *body.IV, *body.Key)
+	if body.Key != nil && isBase64(body.Request) {
+		plaintext, err := mqttd.decrypt(request, body.IV, *body.Key)
 		if err != nil || plaintext == nil {
 			return nil, fmt.Errorf("Error decrypting message (%v::%v)", err, plaintext)
 		}
@@ -179,7 +182,7 @@ func (m *MQTTD) decrypt(request []byte, iv string, key string) ([]byte, error) {
 		return nil, fmt.Errorf("Invalid IV (%v)", err)
 	}
 
-	return m.RSA.Decrypt(ciphertext, ivv, keyv)
+	return m.RSA.Decrypt(append(ivv, ciphertext...), keyv)
 }
 
 func (m *MQTTD) authenticate(clientID *string, request []byte, signature *string) (bool, error) {
@@ -245,17 +248,12 @@ func (m *MQTTD) encrypt(plaintext []byte, clientID *string) ([]byte, []byte, []b
 			return nil, nil, nil, fmt.Errorf("Missing client ID")
 		}
 
-		ciphertext, iv, key, err := m.RSA.Encrypt(plaintext, *clientID)
+		ciphertext, key, err := m.RSA.Encrypt(plaintext, *clientID)
 		if err != nil {
 			return nil, nil, nil, err
 		}
 
-		crypttext, err := json.Marshal(base64.StdEncoding.EncodeToString(ciphertext))
-		if err != nil {
-			return nil, nil, nil, err
-		}
-
-		return crypttext, iv, key, nil
+		return ciphertext[16:], ciphertext[:16], key, nil
 	}
 
 	return plaintext, nil, nil, nil
