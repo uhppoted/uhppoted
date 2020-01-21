@@ -48,7 +48,6 @@ systems.
 | golang.org/x/lint/golint            | Additional *lint* check for release builds             |
 | github.com/eclipse/paho.mqtt.golang | UT0311-L04 simulator for development use               |
 | github.com/gorilla/websocket        | paho.mqtt.golang dependency                            |
-| github.com/docker/docker/client     | Docker client for acceptance/integration tests         |
 
 ### Binaries
 

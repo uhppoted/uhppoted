@@ -89,13 +89,13 @@ func NewConfig() *Config {
 			Topic:             "twystd/uhppoted/gateway",
 			EventsTopic:       "twystd/uhppoted/gateway/events",
 			EventsKeyID:       "events",
-			SignOutgoing:      false,
-			EncryptOutgoing:   false,
+			SignOutgoing:      true,
+			EncryptOutgoing:   true,
 			HMAC: HMAC{
 				Required: false,
 				Key:      "",
 			},
-			Authentication: "",
+			Authentication: "HOTP, RSA",
 			HOTP: HOTP{
 				Range:    8,
 				Secrets:  hotpSecrets,

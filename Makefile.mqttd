@@ -44,16 +44,17 @@ mqttd-get-device-hotp:
                                                         "client-id":  "QWERTY54", \
                                                         "reply-to":   "twystd/uhppoted/reply/97531", \
                                                         "hotp":       "586787", \
+                                                        "nonce":      8, \
                                                         "device-id":  405419896 }}}'
 
 mqttd-get-device-rsa:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
-                 --message '{ "message": { "signature": "WyIfFnU4aGgtrxHVnzNUZT4lkt13Crm9CEw74ziH+80tXR+kp0/S4lU5hJiyTeTuLSWY2iUHmJ+fR30Xv46C0rbu/Mea3nm6Dr8PFXp3HcyMuNpLg4V3eTwE+gMMLj1rQkDLUFgTxDHv21nOd61bjIL0/I/5qyil0PtePPvKPJ4=",\
+                 --message '{ "message": { "signature": "Dd6qGX0lvKA4i0jltpZry1K6hePCATuC0L1Pv7YkHtTNb9cqP+CI4lTOVlq5uWnKB0kVfqdLSGa6dsCRzzw3VFqojhC1ZG8rQtpg4iFno7S73g7O6jF/UEfQ6jHqwubrxcZI8W2P9bcO5f7UR6aiZt6+/nHJlPTLycQ1jlNeM3c=",\
                                            "request": { "request-id":  "AH173635G3", \
                                                         "client-id":  "QWERTY54", \
                                                         "reply-to":   "twystd/uhppoted/reply/97531", \
-                                                        "device-id":   405419896, \
-                                                        "nonce":       8 }}}'
+                                                        "nonce":      8, \
+                                                        "device-id":   405419896 }}}'
 mqttd-get-device-encrypted:
 	mqtt publish --topic 'twystd/uhppoted/gateway/device:get' \
                  --message '{ "message": { "key":       "LRtq7KaKvsCP8VvaRXRsoc2+R5T8fhZ1x/cjFpknQmEbrtYmxe/5t1MSbRl2BxFRnEvCuGk6n64govDWcTvi58gU2Xn1XIQLOdBlg7Rk5bluEHdwM+nWRVqSBGTBe1UbvKbzeJ8Vm7jCFbYNVeBYDHRTgkfAnb4vpM/3KjYVDXlGLHO75ou16XPSNXyEvKwZUY5mKeAuS6O7igPkwkhdOgI4wUIBeqiKq5710pyOxitCv1b3CJvpo3lUIrwkGVNFn2fEUAEN3kCQUPpAxKeMOazEsRuQHJEm/thbFWIt0HrWE/XuqHtZZU17oAXiIgKioSUUJ6+cpXursNJWmI3nSQ==", \
