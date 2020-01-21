@@ -100,7 +100,8 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	}
 
 	api := uhppoted.UHPPOTED{
-		Log: l,
+		Uhppote: u,
+		Log:     l,
 	}
 
 	d := dispatcher{
@@ -191,8 +192,7 @@ func (m *MQTTD) subscribeAndServe(d *dispatcher) error {
 func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, l *log.Logger) error {
 	log.Printf("... listening on %v", u.ListenAddress)
 
-	ctx := context.WithValue(context.Background(), "uhppote", u)
-	ctx = context.WithValue(ctx, "client", m.connection)
+	ctx := context.WithValue(context.Background(), "client", m.connection)
 	ctx = context.WithValue(ctx, "log", l)
 	ctx = context.WithValue(ctx, "topic", m.Topic)
 
@@ -208,15 +208,14 @@ func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, l *log.Logger
 	m.interrupt = make(chan os.Signal)
 
 	go func() {
-		api.Listen(ctx, handler, last, m.interrupt)
+		api.Listen(handler, last, m.interrupt)
 	}()
 
 	return nil
 }
 
 func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
-	ctx := context.WithValue(context.Background(), "uhppote", d.uhppote)
-	ctx = context.WithValue(ctx, "client", client)
+	ctx := context.WithValue(context.Background(), "client", client)
 	ctx = context.WithValue(ctx, "log", d.log)
 	ctx = context.WithValue(ctx, "topic", d.topic)
 

@@ -11,7 +11,7 @@ import (
 func (m *MQTTD) getDevices(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) (interface{}, error) {
 	rq := uhppoted.GetDevicesRequest{}
 
-	response, status, err := impl.GetDevices(ctx, rq)
+	response, status, err := impl.GetDevices(rq)
 	if err != nil {
 		return nil, &errorx{
 			Err:     err,
@@ -58,7 +58,7 @@ func (m *MQTTD) getDevice(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Co
 		DeviceID: *body.DeviceID,
 	}
 
-	response, status, err := impl.GetDevice(ctx, rq)
+	response, status, err := impl.GetDevice(rq)
 	if err != nil {
 		return nil, &errorx{
 			Err:     err,

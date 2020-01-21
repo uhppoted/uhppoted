@@ -33,7 +33,7 @@ func (m *MQTTD) getStatus(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Co
 		DeviceID: *body.DeviceID,
 	}
 
-	response, err := impl.GetStatus(ctx, rq)
+	response, err := impl.GetStatus(rq)
 	if err != nil {
 		return nil, &errorx{
 			Err:     err,

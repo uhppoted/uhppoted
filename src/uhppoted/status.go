@@ -1,9 +1,7 @@
 package uhppoted
 
 import (
-	"context"
 	"fmt"
-	"uhppote"
 	"uhppote/types"
 )
 
@@ -36,10 +34,10 @@ type GetStatusResponse struct {
 	Status   Status   `json:"status"`
 }
 
-func (u *UHPPOTED) GetStatus(ctx context.Context, request GetStatusRequest) (*GetStatusResponse, error) {
+func (u *UHPPOTED) GetStatus(request GetStatusRequest) (*GetStatusResponse, error) {
 	u.debug("get-status", fmt.Sprintf("request  %+v", request))
 
-	status, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetStatus(uint32(request.DeviceID))
+	status, err := u.Uhppote.GetStatus(uint32(request.DeviceID))
 	if err != nil {
 		return nil, err
 	}

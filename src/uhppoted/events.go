@@ -1,10 +1,8 @@
 package uhppoted
 
 import (
-	"context"
 	"fmt"
 	"time"
-	"uhppote"
 	"uhppote/types"
 )
 
@@ -71,14 +69,14 @@ type event struct {
 	Result     uint8          `json:"event-result"`
 }
 
-func (u *UHPPOTED) GetEvents(ctx context.Context, request GetEventsRequest) (*GetEventsResponse, int, error) {
+func (u *UHPPOTED) GetEvents(request GetEventsRequest) (*GetEventsResponse, int, error) {
 	u.debug("get-events", fmt.Sprintf("request  %+v", request))
 
 	device := uint32(request.DeviceID)
 	start := request.Start
 	end := request.End
 
-	event, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, 0xffffffff)
+	event, err := u.Uhppote.GetEvent(device, 0xffffffff)
 	if err != nil {
 		return nil, StatusInternalServerError, err
 	}
@@ -99,7 +97,7 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, request GetEventsRequest) (*Ge
 
 		if start != nil || end != nil {
 			for index := event.Index; index > 0; index-- {
-				record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, index)
+				record, err := u.Uhppote.GetEvent(device, index)
 				if err != nil {
 					return nil, StatusInternalServerError, err
 				}
@@ -142,13 +140,13 @@ func (u *UHPPOTED) GetEvents(ctx context.Context, request GetEventsRequest) (*Ge
 	return &response, StatusOK, nil
 }
 
-func (u *UHPPOTED) GetEvent(ctx context.Context, request GetEventRequest) (*GetEventResponse, int, error) {
+func (u *UHPPOTED) GetEvent(request GetEventRequest) (*GetEventResponse, int, error) {
 	u.debug("get-events", fmt.Sprintf("request  %+v", request))
 
 	device := uint32(request.DeviceID)
 	eventID := request.EventID
 
-	record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, eventID)
+	record, err := u.Uhppote.GetEvent(device, eventID)
 	if err != nil {
 		return nil, StatusInternalServerError, fmt.Errorf("Failed to retrieve event ID %d", eventID)
 	}

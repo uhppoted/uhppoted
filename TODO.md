@@ -35,10 +35,10 @@
 - [x] wrap request handling in go routine
 - [x] rework GetDevices to also find 'known' devices
 - [x] sign & encrypt
+- [x] move UHPPOTE from context to UHPPOTED
 - [ ] move incoming requests to /requests subtopic
 - [ ] health check
 - [ ] watchdog
-- [ ] move UHPPOTE from context to UHPPOTED
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status
   - https://blog.golang.org/go1.13-errors
 

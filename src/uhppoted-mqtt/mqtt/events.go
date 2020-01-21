@@ -50,7 +50,7 @@ func (m *MQTTD) getEvents(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Co
 		End:      (*types.DateTime)(body.End),
 	}
 
-	response, status, err := impl.GetEvents(ctx, rq)
+	response, status, err := impl.GetEvents(rq)
 	if err != nil {
 		return nil, &errorx{
 			Err:     err,
@@ -107,7 +107,7 @@ func (m *MQTTD) getEvent(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Con
 		EventID:  *body.EventID,
 	}
 
-	response, status, err := impl.GetEvent(ctx, rq)
+	response, status, err := impl.GetEvent(rq)
 	if err != nil {
 		return nil, &errorx{
 			Err:     err,
