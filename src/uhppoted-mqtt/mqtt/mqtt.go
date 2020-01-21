@@ -51,6 +51,13 @@ type dispatcher struct {
 	table    map[string]fdispatch
 }
 
+type request struct {
+	ClientID  *string
+	RequestID *string
+	ReplyTo   *string
+	Request   []byte
+}
+
 type metainfo struct {
 	RequestID *string `json:"request-id,omitempty"`
 	ClientID  *string `json:"client-id,omitempty"`
@@ -217,65 +224,53 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 		msg.Ack()
 
 		go func() {
-			request, err := d.mqttd.unwrap(msg.Payload())
+			rq, err := d.mqttd.unwrap(msg.Payload())
 			if err != nil {
 				d.log.Printf("DEBUG %-20s %s", "dispatch", string(msg.Payload()))
 				d.log.Printf("WARN  %-20s %v", "dispatch", err)
 				return
 			}
 
-			misc := struct {
-				ClientID  *string `json:"client-id"`
-				RequestID *string `json:"request-id"`
-				ReplyTo   *string `json:"reply-to"`
-			}{}
-
-			if err := json.Unmarshal(request, &misc); err != nil {
-				d.log.Printf("DEBUG %-20s %s", fn.method, string(request))
-				d.log.Printf("WARN  %-20s %v", fn.method, "Cannot parse request meta-info")
-				return
-			}
-
-			if err := d.mqttd.authorise(misc.ClientID, msg.Topic()); err != nil {
-				d.log.Printf("DEBUG %-20s %s", fn.method, string(request))
+			if err := d.mqttd.authorise(rq.ClientID, msg.Topic()); err != nil {
+				d.log.Printf("DEBUG %-20s %s", fn.method, string(rq.Request))
 				d.log.Printf("WARN  %-20s %v", fn.method, fmt.Errorf("Error authorising request (%v)", err))
 				return
 			}
 
-			ctx = context.WithValue(ctx, "request", request)
+			ctx = context.WithValue(ctx, "request", rq.Request)
 			ctx = context.WithValue(ctx, "method", fn.method)
 
 			replyTo := d.mqttd.Topic + "/reply"
 
-			if misc.ClientID != nil {
-				replyTo = d.mqttd.Topic + "/" + *misc.ClientID
+			if rq.ClientID != nil {
+				replyTo = d.mqttd.Topic + "/" + *rq.ClientID
 			}
 
-			if misc.ReplyTo != nil {
-				replyTo = *misc.ReplyTo
+			if rq.ReplyTo != nil {
+				replyTo = *rq.ReplyTo
 			}
 
 			meta := metainfo{
-				RequestID: misc.RequestID,
-				ClientID:  misc.ClientID,
+				RequestID: rq.RequestID,
+				ClientID:  rq.ClientID,
 				ServerID:  d.mqttd.ServerID,
 				Method:    fn.method,
 				Nonce:     func() uint64 { return d.mqttd.Nonce.Next() },
 			}
 
-			reply, err := fn.f(d.mqttd, meta, d.uhppoted, ctx, request)
+			reply, err := fn.f(d.mqttd, meta, d.uhppoted, ctx, rq.Request)
 
 			if err != nil {
-				d.log.Printf("DEBUG %-20s %s", fn.method, string(request))
+				d.log.Printf("DEBUG %-20s %s", fn.method, string(rq.Request))
 				d.log.Printf("WARN  %-20s %v", fn.method, err)
 
 				if errx, ok := err.(*errorx); ok {
-					d.mqttd.send(fn.method, misc.ClientID, replyTo, errx, msgError, d.log)
+					d.mqttd.send(fn.method, rq.ClientID, replyTo, errx, msgError, d.log)
 				}
 			}
 
 			if reply != nil {
-				d.mqttd.send(fn.method, misc.ClientID, replyTo, reply, msgReply, d.log)
+				d.mqttd.send(fn.method, rq.ClientID, replyTo, reply, msgReply, d.log)
 			}
 		}()
 	}

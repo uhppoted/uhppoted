@@ -34,11 +34,11 @@
 - [x] command protocol: add 'operation' to response meta-info
 - [x] wrap request handling in go routine
 - [x] rework GetDevices to also find 'known' devices
-- [ ] sign & encrypt
-  - return unwrapped request from unwrap
+- [x] sign & encrypt
 - [ ] move incoming requests to /requests subtopic
 - [ ] health check
 - [ ] watchdog
+- [ ] move UHPPOTE from context to UHPPOTED
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status
   - https://blog.golang.org/go1.13-errors
 

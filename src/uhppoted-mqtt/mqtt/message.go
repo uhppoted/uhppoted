@@ -74,7 +74,7 @@ func (mqttd *MQTTD) wrap(msgtype msgType, content interface{}, destID *string) (
 	return bytes, nil
 }
 
-func (mqttd *MQTTD) unwrap(payload []byte) ([]byte, error) {
+func (mqttd *MQTTD) unwrap(payload []byte) (*request, error) {
 	message := struct {
 		Message json.RawMessage `json:"message"`
 		HMAC    *string         `json:"hmac"`
@@ -99,15 +99,15 @@ func (mqttd *MQTTD) unwrap(payload []byte) ([]byte, error) {
 		return nil, fmt.Errorf("Error unmarshaling message body (%v)", err)
 	}
 
-	request := []byte(body.Request)
+	bytes := []byte(body.Request)
 
 	if body.Key != nil && isBase64(body.Request) {
-		plaintext, err := mqttd.decrypt(request, body.IV, *body.Key)
+		plaintext, err := mqttd.decrypt(bytes, body.IV, *body.Key)
 		if err != nil || plaintext == nil {
 			return nil, fmt.Errorf("Error decrypting message (%v::%v)", err, plaintext)
 		}
 
-		request = plaintext
+		bytes = plaintext
 	}
 
 	misc := struct {
@@ -117,11 +117,11 @@ func (mqttd *MQTTD) unwrap(payload []byte) ([]byte, error) {
 		Nonce     *uint64 `json:"nonce"`
 	}{}
 
-	if err := json.Unmarshal(request, &misc); err != nil {
+	if err := json.Unmarshal(bytes, &misc); err != nil {
 		return nil, fmt.Errorf("Error unmarshaling request meta-info (%v)", err)
 	}
 
-	authenticated, err := mqttd.authenticate(misc.ClientID, request, body.Signature)
+	authenticated, err := mqttd.authenticate(misc.ClientID, bytes, body.Signature)
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +132,12 @@ func (mqttd *MQTTD) unwrap(payload []byte) ([]byte, error) {
 		}
 	}
 
-	return request, nil
+	return &request{
+		ClientID:  misc.ClientID,
+		RequestID: misc.RequestID,
+		ReplyTo:   misc.ReplyTo,
+		Request:   bytes,
+	}, nil
 }
 
 func (m *MQTTD) verify(message []byte, mac *string) error {
