@@ -34,7 +34,7 @@ func (m *MQTTD) getCards(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Con
 		DeviceID: *body.DeviceID,
 	}
 
-	response, status, err := impl.GetCards(ctx, rq)
+	response, status, err := impl.GetCards(rq)
 	if err != nil {
 		return nil, &errorx{
 			Err:     err,
@@ -81,7 +81,7 @@ func (m *MQTTD) deleteCards(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.
 		DeviceID: *body.DeviceID,
 	}
 
-	response, status, err := impl.DeleteCards(ctx, rq)
+	response, status, err := impl.DeleteCards(rq)
 	if err != nil {
 		return nil, &errorx{
 			Err:     err,
@@ -138,7 +138,7 @@ func (m *MQTTD) getCard(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 		CardNumber: *body.CardNumber,
 	}
 
-	response, status, err := impl.GetCard(ctx, rq)
+	response, status, err := impl.GetCard(rq)
 	if err != nil {
 		return nil, &errorx{
 			Err:     err,
@@ -195,7 +195,7 @@ func (m *MQTTD) putCard(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 		Card:     *body.Card,
 	}
 
-	response, status, err := impl.PutCard(ctx, rq)
+	response, status, err := impl.PutCard(rq)
 	if err != nil {
 		return nil, &errorx{
 			Err:     err,
@@ -252,7 +252,7 @@ func (m *MQTTD) deleteCard(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.C
 		CardNumber: *body.CardNumber,
 	}
 
-	response, status, err := impl.DeleteCard(ctx, rq)
+	response, status, err := impl.DeleteCard(rq)
 	if err != nil {
 		return nil, &errorx{
 			Err:     err,

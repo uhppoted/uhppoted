@@ -43,7 +43,7 @@ func (m *MQTTD) getDoorDelay(meta metainfo, impl *uhppoted.UHPPOTED, ctx context
 		Door:     *body.Door,
 	}
 
-	response, status, err := impl.GetDoorDelay(ctx, rq)
+	response, status, err := impl.GetDoorDelay(rq)
 	if err != nil {
 		return nil, &errorx{
 			Err:     err,
@@ -110,7 +110,7 @@ func (m *MQTTD) setDoorDelay(meta metainfo, impl *uhppoted.UHPPOTED, ctx context
 		Delay:    *body.Delay,
 	}
 
-	response, status, err := impl.SetDoorDelay(ctx, rq)
+	response, status, err := impl.SetDoorDelay(rq)
 	if err != nil {
 		return nil, &errorx{
 			Err:     err,
@@ -167,7 +167,7 @@ func (m *MQTTD) getDoorControl(meta metainfo, impl *uhppoted.UHPPOTED, ctx conte
 		Door:     *body.Door,
 	}
 
-	response, status, err := impl.GetDoorControl(ctx, rq)
+	response, status, err := impl.GetDoorControl(rq)
 	if err != nil {
 		return nil, &errorx{
 			Err:     err,
@@ -234,7 +234,7 @@ func (m *MQTTD) setDoorControl(meta metainfo, impl *uhppoted.UHPPOTED, ctx conte
 		Control:  *body.Control,
 	}
 
-	response, status, err := impl.SetDoorControl(ctx, rq)
+	response, status, err := impl.SetDoorControl(rq)
 	if err != nil {
 		return nil, &errorx{
 			Err:     err,

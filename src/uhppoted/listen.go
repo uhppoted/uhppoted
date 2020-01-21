@@ -2,7 +2,6 @@ package uhppoted
 
 import (
 	"bufio"
-	"context"
 	"fmt"
 	"log"
 	"os"
@@ -10,7 +9,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"uhppote"
 	"uhppote/types"
 )
 
@@ -37,13 +35,13 @@ type EventMessage struct {
 
 type EventHandler func(EventMessage)
 
-func (u *UHPPOTED) Listen(ctx context.Context, handler EventHandler, received *EventMap, q chan os.Signal) {
+func (u *UHPPOTED) Listen(handler EventHandler, received *EventMap, q chan os.Signal) {
 	for device, index := range received.retrieved {
-		event, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, 0xffffffff)
+		event, err := u.Uhppote.GetEvent(device, 0xffffffff)
 		if err != nil {
 			u.warn(0, "listen", err)
 		} else {
-			if retrieved := u.fetch(ctx, device, index+1, event.Index, handler); retrieved != 0 {
+			if retrieved := u.fetch(device, index+1, event.Index, handler); retrieved != 0 {
 				received.retrieved[device] = retrieved
 				if err := received.store(); err != nil {
 					u.warn(0, "listen", err)
@@ -52,14 +50,14 @@ func (u *UHPPOTED) Listen(ctx context.Context, handler EventHandler, received *E
 		}
 	}
 
-	u.listen(ctx, handler, received, q)
+	u.listen(handler, received, q)
 }
 
-func (u *UHPPOTED) listen(ctx context.Context, handler EventHandler, received *EventMap, q chan os.Signal) {
+func (u *UHPPOTED) listen(handler EventHandler, received *EventMap, q chan os.Signal) {
 	p := make(chan *types.Status)
 
 	go func() {
-		if err := ctx.Value("uhppote").(*uhppote.UHPPOTE).Listen(p, q); err != nil {
+		if err := u.Uhppote.Listen(p, q); err != nil {
 			u.warn(0, "listen", err)
 		}
 	}()
@@ -80,7 +78,7 @@ func (u *UHPPOTED) listen(ctx context.Context, handler EventHandler, received *E
 			first = retrieved + 1
 		}
 
-		if retrieved := u.fetch(ctx, device, first, last, handler); retrieved != 0 {
+		if retrieved := u.fetch(device, first, last, handler); retrieved != 0 {
 			received.retrieved[device] = retrieved
 			if err := received.store(); err != nil {
 				u.warn(0, "listen", err)
@@ -89,11 +87,11 @@ func (u *UHPPOTED) listen(ctx context.Context, handler EventHandler, received *E
 	}
 }
 
-func (u *UHPPOTED) fetch(ctx context.Context, device uint32, first uint32, last uint32, handler EventHandler) uint32 {
+func (u *UHPPOTED) fetch(device uint32, first uint32, last uint32, handler EventHandler) uint32 {
 	retrieved := uint32(0)
 
 	for index := first; index <= last; index++ {
-		record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(device, index)
+		record, err := u.Uhppote.GetEvent(device, index)
 		if err != nil {
 			u.warn(device, "listen", fmt.Errorf("Failed to retrieve event ID %d", index))
 			continue

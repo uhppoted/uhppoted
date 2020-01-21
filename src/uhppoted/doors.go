@@ -1,10 +1,8 @@
 package uhppoted
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
-	"uhppote"
 )
 
 type ControlState uint8
@@ -57,10 +55,10 @@ type GetDoorDelayResponse struct {
 	Delay    uint8    `json:"delay"`
 }
 
-func (u *UHPPOTED) GetDoorDelay(ctx context.Context, request GetDoorDelayRequest) (*GetDoorDelayResponse, int, error) {
+func (u *UHPPOTED) GetDoorDelay(request GetDoorDelayRequest) (*GetDoorDelayResponse, int, error) {
 	u.debug("get-door-delay", fmt.Sprintf("request  %+v", request))
 
-	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(uint32(request.DeviceID), request.Door)
+	result, err := u.Uhppote.GetDoorControlState(uint32(request.DeviceID), request.Door)
 	if err != nil {
 		return nil, StatusInternalServerError, err
 	}
@@ -88,15 +86,15 @@ type SetDoorDelayResponse struct {
 	Delay    uint8    `json:"delay"`
 }
 
-func (u *UHPPOTED) SetDoorDelay(ctx context.Context, request SetDoorDelayRequest) (*SetDoorDelayResponse, int, error) {
+func (u *UHPPOTED) SetDoorDelay(request SetDoorDelayRequest) (*SetDoorDelayResponse, int, error) {
 	u.debug("set-door-delay", fmt.Sprintf("request  %+v", request))
 
-	state, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(uint32(request.DeviceID), request.Door)
+	state, err := u.Uhppote.GetDoorControlState(uint32(request.DeviceID), request.Door)
 	if err != nil {
 		return nil, StatusInternalServerError, err
 	}
 
-	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).SetDoorControlState(uint32(request.DeviceID), request.Door, state.ControlState, request.Delay)
+	result, err := u.Uhppote.SetDoorControlState(uint32(request.DeviceID), request.Door, state.ControlState, request.Delay)
 	if err != nil {
 		return nil, StatusInternalServerError, err
 	}
@@ -123,10 +121,10 @@ type GetDoorControlResponse struct {
 	Control  ControlState `json:"control"`
 }
 
-func (u *UHPPOTED) GetDoorControl(ctx context.Context, request GetDoorControlRequest) (*GetDoorControlResponse, int, error) {
+func (u *UHPPOTED) GetDoorControl(request GetDoorControlRequest) (*GetDoorControlResponse, int, error) {
 	u.debug("get-door-control", fmt.Sprintf("request  %+v", request))
 
-	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(uint32(request.DeviceID), request.Door)
+	result, err := u.Uhppote.GetDoorControlState(uint32(request.DeviceID), request.Door)
 	if err != nil {
 		return nil, StatusInternalServerError, err
 	}
@@ -154,15 +152,15 @@ type SetDoorControlResponse struct {
 	Control  ControlState `json:"control"`
 }
 
-func (u *UHPPOTED) SetDoorControl(ctx context.Context, request SetDoorControlRequest) (*SetDoorControlResponse, int, error) {
+func (u *UHPPOTED) SetDoorControl(request SetDoorControlRequest) (*SetDoorControlResponse, int, error) {
 	u.debug("set-door-control", fmt.Sprintf("request  %+v", request))
 
-	state, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetDoorControlState(uint32(request.DeviceID), request.Door)
+	state, err := u.Uhppote.GetDoorControlState(uint32(request.DeviceID), request.Door)
 	if err != nil {
 		return nil, StatusInternalServerError, err
 	}
 
-	result, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).SetDoorControlState(uint32(request.DeviceID), request.Door, uint8(request.Control), state.Delay)
+	result, err := u.Uhppote.SetDoorControlState(uint32(request.DeviceID), request.Door, uint8(request.Control), state.Delay)
 	if err != nil {
 		return nil, StatusInternalServerError, err
 	}

@@ -3,6 +3,7 @@ package uhppoted
 import (
 	"log"
 	"net/http"
+	"uhppote"
 )
 
 const (
@@ -13,7 +14,8 @@ const (
 )
 
 type UHPPOTED struct {
-	Log *log.Logger
+	Uhppote *uhppote.UHPPOTE
+	Log     *log.Logger
 }
 
 func (u *UHPPOTED) log(tag string, deviceID uint32, msg string) {
