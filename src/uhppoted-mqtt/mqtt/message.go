@@ -28,7 +28,7 @@ func (mqttd *MQTTD) wrap(msgtype msgType, content interface{}, destID *string) (
 		return nil, err
 	}
 
-	ciphertext, iv, key, err := mqttd.encrypt(bytes, destID)
+	body, key, err := mqttd.encrypt(bytes, destID)
 	if err != nil {
 		return nil, err
 	}
@@ -44,18 +44,13 @@ func (mqttd *MQTTD) wrap(msgtype msgType, content interface{}, destID *string) (
 		Key:       base64.StdEncoding.EncodeToString(key),
 	}
 
-	crypttext, err := json.Marshal(base64.StdEncoding.EncodeToString(append(iv, ciphertext...)))
-	if err != nil {
-		return nil, err
-	}
-
 	switch msgtype {
 	case msgReply:
-		message.Reply = crypttext
+		message.Reply = body
 	case msgError:
-		message.Error = crypttext
+		message.Error = body
 	case msgEvent:
-		message.Event = crypttext
+		message.Event = body
 	}
 
 	bytes, err = json.Marshal(message)
@@ -128,12 +123,12 @@ func (mqttd *MQTTD) unwrap(payload []byte) ([]byte, error) {
 
 	authenticated, err := mqttd.authenticate(misc.ClientID, request, body.Signature)
 	if err != nil {
-		return nil, fmt.Errorf("Error authenticating request (%v)", err)
+		return nil, err
 	}
 
 	if authenticated {
 		if err := mqttd.Nonce.Validate(misc.ClientID, misc.Nonce); err != nil {
-			return nil, fmt.Errorf("Error validating nonce (%v)", err)
+			return nil, fmt.Errorf("Message cannot be authenticated (%v)", err)
 		}
 	}
 
@@ -157,6 +152,28 @@ func (m *MQTTD) verify(message []byte, mac *string) error {
 	}
 
 	return nil
+}
+
+func (m *MQTTD) encrypt(plaintext []byte, clientID *string) ([]byte, []byte, error) {
+	if m.EncryptOutgoing {
+		if clientID == nil {
+			return nil, nil, fmt.Errorf("Missing client ID")
+		}
+
+		ciphertext, key, err := m.RSA.Encrypt(plaintext, *clientID, "request")
+		if err != nil {
+			return nil, nil, err
+		}
+
+		crypttext, err := json.Marshal(base64.StdEncoding.EncodeToString(ciphertext))
+		if err != nil {
+			return nil, nil, err
+		}
+
+		return crypttext, key, nil
+	}
+
+	return plaintext, nil, nil
 }
 
 func (m *MQTTD) decrypt(request []byte, iv string, key string) ([]byte, error) {
@@ -186,39 +203,7 @@ func (m *MQTTD) decrypt(request []byte, iv string, key string) ([]byte, error) {
 }
 
 func (m *MQTTD) authenticate(clientID *string, request []byte, signature *string) (bool, error) {
-	if m.Authentication == "HOTP" {
-		rq := struct {
-			HOTP *string `json:"hotp"`
-		}{}
-
-		if clientID == nil {
-			return false, errors.New("Invalid request: missing client-id")
-		}
-
-		if err := json.Unmarshal(request, &rq); err != nil {
-			return false, err
-		}
-
-		if rq.HOTP == nil {
-			return false, errors.New("Invalid request: missing HOTP token")
-		}
-
-		if err := m.HOTP.Validate(*clientID, *rq.HOTP); err != nil {
-			return false, err
-		}
-
-		return true, nil
-	}
-
-	if m.Authentication == "RSA" {
-		if clientID == nil {
-			return false, errors.New("Invalid request: missing client-id")
-		}
-
-		if signature == nil {
-			return false, errors.New("Invalid request: missing RSA signature")
-		}
-
+	if (strings.Contains(m.Authentication, "ANY") || strings.Contains(m.Authentication, "RSA")) && clientID != nil && signature != nil {
 		s, err := base64.StdEncoding.DecodeString(*signature)
 		if err != nil {
 			return false, fmt.Errorf("Invalid request: undecodable RSA signature (%v)", err)
@@ -231,7 +216,24 @@ func (m *MQTTD) authenticate(clientID *string, request []byte, signature *string
 		return true, nil
 	}
 
-	return false, nil
+	if (strings.Contains(m.Authentication, "ANY") || strings.Contains(m.Authentication, "HOTP")) && clientID != nil {
+		rq := struct {
+			HOTP *string `json:"hotp"`
+		}{}
+
+		if err := json.Unmarshal(request, &rq); err == nil && rq.HOTP != nil {
+			if err := m.HOTP.Validate(*clientID, *rq.HOTP); err != nil {
+				return false, err
+			}
+
+			return true, nil
+		}
+	}
+	if strings.Contains(m.Authentication, "NONE") {
+		return false, nil
+	}
+
+	return false, fmt.Errorf("Could not authenticate %s", *clientID)
 }
 
 func (m *MQTTD) sign(reply []byte) ([]byte, error) {
@@ -240,21 +242,4 @@ func (m *MQTTD) sign(reply []byte) ([]byte, error) {
 	}
 
 	return nil, nil
-}
-
-func (m *MQTTD) encrypt(plaintext []byte, clientID *string) ([]byte, []byte, []byte, error) {
-	if m.EncryptOutgoing {
-		if clientID == nil {
-			return nil, nil, nil, fmt.Errorf("Missing client ID")
-		}
-
-		ciphertext, key, err := m.RSA.Encrypt(plaintext, *clientID, "request")
-		if err != nil {
-			return nil, nil, nil, err
-		}
-
-		return ciphertext[16:], ciphertext[:16], key, nil
-	}
-
-	return plaintext, nil, nil, nil
 }

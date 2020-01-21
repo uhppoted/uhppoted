@@ -35,9 +35,7 @@
 - [x] wrap request handling in go routine
 - [x] rework GetDevices to also find 'known' devices
 - [ ] sign & encrypt
-  - allow for multiple authentication modes (HOTP/RSA/NONE)
-  - default to signed+encrypted for outgoing
-  - default to RSA,HOTP for incoming
+  - return unwrapped request from unwrap
 - [ ] move incoming requests to /requests subtopic
 - [ ] health check
 - [ ] watchdog
@@ -73,7 +71,7 @@
 - [ ] commonalise configuration
 - [ ] make types consistent across API
 - [ ] Genericize message unit tests
-- [ ] Add ARM7 target to build
+- [ ] Add Rasbian/ARM7 target to build
 - [ ] Convert to 1.13 error handling
 - [ ] Rework UHPPOTE response messages to use factory
 - [ ] Fix golint errors
