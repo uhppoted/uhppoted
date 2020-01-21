@@ -61,11 +61,11 @@ func NewNonce(verify bool, server, clients string, logger *log.Logger) (*Nonce, 
 func (n *Nonce) Validate(clientID *string, nonce *uint64) error {
 	if !n.ignore || (clientID != nil && nonce != nil) {
 		if clientID == nil {
-			return errors.New("missing 'client-id'")
+			return errors.New("missing client-id")
 		}
 
 		if nonce == nil {
-			return errors.New("missing 'nonce'")
+			return errors.New("missing nonce missing")
 		}
 
 		c, ok := n.counters.Get(*clientID)
@@ -74,7 +74,7 @@ func (n *Nonce) Validate(clientID *string, nonce *uint64) error {
 		}
 
 		if *nonce <= c.(uint64) {
-			return fmt.Errorf("reused: %s, %d", *clientID, *nonce)
+			return fmt.Errorf("nonce reused: %s, %d", *clientID, *nonce)
 		}
 
 		n.counters.Store(*clientID, *nonce, n.counters.filepath, n.log)
