@@ -13,16 +13,6 @@ import (
 	"uhppoted/eventlog"
 )
 
-type Run struct {
-	configuration string
-	dir           string
-	pidFile       string
-	logFile       string
-	logFileSize   int
-	console       bool
-	debug         bool
-}
-
 var RUN = Run{
 	configuration: "/etc/uhppoted/uhppoted.conf",
 	dir:           "/var/uhppoted",

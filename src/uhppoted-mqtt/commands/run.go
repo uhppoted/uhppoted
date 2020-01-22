@@ -22,6 +22,16 @@ import (
 	"uhppoted/monitoring"
 )
 
+type Run struct {
+	configuration string
+	dir           string
+	pidFile       string
+	logFile       string
+	logFileSize   int
+	console       bool
+	debug         bool
+}
+
 type alerts struct {
 	missing      bool
 	unexpected   bool
@@ -129,14 +139,15 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 			Events:   c.Topics.Resolve(c.Topics.Events),
 			System:   c.Topics.Resolve(c.Topics.System),
 		},
-		EventsKeyID:     c.EventsKeyID,
-		Authentication:  c.Authentication,
-		HOTP:            nil,
-		Permissions:     *permissions,
-		EventMap:        c.EventIDs,
-		SignOutgoing:    c.SignOutgoing,
-		EncryptOutgoing: c.EncryptOutgoing,
-		Debug:           r.debug,
+		EventsKeyID:         c.EventsKeyID,
+		Authentication:      c.Authentication,
+		HOTP:                nil,
+		Permissions:         *permissions,
+		EventMap:            c.EventIDs,
+		SignOutgoing:        c.SignOutgoing,
+		EncryptOutgoing:     c.EncryptOutgoing,
+		HealthCheckInterval: c.MQTT.HealthCheckInterval,
+		Debug:               r.debug,
 	}
 
 	// ... TLS
@@ -198,11 +209,11 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 	for {
 		err := r.listen(&u, &mqttd, logger, interrupt)
 		if err != nil {
-			logger.Printf("ERROR: %v", err)
+			logger.Printf("ERROR %v", err)
 			continue
 		}
 
-		logger.Printf("exit\n")
+		logger.Printf("INFO  exit\n")
 		break
 	}
 
@@ -221,7 +232,7 @@ func (r *Run) listen(u *uhppote.UHPPOTE, mqttd *mqtt.MQTTD, logger *log.Logger, 
 	// ... health-check task
 
 	healthcheck := monitoring.NewHealthCheck(u, logger)
-	k := time.NewTicker(15 * time.Second)
+	k := time.NewTicker(mqttd.HealthCheckInterval)
 
 	defer k.Stop()
 

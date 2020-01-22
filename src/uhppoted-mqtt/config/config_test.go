@@ -4,6 +4,7 @@ import (
 	"net"
 	"reflect"
 	"testing"
+	"time"
 	"uhppote/encoding/conf"
 )
 
@@ -21,6 +22,7 @@ mqtt.topic.system = sys
 mqtt.broker.certificate = mqtt-broker.cert
 mqtt.client.certificate = mqtt-client.cert
 mqtt.client.key = mqtt-client.key
+mqtt.monitoring.healthcheck.interval = 31s
 
 # DEVICES
 UT0311-L0x.405419896.address = 192.168.1.100:60000
@@ -72,6 +74,10 @@ func TestUnmarshal(t *testing.T) {
 
 	if config.Broker != "tls://127.0.0.63:8887" {
 		t.Errorf("Expected 'mqtt.broker' %s, got:%v", "tls://127.0.0.63:8887", config.Broker)
+	}
+
+	if config.HealthCheckInterval != 31*time.Second {
+		t.Errorf("Expected 'mqtt.monitoring.healthcheck.interval' %s, got:%v", 31*time.Second, config.HealthCheckInterval)
 	}
 
 	if config.BrokerCertificate != "mqtt-broker.cert" {
