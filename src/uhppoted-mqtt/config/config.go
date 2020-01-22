@@ -8,6 +8,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"uhppote/encoding/conf"
 )
 
@@ -24,8 +25,7 @@ type MQTT struct {
 	BrokerCertificate string      `conf:"broker.certificate"`
 	ClientCertificate string      `conf:"client.certificate"`
 	ClientKey         string      `conf:"client.key"`
-	Topic             string      `conf:"topic"`
-	EventsTopic       string      `conf:"topic.events"`
+	Topics            Topics      `conf:"topic"`
 	EventsKeyID       string      `conf:"events.key"`
 	EventIDs          string      `conf:"events.index.filepath"`
 	Permissions       Permissions `conf:"permissions"`
@@ -36,6 +36,26 @@ type MQTT struct {
 	Nonce             Nonce       `conf:"security.nonce"`
 	SignOutgoing      bool        `conf:"security.outgoing.sign"`
 	EncryptOutgoing   bool        `conf:"security.outgoing.encrypt"`
+}
+
+type Topics struct {
+	Root     string `conf:"root"`
+	Requests string `conf:"requests"`
+	Replies  string `conf:"replies"`
+	Events   string `conf:"events"`
+	System   string `conf:"system"`
+}
+
+func (t *Topics) Resolve(subtopic string) string {
+	if strings.HasPrefix(subtopic, "/") {
+		return strings.ReplaceAll(strings.TrimPrefix(subtopic, "/"), " ", "")
+	}
+
+	if strings.HasPrefix(subtopic, "./") {
+		return strings.ReplaceAll(t.Root+"/"+strings.TrimPrefix(subtopic, "./"), " ", "")
+	}
+
+	return strings.ReplaceAll(t.Root+"/"+subtopic, " ", "")
 }
 
 type HMAC struct {
@@ -86,11 +106,16 @@ func NewConfig() *Config {
 			BrokerCertificate: mqttBrokerCertificate,
 			ClientCertificate: mqttClientCertificate,
 			ClientKey:         mqttClientKey,
-			Topic:             "twystd/uhppoted/gateway",
-			EventsTopic:       "twystd/uhppoted/gateway/events",
-			EventsKeyID:       "events",
-			SignOutgoing:      true,
-			EncryptOutgoing:   true,
+			Topics: Topics{
+				Root:     "twystd/uhppoted/gateway",
+				Requests: "./requests",
+				Replies:  "./replies",
+				Events:   "./events",
+				System:   "./system",
+			},
+			EventsKeyID:     "events",
+			SignOutgoing:    true,
+			EncryptOutgoing: true,
 			HMAC: HMAC{
 				Required: false,
 				Key:      "",

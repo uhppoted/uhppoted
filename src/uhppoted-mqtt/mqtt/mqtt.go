@@ -15,12 +15,18 @@ import (
 	"uhppoted-mqtt/auth"
 )
 
+type Topics struct {
+	Requests string
+	Replies  string
+	Events   string
+	System   string
+}
+
 type MQTTD struct {
 	ServerID        string
 	Broker          string
 	TLS             *tls.Config
-	Topic           string
-	EventsTopic     string
+	Topics          Topics
 	EventsKeyID     string
 	HMAC            auth.HMAC
 	Authentication  string
@@ -47,7 +53,6 @@ type dispatcher struct {
 	uhppoted *uhppoted.UHPPOTED
 	uhppote  *uhppote.UHPPOTE
 	log      *log.Logger
-	topic    string
 	table    map[string]fdispatch
 }
 
@@ -109,24 +114,23 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		uhppoted: &api,
 		uhppote:  u,
 		log:      l,
-		topic:    m.Topic,
 		table: map[string]fdispatch{
-			m.Topic + "/devices:get":             fdispatch{"get-devices", (*MQTTD).getDevices},
-			m.Topic + "/device:get":              fdispatch{"get-device", (*MQTTD).getDevice},
-			m.Topic + "/device/status:get":       fdispatch{"get-status", (*MQTTD).getStatus},
-			m.Topic + "/device/time:get":         fdispatch{"get-time", (*MQTTD).getTime},
-			m.Topic + "/device/time:set":         fdispatch{"set-time", (*MQTTD).setTime},
-			m.Topic + "/device/door/delay:get":   fdispatch{"get-door-delay", (*MQTTD).getDoorDelay},
-			m.Topic + "/device/door/delay:set":   fdispatch{"set-door-delay", (*MQTTD).setDoorDelay},
-			m.Topic + "/device/door/control:get": fdispatch{"get-door-control", (*MQTTD).getDoorControl},
-			m.Topic + "/device/door/control:set": fdispatch{"set-door-control", (*MQTTD).setDoorControl},
-			m.Topic + "/device/cards:get":        fdispatch{"get-cards", (*MQTTD).getCards},
-			m.Topic + "/device/cards:delete":     fdispatch{"delete-cards", (*MQTTD).deleteCards},
-			m.Topic + "/device/card:get":         fdispatch{"get-card", (*MQTTD).getCard},
-			m.Topic + "/device/card:put":         fdispatch{"put-card", (*MQTTD).putCard},
-			m.Topic + "/device/card:delete":      fdispatch{"delete-card", (*MQTTD).deleteCard},
-			m.Topic + "/device/events:get":       fdispatch{"get-events", (*MQTTD).getEvents},
-			m.Topic + "/device/event:get":        fdispatch{"get-event", (*MQTTD).getEvent},
+			m.Topics.Requests + "/devices:get":             fdispatch{"get-devices", (*MQTTD).getDevices},
+			m.Topics.Requests + "/device:get":              fdispatch{"get-device", (*MQTTD).getDevice},
+			m.Topics.Requests + "/device/status:get":       fdispatch{"get-status", (*MQTTD).getStatus},
+			m.Topics.Requests + "/device/time:get":         fdispatch{"get-time", (*MQTTD).getTime},
+			m.Topics.Requests + "/device/time:set":         fdispatch{"set-time", (*MQTTD).setTime},
+			m.Topics.Requests + "/device/door/delay:get":   fdispatch{"get-door-delay", (*MQTTD).getDoorDelay},
+			m.Topics.Requests + "/device/door/delay:set":   fdispatch{"set-door-delay", (*MQTTD).setDoorDelay},
+			m.Topics.Requests + "/device/door/control:get": fdispatch{"get-door-control", (*MQTTD).getDoorControl},
+			m.Topics.Requests + "/device/door/control:set": fdispatch{"set-door-control", (*MQTTD).setDoorControl},
+			m.Topics.Requests + "/device/cards:get":        fdispatch{"get-cards", (*MQTTD).getCards},
+			m.Topics.Requests + "/device/cards:delete":     fdispatch{"delete-cards", (*MQTTD).deleteCards},
+			m.Topics.Requests + "/device/card:get":         fdispatch{"get-card", (*MQTTD).getCard},
+			m.Topics.Requests + "/device/card:put":         fdispatch{"put-card", (*MQTTD).putCard},
+			m.Topics.Requests + "/device/card:delete":      fdispatch{"delete-card", (*MQTTD).deleteCard},
+			m.Topics.Requests + "/device/events:get":       fdispatch{"get-events", (*MQTTD).getEvents},
+			m.Topics.Requests + "/device/event:get":        fdispatch{"get-event", (*MQTTD).getEvent},
 		},
 	}
 
@@ -152,9 +156,9 @@ func (m *MQTTD) Close(l *log.Logger) {
 
 	if m.connection != nil {
 		log.Printf("... closing connection to %s", m.Broker)
-		token := m.connection.Unsubscribe(m.Topic + "/#")
+		token := m.connection.Unsubscribe(m.Topics.Requests + "/#")
 		if token.Wait() && token.Error() != nil {
-			l.Printf("WARN: Error unsubscribing from topic '%s': %v", m.Topic, token.Error())
+			l.Printf("WARN: Error unsubscribing from topic '%s': %v", m.Topics.Requests, token.Error())
 		}
 
 		m.connection.Disconnect(250)
@@ -181,20 +185,22 @@ func (m *MQTTD) subscribeAndServe(d *dispatcher) error {
 		return token.Error()
 	}
 
-	token = m.connection.Subscribe(m.Topic+"/#", 0, nil)
+	token = m.connection.Subscribe(m.Topics.Requests+"/#", 0, nil)
 	if token.Wait() && token.Error() != nil {
 		return token.Error()
 	}
+
+	log.Printf("... subscribed to %s", m.Topics.Requests)
 
 	return nil
 }
 
 func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, l *log.Logger) error {
 	log.Printf("... listening on %v", u.ListenAddress)
+	log.Printf("... publishing events to %s", m.Topics.Events)
 
 	ctx := context.WithValue(context.Background(), "client", m.connection)
 	ctx = context.WithValue(ctx, "log", l)
-	ctx = context.WithValue(ctx, "topic", m.Topic)
 
 	last := uhppoted.NewEventMap(m.EventMap)
 	if err := last.Load(l); err != nil {
@@ -202,7 +208,7 @@ func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, l *log.Logger
 	}
 
 	handler := func(event uhppoted.EventMessage) {
-		m.send("listen", &m.EventsKeyID, m.EventsTopic, event, msgEvent, l)
+		m.send("listen", &m.EventsKeyID, m.Topics.Events, event, msgEvent, l)
 	}
 
 	m.interrupt = make(chan os.Signal)
@@ -217,7 +223,6 @@ func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, l *log.Logger
 func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 	ctx := context.WithValue(context.Background(), "client", client)
 	ctx = context.WithValue(ctx, "log", d.log)
-	ctx = context.WithValue(ctx, "topic", d.topic)
 
 	if fn, ok := d.table[msg.Topic()]; ok {
 		msg.Ack()
@@ -239,10 +244,10 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 			ctx = context.WithValue(ctx, "request", rq.Request)
 			ctx = context.WithValue(ctx, "method", fn.method)
 
-			replyTo := d.mqttd.Topic + "/reply"
+			replyTo := d.mqttd.Topics.Replies
 
 			if rq.ClientID != nil {
-				replyTo = d.mqttd.Topic + "/" + *rq.ClientID
+				replyTo = d.mqttd.Topics.Replies + "/" + *rq.ClientID
 			}
 
 			if rq.ReplyTo != nil {

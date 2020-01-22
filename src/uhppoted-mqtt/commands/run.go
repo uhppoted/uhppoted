@@ -140,11 +140,15 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 	}
 
 	mqttd := mqtt.MQTTD{
-		ServerID:        c.ServerID,
-		Broker:          fmt.Sprintf(c.Broker),
-		TLS:             &tls.Config{},
-		Topic:           c.Topic,
-		EventsTopic:     c.EventsTopic,
+		ServerID: c.ServerID,
+		Broker:   fmt.Sprintf(c.Broker),
+		TLS:      &tls.Config{},
+		Topics: mqtt.Topics{
+			Requests: c.Topics.Resolve(c.Topics.Requests),
+			Replies:  c.Topics.Resolve(c.Topics.Replies),
+			Events:   c.Topics.Resolve(c.Topics.Events),
+			System:   c.Topics.Resolve(c.Topics.System),
+		},
 		EventsKeyID:     c.EventsKeyID,
 		Authentication:  c.Authentication,
 		HOTP:            nil,

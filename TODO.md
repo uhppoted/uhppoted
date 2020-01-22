@@ -36,11 +36,12 @@
 - [x] rework GetDevices to also find 'known' devices
 - [x] sign & encrypt
 - [x] move UHPPOTE from context to UHPPOTED
-- [ ] move incoming requests to /requests subtopic
+- [x] move incoming requests to /requests subtopic
 - [ ] health check
 - [ ] watchdog
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status
   - https://blog.golang.org/go1.13-errors
+- [ ] daemonize/undaemonize
 
 - [x] subscribe
 - [x] error handling
