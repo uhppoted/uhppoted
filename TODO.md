@@ -38,6 +38,8 @@
 - [x] move UHPPOTE from context to UHPPOTED
 - [x] move incoming requests to /requests subtopic
 - [ ] health check
+- [ ] Include get-listener in health check
+- [ ] Make health check interval configurable 
 - [ ] watchdog
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status
   - https://blog.golang.org/go1.13-errors
@@ -52,8 +54,6 @@
 - [ ] Implement retry + backoff for connection to broker
 - [ ] Implement retry + backoff for 'listen'
 - [ ] Rework listen logic to handle errors robustly
-- [ ] Include get-listener in health check
-- [ ] Make health check interval configurable 
 - [x] Identify UTO311-L01..L04 based on serial number prefix
 
 - [x] Fix go vet errors

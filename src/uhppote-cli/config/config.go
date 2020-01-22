@@ -99,9 +99,9 @@ func bind(l string, c *Config) *Config {
 	if len(match) > 0 {
 		address, err := net.ResolveUDPAddr("udp", strings.TrimSpace(match[1]))
 		if err != nil {
-			fmt.Printf("WARN: configuration error - invalid UDP bind address '%s': %v\n", l, err)
+			fmt.Printf("WARN  configuration error - invalid UDP bind address '%s': %v\n", l, err)
 		} else if address == nil {
-			fmt.Println("WARN: configuration error - invalid UDP bind address")
+			fmt.Println("WARN configuration error - invalid UDP bind address")
 		} else {
 			c.BindAddress = address
 		}
@@ -117,9 +117,9 @@ func listen(l string, c *Config) *Config {
 	if len(match) > 0 {
 		address, err := net.ResolveUDPAddr("udp", strings.TrimSpace(match[1]))
 		if err != nil {
-			fmt.Printf("WARN: configuration error - invalid UDP listen address '%s': %v\n", l, err)
+			fmt.Printf("WARN  configuration error - invalid UDP listen address '%s': %v\n", l, err)
 		} else if address == nil {
-			fmt.Println("WARN: configuration error - invalid UDP listen address")
+			fmt.Println("WARN  configuration error - invalid UDP listen address")
 		} else {
 			c.BindAddress = address
 		}
@@ -135,9 +135,9 @@ func broadcast(l string, c *Config) *Config {
 	if len(match) > 0 {
 		address, err := net.ResolveUDPAddr("udp", strings.TrimSpace(match[1]))
 		if err != nil {
-			fmt.Printf("WARN: configuration error - invalid UDP broadcast address '%s': %v\n", l, err)
+			fmt.Printf("WARN  configuration error - invalid UDP broadcast address '%s': %v\n", l, err)
 		} else if address == nil {
-			fmt.Println("WARN: configuration error - invalid UDP broadcast address")
+			fmt.Println("WARN  configuration error - invalid UDP broadcast address")
 		} else {
 			c.BroadcastAddress = address
 		}
@@ -153,13 +153,13 @@ func address(l string, c *Config) *Config {
 	if len(match) > 0 {
 		serialNo, err := strconv.ParseUint(match[1], 10, 32)
 		if err != nil {
-			fmt.Printf("WARN: configuration error - invalid serial number '%s': %v\n", l, err)
+			fmt.Printf("WARN  configuration error - invalid serial number '%s': %v\n", l, err)
 			return c
 		}
 
 		address, err := net.ResolveUDPAddr("udp", strings.TrimSpace(match[2]))
 		if err != nil {
-			fmt.Printf("WARN: configuration error - invalid device UDP address '%s': %v\n", l, err)
+			fmt.Printf("WARN  configuration error - invalid device UDP address '%s': %v\n", l, err)
 			return c
 		}
 

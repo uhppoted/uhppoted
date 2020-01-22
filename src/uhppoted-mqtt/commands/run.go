@@ -13,40 +13,20 @@ import (
 	"os"
 	"os/signal"
 	"strings"
-	"sync"
 	"syscall"
 	"time"
 	"uhppote"
-	"uhppote/types"
 	"uhppoted-mqtt/auth"
 	"uhppoted-mqtt/config"
 	"uhppoted-mqtt/mqtt"
+	"uhppoted/monitoring"
 )
-
-type status struct {
-	touched time.Time
-	status  types.Status
-}
 
 type alerts struct {
 	missing      bool
 	unexpected   bool
 	touched      bool
 	synchronized bool
-}
-
-type state struct {
-	started time.Time
-
-	healthcheck struct {
-		touched *time.Time
-		alerted bool
-	}
-
-	devices struct {
-		status sync.Map
-		errors sync.Map
-	}
 }
 
 const (
@@ -84,7 +64,7 @@ func (c *Run) Help() {
 func (r *Run) execute(ctx context.Context, f func(*config.Config) error) error {
 	conf := config.NewConfig()
 	if err := conf.Load(r.configuration); err != nil {
-		log.Printf("\n   WARN:  Could not load configuration (%v)\n\n", err)
+		log.Printf("\n   WARN  Could not load configuration (%v)\n\n", err)
 	}
 
 	if err := os.MkdirAll(r.dir, os.ModeDir|os.ModePerm); err != nil {
@@ -230,57 +210,7 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 }
 
 func (r *Run) listen(u *uhppote.UHPPOTE, mqttd *mqtt.MQTTD, logger *log.Logger, interrupt chan os.Signal) error {
-	// 	s := state{
-	// 		started: time.Now(),
-
-	// 		healthcheck: struct {
-	// 			touched *time.Time
-	// 			alerted bool
-	// 		}{
-	// 			touched: nil,
-	// 			alerted: false,
-	// 		},
-	// 		devices: struct {
-	// 			status sync.Map
-	// 			errors sync.Map
-	// 		}{
-	// 			status: sync.Map{},
-	// 			errors: sync.Map{},
-	// 		},
-	// 	}
-
-	// u := uhppote.UHPPOTE{
-	// 	BindAddress:      c.BindAddress,
-	// 	BroadcastAddress: c.BroadcastAddress,
-	// 	ListenAddress:    c.ListenAddress,
-	// 	Devices:          make(map[uint32]*net.UDPAddr),
-	// 	Debug:            r.debug,
-	// }
-
-	// for id, d := range c.Devices {
-	// 	if d.Address != nil {
-	// 		u.Devices[id] = d.Address
-	// 	}
-	// }
-
 	// ... MQTT task
-
-	// hotp, err := auth.NewHOTP(
-	// 	c.MQTT.HOTP.Enabled,
-	// 	c.MQTT.HOTP.Range,
-	// 	c.MQTT.HOTP.Secrets,
-	// 	c.MQTT.HOTP.Counters,
-	// )
-	// if err != nil {
-	// 	return err
-	// }
-
-	// mqttd := mqtt.MQTTD{
-	// 	Broker: fmt.Sprintf("tcp://%s", c.Broker),
-	// 	Topic:  c.Topic,
-	// 	HOTP:   *hotp,
-	// 	Debug:  r.debug,
-	// }
 
 	go func() {
 		mqttd.Run(u, logger)
@@ -288,18 +218,19 @@ func (r *Run) listen(u *uhppote.UHPPOTE, mqttd *mqtt.MQTTD, logger *log.Logger, 
 
 	defer mqttd.Close(logger)
 
-	// 	// ... health-check task
-	//
-	// 	k := time.NewTicker(15 * time.Second)
-	//
-	// 	defer k.Stop()
-	//
-	// 	go func() {
-	// 		for {
-	// 			<-k.C
-	// 			healthcheck(&u, &s, logger)
-	// 		}
-	// 	}()
+	// ... health-check task
+
+	healthcheck := monitoring.NewHealthCheck(u, logger)
+	k := time.NewTicker(15 * time.Second)
+
+	defer k.Stop()
+
+	go func() {
+		for {
+			<-k.C
+			healthcheck.Exec()
+		}
+	}()
 
 	// ... wait until interrupted/closed
 
@@ -325,40 +256,6 @@ func (r *Run) listen(u *uhppote.UHPPOTE, mqttd *mqtt.MQTTD, logger *log.Logger, 
 		}
 	}
 }
-
-// func healthcheck(u *uhppote.UHPPOTE, st *state, l *log.Logger) {
-// 	l.Printf("health-check")
-
-// 	now := time.Now()
-// 	devices := make(map[uint32]bool)
-
-// 	found, err := u.FindDevices()
-// 	if err != nil {
-// 		l.Printf("WARN  'keep-alive' error: %v", err)
-// 	}
-
-// 	if found != nil {
-// 		for _, id := range found {
-// 			devices[uint32(id.SerialNumber)] = true
-// 		}
-// 	}
-
-// 	for id, _ := range u.Devices {
-// 		devices[id] = true
-// 	}
-
-// 	for id, _ := range devices {
-// 		s, err := u.GetStatus(id)
-// 		if err == nil {
-// 			st.devices.status.Store(id, status{
-// 				touched: now,
-// 				status:  *s,
-// 			})
-// 		}
-// 	}
-
-// 	st.healthcheck.touched = &now
-// }
 
 // func watchdog(u *uhppote.UHPPOTE, st *state, l *log.Logger) error {
 // 	warnings := 0
@@ -459,7 +356,7 @@ func (r *Run) listen(u *uhppote.UHPPOTE, mqttd *mqtt.MQTTD, logger *log.Logger, 
 
 // 			st.devices.errors.Store(id, alerted)
 // 		}
-// 	}
+// }
 
 // 	// Any unexpected devices?
 

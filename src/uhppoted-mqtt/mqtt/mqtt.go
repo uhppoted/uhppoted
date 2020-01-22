@@ -140,7 +140,7 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		return
 	}
 
-	log.Printf("... connected to %s\n", m.Broker)
+	log.Printf("INFO  connected to %s\n", m.Broker)
 
 	if err := m.listen(&api, u, l); err != nil {
 		l.Printf("ERROR: Error binding to listen port '%d': %v", 12345, err)
@@ -155,10 +155,10 @@ func (m *MQTTD) Close(l *log.Logger) {
 	}
 
 	if m.connection != nil {
-		log.Printf("... closing connection to %s", m.Broker)
+		log.Printf("INFO  closing connection to %s", m.Broker)
 		token := m.connection.Unsubscribe(m.Topics.Requests + "/#")
 		if token.Wait() && token.Error() != nil {
-			l.Printf("WARN: Error unsubscribing from topic '%s': %v", m.Topics.Requests, token.Error())
+			l.Printf("WARN  Error unsubscribing from topic '%s': %v", m.Topics.Requests, token.Error())
 		}
 
 		m.connection.Disconnect(250)
@@ -190,21 +190,21 @@ func (m *MQTTD) subscribeAndServe(d *dispatcher) error {
 		return token.Error()
 	}
 
-	log.Printf("... subscribed to %s", m.Topics.Requests)
+	log.Printf("INFO  subscribed to %s", m.Topics.Requests)
 
 	return nil
 }
 
 func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, l *log.Logger) error {
-	log.Printf("... listening on %v", u.ListenAddress)
-	log.Printf("... publishing events to %s", m.Topics.Events)
+	log.Printf("INFO  listening on %v", u.ListenAddress)
+	log.Printf("INFO  publishing events to %s", m.Topics.Events)
 
 	ctx := context.WithValue(context.Background(), "client", m.connection)
 	ctx = context.WithValue(ctx, "log", l)
 
 	last := uhppoted.NewEventMap(m.EventMap)
 	if err := last.Load(l); err != nil {
-		l.Printf("WARN: Error loading event map [%v]", err)
+		l.Printf("WARN  Error loading event map [%v]", err)
 	}
 
 	handler := func(event uhppoted.EventMessage) {
