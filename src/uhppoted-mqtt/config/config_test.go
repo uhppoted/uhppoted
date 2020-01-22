@@ -14,7 +14,10 @@ listen.address = 192.168.1.100:12345
 
 # MQTT
 mqtt.broker = tls://127.0.0.63:8887
-mqtt.topic = twystd-qwerty
+mqtt.topic.root = twystd-qwerty
+mqtt.topic.replies = /uiop
+mqtt.topic.events = ./asdf
+mqtt.topic.system = sys
 mqtt.broker.certificate = mqtt-broker.cert
 mqtt.client.certificate = mqtt-client.cert
 mqtt.client.key = mqtt-client.key
@@ -83,8 +86,24 @@ func TestUnmarshal(t *testing.T) {
 		t.Errorf("Expected 'mqtt.client.key' %s, got:%v", "mqtt-client.key", config.ClientKey)
 	}
 
-	if config.Topic != "twystd-qwerty" {
-		t.Errorf("Expected 'mqtt::topic' %v, got:%v", "twystd-qwerty", config.Topic)
+	if config.Topics.Root != "twystd-qwerty" {
+		t.Errorf("Expected 'mqtt::topic' %v, got:%v", "twystd-qwerty", config.Topics.Root)
+	}
+
+	if config.Topics.Resolve(config.Topics.Requests) != "twystd-qwerty/requests" {
+		t.Errorf("Expected 'mqtt::topic.requests' %v, got:%v", "wystd-qwerty/requests", config.Topics.Resolve(config.Topics.Requests))
+	}
+
+	if config.Topics.Resolve(config.Topics.Replies) != "uiop" {
+		t.Errorf("Expected 'mqtt::topic.replies' %v, got:%v", "uiop", config.Topics.Resolve(config.Topics.Replies))
+	}
+
+	if config.Topics.Resolve(config.Topics.Events) != "twystd-qwerty/asdf" {
+		t.Errorf("Expected 'mqtt::topic.events' %v, got:%v", "twystd-qwerty/asdf", config.Topics.Resolve(config.Topics.Events))
+	}
+
+	if config.Topics.Resolve(config.Topics.System) != "twystd-qwerty/sys" {
+		t.Errorf("Expected 'mqtt::topic.system' %v, got:%v", "twystd-qwerty/sys", config.Topics.Resolve(config.Topics.System))
 	}
 
 	if d, _ := config.Devices[405419896]; d == nil {

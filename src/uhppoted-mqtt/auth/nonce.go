@@ -48,11 +48,11 @@ func NewNonce(verify bool, server, clients string, logger *log.Logger) (*Nonce, 
 	}
 
 	if err = nonce.mqttd.LoadFromFile(server); err != nil {
-		log.Printf("WARN: %v", err)
+		log.Printf("WARN  %v", err)
 	}
 
 	if err = nonce.counters.LoadFromFile(clients); err != nil {
-		log.Printf("WARN: %v", err)
+		log.Printf("WARN  %v", err)
 	}
 
 	return &nonce, nil

@@ -68,20 +68,20 @@ func NewRSA(keydir string, logger *log.Logger) (*RSA, error) {
 
 	r.signingKeys.key, err = loadPrivateKey(path.Join(r.signingKeys.directory, "private.key"))
 	if err != nil {
-		log.Printf("WARN: %v", err)
+		log.Printf("WARN  %v", err)
 	}
 
 	r.encryptionKeys.key, err = loadPrivateKey(path.Join(r.encryptionKeys.directory, "private.key"))
 	if err != nil {
-		log.Printf("WARN: %v", err)
+		log.Printf("WARN  %v", err)
 	}
 
 	if err := f(&r.signingKeys); err != nil {
-		log.Printf("WARN: %v", err)
+		log.Printf("WARN  %v", err)
 	}
 
 	if err := f(&r.encryptionKeys); err != nil {
-		log.Printf("WARN: %v", err)
+		log.Printf("WARN  %v", err)
 	}
 
 	watch("signing keys", r.signingKeys.directory, func() error { return f(&r.signingKeys) }, logger)
@@ -252,24 +252,24 @@ func loadPublicKeys(dir string, log *log.Logger) (map[string]*rsa.PublicKey, err
 
 			bytes, err := ioutil.ReadFile(path.Join(dir, filename))
 			if err != nil {
-				log.Printf("WARN: %v", err)
+				log.Printf("WARN  %v", err)
 			}
 
 			block, _ := pem.Decode(bytes)
 			if block == nil || block.Type != "PUBLIC KEY" {
-				log.Printf("WARN: %s is not a valid RSA public key", filename)
+				log.Printf("WARN  %s is not a valid RSA public key", filename)
 				continue
 			}
 
 			key, err := x509.ParsePKIXPublicKey(block.Bytes)
 			if err != nil {
-				log.Printf("WARN: %s is not a valid RSA public key (%v)", filename, err)
+				log.Printf("WARN  %s is not a valid RSA public key (%v)", filename, err)
 				continue
 			}
 
 			pubkey, ok := key.(*rsa.PublicKey)
 			if !ok {
-				log.Printf("WARN: %s is not a valid RSA public key", filename)
+				log.Printf("WARN  %s is not a valid RSA public key", filename)
 				continue
 			}
 
