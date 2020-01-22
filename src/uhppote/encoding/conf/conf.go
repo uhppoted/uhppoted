@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Unmarshaler interface {
@@ -17,12 +18,13 @@ type Unmarshaler interface {
 }
 
 var (
-	tBoolean = reflect.TypeOf(bool(false))
-	tInt     = reflect.TypeOf(int(0))
-	tUint    = reflect.TypeOf(uint(0))
-	tUint16  = reflect.TypeOf(uint16(0))
-	tString  = reflect.TypeOf(string(""))
-	pUDPAddr = reflect.TypeOf(&net.UDPAddr{})
+	tBoolean  = reflect.TypeOf(bool(false))
+	tInt      = reflect.TypeOf(int(0))
+	tUint     = reflect.TypeOf(uint(0))
+	tUint16   = reflect.TypeOf(uint16(0))
+	tString   = reflect.TypeOf(string(""))
+	tDuration = reflect.TypeOf(time.Duration(0))
+	pUDPAddr  = reflect.TypeOf(&net.UDPAddr{})
 )
 
 func Unmarshal(b []byte, m interface{}) error {
@@ -145,6 +147,15 @@ func unmarshal(s reflect.Value, prefix string, values map[string]string) error {
 		case tString:
 			if value, ok := values[tag]; ok {
 				f.SetString(value)
+			}
+
+		case tDuration:
+			if value, ok := values[tag]; ok {
+				d, err := time.ParseDuration(value)
+				if err != nil {
+					return err
+				}
+				f.SetInt(int64(d))
 			}
 
 		case pUDPAddr:

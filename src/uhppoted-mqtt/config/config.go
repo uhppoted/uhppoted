@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 	"uhppote/encoding/conf"
 )
 
@@ -20,22 +21,23 @@ type Device struct {
 }
 
 type MQTT struct {
-	ServerID          string      `conf:"server.ID"`
-	Broker            string      `conf:"broker"`
-	BrokerCertificate string      `conf:"broker.certificate"`
-	ClientCertificate string      `conf:"client.certificate"`
-	ClientKey         string      `conf:"client.key"`
-	Topics            Topics      `conf:"topic"`
-	EventsKeyID       string      `conf:"events.key"`
-	EventIDs          string      `conf:"events.index.filepath"`
-	Permissions       Permissions `conf:"permissions"`
-	HMAC              HMAC        `conf:"security.HMAC"`
-	Authentication    string      `conf:"security.authentication"`
-	HOTP              HOTP        `conf:"security.hotp"`
-	RSA               RSA         `conf:"security.rsa"`
-	Nonce             Nonce       `conf:"security.nonce"`
-	SignOutgoing      bool        `conf:"security.outgoing.sign"`
-	EncryptOutgoing   bool        `conf:"security.outgoing.encrypt"`
+	ServerID            string        `conf:"server.ID"`
+	Broker              string        `conf:"broker"`
+	BrokerCertificate   string        `conf:"broker.certificate"`
+	ClientCertificate   string        `conf:"client.certificate"`
+	ClientKey           string        `conf:"client.key"`
+	Topics              Topics        `conf:"topic"`
+	EventsKeyID         string        `conf:"events.key"`
+	EventIDs            string        `conf:"events.index.filepath"`
+	Permissions         Permissions   `conf:"permissions"`
+	HMAC                HMAC          `conf:"security.HMAC"`
+	Authentication      string        `conf:"security.authentication"`
+	HOTP                HOTP          `conf:"security.hotp"`
+	RSA                 RSA           `conf:"security.rsa"`
+	Nonce               Nonce         `conf:"security.nonce"`
+	SignOutgoing        bool          `conf:"security.outgoing.sign"`
+	EncryptOutgoing     bool          `conf:"security.outgoing.encrypt"`
+	HealthCheckInterval time.Duration `conf:"monitoring.healthcheck.interval"`
 }
 
 type Topics struct {
@@ -101,11 +103,12 @@ func NewConfig() *Config {
 		BroadcastAddress: &broadcast,
 		ListenAddress:    &listen,
 		MQTT: MQTT{
-			ServerID:          "twystd-uhppoted",
-			Broker:            "tcp://127.0.0.1:1883",
-			BrokerCertificate: mqttBrokerCertificate,
-			ClientCertificate: mqttClientCertificate,
-			ClientKey:         mqttClientKey,
+			ServerID:            "twystd-uhppoted",
+			Broker:              "tcp://127.0.0.1:1883",
+			HealthCheckInterval: 15 * time.Second,
+			BrokerCertificate:   mqttBrokerCertificate,
+			ClientCertificate:   mqttClientCertificate,
+			ClientKey:           mqttClientKey,
 			Topics: Topics{
 				Root:     "twystd/uhppoted/gateway",
 				Requests: "./requests",

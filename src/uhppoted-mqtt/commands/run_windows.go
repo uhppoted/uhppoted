@@ -16,16 +16,6 @@ import (
 	filelogger "uhppoted/eventlog"
 )
 
-type Run struct {
-	configuration string
-	dir           string
-	pidFile       string
-	logFile       string
-	logFileSize   int
-	console       bool
-	debug         bool
-}
-
 type service struct {
 	name   string
 	conf   *config.Config

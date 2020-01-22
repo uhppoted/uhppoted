@@ -39,7 +39,7 @@
 - [x] move incoming requests to /requests subtopic
 - [x] health check
 - [ ] Include get-listener in health check
-- [ ] Make health check interval configurable 
+- [x] Make health check interval configurable 
 - [ ] Send health-check event to system topic
 - [ ] watchdog
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status

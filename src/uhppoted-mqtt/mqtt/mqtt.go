@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"time"
 	"uhppote"
 	"uhppoted"
 	"uhppoted-mqtt/auth"
@@ -23,21 +24,22 @@ type Topics struct {
 }
 
 type MQTTD struct {
-	ServerID        string
-	Broker          string
-	TLS             *tls.Config
-	Topics          Topics
-	EventsKeyID     string
-	HMAC            auth.HMAC
-	Authentication  string
-	HOTP            *auth.HOTP
-	RSA             *auth.RSA
-	Nonce           auth.Nonce
-	Permissions     auth.Permissions
-	EventMap        string
-	SignOutgoing    bool
-	EncryptOutgoing bool
-	Debug           bool
+	ServerID            string
+	Broker              string
+	TLS                 *tls.Config
+	Topics              Topics
+	EventsKeyID         string
+	HMAC                auth.HMAC
+	Authentication      string
+	HOTP                *auth.HOTP
+	RSA                 *auth.RSA
+	Nonce               auth.Nonce
+	Permissions         auth.Permissions
+	EventMap            string
+	SignOutgoing        bool
+	EncryptOutgoing     bool
+	HealthCheckInterval time.Duration
+	Debug               bool
 
 	connection MQTT.Client
 	interrupt  chan os.Signal
