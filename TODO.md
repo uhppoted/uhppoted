@@ -37,9 +37,10 @@
 - [x] sign & encrypt
 - [x] move UHPPOTE from context to UHPPOTED
 - [x] move incoming requests to /requests subtopic
-- [ ] health check
+- [x] health check
 - [ ] Include get-listener in health check
 - [ ] Make health check interval configurable 
+- [ ] Send health-check event to system topic
 - [ ] watchdog
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status
   - https://blog.golang.org/go1.13-errors
