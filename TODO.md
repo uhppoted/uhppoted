@@ -40,8 +40,9 @@
 - [x] health check
 - [x] Make health check interval configurable 
 - [x] Send health-check event to system topic
-- [ ] Include get-listener in health check
 - [ ] watchdog
+- [ ] Make watchdog check interval configurable 
+- [ ] Include get-listener in health check
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status
   - https://blog.golang.org/go1.13-errors
 - [ ] daemonize/undaemonize
