@@ -38,13 +38,14 @@
 - [x] move UHPPOTE from context to UHPPOTED
 - [x] move incoming requests to /requests subtopic
 - [x] health check
-- [ ] Include get-listener in health check
 - [x] Make health check interval configurable 
-- [ ] Send health-check event to system topic
+- [x] Send health-check event to system topic
+- [ ] Include get-listener in health check
 - [ ] watchdog
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status
   - https://blog.golang.org/go1.13-errors
 - [ ] daemonize/undaemonize
+- [ ] get config defaults by unmarshalling string
 
 - [x] subscribe
 - [x] error handling

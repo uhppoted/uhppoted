@@ -139,13 +139,16 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 			Events:   c.Topics.Resolve(c.Topics.Events),
 			System:   c.Topics.Resolve(c.Topics.System),
 		},
-		EventsKeyID:         c.EventsKeyID,
+		Encryption: mqtt.Encryption{
+			SignOutgoing:    c.SignOutgoing,
+			EncryptOutgoing: c.EncryptOutgoing,
+			EventsKeyID:     c.EventsKeyID,
+			SystemKeyID:     c.SystemKeyID,
+			HOTP:            nil,
+		},
 		Authentication:      c.Authentication,
-		HOTP:                nil,
 		Permissions:         *permissions,
 		EventMap:            c.EventIDs,
-		SignOutgoing:        c.SignOutgoing,
-		EncryptOutgoing:     c.EncryptOutgoing,
 		HealthCheckInterval: c.MQTT.HealthCheckInterval,
 		Debug:               r.debug,
 	}
@@ -200,9 +203,9 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 	}
 
 	mqttd.HMAC = *hmac
-	mqttd.HOTP = hotp
-	mqttd.RSA = rsa
-	mqttd.Nonce = *nonce
+	mqttd.Encryption.HOTP = hotp
+	mqttd.Encryption.RSA = rsa
+	mqttd.Encryption.Nonce = *nonce
 
 	// ... listen forever
 
@@ -239,7 +242,9 @@ func (r *Run) listen(u *uhppote.UHPPOTE, mqttd *mqtt.MQTTD, logger *log.Logger, 
 	go func() {
 		for {
 			<-k.C
-			healthcheck.Exec()
+			if err := healthcheck.Exec(mqttd); err != nil {
+				logger.Printf("WARN  %-20s %v", "monitoring", err)
+			}
 		}
 	}()
 
