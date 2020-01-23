@@ -8,27 +8,16 @@ import (
 	"uhppote/types"
 )
 
-type HealthCheckHandler interface {
-	Touched(*HealthCheck) error
-}
-
 type HealthCheck struct {
 	uhppote *uhppote.UHPPOTE
 	log     *log.Logger
-	state   state
-}
-
-type state struct {
-	Started time.Time
-
-	HealthCheck struct {
+	state   struct {
+		Started time.Time
 		Touched *time.Time
-		Alerted bool
-	}
-
-	Devices struct {
-		Status sync.Map
-		Errors sync.Map
+		Devices struct {
+			Status sync.Map
+			Errors sync.Map
+		}
 	}
 }
 
@@ -41,16 +30,16 @@ func NewHealthCheck(u *uhppote.UHPPOTE, l *log.Logger) HealthCheck {
 	return HealthCheck{
 		uhppote: u,
 		log:     l,
-		state: state{
+		state: struct {
+			Started time.Time
+			Touched *time.Time
+			Devices struct {
+				Status sync.Map
+				Errors sync.Map
+			}
+		}{
 			Started: time.Now(),
-
-			HealthCheck: struct {
-				Touched *time.Time
-				Alerted bool
-			}{
-				Touched: nil,
-				Alerted: false,
-			},
+			Touched: nil,
 			Devices: struct {
 				Status sync.Map
 				Errors sync.Map
@@ -62,9 +51,21 @@ func NewHealthCheck(u *uhppote.UHPPOTE, l *log.Logger) HealthCheck {
 	}
 }
 
-func (h *HealthCheck) Exec(handler HealthCheckHandler) error {
+func (h *HealthCheck) ID() string {
+	return "health-check"
+}
+
+func (h *HealthCheck) Exec(handler MonitoringHandler) {
 	h.log.Printf("INFO  %-20s", "health-check")
 
+	h.update()
+
+	if err := handler.Alive(h, "health-check"); err != nil {
+		h.log.Printf("WARN  %-20s %v", "monitoring", err)
+	}
+}
+
+func (h *HealthCheck) update() {
 	now := time.Now()
 	devices := make(map[uint32]bool)
 
@@ -93,7 +94,5 @@ func (h *HealthCheck) Exec(handler HealthCheckHandler) error {
 		}
 	}
 
-	h.state.HealthCheck.Touched = &now
-
-	return handler.Touched(h)
+	h.state.Touched = &now
 }
