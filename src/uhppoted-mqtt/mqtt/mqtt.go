@@ -14,6 +14,7 @@ import (
 	"uhppote"
 	"uhppoted"
 	"uhppoted-mqtt/auth"
+	"uhppoted/monitoring"
 )
 
 type Topics struct {
@@ -23,21 +24,26 @@ type Topics struct {
 	System   string
 }
 
+type Encryption struct {
+	SignOutgoing    bool
+	EncryptOutgoing bool
+	EventsKeyID     string
+	SystemKeyID     string
+	HOTP            *auth.HOTP
+	RSA             *auth.RSA
+	Nonce           auth.Nonce
+}
+
 type MQTTD struct {
 	ServerID            string
 	Broker              string
 	TLS                 *tls.Config
 	Topics              Topics
-	EventsKeyID         string
 	HMAC                auth.HMAC
+	Encryption          Encryption
 	Authentication      string
-	HOTP                *auth.HOTP
-	RSA                 *auth.RSA
-	Nonce               auth.Nonce
 	Permissions         auth.Permissions
 	EventMap            string
-	SignOutgoing        bool
-	EncryptOutgoing     bool
 	HealthCheckInterval time.Duration
 	Debug               bool
 
@@ -197,20 +203,19 @@ func (m *MQTTD) subscribeAndServe(d *dispatcher) error {
 	return nil
 }
 
-func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, l *log.Logger) error {
+func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, log *log.Logger) error {
 	log.Printf("INFO  listening on %v", u.ListenAddress)
 	log.Printf("INFO  publishing events to %s", m.Topics.Events)
 
-	ctx := context.WithValue(context.Background(), "client", m.connection)
-	ctx = context.WithValue(ctx, "log", l)
-
 	last := uhppoted.NewEventMap(m.EventMap)
-	if err := last.Load(l); err != nil {
-		l.Printf("WARN  Error loading event map [%v]", err)
+	if err := last.Load(log); err != nil {
+		log.Printf("WARN  Error loading event map [%v]", err)
 	}
 
 	handler := func(event uhppoted.EventMessage) {
-		m.send("listen", &m.EventsKeyID, m.Topics.Events, event, msgEvent, l)
+		if err := m.send(&m.Encryption.EventsKeyID, m.Topics.Events, event, msgEvent); err != nil {
+			log.Printf("WARN  %-20s %v", "listen", err)
+		}
 	}
 
 	m.interrupt = make(chan os.Signal)
@@ -261,7 +266,7 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 				ClientID:  rq.ClientID,
 				ServerID:  d.mqttd.ServerID,
 				Method:    fn.method,
-				Nonce:     func() uint64 { return d.mqttd.Nonce.Next() },
+				Nonce:     func() uint64 { return d.mqttd.Encryption.Nonce.Next() },
 			}
 
 			reply, err := fn.f(d.mqttd, meta, d.uhppoted, ctx, rq.Request)
@@ -271,12 +276,16 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 				d.log.Printf("WARN  %-20s %v", fn.method, err)
 
 				if errx, ok := err.(*errorx); ok {
-					d.mqttd.send(fn.method, rq.ClientID, replyTo, errx, msgError, d.log)
+					if err := d.mqttd.send(rq.ClientID, replyTo, errx, msgError); err != nil {
+						d.log.Printf("WARN  %-20s %v", fn.method, err)
+					}
 				}
 			}
 
 			if reply != nil {
-				d.mqttd.send(fn.method, rq.ClientID, replyTo, reply, msgReply, d.log)
+				if err := d.mqttd.send(rq.ClientID, replyTo, reply, msgReply); err != nil {
+					d.log.Printf("WARN  %-20s %v", fn.method, err)
+				}
 			}
 		}()
 	}
@@ -299,12 +308,27 @@ func (m *MQTTD) authorise(clientID *string, topic string) error {
 	return nil
 }
 
-func (mqttd *MQTTD) send(method string, destID *string, topic string, message interface{}, msgtype msgType, log *log.Logger) {
-	if m, err := mqttd.wrap(msgtype, message, destID); err != nil {
-		log.Printf("WARN  %-20s %v", method, err)
-	} else if m != nil {
+func (m *MQTTD) Touched(h *monitoring.HealthCheck) error {
+	event := struct {
+		Event string `json:"event"`
+	}{
+		Event: "health-check",
+	}
+
+	return m.send(&m.Encryption.SystemKeyID, m.Topics.System, event, msgSystem)
+}
+
+func (mqttd *MQTTD) send(destID *string, topic string, message interface{}, msgtype msgType) error {
+	m, err := mqttd.wrap(msgtype, message, destID)
+	if err != nil {
+		return err
+	}
+
+	if m != nil {
 		mqttd.connection.Publish(topic, 0, false, string(m)).Wait()
 	}
+
+	return nil
 }
 
 func isBase64(request []byte) bool {

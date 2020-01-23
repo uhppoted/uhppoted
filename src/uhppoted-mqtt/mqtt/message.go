@@ -15,6 +15,7 @@ const (
 	msgReply msgType = iota + 1
 	msgError
 	msgEvent
+	msgSystem
 )
 
 func (mqttd *MQTTD) wrap(msgtype msgType, content interface{}, destID *string) ([]byte, error) {
@@ -39,6 +40,7 @@ func (mqttd *MQTTD) wrap(msgtype msgType, content interface{}, destID *string) (
 		Reply     json.RawMessage `json:"reply,omitempty"`
 		Error     json.RawMessage `json:"error,omitempty"`
 		Event     json.RawMessage `json:"event,omitempty"`
+		System    json.RawMessage `json:"system,omitempty"`
 	}{
 		Signature: base64.StdEncoding.EncodeToString(signature),
 		Key:       base64.StdEncoding.EncodeToString(key),
@@ -51,6 +53,8 @@ func (mqttd *MQTTD) wrap(msgtype msgType, content interface{}, destID *string) (
 		message.Error = body
 	case msgEvent:
 		message.Event = body
+	case msgSystem:
+		message.System = body
 	}
 
 	bytes, err = json.Marshal(message)
@@ -127,7 +131,7 @@ func (mqttd *MQTTD) unwrap(payload []byte) (*request, error) {
 	}
 
 	if authenticated {
-		if err := mqttd.Nonce.Validate(misc.ClientID, misc.Nonce); err != nil {
+		if err := mqttd.Encryption.Nonce.Validate(misc.ClientID, misc.Nonce); err != nil {
 			return nil, fmt.Errorf("Message cannot be authenticated (%v)", err)
 		}
 	}
@@ -160,12 +164,12 @@ func (m *MQTTD) verify(message []byte, mac *string) error {
 }
 
 func (m *MQTTD) encrypt(plaintext []byte, clientID *string) ([]byte, []byte, error) {
-	if m.EncryptOutgoing {
+	if m.Encryption.EncryptOutgoing {
 		if clientID == nil {
 			return nil, nil, fmt.Errorf("Missing client ID")
 		}
 
-		ciphertext, key, err := m.RSA.Encrypt(plaintext, *clientID, "request")
+		ciphertext, key, err := m.Encryption.RSA.Encrypt(plaintext, *clientID, "request")
 		if err != nil {
 			return nil, nil, err
 		}
@@ -204,7 +208,7 @@ func (m *MQTTD) decrypt(request []byte, iv string, key string) ([]byte, error) {
 		return nil, fmt.Errorf("Invalid IV (%v)", err)
 	}
 
-	return m.RSA.Decrypt(append(ivv, ciphertext...), keyv, "request")
+	return m.Encryption.RSA.Decrypt(append(ivv, ciphertext...), keyv, "request")
 }
 
 func (m *MQTTD) authenticate(clientID *string, request []byte, signature *string) (bool, error) {
@@ -214,7 +218,7 @@ func (m *MQTTD) authenticate(clientID *string, request []byte, signature *string
 			return false, fmt.Errorf("Invalid request: undecodable RSA signature (%v)", err)
 		}
 
-		if err := m.RSA.Validate(*clientID, request, s); err != nil {
+		if err := m.Encryption.RSA.Validate(*clientID, request, s); err != nil {
 			return false, err
 		}
 
@@ -227,7 +231,7 @@ func (m *MQTTD) authenticate(clientID *string, request []byte, signature *string
 		}{}
 
 		if err := json.Unmarshal(request, &rq); err == nil && rq.HOTP != nil {
-			if err := m.HOTP.Validate(*clientID, *rq.HOTP); err != nil {
+			if err := m.Encryption.HOTP.Validate(*clientID, *rq.HOTP); err != nil {
 				return false, err
 			}
 
@@ -242,8 +246,8 @@ func (m *MQTTD) authenticate(clientID *string, request []byte, signature *string
 }
 
 func (m *MQTTD) sign(reply []byte) ([]byte, error) {
-	if m.SignOutgoing {
-		return m.RSA.Sign(reply)
+	if m.Encryption.SignOutgoing {
+		return m.Encryption.RSA.Sign(reply)
 	}
 
 	return nil, nil

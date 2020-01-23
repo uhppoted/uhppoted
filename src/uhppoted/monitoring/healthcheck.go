@@ -8,6 +8,10 @@ import (
 	"uhppote/types"
 )
 
+type HealthCheckHandler interface {
+	Touched(*HealthCheck) error
+}
+
 type HealthCheck struct {
 	uhppote *uhppote.UHPPOTE
 	log     *log.Logger
@@ -58,7 +62,7 @@ func NewHealthCheck(u *uhppote.UHPPOTE, l *log.Logger) HealthCheck {
 	}
 }
 
-func (h *HealthCheck) Exec() {
+func (h *HealthCheck) Exec(handler HealthCheckHandler) error {
 	h.log.Printf("INFO  %-20s", "health-check")
 
 	now := time.Now()
@@ -90,4 +94,6 @@ func (h *HealthCheck) Exec() {
 	}
 
 	h.state.HealthCheck.Touched = &now
+
+	return handler.Touched(h)
 }

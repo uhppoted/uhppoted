@@ -28,6 +28,7 @@ type MQTT struct {
 	ClientKey           string        `conf:"client.key"`
 	Topics              Topics        `conf:"topic"`
 	EventsKeyID         string        `conf:"events.key"`
+	SystemKeyID         string        `conf:"system.key"`
 	EventIDs            string        `conf:"events.index.filepath"`
 	Permissions         Permissions   `conf:"permissions"`
 	HMAC                HMAC          `conf:"security.HMAC"`
@@ -117,6 +118,7 @@ func NewConfig() *Config {
 				System:   "./system",
 			},
 			EventsKeyID:     "events",
+			SystemKeyID:     "system",
 			SignOutgoing:    true,
 			EncryptOutgoing: true,
 			HMAC: HMAC{
