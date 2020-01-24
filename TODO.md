@@ -110,6 +110,7 @@
 - [ ] Add to CLI
 - [ ] Non-ephemeral key transport:  https://tools.ietf.org/html/rfc5990#appendix-A
 - [ ] user:open/get permissions require matching card number 
+- [ ] [AEAD](http://alexander.holbreich.org/message-authentication)
 
 ### CLI
 - [ ] Rework grant/revoke for individual doors (labelled)
@@ -198,3 +199,4 @@
 25. go-fuzz
 26. [OPA](https://github.com/open-policy-agent/opa) for permissions (?)
 27. [Node-RED](https://hackaday.com/2020/01/15/automate-your-life-with-node-red-plus-a-dash-of-mqtt)
+28. [Datomic ?](https://stackoverflow.com/questions/21245555/when-should-i-use-datomic)

@@ -230,6 +230,7 @@ func (r *Run) listen(u *uhppote.UHPPOTE, mqttd *mqtt.MQTTD, logger *log.Logger, 
 
 	// ... health-check task
 
+	monitor := mqtt.NewSystemMonitor(mqttd)
 	healthcheck := monitoring.NewHealthCheck(u, logger)
 	watchdog := monitoring.NewWatchdog(&healthcheck, logger)
 	k := time.NewTicker(mqttd.HealthCheckInterval)
@@ -239,7 +240,7 @@ func (r *Run) listen(u *uhppote.UHPPOTE, mqttd *mqtt.MQTTD, logger *log.Logger, 
 	go func() {
 		for {
 			<-k.C
-			healthcheck.Exec(mqttd)
+			healthcheck.Exec(monitor)
 		}
 	}()
 
@@ -253,7 +254,7 @@ func (r *Run) listen(u *uhppote.UHPPOTE, mqttd *mqtt.MQTTD, logger *log.Logger, 
 	for {
 		select {
 		case <-w.C:
-			if err := watchdog.Exec(mqttd); err != nil {
+			if err := watchdog.Exec(monitor); err != nil {
 				return err
 			}
 
