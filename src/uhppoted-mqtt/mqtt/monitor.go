@@ -1,6 +1,7 @@
 package mqtt
 
 import (
+	"log"
 	"sync"
 	"time"
 	"uhppoted/monitoring"
@@ -8,11 +9,12 @@ import (
 
 type SystemMonitor struct {
 	mqttd *MQTTD
+	log   *log.Logger
 }
 
 var alive = sync.Map{}
 
-func NewSystemMonitor(mqttd *MQTTD) *SystemMonitor {
+func NewSystemMonitor(mqttd *MQTTD, log *log.Logger) *SystemMonitor {
 	return &SystemMonitor{
 		mqttd: mqttd,
 	}
@@ -20,9 +22,18 @@ func NewSystemMonitor(mqttd *MQTTD) *SystemMonitor {
 
 func (m *SystemMonitor) Alive(monitor monitoring.Monitor, msg string) error {
 	event := struct {
-		Alive string `json:"alive"`
+		Alive struct {
+			SubSystem string `json:"subsystem"`
+			Message   string `json:"message"`
+		} `json:"alive"`
 	}{
-		Alive: msg,
+		Alive: struct {
+			SubSystem string `json:"subsystem"`
+			Message   string `json:"message"`
+		}{
+			SubSystem: monitor.ID(),
+			Message:   msg,
+		},
 	}
 
 	now := time.Now()
@@ -34,6 +45,7 @@ func (m *SystemMonitor) Alive(monitor monitoring.Monitor, msg string) error {
 	}
 
 	if err := m.mqttd.send(&m.mqttd.Encryption.SystemKeyID, m.mqttd.Topics.System, event, msgSystem); err != nil {
+		m.log.Printf("WARN  %-20s %v", "monitoring", err)
 		return err
 	}
 
@@ -44,10 +56,24 @@ func (m *SystemMonitor) Alive(monitor monitoring.Monitor, msg string) error {
 
 func (m *SystemMonitor) Alert(monitor monitoring.Monitor, msg string) error {
 	event := struct {
-		Alert string `json:"alert"`
+		Alert struct {
+			SubSystem string `json:"subsystem"`
+			Message   string `json:"message"`
+		} `json:"alert"`
 	}{
-		Alert: msg,
+		Alert: struct {
+			SubSystem string `json:"subsystem"`
+			Message   string `json:"message"`
+		}{
+			SubSystem: monitor.ID(),
+			Message:   msg,
+		},
 	}
 
-	return m.mqttd.send(&m.mqttd.Encryption.SystemKeyID, m.mqttd.Topics.System, event, msgSystem)
+	if err := m.mqttd.send(&m.mqttd.Encryption.SystemKeyID, m.mqttd.Topics.System, event, msgSystem); err != nil {
+		m.log.Printf("WARN  %-20s %v", "monitoring", err)
+		return err
+	}
+
+	return nil
 }
