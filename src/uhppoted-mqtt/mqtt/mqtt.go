@@ -10,12 +10,10 @@ import (
 	"log"
 	"os"
 	"regexp"
-	"sync"
 	"time"
 	"uhppote"
 	"uhppoted"
 	"uhppoted-mqtt/auth"
-	"uhppoted/monitoring"
 )
 
 type Topics struct {
@@ -103,8 +101,6 @@ var regex = struct {
 	clean:  regexp.MustCompile(`\s+`),
 	base64: regexp.MustCompile(`^"[A-Za-z0-9+/]*[=]{0,2}"$`),
 }
-
-var alive = sync.Map{}
 
 func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 	MQTT.CRITICAL = l
@@ -309,40 +305,6 @@ func (m *MQTTD) authorise(clientID *string, topic string) error {
 	}
 
 	return nil
-}
-
-func (m *MQTTD) Alive(monitor monitoring.Monitor, msg string) error {
-	event := struct {
-		Alive string `json:"alive"`
-	}{
-		Alive: msg,
-	}
-
-	now := time.Now()
-	last, ok := alive.Load(monitor.ID())
-	interval := 60 * time.Second
-
-	if ok && time.Since(last.(time.Time)).Round(time.Second) < interval {
-		return nil
-	}
-
-	if err := m.send(&m.Encryption.SystemKeyID, m.Topics.System, event, msgSystem); err != nil {
-		return err
-	}
-
-	alive.Store(monitor.ID(), now)
-
-	return nil
-}
-
-func (m *MQTTD) Alert(monitor monitoring.Monitor, msg string) error {
-	event := struct {
-		Alert string `json:"alert"`
-	}{
-		Alert: msg,
-	}
-
-	return m.send(&m.Encryption.SystemKeyID, m.Topics.System, event, msgSystem)
 }
 
 func (mqttd *MQTTD) send(destID *string, topic string, message interface{}, msgtype msgType) error {
