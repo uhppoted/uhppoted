@@ -11,18 +11,21 @@ import (
 )
 
 var options = struct {
-	bind  string
 	dir   string
+	bind  string
+	rest  string
 	debug bool
 }{
-	bind:  ":60000",
 	dir:   "./devices",
+	bind:  ":60000",
+	rest:  ":8000",
 	debug: false,
 }
 
 func main() {
-	flag.StringVar(&options.bind, "bind", ":60000", "Specifies the bind address for the simulator")
 	flag.StringVar(&options.dir, "devices", "devices", "Specifies the simulation device directory")
+	flag.StringVar(&options.bind, "bind", ":60000", "Specifies the bind address for the simulator")
+	flag.StringVar(&options.rest, "rest", ":8000", "Specifies the bind address for the REST interface")
 	flag.BoolVar(&options.debug, "debug", false, "Displays simulator activity")
 	flag.Parse()
 
@@ -37,8 +40,9 @@ func main() {
 	}
 
 	ctx := simulator.Context{
-		BindAddress: options.bind,
 		Directory:   options.dir,
+		BindAddress: options.bind,
+		RestAddress: options.rest,
 		DeviceList:  simulator.NewDeviceList(load(options.dir)),
 	}
 

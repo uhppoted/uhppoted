@@ -14,6 +14,7 @@ type Context struct {
 	BindAddress string
 	DeviceList  DeviceList
 	Directory   string
+	RestAddress string
 }
 
 func NewDeviceList(l []Simulator) DeviceList {

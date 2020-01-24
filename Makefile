@@ -74,7 +74,7 @@ debug: build
 	go test src/uhppoted/kvs/*.go
 
 simulator: build
-	./bin/uhppote-simulator --debug --devices "./runtime/simulation/devices"
+	./bin/uhppote-simulator --debug --bind 192.168.1.100:54321 --rest 192.168.1.100:8008 --devices "./runtime/simulation/devices"
 
 simulator-device: build
 	./bin/uhppote-simulator --debug --devices "runtime/simulation/devices" new-device 678

@@ -32,13 +32,6 @@ type Run struct {
 	debug         bool
 }
 
-type alerts struct {
-	missing      bool
-	unexpected   bool
-	touched      bool
-	synchronized bool
-}
-
 const (
 	SERVICE = `uhppoted-mqtt`
 )
@@ -230,7 +223,7 @@ func (r *Run) listen(u *uhppote.UHPPOTE, mqttd *mqtt.MQTTD, logger *log.Logger, 
 
 	// ... health-check task
 
-	monitor := mqtt.NewSystemMonitor(mqttd)
+	monitor := mqtt.NewSystemMonitor(mqttd, logger)
 	healthcheck := monitoring.NewHealthCheck(u, logger)
 	watchdog := monitoring.NewWatchdog(&healthcheck, logger)
 	k := time.NewTicker(mqttd.HealthCheckInterval)
