@@ -32,17 +32,6 @@ embedded.id = 67890
 `)
 
 func TestMarshal(t *testing.T) {
-	expected := `udp.address = 192.168.1.100:54321
-interface.value = qwerty
-interface.pointer = uiop
-sys.enabled = true
-sys.integer = -13579
-sys.unsigned = 8081
-sys.string = asdfghjkl
-embedded.name = zxcvb
-embedded.id = 67890
-`
-
 	address := net.UDPAddr{
 		IP:   []byte{192, 168, 1, 100},
 		Port: 54321,
@@ -77,8 +66,8 @@ embedded.id = 67890
 		t.Fatalf("Unexpected error: %v", err)
 	}
 
-	if string(bytes) != expected {
-		l, ls, p, q := diff(expected, string(bytes))
+	if !reflect.DeepEqual(bytes, configuration) {
+		l, ls, p, q := diff(string(configuration), string(bytes))
 		t.Errorf("conf not marshaled correctly:\n%s\n>> line %d:\n>> %s\n--------\n   %s\n   %s\n--------\n", string(bytes), l, ls, p, q)
 	}
 }
