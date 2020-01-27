@@ -32,6 +32,23 @@ UT0311-L0x.405419896.door.3 = Garage
 UT0311-L0x.405419896.door.4 = Workshop
 `)
 
+func TestNewConfig(t *testing.T) {
+	bind, broadcast, listen := DefaultIpAddresses()
+	config := NewConfig()
+
+	if !reflect.DeepEqual(config.BindAddress, &bind) {
+		t.Errorf("Expected 'bind.address' %s, got: %s", &bind, config.BindAddress)
+	}
+
+	if !reflect.DeepEqual(config.BroadcastAddress, &broadcast) {
+		t.Errorf("Expected 'broadcast.address' %s, got: %s", &broadcast, config.BroadcastAddress)
+	}
+
+	if !reflect.DeepEqual(config.ListenAddress, &listen) {
+		t.Errorf("Expected 'listen.address' %s, got: %s", &listen, config.ListenAddress)
+	}
+}
+
 func TestUnmarshal(t *testing.T) {
 	config := NewConfig()
 

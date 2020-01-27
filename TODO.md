@@ -41,12 +41,12 @@
 - [x] Make health check interval configurable 
 - [x] Send health-check event to system topic
 - [x] watchdog
+- [ ] get config defaults by unmarshalling string
 - [ ] Make watchdog check interval configurable 
 - [ ] Include get-listener in health check
+- [ ] daemonize/undaemonize
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status
   - https://blog.golang.org/go1.13-errors
-- [ ] daemonize/undaemonize
-- [ ] get config defaults by unmarshalling string
 
 - [x] subscribe
 - [x] error handling
@@ -62,6 +62,7 @@
 - [x] Fix go vet errors
 - [x] conf file decoder with reflection
 - [x] conf file decoder: embedded structs
+- [x] conf file encoder
 - [x] docker: simulator
 - [x] UT0311-L0x encoding: unmarshal arrays of structs (for broadcast)
 - [x] Move version to [LDFLAGS](https://stackoverflow.com/questions/28459102/golang-compile-environment-variable-into-binary)
@@ -87,7 +88,6 @@
 - [ ] MacOS launchd socket handoff
 - [ ] Linux systemd socket handoff
 - [ ] conf file decoder: JSON
-- [ ] conf file encoder
 - [ ] Rework plist encoder
 - [ ] move ACL and events to separate API's
 - [ ] Make events consistent across everything
@@ -200,3 +200,4 @@
 26. [OPA](https://github.com/open-policy-agent/opa) for permissions (?)
 27. [Node-RED](https://hackaday.com/2020/01/15/automate-your-life-with-node-red-plus-a-dash-of-mqtt)
 28. [Datomic ?](https://stackoverflow.com/questions/21245555/when-should-i-use-datomic)
+29. [OCF-Over-Thread](https://www.infoq.com/news/2016/07/ocf-thread/)

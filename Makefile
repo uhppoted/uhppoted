@@ -71,7 +71,8 @@ release-tar: release
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
 
 debug: build
-	go test src/uhppoted/kvs/*.go
+	go test -v src/uhppote/encoding/conf/*.go
+#	go test uhppote... -run TestNewConfig
 
 simulator: build
 	./bin/uhppote-simulator --debug --bind 192.168.1.100:54321 --rest 192.168.1.100:8008 --devices "./runtime/simulation/devices"
