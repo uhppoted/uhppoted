@@ -3,6 +3,7 @@ package conf
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -13,12 +14,16 @@ import (
 	"time"
 )
 
+type Marshaler interface {
+	MarshalConf() ([]byte, error)
+}
+
 type Unmarshaler interface {
 	UnmarshalConf(tag string, values map[string]string) (interface{}, error)
 }
 
 var (
-	tBoolean  = reflect.TypeOf(bool(false))
+	tBool     = reflect.TypeOf(bool(false))
 	tInt      = reflect.TypeOf(int(0))
 	tUint     = reflect.TypeOf(uint(0))
 	tUint16   = reflect.TypeOf(uint16(0))
@@ -26,6 +31,87 @@ var (
 	tDuration = reflect.TypeOf(time.Duration(0))
 	pUDPAddr  = reflect.TypeOf(&net.UDPAddr{})
 )
+
+func Marshal(m interface{}) ([]byte, error) {
+	v := reflect.ValueOf(m)
+
+	if v.Type().Kind() == reflect.Ptr {
+		return marshal(v.Elem())
+	} else {
+		return marshal(reflect.Indirect(v))
+	}
+}
+
+func marshal(s reflect.Value) ([]byte, error) {
+	var c strings.Builder
+
+	if s.Kind() == reflect.Struct {
+		N := s.NumField()
+
+		for i := 0; i < N; i++ {
+			f := s.Field(i)
+			t := s.Type().Field(i)
+			tag := t.Tag.Get("conf")
+
+			// Marshall with MarshalConf{} interface
+
+			if m, ok := f.Interface().(Marshaler); ok {
+				// If f is a pointer type and the value is nil skips this field, leaving the buffer 'as is'
+				// i.e. 'omitempty' is the default implementation
+				if f.Kind() != reflect.Ptr || !f.IsNil() {
+					if b, err := m.MarshalConf(); err == nil {
+						fmt.Fprintf(&c, "%s = %s\n", tag, string(b))
+					}
+				}
+
+				continue
+			}
+
+			// Marshal embedded structs
+
+			if f.Kind() == reflect.Struct {
+				if v, err := marshal(f); err != nil {
+					return []byte(c.String()), err
+				} else {
+					entries := strings.Split(string(v), "\n")
+					for _, e := range entries {
+						if e != "" {
+							fmt.Fprintf(&c, "%s.%s\n", tag, e)
+						}
+					}
+				}
+
+				continue
+			}
+
+			// Unmarshal built-in types
+
+			// Marshal built-in types
+
+			switch t.Type {
+			case tBool:
+				fmt.Fprintf(&c, "%s = %v\n", tag, f)
+
+			case tInt:
+				fmt.Fprintf(&c, "%s = %v\n", tag, f)
+
+			case tUint:
+				fmt.Fprintf(&c, "%s = %v\n", tag, f)
+
+			case tString:
+				fmt.Fprintf(&c, "%s = %v\n", tag, f)
+
+			case pUDPAddr:
+				fmt.Fprintf(&c, "%s = %v\n", tag, f)
+
+			default:
+				panic(errors.New(fmt.Sprintf("Cannot marshal field with type '%v'", t.Type)))
+			}
+		}
+	}
+
+	return []byte(c.String()), nil
+}
 
 func Unmarshal(b []byte, m interface{}) error {
 	v := reflect.ValueOf(m)
@@ -106,7 +192,7 @@ func unmarshal(s reflect.Value, prefix string, values map[string]string) error {
 		// Unmarshal built-in types
 
 		switch t.Type {
-		case tBoolean:
+		case tBool:
 			if value, ok := values[tag]; ok {
 				if value == "true" {
 					f.SetBool(true)

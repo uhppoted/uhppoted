@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"regexp"
 	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -30,6 +31,58 @@ embedded.name = zxcvb
 embedded.id = 67890
 `)
 
+func TestMarshal(t *testing.T) {
+	expected := `udp.address = 192.168.1.100:54321
+interface.value = qwerty
+interface.pointer = uiop
+sys.enabled = true
+sys.integer = -13579
+sys.unsigned = 8081
+sys.string = asdfghjkl
+embedded.name = zxcvb
+embedded.id = 67890
+`
+
+	address := net.UDPAddr{
+		IP:   []byte{192, 168, 1, 100},
+		Port: 54321,
+		Zone: "",
+	}
+
+	config := struct {
+		UdpAddress *net.UDPAddr `conf:"udp.address"`
+		Interface  testType     `conf:"interface.value"`
+		InterfaceP *testType    `conf:"interface.pointer"`
+		Enabled    bool         `conf:"sys.enabled"`
+		Integer    int          `conf:"sys.integer"`
+		Unsigned   uint         `conf:"sys.unsigned"`
+		String     string       `conf:"sys.string"`
+		Embedded   `conf:"embedded"`
+	}{
+		UdpAddress: &address,
+		Interface:  testType{"qwerty"},
+		InterfaceP: &testType{"uiop"},
+		Enabled:    true,
+		Integer:    -13579,
+		Unsigned:   8081,
+		String:     "asdfghjkl",
+		Embedded: Embedded{
+			Name: "zxcvb",
+			ID:   67890,
+		},
+	}
+
+	bytes, err := Marshal(config)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+
+	if string(bytes) != expected {
+		l, ls, p, q := diff(expected, string(bytes))
+		t.Errorf("conf not marshaled correctly:\n%s\n>> line %d:\n>> %s\n--------\n   %s\n   %s\n--------\n", string(bytes), l, ls, p, q)
+	}
+}
+
 func TestUnmarshal(t *testing.T) {
 	config := struct {
 		UdpAddress *net.UDPAddr `conf:"udp.address"`
@@ -43,10 +96,8 @@ func TestUnmarshal(t *testing.T) {
 	}{}
 
 	err := Unmarshal(configuration, &config)
-
 	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-		return
+		t.Fatalf("Unexpected error: %v", err)
 	}
 
 	address := net.UDPAddr{
@@ -90,6 +141,10 @@ func TestUnmarshal(t *testing.T) {
 	if config.ID != 67890 {
 		t.Errorf("Expected 'embedded.id' value '%v', got: '%v'", 67890, config.ID)
 	}
+}
+
+func (f testType) MarshalConf() ([]byte, error) {
+	return []byte(f.value), nil
 }
 
 func (f *testType) UnmarshalConf(tag string, values map[string]string) (interface{}, error) {
@@ -186,4 +241,32 @@ func (f *deviceMap) UnmarshalConf(tag string, values map[string]string) (interfa
 	}
 
 	return &m, nil
+}
+
+func diff(p, q string) (int, string, string, string) {
+	line := 0
+	s := strings.Split(p, "\n")
+	t := strings.Split(q, "\n")
+
+	for ix := 0; ix < len(s) && ix < len(t); ix++ {
+		line++
+		println(">>", s[ix])
+		println(">>", t[ix])
+		println()
+		if s[ix] != t[ix] {
+			u := []rune(s[ix])
+			v := []rune(t[ix])
+			for jx := 0; jx < len(u) && jx < len(v); jx++ {
+				if u[jx] != v[jx] {
+					break
+				}
+				u[jx] = '.'
+				v[jx] = '.'
+			}
+
+			return line, s[ix], string(u), string(v)
+		}
+	}
+
+	return line, "?", "?", "?"
 }
