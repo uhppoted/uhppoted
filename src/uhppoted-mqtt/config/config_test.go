@@ -8,10 +8,13 @@ import (
 	"uhppote/encoding/conf"
 )
 
-var configuration = []byte(`# UDP
+var configuration = []byte(`# SYSTEM
 bind.address = 192.168.1.100:54321
 broadcast.address = 192.168.1.255:60001
 listen.address = 192.168.1.100:12345
+
+monitoring.healthcheck.interval = 31s
+monitoring.watchdog.interval = 7s
 
 # MQTT
 mqtt.broker = tls://127.0.0.63:8887
@@ -22,8 +25,6 @@ mqtt.topic.system = sys
 mqtt.broker.certificate = mqtt-broker.cert
 mqtt.client.certificate = mqtt-client.cert
 mqtt.client.key = mqtt-client.key
-mqtt.monitoring.healthcheck.interval = 31s
-mqtt.monitoring.watchdog.interval = 7s
 
 # DEVICES
 UT0311-L0x.405419896.address = 192.168.1.100:60000
