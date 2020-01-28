@@ -32,7 +32,7 @@ UT0311-L0x.405419896.door.3 = Garage
 UT0311-L0x.405419896.door.4 = Workshop
 `)
 
-func TestNewConfig(t *testing.T) {
+func TestDefaultConfig(t *testing.T) {
 	bind, broadcast, listen := DefaultIpAddresses()
 	config := NewConfig()
 

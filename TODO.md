@@ -41,7 +41,6 @@
 - [x] Make health check interval configurable 
 - [x] Send health-check event to system topic
 - [x] watchdog
-- [ ] get config defaults by unmarshalling string
 - [ ] Make watchdog check interval configurable 
 - [ ] Include get-listener in health check
 - [ ] daemonize/undaemonize
@@ -80,6 +79,7 @@
 - [ ] Convert to 1.13 error handling
 - [ ] Rework UHPPOTE response messages to use factory
 - [ ] Fix golint errors
+- [ ] Invert conf Unmarshal so that it iterates struct rather than file (simplifies e.g. DeviceMap)
 
 ### uhppoted
 - [ ] websocket + GraphQL (?)

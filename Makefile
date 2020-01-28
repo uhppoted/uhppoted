@@ -72,7 +72,7 @@ release-tar: release
 
 debug: build
 	go test -v src/uhppote/encoding/conf/*.go
-#	go test uhppote... -run TestNewConfig
+	go test uhppote... -run TestDefaultConfig
 
 simulator: build
 	./bin/uhppote-simulator --debug --bind 192.168.1.100:54321 --rest 192.168.1.100:8008 --devices "./runtime/simulation/devices"
@@ -120,7 +120,8 @@ docker-integration-tests:
 	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --name qwerty --rm integration-tests/simulator
 
 hivemq-listen:
-	mqtt subscribe --topic 'twystd/uhppoted/#'
+#	mqtt subscribe --topic 'twystd/uhppoted/#'
+	open runtime/mqtt-spy-0.5.4-jar-with-dependencies.jar
 
 
 

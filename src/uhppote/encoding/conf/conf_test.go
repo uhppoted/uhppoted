@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 )
 
 type testType struct {
@@ -26,7 +27,10 @@ interface.pointer = uiop
 sys.enabled = true
 sys.integer = -13579
 sys.unsigned = 8081
+sys.unsigned32 = 4294967295
+sys.unsigned64 = 18446744073709551615
 sys.string = asdfghjkl
+sys.duration = 23s
 embedded.name = zxcvb
 embedded.id = 67890
 `)
@@ -39,13 +43,16 @@ func TestMarshal(t *testing.T) {
 	}
 
 	config := struct {
-		UdpAddress *net.UDPAddr `conf:"udp.address"`
-		Interface  testType     `conf:"interface.value"`
-		InterfaceP *testType    `conf:"interface.pointer"`
-		Enabled    bool         `conf:"sys.enabled"`
-		Integer    int          `conf:"sys.integer"`
-		Unsigned   uint         `conf:"sys.unsigned"`
-		String     string       `conf:"sys.string"`
+		UdpAddress *net.UDPAddr  `conf:"udp.address"`
+		Interface  testType      `conf:"interface.value"`
+		InterfaceP *testType     `conf:"interface.pointer"`
+		Enabled    bool          `conf:"sys.enabled"`
+		Integer    int           `conf:"sys.integer"`
+		Unsigned   uint          `conf:"sys.unsigned"`
+		Unsigned32 uint32        `conf:"sys.unsigned32"`
+		Unsigned64 uint64        `conf:"sys.unsigned64"`
+		String     string        `conf:"sys.string"`
+		Duration   time.Duration `conf:"sys.duration"`
 		Embedded   `conf:"embedded"`
 	}{
 		UdpAddress: &address,
@@ -54,7 +61,10 @@ func TestMarshal(t *testing.T) {
 		Enabled:    true,
 		Integer:    -13579,
 		Unsigned:   8081,
+		Unsigned32: 4294967295,
+		Unsigned64: 18446744073709551615,
 		String:     "asdfghjkl",
+		Duration:   23 * time.Second,
 		Embedded: Embedded{
 			Name: "zxcvb",
 			ID:   67890,
@@ -74,13 +84,16 @@ func TestMarshal(t *testing.T) {
 
 func TestUnmarshal(t *testing.T) {
 	config := struct {
-		UdpAddress *net.UDPAddr `conf:"udp.address"`
-		Interface  testType     `conf:"interface.value"`
-		InterfaceP *testType    `conf:"interface.pointer"`
-		Enabled    bool         `conf:"sys.enabled"`
-		Integer    int          `conf:"sys.integer"`
-		Unsigned   uint         `conf:"sys.unsigned"`
-		String     string       `conf:"sys.string"`
+		UdpAddress *net.UDPAddr  `conf:"udp.address"`
+		Interface  testType      `conf:"interface.value"`
+		InterfaceP *testType     `conf:"interface.pointer"`
+		Enabled    bool          `conf:"sys.enabled"`
+		Integer    int           `conf:"sys.integer"`
+		Unsigned   uint          `conf:"sys.unsigned"`
+		Unsigned32 uint          `conf:"sys.unsigned32"`
+		Unsigned64 uint          `conf:"sys.unsigned64"`
+		String     string        `conf:"sys.string"`
+		Duration   time.Duration `conf:"sys.duration"`
 		Embedded   `conf:"embedded"`
 	}{}
 
@@ -119,8 +132,20 @@ func TestUnmarshal(t *testing.T) {
 		t.Errorf("Expected 'unsigned' value '%v', got: '%v'", 8081, config.Unsigned)
 	}
 
+	if config.Unsigned32 != 4294967295 {
+		t.Errorf("Expected 'unsigned' value '%v', got: '%v'", 4294967295, config.Unsigned32)
+	}
+
+	if config.Unsigned64 != 18446744073709551615 {
+		t.Errorf("Expected 'unsigned' value '%v', got: '%v'", uint64(18446744073709551615), config.Unsigned64)
+	}
+
 	if config.String != "asdfghjkl" {
 		t.Errorf("Expected 'string' value '%v', got: '%v'", "asdfghjkl", config.String)
+	}
+
+	if config.Duration != 23*time.Second {
+		t.Errorf("Expected 'duration' value '%v', got: '%v'", 23*time.Second, config.Duration)
 	}
 
 	if config.Name != "zxcvb" {
@@ -132,8 +157,12 @@ func TestUnmarshal(t *testing.T) {
 	}
 }
 
-func (f testType) MarshalConf() ([]byte, error) {
-	return []byte(f.value), nil
+func (f testType) MarshalConf(tag string) ([]byte, error) {
+	var s strings.Builder
+
+	fmt.Fprintf(&s, "%s = %s", tag, f.value)
+
+	return []byte(s.String()), nil
 }
 
 func (f *testType) UnmarshalConf(tag string, values map[string]string) (interface{}, error) {
