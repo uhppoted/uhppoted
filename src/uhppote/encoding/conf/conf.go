@@ -15,7 +15,7 @@ import (
 )
 
 type Marshaler interface {
-	MarshalConf() ([]byte, error)
+	MarshalConf(tag string) ([]byte, error)
 }
 
 type Unmarshaler interface {
@@ -27,6 +27,8 @@ var (
 	tInt      = reflect.TypeOf(int(0))
 	tUint     = reflect.TypeOf(uint(0))
 	tUint16   = reflect.TypeOf(uint16(0))
+	tUint32   = reflect.TypeOf(uint32(0))
+	tUint64   = reflect.TypeOf(uint64(0))
 	tString   = reflect.TypeOf(string(""))
 	tDuration = reflect.TypeOf(time.Duration(0))
 	pUDPAddr  = reflect.TypeOf(&net.UDPAddr{})
@@ -53,14 +55,13 @@ func marshal(s reflect.Value) ([]byte, error) {
 			t := s.Type().Field(i)
 			tag := t.Tag.Get("conf")
 
-			// Marshall with MarshalConf{} interface
-
+			// Marshal with MarshalConf{} interface
 			if m, ok := f.Interface().(Marshaler); ok {
 				// If f is a pointer type and the value is nil skips this field, leaving the buffer 'as is'
 				// i.e. 'omitempty' is the default implementation
 				if f.Kind() != reflect.Ptr || !f.IsNil() {
-					if b, err := m.MarshalConf(); err == nil {
-						fmt.Fprintf(&c, "%s = %s\n", tag, string(b))
+					if b, err := m.MarshalConf(tag); err == nil {
+						fmt.Fprintf(&c, "%s\n", string(b))
 					}
 				}
 
@@ -68,7 +69,6 @@ func marshal(s reflect.Value) ([]byte, error) {
 			}
 
 			// Marshal embedded structs
-
 			if f.Kind() == reflect.Struct {
 				if v, err := marshal(f); err != nil {
 					return []byte(c.String()), err
@@ -98,7 +98,16 @@ func marshal(s reflect.Value) ([]byte, error) {
 			case tUint:
 				fmt.Fprintf(&c, "%s = %v\n", tag, f)
 
+			case tUint32:
+				fmt.Fprintf(&c, "%s = %v\n", tag, f)
+
+			case tUint64:
+				fmt.Fprintf(&c, "%s = %v\n", tag, f)
+
 			case tString:
+				fmt.Fprintf(&c, "%s = %v\n", tag, f)
+
+			case tDuration:
 				fmt.Fprintf(&c, "%s = %v\n", tag, f)
 
 			case pUDPAddr:

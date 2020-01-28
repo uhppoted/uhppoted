@@ -222,6 +222,23 @@ func DefaultIpAddresses() (net.UDPAddr, net.UDPAddr, net.UDPAddr) {
 	return bind, broadcast, listen
 }
 
+func (f DeviceMap) MarshalConf(tag string) ([]byte, error) {
+	var s strings.Builder
+
+	if len(f) > 0 {
+		fmt.Fprintf(&s, "# DEVICES\n")
+		for id, device := range f {
+			fmt.Fprintf(&s, "UTO311-L0x.%d.address = %s\n", id, device.Address)
+			for d, door := range device.Door {
+				fmt.Fprintf(&s, "UTO311-L0x.%d.door.%d = %s\n", id, d+1, door)
+			}
+			fmt.Fprintf(&s, "\n")
+		}
+	}
+
+	return []byte(s.String()), nil
+}
+
 func (f *DeviceMap) UnmarshalConf(tag string, values map[string]string) (interface{}, error) {
 	re := regexp.MustCompile(`^/(.*?)/$`)
 	match := re.FindStringSubmatch(tag)
