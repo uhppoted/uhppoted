@@ -23,6 +23,7 @@ mqtt.broker.certificate = mqtt-broker.cert
 mqtt.client.certificate = mqtt-client.cert
 mqtt.client.key = mqtt-client.key
 mqtt.monitoring.healthcheck.interval = 31s
+mqtt.monitoring.watchdog.interval = 7s
 
 # DEVICES
 UT0311-L0x.405419896.address = 192.168.1.100:60000
@@ -46,6 +47,14 @@ func TestDefaultConfig(t *testing.T) {
 
 	if !reflect.DeepEqual(config.ListenAddress, &listen) {
 		t.Errorf("Expected 'listen.address' %s, got: %s", &listen, config.ListenAddress)
+	}
+
+	if config.HealthCheckInterval != 15*time.Second {
+		t.Errorf("Expected 'monitoring.healthcheck.interval' %v, got: %v", 15*time.Second, config.HealthCheckInterval)
+	}
+
+	if config.WatchdogInterval != 5*time.Second {
+		t.Errorf("Expected 'monitoring.watchdog.interval' %v, got: %v", 5*time.Second, config.WatchdogInterval)
 	}
 }
 
