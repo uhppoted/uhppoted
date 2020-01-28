@@ -23,13 +23,15 @@ import (
 )
 
 type Run struct {
-	configuration string
-	dir           string
-	pidFile       string
-	logFile       string
-	logFileSize   int
-	console       bool
-	debug         bool
+	configuration       string
+	dir                 string
+	pidFile             string
+	logFile             string
+	logFileSize         int
+	console             bool
+	debug               bool
+	healthCheckInterval time.Duration
+	watchdogInterval    time.Duration
 }
 
 const (
@@ -86,6 +88,9 @@ func (r *Run) execute(ctx context.Context, f func(*config.Config) error) error {
 func (r *Run) run(c *config.Config, logger *log.Logger) {
 	logger.Printf("START")
 
+	r.healthCheckInterval = c.HealthCheckInterval
+	r.watchdogInterval = c.WatchdogInterval
+
 	// ... syscall SIG handlers
 
 	interrupt := make(chan os.Signal, 1)
@@ -135,11 +140,10 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 			SystemKeyID:     c.SystemKeyID,
 			HOTP:            nil,
 		},
-		Authentication:      c.Authentication,
-		Permissions:         *permissions,
-		EventMap:            c.EventIDs,
-		HealthCheckInterval: c.MQTT.HealthCheckInterval,
-		Debug:               r.debug,
+		Authentication: c.Authentication,
+		Permissions:    *permissions,
+		EventMap:       c.EventIDs,
+		Debug:          r.debug,
 	}
 
 	// ... TLS
@@ -226,7 +230,7 @@ func (r *Run) listen(u *uhppote.UHPPOTE, mqttd *mqtt.MQTTD, logger *log.Logger, 
 	monitor := mqtt.NewSystemMonitor(mqttd, logger)
 	healthcheck := monitoring.NewHealthCheck(u, logger)
 	watchdog := monitoring.NewWatchdog(&healthcheck, logger)
-	k := time.NewTicker(mqttd.HealthCheckInterval)
+	k := time.NewTicker(r.healthCheckInterval)
 
 	defer k.Stop()
 
@@ -240,7 +244,7 @@ func (r *Run) listen(u *uhppote.UHPPOTE, mqttd *mqtt.MQTTD, logger *log.Logger, 
 	// ... wait until interrupted/closed
 
 	closed := make(chan struct{})
-	w := time.NewTicker(5 * time.Second)
+	w := time.NewTicker(r.watchdogInterval)
 
 	defer w.Stop()
 
