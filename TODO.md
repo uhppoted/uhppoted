@@ -42,7 +42,7 @@
 - [x] Send health-check event to system topic
 - [x] watchdog
 - [x] Make watchdog check interval configurable 
-- [ ] Include get-listener in health check
+- [x] Include get-listener in health check
 - [ ] daemonize/undaemonize
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status
   - https://blog.golang.org/go1.13-errors
@@ -92,6 +92,7 @@
 - [ ] move ACL and events to separate API's
 - [ ] Make events consistent across everything
 - [ ] Rework uhppoted-xxx Run, etc to use [method expressions](https://talks.golang.org/2012/10things.slide#9)
+- [ ] system API (for health-check, watchdog, configuration, etc)
 
 ### uhppoted-rest
 - [ ] Get events after XXX
