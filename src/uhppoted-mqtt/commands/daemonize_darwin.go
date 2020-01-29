@@ -66,7 +66,7 @@ var DAEMONIZE = Daemonize{
 	plist:   fmt.Sprintf("com.github.twystd.%s.plist", SERVICE),
 	workdir: "/usr/local/var/com.github.twystd.uhppoted",
 	logdir:  "/usr/local/var/com.github.twystd.uhppoted/log",
-	config:  "/usr/local/etc/com.github.twystd.uhppoted/uhppoted-mqtt.stuff",
+	config:  fmt.Sprintf("/usr/local/etc/com.github.twystd.uhppoted/%s.stuff", SERVICE),
 }
 
 type Daemonize struct {

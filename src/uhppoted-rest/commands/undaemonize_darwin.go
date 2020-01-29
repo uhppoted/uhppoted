@@ -140,7 +140,7 @@ func (c *Undaemonize) rmdirs(d info) error {
 func (c *Undaemonize) firewall(d info) error {
 	fmt.Println()
 	fmt.Println("   ***")
-	fmt.Println("   *** WARNING: removing 'uhppoted-rest' to the application firewall")
+	fmt.Println("   *** WARNING: removing 'uhppoted-rest' from the application firewall")
 	fmt.Println("   ***")
 	fmt.Println()
 
