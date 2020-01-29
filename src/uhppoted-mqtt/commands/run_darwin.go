@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 	"uhppote"
-	"uhppoted-mqtt/config"
+	"uhppoted/config"
 	"uhppoted/eventlog"
 )
 

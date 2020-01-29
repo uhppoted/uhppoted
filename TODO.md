@@ -93,6 +93,7 @@
 - [ ] Make events consistent across everything
 - [ ] Rework uhppoted-xxx Run, etc to use [method expressions](https://talks.golang.org/2012/10things.slide#9)
 - [ ] system API (for health-check, watchdog, configuration, etc)
+- [ ] Parallel-ize health-check 
 
 ### uhppoted-rest
 - [ ] Get events after XXX

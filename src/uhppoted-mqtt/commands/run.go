@@ -17,8 +17,8 @@ import (
 	"time"
 	"uhppote"
 	"uhppoted-mqtt/auth"
-	"uhppoted-mqtt/config"
 	"uhppoted-mqtt/mqtt"
+	"uhppoted/config"
 	"uhppoted/monitoring"
 )
 

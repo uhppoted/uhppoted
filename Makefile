@@ -88,6 +88,7 @@ uhppoted-mqtt: build
 
 swagger: 
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
+	open http://127.0.0.1:80
 
 docker: build
 	env GOOS=linux GOARCH=amd64 go build -o docker/simulator/uhppote-simulator     uhppote-simulator
