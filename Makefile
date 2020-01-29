@@ -71,7 +71,7 @@ release-tar: release
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
 
 debug: build
-	sudo ./bin/uhppoted-mqtt daemonize
+	sudo ./bin/uhppoted-mqtt undaemonize
 
 simulator: build
 	./bin/uhppote-simulator --debug --bind 192.168.1.100:54321 --rest 192.168.1.100:8008 --devices "./runtime/simulation/devices"

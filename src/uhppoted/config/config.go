@@ -179,12 +179,12 @@ func (c *Config) Load(path string) error {
 
 func (c *Config) Write(w io.Writer) error {
 	// bytes, _ := json.MarshalIndent(cfg, ">>", "  ")
-    // fmt.Printf("-----\n")
-    // fmt.Printf("%s\n", string(bytes))
-    // fmt.Printf("-----\n")
-    // t := template.Must(template.New("uhppoted.conf").Parse(confTemplate))
-    // return t.Execute(f, d)
-    
+	// fmt.Printf("-----\n")
+	// fmt.Printf("%s\n", string(bytes))
+	// fmt.Printf("-----\n")
+	// t := template.Must(template.New("uhppoted.conf").Parse(confTemplate))
+	// return t.Execute(f, d)
+
 	return nil
 }
 
