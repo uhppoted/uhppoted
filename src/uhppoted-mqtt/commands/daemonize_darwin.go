@@ -10,6 +10,7 @@ import (
 	"strings"
 	"text/template"
 	xpath "uhppoted-rest/encoding/plist"
+	"uhppoted/config"
 )
 
 type info struct {
@@ -79,23 +80,23 @@ func NewDaemonize() *Daemonize {
 	return &Daemonize{}
 }
 
-func (c *Daemonize) Name() string {
+func (d *Daemonize) Name() string {
 	return "daemonize"
 }
 
-func (c *Daemonize) FlagSet() *flag.FlagSet {
+func (d *Daemonize) FlagSet() *flag.FlagSet {
 	return flag.NewFlagSet("daemonize", flag.ExitOnError)
 }
 
-func (c *Daemonize) Description() string {
+func (d *Daemonize) Description() string {
 	return fmt.Sprintf("Daemonizes %s as a service/daemon", SERVICE)
 }
 
-func (c *Daemonize) Usage() string {
+func (d *Daemonize) Usage() string {
 	return ""
 }
 
-func (c *Daemonize) Help() {
+func (d *Daemonize) Help() {
 	fmt.Println()
 	fmt.Printf("  Usage: %s daemonize\n", SERVICE)
 	fmt.Println()
@@ -103,7 +104,7 @@ func (c *Daemonize) Help() {
 	fmt.Println()
 }
 
-func (c *Daemonize) Execute(ctx context.Context) error {
+func (d *Daemonize) Execute(ctx context.Context) error {
 	fmt.Println("   ... daemonizing")
 
 	executable, err := os.Executable()
@@ -111,35 +112,35 @@ func (c *Daemonize) Execute(ctx context.Context) error {
 		return err
 	}
 
-	d := info{
+	i := info{
 		Label:      fmt.Sprintf("com.github.twystd.%s", SERVICE),
 		Executable: executable,
-		WorkDir:    c.workdir,
-		StdLogFile: filepath.Join(c.logdir, fmt.Sprintf("%s.log", SERVICE)),
-		ErrLogFile: filepath.Join(c.logdir, fmt.Sprintf("%s.err", SERVICE)),
+		WorkDir:    d.workdir,
+		StdLogFile: filepath.Join(d.logdir, fmt.Sprintf("%s.log", SERVICE)),
+		ErrLogFile: filepath.Join(d.logdir, fmt.Sprintf("%s.err", SERVICE)),
 	}
 
-	if err := c.launchd(&d); err != nil {
+	if err := d.launchd(&i); err != nil {
 		return err
 	}
 
-	if err := c.mkdirs(); err != nil {
+	if err := d.mkdirs(); err != nil {
 		return err
 	}
 
-	if err := c.logrotate(&d); err != nil {
+	if err := d.logrotate(&i); err != nil {
 		return err
 	}
 
-	if err := c.firewall(&d); err != nil {
+	if err := d.firewall(&i); err != nil {
 		return err
 	}
 
-	if err := c.conf(&d); err != nil {
+	if err := d.conf(&i); err != nil {
 		return err
 	}
 
-	fmt.Printf("   ... %s registered as a LaunchDaemon\n", d.Label)
+	fmt.Printf("   ... %s registered as a LaunchDaemon\n", i.Label)
 	fmt.Println()
 	fmt.Println("   The daemon will start automatically on the next system restart - to start it manually, execute the following command:")
 	fmt.Println()
@@ -149,26 +150,26 @@ func (c *Daemonize) Execute(ctx context.Context) error {
 	return nil
 }
 
-func (c *Daemonize) launchd(d *info) error {
-	path := filepath.Join("/Library/LaunchDaemons", c.plist)
+func (d *Daemonize) launchd(i *info) error {
+	path := filepath.Join("/Library/LaunchDaemons", d.plist)
 	_, err := os.Stat(path)
 	if err != nil && !os.IsNotExist(err) {
 		return err
 	}
 
 	pl := plist{
-		Label:             d.Label,
-		Program:           d.Executable,
-		WorkingDirectory:  d.WorkDir,
+		Label:             i.Label,
+		Program:           i.Executable,
+		WorkingDirectory:  i.WorkDir,
 		ProgramArguments:  []string{},
 		KeepAlive:         true,
 		RunAtLoad:         true,
-		StandardOutPath:   d.StdLogFile,
-		StandardErrorPath: d.ErrLogFile,
+		StandardOutPath:   i.StdLogFile,
+		StandardErrorPath: i.ErrLogFile,
 	}
 
 	if !os.IsNotExist(err) {
-		current, err := c.parse(path)
+		current, err := d.parse(path)
 		if err != nil {
 			return err
 		}
@@ -181,10 +182,10 @@ func (c *Daemonize) launchd(d *info) error {
 		pl.StandardErrorPath = current.StandardErrorPath
 	}
 
-	return c.daemonize(path, pl)
+	return d.daemonize(path, pl)
 }
 
-func (c *Daemonize) parse(path string) (*plist, error) {
+func (d *Daemonize) parse(path string) (*plist, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -202,7 +203,7 @@ func (c *Daemonize) parse(path string) (*plist, error) {
 	return &p, nil
 }
 
-func (c *Daemonize) daemonize(path string, p interface{}) error {
+func (d *Daemonize) daemonize(path string, p interface{}) error {
 	fmt.Printf("   ... creating '%s'\n", path)
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
@@ -219,10 +220,10 @@ func (c *Daemonize) daemonize(path string, p interface{}) error {
 	return nil
 }
 
-func (c *Daemonize) mkdirs() error {
+func (d *Daemonize) mkdirs() error {
 	directories := []string{
-		c.workdir,
-		c.logdir,
+		d.workdir,
+		d.logdir,
 	}
 
 	for _, dir := range directories {
@@ -236,19 +237,22 @@ func (c *Daemonize) mkdirs() error {
 	return nil
 }
 
-func (c *Daemonize) conf(i *info) error {
-	path := c.config
-	// 	t := template.Must(template.New("uhppoted.conf").Parse(confTemplate))
+func (d *Daemonize) conf(i *info) error {
+	path := d.config
 
 	fmt.Printf("   ... creating '%s'\n", path)
-	// 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	// 	if err != nil {
-	// 		return err
-	// 	}
 
-	// 	defer f.Close()
+	cfg := config.NewConfig()
 
-	// 	return t.Execute(f, d)
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	cfg.Write(f)
+
 	return nil
 }
 
