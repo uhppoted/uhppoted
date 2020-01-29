@@ -9,6 +9,7 @@ import (
 )
 
 var cli = []uhppoted.Command{
+	&commands.DAEMONIZE,
 	&uhppoted.VERSION,
 }
 
