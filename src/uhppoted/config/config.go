@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/binary"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net"
 	"os"
@@ -174,6 +175,17 @@ func (c *Config) Load(path string) error {
 	}
 
 	return conf.Unmarshal(bytes, c)
+}
+
+func (c *Config) Write(w io.Writer) error {
+	// bytes, _ := json.MarshalIndent(cfg, ">>", "  ")
+    // fmt.Printf("-----\n")
+    // fmt.Printf("%s\n", string(bytes))
+    // fmt.Printf("-----\n")
+    // t := template.Must(template.New("uhppoted.conf").Parse(confTemplate))
+    // return t.Execute(f, d)
+    
+	return nil
 }
 
 // Ref. https://stackoverflow.com/questions/23529663/how-to-get-all-addresses-and-masks-from-local-interfaces-in-go
