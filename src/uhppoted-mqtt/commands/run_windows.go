@@ -12,7 +12,7 @@ import (
 	"sync"
 	"syscall"
 	"uhppote"
-	"uhppoted-mqtt/config"
+	"uhppoted/config"
 	filelogger "uhppoted/eventlog"
 )
 
