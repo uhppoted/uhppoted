@@ -7,9 +7,11 @@ import (
 	"io/ioutil"
 	"net"
 	"os"
+	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
+	"text/template"
 	"time"
 	"uhppote/encoding/conf"
 )
@@ -21,72 +23,41 @@ type Device struct {
 	Door    []string
 }
 
-type MQTT struct {
-	ServerID          string      `conf:"server.ID"`
-	Broker            string      `conf:"broker"`
-	BrokerCertificate string      `conf:"broker.certificate"`
-	ClientCertificate string      `conf:"client.certificate"`
-	ClientKey         string      `conf:"client.key"`
-	Topics            Topics      `conf:"topic"`
-	EventsKeyID       string      `conf:"events.key"`
-	SystemKeyID       string      `conf:"system.key"`
-	EventIDs          string      `conf:"events.index.filepath"`
-	Permissions       Permissions `conf:"permissions"`
-	HMAC              HMAC        `conf:"security.HMAC"`
-	Authentication    string      `conf:"security.authentication"`
-	HOTP              HOTP        `conf:"security.hotp"`
-	RSA               RSA         `conf:"security.rsa"`
-	Nonce             Nonce       `conf:"security.nonce"`
-	SignOutgoing      bool        `conf:"security.outgoing.sign"`
-	EncryptOutgoing   bool        `conf:"security.outgoing.encrypt"`
+// # OPEN API
+// # openapi.enabled = false
+// # openapi.directory = {{.WorkDir}}\rest\openapi
+
+type kv struct {
+	Key   string
+	Value interface{}
 }
 
-type Topics struct {
-	Root     string `conf:"root"`
-	Requests string `conf:"requests"`
-	Replies  string `conf:"replies"`
-	Events   string `conf:"events"`
-	System   string `conf:"system"`
-}
+const pretty = `# SYSTEM{{range .system}}
+{{.Key}} = {{.Value}}{{end}}
 
-func (t *Topics) Resolve(subtopic string) string {
-	if strings.HasPrefix(subtopic, "/") {
-		return strings.ReplaceAll(strings.TrimPrefix(subtopic, "/"), " ", "")
-	}
+# REST{{range .rest}}
+{{.Key}} = {{.Value}}{{end}}
 
-	if strings.HasPrefix(subtopic, "./") {
-		return strings.ReplaceAll(t.Root+"/"+strings.TrimPrefix(subtopic, "./"), " ", "")
-	}
+# MQTT{{range .mqtt}}
+{{.Key}} = {{.Value}}{{end}}
 
-	return strings.ReplaceAll(t.Root+"/"+subtopic, " ", "")
-}
+# OPEN API{{range .openapi}}
+# {{.Key}} = {{.Value}}{{end}}
 
-type HMAC struct {
-	Required bool   `conf:"required"`
-	Key      string `conf:"key"`
-}
-
-type HOTP struct {
-	Range    uint64 `conf:"range"`
-	Secrets  string `conf:"secrets"`
-	Counters string `conf:"counters"`
-}
-
-type RSA struct {
-	KeyDir string `conf:"keys"`
-}
-
-type Nonce struct {
-	Required bool   `conf:"required"`
-	Server   string `conf:"server"`
-	Clients  string `conf:"clients"`
-}
-
-type Permissions struct {
-	Enabled bool   `conf:"enabled"`
-	Users   string `conf:"users"`
-	Groups  string `conf:"groups"`
-}
+# DEVICES{{range $id,$device := .devices}}
+UT0311-L0x.{{$id}}.address = {{$device.Address}}
+UT0311-L0x.{{$id}}.door.1 = {{index $device.Door 0}}
+UT0311-L0x.{{$id}}.door.2 = {{index $device.Door 1}}
+UT0311-L0x.{{$id}}.door.3 = {{index $device.Door 2}}
+UT0311-L0x.{{$id}}.door.4 = {{index $device.Door 3}}
+{{else}}
+# Example configuration for UTO311-L04 with serial number 405419896
+# UT0311-L0x.405419896.address = 192.168.1.100:60000
+# UT0311-L0x.405419896.door.1 = Front Door
+# UT0311-L0x.405419896.door.2 = Side Door
+# UT0311-L0x.405419896.door.3 = Garage
+# UT0311-L0x.405419896.door.4 = Workshop
+{{end}}`
 
 type Config struct {
 	BindAddress         *net.UDPAddr  `conf:"bind.address"`
@@ -95,63 +66,24 @@ type Config struct {
 	HealthCheckInterval time.Duration `conf:"monitoring.healthcheck.interval"`
 	WatchdogInterval    time.Duration `conf:"monitoring.watchdog.interval"`
 	Devices             DeviceMap     `conf:"/^UT0311-L0x\\.([0-9]+)\\.(.*)/"`
+	REST                `conf:"rest"`
 	MQTT                `conf:"mqtt"`
+	OpenAPI             `conf:"openapi"`
 }
 
 func NewConfig() *Config {
 	bind, broadcast, listen := DefaultIpAddresses()
 
 	c := Config{
-		BindAddress:      &bind,
-		BroadcastAddress: &broadcast,
-		ListenAddress:    &listen,
-		MQTT: MQTT{
-			ServerID:          "twystd-uhppoted",
-			Broker:            "tcp://127.0.0.1:1883",
-			BrokerCertificate: mqttBrokerCertificate,
-			ClientCertificate: mqttClientCertificate,
-			ClientKey:         mqttClientKey,
-			Topics: Topics{
-				Root:     "twystd/uhppoted/gateway",
-				Requests: "./requests",
-				Replies:  "./replies",
-				Events:   "./events",
-				System:   "./system",
-			},
-			EventsKeyID:     "events",
-			SystemKeyID:     "system",
-			SignOutgoing:    true,
-			EncryptOutgoing: true,
-			HMAC: HMAC{
-				Required: false,
-				Key:      "",
-			},
-			Authentication: "HOTP, RSA",
-			HOTP: HOTP{
-				Range:    8,
-				Secrets:  hotpSecrets,
-				Counters: hotpCounters,
-			},
-			RSA: RSA{
-				KeyDir: rsaKeyDir,
-			},
-			Nonce: Nonce{
-				Required: true,
-				Server:   nonceServer,
-				Clients:  nonceClients,
-			},
-			Permissions: Permissions{
-				Enabled: false,
-				Users:   users,
-				Groups:  groups,
-			},
-			EventIDs: eventIDs,
-		},
-
+		BindAddress:         &bind,
+		BroadcastAddress:    &broadcast,
+		ListenAddress:       &listen,
 		HealthCheckInterval: 15 * time.Second,
 		WatchdogInterval:    5 * time.Second,
-
-		Devices: make(DeviceMap, 0),
+		REST:                *NewREST(),
+		MQTT:                *NewMQTT(),
+		OpenAPI:             *NewOpenAPI(),
+		Devices:             make(DeviceMap, 0),
 	}
 
 	return &c
@@ -169,7 +101,11 @@ func (c *Config) Load(path string) error {
 
 	defer f.Close()
 
-	bytes, err := ioutil.ReadAll(f)
+	return c.Read(f)
+}
+
+func (c *Config) Read(r io.Reader) error {
+	bytes, err := ioutil.ReadAll(r)
 	if err != nil {
 		return err
 	}
@@ -178,14 +114,46 @@ func (c *Config) Load(path string) error {
 }
 
 func (c *Config) Write(w io.Writer) error {
-	// bytes, _ := json.MarshalIndent(cfg, ">>", "  ")
-	// fmt.Printf("-----\n")
-	// fmt.Printf("%s\n", string(bytes))
-	// fmt.Printf("-----\n")
-	// t := template.Must(template.New("uhppoted.conf").Parse(confTemplate))
-	// return t.Execute(f, d)
+	system := []kv{}
+	v := reflect.ValueOf(c)
+	s := v.Elem()
+	N := s.NumField()
+	for i := 0; i < N; i++ {
+		f := s.Field(i)
+		t := s.Type().Field(i)
+		tag := t.Tag.Get("conf")
+		if f.Kind() != reflect.Struct && f.Kind() != reflect.Map {
+			system = append(system, kv{tag, f})
+		}
+	}
 
-	return nil
+	config := map[string]interface{}{
+		"system":  system,
+		"rest":    listify("rest", reflect.ValueOf(c.REST)),
+		"mqtt":    listify("mqtt", reflect.ValueOf(c.MQTT)),
+		"openapi": listify("openapi", reflect.ValueOf(c.OpenAPI)),
+		"devices": c.Devices,
+	}
+
+	return template.Must(template.New("uhppoted.conf").Parse(pretty)).Execute(w, config)
+}
+
+func listify(parent string, s reflect.Value) []kv {
+	list := []kv{}
+	N := s.NumField()
+	for i := 0; i < N; i++ {
+		f := s.Field(i)
+		t := s.Type().Field(i)
+		tag := t.Tag.Get("conf")
+
+		if f.Kind() == reflect.Struct {
+			list = append(list, listify(parent+"."+tag, f)...)
+		} else {
+			list = append(list, kv{parent + "." + tag, fmt.Sprintf("%v", f)})
+		}
+	}
+
+	return list
 }
 
 // Ref. https://stackoverflow.com/questions/23529663/how-to-get-all-addresses-and-masks-from-local-interfaces-in-go
