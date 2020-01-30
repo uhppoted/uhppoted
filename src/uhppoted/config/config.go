@@ -23,26 +23,50 @@ type Device struct {
 	Door    []string
 }
 
-// # OPEN API
-// # openapi.enabled = false
-// # openapi.directory = {{.WorkDir}}\rest\openapi
-
 type kv struct {
-	Key   string
-	Value interface{}
+	Key       string
+	Value     interface{}
+	IsDefault bool
 }
 
 const pretty = `# SYSTEM{{range .system}}
 {{.Key}} = {{.Value}}{{end}}
 
-# REST{{range .rest}}
+# REST{{range .rest}}{{if not .IsDefault}}
+{{.Key}} = {{.Value}}{{end}}{{end}}
+
+# MQTT{{range .mqtt}}{{if not .IsDefault}}
+{{.Key}} = {{.Value}}{{end}}{{end}}
+
+# OPEN API{{range .openapi}}{{if not .IsDefault}}
+{{.Key}} = {{.Value}}{{end}}{{end}}
+
+# DEVICES{{range $id,$device := .devices}}
+UT0311-L0x.{{$id}}.address = {{$device.Address}}
+UT0311-L0x.{{$id}}.door.1 = {{index $device.Door 0}}
+UT0311-L0x.{{$id}}.door.2 = {{index $device.Door 1}}
+UT0311-L0x.{{$id}}.door.3 = {{index $device.Door 2}}
+UT0311-L0x.{{$id}}.door.4 = {{index $device.Door 3}}
+{{else}}
+# Example configuration for UTO311-L04 with serial number 405419896
+# UT0311-L0x.405419896.address = 192.168.1.100:60000
+# UT0311-L0x.405419896.door.1 = Front Door
+# UT0311-L0x.405419896.door.2 = Side Door
+# UT0311-L0x.405419896.door.3 = Garage
+# UT0311-L0x.405419896.door.4 = Workshop
+{{end}}`
+
+const dump = `# SYSTEM{{range .system}}
 {{.Key}} = {{.Value}}{{end}}
+
+# REST{{range .rest}}
+{{if .IsDefault}}; {{end}}{{.Key}} = {{.Value}}{{end}}
 
 # MQTT{{range .mqtt}}
-{{.Key}} = {{.Value}}{{end}}
+{{if .IsDefault}}; {{end}}{{.Key}} = {{.Value}}{{end}}
 
 # OPEN API{{range .openapi}}
-# {{.Key}} = {{.Value}}{{end}}
+{{if .IsDefault}}# {{end}}{{.Key}} = {{.Value}}{{end}}
 
 # DEVICES{{range $id,$device := .devices}}
 UT0311-L0x.{{$id}}.address = {{$device.Address}}
@@ -114,6 +138,13 @@ func (c *Config) Read(r io.Reader) error {
 }
 
 func (c *Config) Write(w io.Writer) error {
+	defc := NewConfig()
+	defv := map[string][]kv{
+		"rest":    listify("rest", reflect.ValueOf(defc.REST)),
+		"mqtt":    listify("mqtt", reflect.ValueOf(defc.MQTT)),
+		"openapi": listify("openapi", reflect.ValueOf(defc.OpenAPI)),
+	}
+
 	system := []kv{}
 	v := reflect.ValueOf(c)
 	s := v.Elem()
@@ -123,7 +154,7 @@ func (c *Config) Write(w io.Writer) error {
 		t := s.Type().Field(i)
 		tag := t.Tag.Get("conf")
 		if f.Kind() != reflect.Struct && f.Kind() != reflect.Map {
-			system = append(system, kv{tag, f})
+			system = append(system, kv{tag, f, false})
 		}
 	}
 
@@ -133,6 +164,15 @@ func (c *Config) Write(w io.Writer) error {
 		"mqtt":    listify("mqtt", reflect.ValueOf(c.MQTT)),
 		"openapi": listify("openapi", reflect.ValueOf(c.OpenAPI)),
 		"devices": c.Devices,
+	}
+
+	for k, l := range defv {
+		list := config[k].([]kv)
+		for i, v := range list {
+			if v == l[i] {
+				list[i].IsDefault = true
+			}
+		}
 	}
 
 	return template.Must(template.New("uhppoted.conf").Parse(pretty)).Execute(w, config)
@@ -149,7 +189,7 @@ func listify(parent string, s reflect.Value) []kv {
 		if f.Kind() == reflect.Struct {
 			list = append(list, listify(parent+"."+tag, f)...)
 		} else {
-			list = append(list, kv{parent + "." + tag, fmt.Sprintf("%v", f)})
+			list = append(list, kv{parent + "." + tag, fmt.Sprintf("%v", f), false})
 		}
 	}
 
