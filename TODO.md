@@ -44,14 +44,12 @@
 - [x] Make watchdog check interval configurable 
 - [x] Include get-listener in health check
 - [ ] daemonize/darwin
-  - launchd
   - merge conf
   - generate HMAC key
   - generate RSA keys
-  - firewall
+  - undaemonize should remind user to remove config and workdir files that remain (iff any)
 - [ ] daemonize/linux
 - [ ] daemonize/windows
-- [ ] undaemonize
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status
   - https://blog.golang.org/go1.13-errors
 
