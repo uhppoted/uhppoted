@@ -39,8 +39,8 @@ const newsyslog = `#logfilename                                       [owner:gro
 var DAEMONIZE = Daemonize{
 	plist:   fmt.Sprintf("com.github.twystd.%s.plist", SERVICE),
 	workdir: "/usr/local/var/com.github.twystd.uhppoted",
-	logdir:  "/usr/local/var/com.github.twystd.uhppoted/log",
-	config:  fmt.Sprintf("/usr/local/etc/com.github.twystd.uhppoted/%s.stuff", SERVICE),
+	logdir:  "/usr/local/var/com.github.twystd.uhppoted/logs",
+	config:  "/usr/local/etc/com.github.twystd.uhppoted/uhppoted.conf",
 }
 
 type Daemonize struct {
@@ -94,32 +94,32 @@ func (d *Daemonize) Execute(ctx context.Context) error {
 		ErrLogFile: filepath.Join(d.logdir, fmt.Sprintf("%s.err", SERVICE)),
 	}
 
-	// if err := d.launchd(&i); err != nil {
-	// 	return err
-	// }
+	if err := d.launchd(&i); err != nil {
+		return err
+	}
 
-	// if err := d.mkdirs(); err != nil {
-	// 	return err
-	// }
+	if err := d.mkdirs(); err != nil {
+		return err
+	}
 
-	// if err := d.logrotate(&i); err != nil {
-	// 	return err
-	// }
+	if err := d.logrotate(&i); err != nil {
+		return err
+	}
 
-	// if err := d.firewall(&i); err != nil {
-	// 	return err
-	// }
+	if err := d.firewall(&i); err != nil {
+		return err
+	}
 
 	if err := d.conf(&i); err != nil {
 		return err
 	}
 
-	// fmt.Printf("   ... %s registered as a LaunchDaemon\n", i.Label)
-	// fmt.Println()
-	// fmt.Println("   The daemon will start automatically on the next system restart - to start it manually, execute the following command:")
-	// fmt.Println()
-	// fmt.Printf("   sudo launchctl load /Library/LaunchDaemons/com.github.twystd.%s.plist\n", SERVICE)
-	// fmt.Println()
+	fmt.Printf("   ... %s registered as a LaunchDaemon\n", i.Label)
+	fmt.Println()
+	fmt.Println("   The daemon will start automatically on the next system restart - to start it manually, execute the following command:")
+	fmt.Println()
+	fmt.Printf("   sudo launchctl load /Library/LaunchDaemons/com.github.twystd.%s.plist\n", SERVICE)
+	fmt.Println()
 
 	return nil
 }
@@ -218,7 +218,7 @@ func (d *Daemonize) conf(i *info) error {
 
 	// initialise config from existing uhppoted.conf
 	cfg := config.NewConfig()
-	if f, err := os.Open("/usr/local/etc/com.github.twystd.uhppoted/uhppoted.conf"); err != nil {
+	if f, err := os.Open(path); err != nil {
 		if !os.IsNotExist(err) {
 			return err
 		}

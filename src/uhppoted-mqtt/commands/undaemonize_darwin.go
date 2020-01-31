@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"strings"
 	"syscall"
@@ -15,8 +16,8 @@ import (
 var UNDAEMONIZE = Undaemonize{
 	plist:   fmt.Sprintf("com.github.twystd.%s.plist", SERVICE),
 	workdir: "/usr/local/var/com.github.twystd.uhppoted",
-	logdir:  "/usr/local/var/com.github.twystd.uhppoted/log",
-	config:  fmt.Sprintf("/usr/local/etc/com.github.twystd.uhppoted/%s.stuff", SERVICE),
+	logdir:  "/usr/local/var/com.github.twystd.uhppoted/logs",
+	config:  "/usr/local/etc/com.github.twystd.uhppoted/uhppoted.conf",
 }
 
 type Undaemonize struct {
@@ -75,6 +76,12 @@ func (u *Undaemonize) Execute(ctx context.Context) error {
 	}
 
 	fmt.Printf("   ... com.github.twystd.%s unregistered as a LaunchDaemon\n", SERVICE)
+	fmt.Printf(`
+   NOTE: Configuration files in %s,
+               working files in %s,
+               and log files in %s
+               were not removed and should be deleted manually
+`, path.Dir(u.config), u.workdir, u.logdir)
 	fmt.Println()
 
 	return nil
