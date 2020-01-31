@@ -52,6 +52,7 @@ interface.pointer = uiop
 sys.enabled = true
 sys.integer = -13579
 sys.unsigned = 8081
+sys.unsigned16 = 65535
 sys.unsigned32 = 4294967295
 sys.unsigned64 = 18446744073709551615
 sys.string = asdfghjkl
@@ -70,6 +71,7 @@ func TestRange(t *testing.T) {
 		Enabled    bool          `conf:"sys.enabled"`
 		Integer    int           `conf:"sys.integer"`
 		Unsigned   uint          `conf:"sys.unsigned"`
+		Unsigned16 uint16        `conf:"sys.unsigned16"`
 		Unsigned32 uint32        `conf:"sys.unsigned32"`
 		Unsigned64 uint64        `conf:"sys.unsigned64"`
 		String     string        `conf:"sys.string"`
@@ -82,6 +84,7 @@ func TestRange(t *testing.T) {
 		Enabled:    true,
 		Integer:    -13579,
 		Unsigned:   8081,
+		Unsigned16: 65535,
 		Unsigned32: 4294967295,
 		Unsigned64: 18446744073709551615,
 		String:     "asdfghjkl",
@@ -99,6 +102,7 @@ func TestRange(t *testing.T) {
 		testKV{"sys.enabled", true},
 		testKV{"sys.integer", -13579},
 		testKV{"sys.unsigned", uint(8081)},
+		testKV{"sys.unsigned16", uint16(65535)},
 		testKV{"sys.unsigned32", uint32(4294967295)},
 		testKV{"sys.unsigned64", uint64(18446744073709551615)},
 		testKV{"sys.string", "asdfghjkl"},
@@ -143,6 +147,7 @@ func TestMarshal(t *testing.T) {
 		Enabled    bool          `conf:"sys.enabled"`
 		Integer    int           `conf:"sys.integer"`
 		Unsigned   uint          `conf:"sys.unsigned"`
+		Unsigned16 uint16        `conf:"sys.unsigned16"`
 		Unsigned32 uint32        `conf:"sys.unsigned32"`
 		Unsigned64 uint64        `conf:"sys.unsigned64"`
 		String     string        `conf:"sys.string"`
@@ -155,6 +160,7 @@ func TestMarshal(t *testing.T) {
 		Enabled:    true,
 		Integer:    -13579,
 		Unsigned:   8081,
+		Unsigned16: 65535,
 		Unsigned32: 4294967295,
 		Unsigned64: 18446744073709551615,
 		String:     "asdfghjkl",
@@ -184,8 +190,9 @@ func TestUnmarshal(t *testing.T) {
 		Enabled    bool          `conf:"sys.enabled"`
 		Integer    int           `conf:"sys.integer"`
 		Unsigned   uint          `conf:"sys.unsigned"`
-		Unsigned32 uint          `conf:"sys.unsigned32"`
-		Unsigned64 uint          `conf:"sys.unsigned64"`
+		Unsigned16 uint16        `conf:"sys.unsigned16"`
+		Unsigned32 uint32        `conf:"sys.unsigned32"`
+		Unsigned64 uint64        `conf:"sys.unsigned64"`
 		String     string        `conf:"sys.string"`
 		Duration   time.Duration `conf:"sys.duration"`
 		Embedded   `conf:"embedded"`
@@ -226,12 +233,16 @@ func TestUnmarshal(t *testing.T) {
 		t.Errorf("Expected 'unsigned' value '%v', got: '%v'", 8081, config.Unsigned)
 	}
 
-	if config.Unsigned32 != 4294967295 {
-		t.Errorf("Expected 'unsigned' value '%v', got: '%v'", 4294967295, config.Unsigned32)
+	if config.Unsigned16 != uint16(65535) {
+		t.Errorf("Expected 'unsigned16' value '%v', got: '%v'", uint16(65535), config.Unsigned16)
 	}
 
-	if config.Unsigned64 != 18446744073709551615 {
-		t.Errorf("Expected 'unsigned' value '%v', got: '%v'", uint64(18446744073709551615), config.Unsigned64)
+	if config.Unsigned32 != uint32(4294967295) {
+		t.Errorf("Expected 'unsigned32' value '%v', got: '%v'", uint32(4294967295), config.Unsigned32)
+	}
+
+	if config.Unsigned64 != uint64(18446744073709551615) {
+		t.Errorf("Expected 'unsigned64' value '%v', got: '%v'", uint64(18446744073709551615), config.Unsigned64)
 	}
 
 	if config.String != "asdfghjkl" {
@@ -246,8 +257,8 @@ func TestUnmarshal(t *testing.T) {
 		t.Errorf("Expected 'embedded.name' value '%v', got: '%v'", "zxcvb", config.Name)
 	}
 
-	if config.ID != 67890 {
-		t.Errorf("Expected 'embedded.id' value '%v', got: '%v'", 67890, config.ID)
+	if config.ID != uint(67890) {
+		t.Errorf("Expected 'embedded.id' value '%v', got: '%v'", uint(67890), config.ID)
 	}
 }
 

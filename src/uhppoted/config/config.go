@@ -32,14 +32,14 @@ type kv struct {
 const pretty = `# SYSTEM{{range .system}}
 {{.Key}} = {{.Value}}{{end}}
 
-# REST{{range .rest}}{{if not .IsDefault}}
-{{.Key}} = {{.Value}}{{end}}{{end}}
+# REST{{range .rest}}
+{{if .IsDefault}}; {{end}}{{.Key}} = {{.Value}}{{end}}
 
-# MQTT{{range .mqtt}}{{if not .IsDefault}}
-{{.Key}} = {{.Value}}{{end}}{{end}}
+# MQTT{{range .mqtt}}
+{{if .IsDefault}}; {{end}}{{.Key}} = {{.Value}}{{end}}
 
-# OPEN API{{range .openapi}}{{if not .IsDefault}}
-{{.Key}} = {{.Value}}{{end}}{{end}}
+# OPEN API{{range .openapi}}
+{{if .IsDefault}}# {{end}}{{.Key}} = {{.Value}}{{end}}
 
 # DEVICES{{range $id,$device := .devices}}
 UT0311-L0x.{{$id}}.address = {{$device.Address}}
@@ -140,9 +140,9 @@ func (c *Config) Read(r io.Reader) error {
 func (c *Config) Write(w io.Writer) error {
 	defc := NewConfig()
 	defv := map[string][]kv{
-		"rest":    listify("rest", reflect.ValueOf(defc.REST)),
-		"mqtt":    listify("mqtt", reflect.ValueOf(defc.MQTT)),
-		"openapi": listify("openapi", reflect.ValueOf(defc.OpenAPI)),
+		"rest":    listify("rest", &defc.REST),
+		"mqtt":    listify("mqtt", &defc.MQTT),
+		"openapi": listify("openapi", &defc.OpenAPI),
 	}
 
 	system := []kv{}
@@ -160,9 +160,9 @@ func (c *Config) Write(w io.Writer) error {
 
 	config := map[string]interface{}{
 		"system":  system,
-		"rest":    listify("rest", reflect.ValueOf(c.REST)),
-		"mqtt":    listify("mqtt", reflect.ValueOf(c.MQTT)),
-		"openapi": listify("openapi", reflect.ValueOf(c.OpenAPI)),
+		"rest":    listify("rest", &c.REST),
+		"mqtt":    listify("mqtt", &c.MQTT),
+		"openapi": listify("openapi", &c.OpenAPI),
 		"devices": c.Devices,
 	}
 
@@ -178,20 +178,15 @@ func (c *Config) Write(w io.Writer) error {
 	return template.Must(template.New("uhppoted.conf").Parse(pretty)).Execute(w, config)
 }
 
-func listify(parent string, s reflect.Value) []kv {
+func listify(parent string, s interface{}) []kv {
 	list := []kv{}
-	N := s.NumField()
-	for i := 0; i < N; i++ {
-		f := s.Field(i)
-		t := s.Type().Field(i)
-		tag := t.Tag.Get("conf")
 
-		if f.Kind() == reflect.Struct {
-			list = append(list, listify(parent+"."+tag, f)...)
-		} else {
-			list = append(list, kv{parent + "." + tag, fmt.Sprintf("%v", f), false})
-		}
+	g := func(tag string, v interface{}) bool {
+		list = append(list, kv{tag, fmt.Sprintf("%v", v), false})
+		return true
 	}
+
+	conf.Range(s, g)
 
 	return list
 }

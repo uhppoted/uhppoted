@@ -94,32 +94,32 @@ func (d *Daemonize) Execute(ctx context.Context) error {
 		ErrLogFile: filepath.Join(d.logdir, fmt.Sprintf("%s.err", SERVICE)),
 	}
 
-	if err := d.launchd(&i); err != nil {
-		return err
-	}
+	// if err := d.launchd(&i); err != nil {
+	// 	return err
+	// }
 
-	if err := d.mkdirs(); err != nil {
-		return err
-	}
+	// if err := d.mkdirs(); err != nil {
+	// 	return err
+	// }
 
-	if err := d.logrotate(&i); err != nil {
-		return err
-	}
+	// if err := d.logrotate(&i); err != nil {
+	// 	return err
+	// }
 
-	if err := d.firewall(&i); err != nil {
-		return err
-	}
+	// if err := d.firewall(&i); err != nil {
+	// 	return err
+	// }
 
 	if err := d.conf(&i); err != nil {
 		return err
 	}
 
-	fmt.Printf("   ... %s registered as a LaunchDaemon\n", i.Label)
-	fmt.Println()
-	fmt.Println("   The daemon will start automatically on the next system restart - to start it manually, execute the following command:")
-	fmt.Println()
-	fmt.Printf("   sudo launchctl load /Library/LaunchDaemons/com.github.twystd.%s.plist\n", SERVICE)
-	fmt.Println()
+	// fmt.Printf("   ... %s registered as a LaunchDaemon\n", i.Label)
+	// fmt.Println()
+	// fmt.Println("   The daemon will start automatically on the next system restart - to start it manually, execute the following command:")
+	// fmt.Println()
+	// fmt.Printf("   sudo launchctl load /Library/LaunchDaemons/com.github.twystd.%s.plist\n", SERVICE)
+	// fmt.Println()
 
 	return nil
 }
