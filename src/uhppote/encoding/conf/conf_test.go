@@ -11,6 +11,11 @@ import (
 	"time"
 )
 
+type System struct {
+	SysName string `conf:"sysname"`
+	SysID   uint   `conf:"sysid"`
+}
+
 type Embedded struct {
 	Name string `conf:"name"`
 	ID   uint   `conf:"id"`
@@ -46,7 +51,9 @@ func (f *testType) UnmarshalConf(tag string, values map[string]string) (interfac
 }
 
 var configuration = []byte(
-	`udp.address = 192.168.1.100:54321
+	`sysname = this
+sysid = 42
+udp.address = 192.168.1.100:54321
 interface.value = qwerty
 interface.pointer = uiop
 sys.enabled = true
@@ -61,78 +68,6 @@ embedded.name = zxcvb
 embedded.id = 67890
 `)
 
-func TestRange(t *testing.T) {
-	address, _ := net.ResolveUDPAddr("udp", "192.168.1.100:54321")
-
-	config := struct {
-		UdpAddress *net.UDPAddr  `conf:"udp.address"`
-		Interface  testType      `conf:"interface.value"`
-		InterfaceP *testType     `conf:"interface.pointer"`
-		Enabled    bool          `conf:"sys.enabled"`
-		Integer    int           `conf:"sys.integer"`
-		Unsigned   uint          `conf:"sys.unsigned"`
-		Unsigned16 uint16        `conf:"sys.unsigned16"`
-		Unsigned32 uint32        `conf:"sys.unsigned32"`
-		Unsigned64 uint64        `conf:"sys.unsigned64"`
-		String     string        `conf:"sys.string"`
-		Duration   time.Duration `conf:"sys.duration"`
-		Embedded   `conf:"embedded"`
-	}{
-		UdpAddress: address,
-		Interface:  testType{"qwerty"},
-		InterfaceP: &testType{"uiop"},
-		Enabled:    true,
-		Integer:    -13579,
-		Unsigned:   8081,
-		Unsigned16: 65535,
-		Unsigned32: 4294967295,
-		Unsigned64: 18446744073709551615,
-		String:     "asdfghjkl",
-		Duration:   23 * time.Second,
-		Embedded: Embedded{
-			Name: "zxcvb",
-			ID:   67890,
-		},
-	}
-
-	expected := []testKV{
-		testKV{"udp.address", address},
-		testKV{"interface.value", "qwerty"},
-		testKV{"interface.pointer", "uiop"},
-		testKV{"sys.enabled", true},
-		testKV{"sys.integer", -13579},
-		testKV{"sys.unsigned", uint(8081)},
-		testKV{"sys.unsigned16", uint16(65535)},
-		testKV{"sys.unsigned32", uint32(4294967295)},
-		testKV{"sys.unsigned64", uint64(18446744073709551615)},
-		testKV{"sys.string", "asdfghjkl"},
-		testKV{"sys.duration", 23 * time.Second},
-		testKV{"embedded.name", "zxcvb"},
-		testKV{"embedded.id", uint(67890)},
-	}
-
-	list := []testKV{}
-	Range(config, func(k string, v interface{}) bool {
-		list = append(list, testKV{k, v})
-		return true
-	})
-
-	if !reflect.DeepEqual(list, expected) {
-		var err strings.Builder
-		fmt.Fprintf(&err, "Range did not fill list correctly:\n\n--------\n   %v\n   %v\n\n", expected, list)
-
-		for ix := 0; ix < len(expected) && ix < len(list); ix++ {
-			if !reflect.DeepEqual(list[ix], expected[ix]) {
-				fmt.Fprintf(&err, "   %#v\n   %#v\n", expected[ix], list[ix])
-				break
-			}
-		}
-		fmt.Fprintf(&err, "--------\n")
-
-		t.Errorf(err.String())
-	}
-}
-
 func TestMarshal(t *testing.T) {
 	address := net.UDPAddr{
 		IP:   []byte{192, 168, 1, 100},
@@ -141,6 +76,8 @@ func TestMarshal(t *testing.T) {
 	}
 
 	config := struct {
+		System     System
+		Ignore     string        `conf:"-"`
 		UdpAddress *net.UDPAddr  `conf:"udp.address"`
 		Interface  testType      `conf:"interface.value"`
 		InterfaceP *testType     `conf:"interface.pointer"`
@@ -154,6 +91,11 @@ func TestMarshal(t *testing.T) {
 		Duration   time.Duration `conf:"sys.duration"`
 		Embedded   `conf:"embedded"`
 	}{
+		System: System{
+			SysName: "this",
+			SysID:   42,
+		},
+		Ignore:     "ignore",
 		UdpAddress: &address,
 		Interface:  testType{"qwerty"},
 		InterfaceP: &testType{"uiop"},
@@ -184,6 +126,8 @@ func TestMarshal(t *testing.T) {
 
 func TestUnmarshal(t *testing.T) {
 	config := struct {
+		System     System        `conf:""`
+		Ignore     string        `conf:"-"`
 		UdpAddress *net.UDPAddr  `conf:"udp.address"`
 		Interface  testType      `conf:"interface.value"`
 		InterfaceP *testType     `conf:"interface.pointer"`
@@ -196,7 +140,9 @@ func TestUnmarshal(t *testing.T) {
 		String     string        `conf:"sys.string"`
 		Duration   time.Duration `conf:"sys.duration"`
 		Embedded   `conf:"embedded"`
-	}{}
+	}{
+		Ignore: "ignore",
+	}
 
 	err := Unmarshal(configuration, &config)
 	if err != nil {
@@ -207,6 +153,18 @@ func TestUnmarshal(t *testing.T) {
 		IP:   []byte{192, 168, 1, 100},
 		Port: 54321,
 		Zone: "",
+	}
+
+	if config.System.SysName != "this" {
+		t.Errorf("Expected 'sysname' %s, got: %s", "this", config.System.SysName)
+	}
+
+	if config.System.SysID != 42 {
+		t.Errorf("Expected 'sysid' %d, got: %d", 42, config.System.SysID)
+	}
+
+	if config.Ignore != "ignore" {
+		t.Errorf("Expected 'ignore' %s, got: %s", "ignore", config.Ignore)
 	}
 
 	if !reflect.DeepEqual(config.UdpAddress, &address) {
@@ -259,6 +217,80 @@ func TestUnmarshal(t *testing.T) {
 
 	if config.ID != uint(67890) {
 		t.Errorf("Expected 'embedded.id' value '%v', got: '%v'", uint(67890), config.ID)
+	}
+}
+
+func TestRange(t *testing.T) {
+	address, _ := net.ResolveUDPAddr("udp", "192.168.1.100:54321")
+
+	config := struct {
+		Ignore     string        `conf:"-"`
+		UdpAddress *net.UDPAddr  `conf:"udp.address"`
+		Interface  testType      `conf:"interface.value"`
+		InterfaceP *testType     `conf:"interface.pointer"`
+		Enabled    bool          `conf:"sys.enabled"`
+		Integer    int           `conf:"sys.integer"`
+		Unsigned   uint          `conf:"sys.unsigned"`
+		Unsigned16 uint16        `conf:"sys.unsigned16"`
+		Unsigned32 uint32        `conf:"sys.unsigned32"`
+		Unsigned64 uint64        `conf:"sys.unsigned64"`
+		String     string        `conf:"sys.string"`
+		Duration   time.Duration `conf:"sys.duration"`
+		Embedded   `conf:"embedded"`
+	}{
+		Ignore:     "ignore",
+		UdpAddress: address,
+		Interface:  testType{"qwerty"},
+		InterfaceP: &testType{"uiop"},
+		Enabled:    true,
+		Integer:    -13579,
+		Unsigned:   8081,
+		Unsigned16: 65535,
+		Unsigned32: 4294967295,
+		Unsigned64: 18446744073709551615,
+		String:     "asdfghjkl",
+		Duration:   23 * time.Second,
+		Embedded: Embedded{
+			Name: "zxcvb",
+			ID:   67890,
+		},
+	}
+
+	expected := []testKV{
+		testKV{"udp.address", address},
+		testKV{"interface.value", "qwerty"},
+		testKV{"interface.pointer", "uiop"},
+		testKV{"sys.enabled", true},
+		testKV{"sys.integer", -13579},
+		testKV{"sys.unsigned", uint(8081)},
+		testKV{"sys.unsigned16", uint16(65535)},
+		testKV{"sys.unsigned32", uint32(4294967295)},
+		testKV{"sys.unsigned64", uint64(18446744073709551615)},
+		testKV{"sys.string", "asdfghjkl"},
+		testKV{"sys.duration", 23 * time.Second},
+		testKV{"embedded.name", "zxcvb"},
+		testKV{"embedded.id", uint(67890)},
+	}
+
+	list := []testKV{}
+	Range(config, func(k string, v interface{}) bool {
+		list = append(list, testKV{k, v})
+		return true
+	})
+
+	if !reflect.DeepEqual(list, expected) {
+		var err strings.Builder
+		fmt.Fprintf(&err, "Range did not fill list correctly:\n\n--------\n   %v\n   %v\n\n", expected, list)
+
+		for ix := 0; ix < len(expected) && ix < len(list); ix++ {
+			if !reflect.DeepEqual(list[ix], expected[ix]) {
+				fmt.Fprintf(&err, "   %#v\n   %#v\n", expected[ix], list[ix])
+				break
+			}
+		}
+		fmt.Fprintf(&err, "--------\n")
+
+		t.Errorf(err.String())
 	}
 }
 
