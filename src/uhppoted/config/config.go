@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net"
 	"os"
-	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
@@ -30,7 +29,7 @@ type kv struct {
 }
 
 const pretty = `# SYSTEM{{range .system}}
-{{.Key}} = {{.Value}}{{end}}
+{{if .IsDefault}}; {{end}}{{.Key}} = {{.Value}}{{end}}
 
 # REST{{range .rest}}
 {{if .IsDefault}}; {{end}}{{.Key}} = {{.Value}}{{end}}
@@ -84,30 +83,41 @@ UT0311-L0x.{{$id}}.door.4 = {{index $device.Door 3}}
 {{end}}`
 
 type Config struct {
+	//	BindAddress         *net.UDPAddr  `conf:"bind.address"`
+	//	BroadcastAddress    *net.UDPAddr  `conf:"broadcast.address"`
+	//	ListenAddress       *net.UDPAddr  `conf:"listen.address"`
+	//	HealthCheckInterval time.Duration `conf:"monitoring.healthcheck.interval"`
+	//	WatchdogInterval    time.Duration `conf:"monitoring.watchdog.interval"`
+	System
+	Devices DeviceMap `conf:"/^UT0311-L0x\\.([0-9]+)\\.(.*)/"`
+	REST    `conf:"rest"`
+	MQTT    `conf:"mqtt"`
+	OpenAPI `conf:"openapi"`
+}
+
+type System struct {
 	BindAddress         *net.UDPAddr  `conf:"bind.address"`
 	BroadcastAddress    *net.UDPAddr  `conf:"broadcast.address"`
 	ListenAddress       *net.UDPAddr  `conf:"listen.address"`
 	HealthCheckInterval time.Duration `conf:"monitoring.healthcheck.interval"`
 	WatchdogInterval    time.Duration `conf:"monitoring.watchdog.interval"`
-	Devices             DeviceMap     `conf:"/^UT0311-L0x\\.([0-9]+)\\.(.*)/"`
-	REST                `conf:"rest"`
-	MQTT                `conf:"mqtt"`
-	OpenAPI             `conf:"openapi"`
 }
 
 func NewConfig() *Config {
 	bind, broadcast, listen := DefaultIpAddresses()
 
 	c := Config{
-		BindAddress:         &bind,
-		BroadcastAddress:    &broadcast,
-		ListenAddress:       &listen,
-		HealthCheckInterval: 15 * time.Second,
-		WatchdogInterval:    5 * time.Second,
-		REST:                *NewREST(),
-		MQTT:                *NewMQTT(),
-		OpenAPI:             *NewOpenAPI(),
-		Devices:             make(DeviceMap, 0),
+		System: System{
+			BindAddress:         &bind,
+			BroadcastAddress:    &broadcast,
+			ListenAddress:       &listen,
+			HealthCheckInterval: 15 * time.Second,
+			WatchdogInterval:    5 * time.Second,
+		},
+		REST:    *NewREST(),
+		MQTT:    *NewMQTT(),
+		OpenAPI: *NewOpenAPI(),
+		Devices: make(DeviceMap, 0),
 	}
 
 	return &c
@@ -140,29 +150,17 @@ func (c *Config) Read(r io.Reader) error {
 func (c *Config) Write(w io.Writer) error {
 	defc := NewConfig()
 	defv := map[string][]kv{
-		"rest":    listify("rest", &defc.REST),
-		"mqtt":    listify("mqtt", &defc.MQTT),
-		"openapi": listify("openapi", &defc.OpenAPI),
-	}
-
-	system := []kv{}
-	v := reflect.ValueOf(c)
-	s := v.Elem()
-	N := s.NumField()
-	for i := 0; i < N; i++ {
-		f := s.Field(i)
-		t := s.Type().Field(i)
-		tag := t.Tag.Get("conf")
-		if f.Kind() != reflect.Struct && f.Kind() != reflect.Map {
-			system = append(system, kv{tag, f, false})
-		}
+		"system":  listify("", &defc.System),
+		"rest":    listify("rest.", &defc.REST),
+		"mqtt":    listify("mqtt.", &defc.MQTT),
+		"openapi": listify("openapi.", &defc.OpenAPI),
 	}
 
 	config := map[string]interface{}{
-		"system":  system,
-		"rest":    listify("rest", &c.REST),
-		"mqtt":    listify("mqtt", &c.MQTT),
-		"openapi": listify("openapi", &c.OpenAPI),
+		"system":  listify("", &c.System),
+		"rest":    listify("rest.", &c.REST),
+		"mqtt":    listify("mqtt.", &c.MQTT),
+		"openapi": listify("openapi.", &c.OpenAPI),
 		"devices": c.Devices,
 	}
 
@@ -182,7 +180,7 @@ func listify(parent string, s interface{}) []kv {
 	list := []kv{}
 
 	g := func(tag string, v interface{}) bool {
-		list = append(list, kv{tag, fmt.Sprintf("%v", v), false})
+		list = append(list, kv{parent + tag, fmt.Sprintf("%v", v), false})
 		return true
 	}
 
