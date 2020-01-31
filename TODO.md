@@ -44,6 +44,7 @@
 - [x] Make watchdog check interval configurable 
 - [x] Include get-listener in health check
 - [ ] daemonize/darwin
+  - conf.Range
   - generate HMAC key
   - generate RSA keys
   - undaemonize should remind user to remove config and workdir files that remain (iff any)
@@ -152,6 +153,7 @@
 - [ ] build documentation
 - [ ] install documentation
 - [ ] user manuals
+- [ ] man/info page
 
 ### Other
 

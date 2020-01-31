@@ -11,13 +11,38 @@ import (
 	"time"
 )
 
+type Embedded struct {
+	Name string `conf:"name"`
+	ID   uint   `conf:"id"`
+}
+
+type testKV struct {
+	key   string
+	value interface{}
+}
+
 type testType struct {
 	value string
 }
 
-type Embedded struct {
-	Name string `conf:"name"`
-	ID   uint   `conf:"id"`
+func (f testType) MapKV(tag string, g func(string, interface{}) bool) bool {
+	return g(tag, f.value)
+}
+
+func (f testType) MarshalConf(tag string) ([]byte, error) {
+	var s strings.Builder
+
+	fmt.Fprintf(&s, "%s = %s", tag, f.value)
+
+	return []byte(s.String()), nil
+}
+
+func (f *testType) UnmarshalConf(tag string, values map[string]string) (interface{}, error) {
+	if v, ok := values[tag]; ok {
+		return &testType{v}, nil
+	}
+
+	return f, nil
 }
 
 var configuration = []byte(
@@ -34,6 +59,75 @@ sys.duration = 23s
 embedded.name = zxcvb
 embedded.id = 67890
 `)
+
+func TestRange(t *testing.T) {
+	address, _ := net.ResolveUDPAddr("udp", "192.168.1.100:54321")
+
+	config := struct {
+		UdpAddress *net.UDPAddr  `conf:"udp.address"`
+		Interface  testType      `conf:"interface.value"`
+		InterfaceP *testType     `conf:"interface.pointer"`
+		Enabled    bool          `conf:"sys.enabled"`
+		Integer    int           `conf:"sys.integer"`
+		Unsigned   uint          `conf:"sys.unsigned"`
+		Unsigned32 uint32        `conf:"sys.unsigned32"`
+		Unsigned64 uint64        `conf:"sys.unsigned64"`
+		String     string        `conf:"sys.string"`
+		Duration   time.Duration `conf:"sys.duration"`
+		Embedded   `conf:"embedded"`
+	}{
+		UdpAddress: address,
+		Interface:  testType{"qwerty"},
+		InterfaceP: &testType{"uiop"},
+		Enabled:    true,
+		Integer:    -13579,
+		Unsigned:   8081,
+		Unsigned32: 4294967295,
+		Unsigned64: 18446744073709551615,
+		String:     "asdfghjkl",
+		Duration:   23 * time.Second,
+		Embedded: Embedded{
+			Name: "zxcvb",
+			ID:   67890,
+		},
+	}
+
+	expected := []testKV{
+		testKV{"udp.address", address},
+		testKV{"interface.value", "qwerty"},
+		testKV{"interface.pointer", "uiop"},
+		testKV{"sys.enabled", true},
+		testKV{"sys.integer", -13579},
+		testKV{"sys.unsigned", uint(8081)},
+		testKV{"sys.unsigned32", uint32(4294967295)},
+		testKV{"sys.unsigned64", uint64(18446744073709551615)},
+		testKV{"sys.string", "asdfghjkl"},
+		testKV{"sys.duration", 23 * time.Second},
+		testKV{"embedded.name", "zxcvb"},
+		testKV{"embedded.id", uint(67890)},
+	}
+
+	list := []testKV{}
+	Range(config, func(k string, v interface{}) bool {
+		list = append(list, testKV{k, v})
+		return true
+	})
+
+	if !reflect.DeepEqual(list, expected) {
+		var err strings.Builder
+		fmt.Fprintf(&err, "Range did not fill list correctly:\n\n--------\n   %v\n   %v\n\n", expected, list)
+
+		for ix := 0; ix < len(expected) && ix < len(list); ix++ {
+			if !reflect.DeepEqual(list[ix], expected[ix]) {
+				fmt.Fprintf(&err, "   %#v\n   %#v\n", expected[ix], list[ix])
+				break
+			}
+		}
+		fmt.Fprintf(&err, "--------\n")
+
+		t.Errorf(err.String())
+	}
+}
 
 func TestMarshal(t *testing.T) {
 	address := net.UDPAddr{
@@ -155,22 +249,6 @@ func TestUnmarshal(t *testing.T) {
 	if config.ID != 67890 {
 		t.Errorf("Expected 'embedded.id' value '%v', got: '%v'", 67890, config.ID)
 	}
-}
-
-func (f testType) MarshalConf(tag string) ([]byte, error) {
-	var s strings.Builder
-
-	fmt.Fprintf(&s, "%s = %s", tag, f.value)
-
-	return []byte(s.String()), nil
-}
-
-func (f *testType) UnmarshalConf(tag string, values map[string]string) (interface{}, error) {
-	if v, ok := values[tag]; ok {
-		return &testType{v}, nil
-	}
-
-	return f, nil
 }
 
 // Unmarshal example for map[id]device using Unmarshaler interface
