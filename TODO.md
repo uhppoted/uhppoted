@@ -62,6 +62,7 @@
 - [ ] Implement retry + backoff for 'listen'
 - [ ] Rework listen logic to handle errors robustly
 - [x] Identify UTO311-L01..L04 based on serial number prefix
+- [ ] Rework conf.Marshal to use Range
 
 - [x] Fix go vet errors
 - [x] conf file decoder with reflection
