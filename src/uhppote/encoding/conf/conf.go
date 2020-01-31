@@ -98,6 +98,11 @@ func iterate(parent string, s reflect.Value, g func(string, interface{}) bool) b
 					return false
 				}
 
+			case tUint16:
+				if !g(tag, uint16(f.Uint())) {
+					return false
+				}
+
 			case tUint32:
 				if !g(tag, uint32(f.Uint())) {
 					return false
@@ -209,6 +214,9 @@ func marshal(s reflect.Value) ([]byte, error) {
 				fmt.Fprintf(&c, "%s = %v\n", tag, f)
 
 			case tUint:
+				fmt.Fprintf(&c, "%s = %v\n", tag, f)
+
+			case tUint16:
 				fmt.Fprintf(&c, "%s = %v\n", tag, f)
 
 			case tUint32:
@@ -346,6 +354,24 @@ func unmarshal(s reflect.Value, prefix string, values map[string]string) error {
 		case tUint16:
 			if value, ok := values[tag]; ok {
 				i, err := strconv.ParseUint(value, 10, 16)
+				if err != nil {
+					return err
+				}
+				f.SetUint(i)
+			}
+
+		case tUint32:
+			if value, ok := values[tag]; ok {
+				i, err := strconv.ParseUint(value, 10, 32)
+				if err != nil {
+					return err
+				}
+				f.SetUint(i)
+			}
+
+		case tUint64:
+			if value, ok := values[tag]; ok {
+				i, err := strconv.ParseUint(value, 10, 64)
 				if err != nil {
 					return err
 				}
