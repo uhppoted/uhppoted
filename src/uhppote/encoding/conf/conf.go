@@ -38,122 +38,6 @@ var (
 	pUDPAddr  = reflect.TypeOf(&net.UDPAddr{})
 )
 
-func Range(m interface{}, g func(string, interface{}) bool) {
-	v := reflect.ValueOf(m)
-
-	if v.Type().Kind() == reflect.Ptr {
-		iterate("", v.Elem(), g)
-	} else {
-		iterate("", reflect.Indirect(v), g)
-	}
-}
-
-func iterate(parent string, s reflect.Value, g func(string, interface{}) bool) bool {
-	if s.Kind() == reflect.Struct {
-		N := s.NumField()
-
-		for i := 0; i < N; i++ {
-			f := s.Field(i)
-			t := s.Type().Field(i)
-			tag := t.Tag.Get("conf")
-
-			if parent != "" {
-				tag = parent + "." + tag
-			}
-
-			// Rangeable{} interface
-			if m, ok := f.Interface().(Rangeable); ok {
-				if f.Kind() != reflect.Ptr || !f.IsNil() {
-					if !m.MapKV(tag, g) {
-						return false
-					}
-				}
-
-				continue
-			}
-
-			// Range over embedded structs
-			if f.Kind() == reflect.Struct {
-				if !iterate(tag, f, g) {
-					return false
-				}
-				continue
-			}
-
-			// range over built-in types
-
-			switch t.Type {
-			case tBool:
-				if !g(tag, f.Bool()) {
-					return false
-				}
-
-			case tInt:
-				if !g(tag, int(f.Int())) {
-					return false
-				}
-
-			case tUint:
-				if !g(tag, uint(f.Uint())) {
-					return false
-				}
-
-			case tUint16:
-				if !g(tag, uint16(f.Uint())) {
-					return false
-				}
-
-			case tUint32:
-				if !g(tag, uint32(f.Uint())) {
-					return false
-				}
-
-			case tUint64:
-				if !g(tag, uint64(f.Uint())) {
-					return false
-				}
-
-			case tString:
-				if !g(tag, f.String()) {
-					return false
-				}
-
-			case tDuration:
-				if !g(tag, time.Duration(int64(f.Int()))) {
-					return false
-				}
-
-			case pUDPAddr:
-				// NOTE: this returns a copy of the underlying UDPAddr. This is probably correct (or at least
-				//       safer) but does mean Range can't be used to modify the original struct. Am undecided
-				//       whether passing the pointer to the original would be more correct but it's moot for
-				//       now because Range() is only currently used 'read only' for marshaling and pretty
-				//       printing.
-				ip := reflect.Indirect(f).FieldByName("IP")
-				port := reflect.Indirect(f).FieldByName("Port")
-				zone := reflect.Indirect(f).FieldByName("Zone")
-
-				addr := net.UDPAddr{
-					IP:   make([]byte, len(ip.Bytes())),
-					Port: int(port.Int()),
-					Zone: zone.String(),
-				}
-
-				copy(addr.IP, ip.Bytes())
-
-				if !g(tag, &addr) {
-					return false
-				}
-
-			default:
-				panic(errors.New(fmt.Sprintf("Cannot apply Range to field with type '%v'", t.Type)))
-			}
-		}
-	}
-
-	return true
-}
-
 func Marshal(m interface{}) ([]byte, error) {
 	v := reflect.ValueOf(m)
 
@@ -174,6 +58,10 @@ func marshal(s reflect.Value) ([]byte, error) {
 			f := s.Field(i)
 			t := s.Type().Field(i)
 			tag := t.Tag.Get("conf")
+
+			if tag == "-" {
+				continue
+			}
 
 			// Marshal with MarshalConf{} interface
 			if m, ok := f.Interface().(Marshaler); ok {
@@ -196,7 +84,11 @@ func marshal(s reflect.Value) ([]byte, error) {
 					entries := strings.Split(string(v), "\n")
 					for _, e := range entries {
 						if e != "" {
-							fmt.Fprintf(&c, "%s.%s\n", tag, e)
+							if tag == "" {
+								fmt.Fprintf(&c, "%s\n", e)
+							} else {
+								fmt.Fprintf(&c, "%s.%s\n", tag, e)
+							}
 						}
 					}
 				}
@@ -284,7 +176,7 @@ func unmarshal(s reflect.Value, prefix string, values map[string]string) error {
 		t := s.Type().Field(i)
 		tag := strings.TrimSpace(t.Tag.Get("conf"))
 
-		if tag == "" || !f.CanSet() {
+		if !f.CanSet() {
 			continue
 		}
 
@@ -315,7 +207,11 @@ func unmarshal(s reflect.Value, prefix string, values map[string]string) error {
 		// Unmarshal embedded structs
 
 		if f.Kind() == reflect.Struct {
-			unmarshal(f, tag+".", values)
+			if tag == "" {
+				unmarshal(f, "", values)
+			} else {
+				unmarshal(f, tag+".", values)
+			}
 			continue
 		}
 
@@ -413,4 +309,124 @@ func unmarshal(s reflect.Value, prefix string, values map[string]string) error {
 	}
 
 	return nil
+}
+
+func Range(m interface{}, g func(string, interface{}) bool) {
+	v := reflect.ValueOf(m)
+
+	if v.Type().Kind() == reflect.Ptr {
+		iterate("", v.Elem(), g)
+	} else {
+		iterate("", reflect.Indirect(v), g)
+	}
+}
+
+func iterate(parent string, s reflect.Value, g func(string, interface{}) bool) bool {
+	if s.Kind() == reflect.Struct {
+		N := s.NumField()
+
+		for i := 0; i < N; i++ {
+			f := s.Field(i)
+			t := s.Type().Field(i)
+			tag := t.Tag.Get("conf")
+
+			if tag == "-" {
+				continue
+			}
+
+			if parent != "" {
+				tag = parent + "." + tag
+			}
+
+			// Rangeable{} interface
+			if m, ok := f.Interface().(Rangeable); ok {
+				if f.Kind() != reflect.Ptr || !f.IsNil() {
+					if !m.MapKV(tag, g) {
+						return false
+					}
+				}
+
+				continue
+			}
+
+			// Range over embedded structs
+			if f.Kind() == reflect.Struct {
+				if !iterate(tag, f, g) {
+					return false
+				}
+				continue
+			}
+
+			// range over built-in types
+
+			switch t.Type {
+			case tBool:
+				if !g(tag, f.Bool()) {
+					return false
+				}
+
+			case tInt:
+				if !g(tag, int(f.Int())) {
+					return false
+				}
+
+			case tUint:
+				if !g(tag, uint(f.Uint())) {
+					return false
+				}
+
+			case tUint16:
+				if !g(tag, uint16(f.Uint())) {
+					return false
+				}
+
+			case tUint32:
+				if !g(tag, uint32(f.Uint())) {
+					return false
+				}
+
+			case tUint64:
+				if !g(tag, uint64(f.Uint())) {
+					return false
+				}
+
+			case tString:
+				if !g(tag, f.String()) {
+					return false
+				}
+
+			case tDuration:
+				if !g(tag, time.Duration(int64(f.Int()))) {
+					return false
+				}
+
+			case pUDPAddr:
+				// NOTE: this returns a copy of the underlying UDPAddr. This is probably correct (or at least
+				//       safer) but does mean Range can't be used to modify the original struct. Am undecided
+				//       whether passing the pointer to the original would be more correct but it's moot for
+				//       now because Range() is only currently used 'read only' for marshaling and pretty
+				//       printing.
+				ip := reflect.Indirect(f).FieldByName("IP")
+				port := reflect.Indirect(f).FieldByName("Port")
+				zone := reflect.Indirect(f).FieldByName("Zone")
+
+				addr := net.UDPAddr{
+					IP:   make([]byte, len(ip.Bytes())),
+					Port: int(port.Int()),
+					Zone: zone.String(),
+				}
+
+				copy(addr.IP, ip.Bytes())
+
+				if !g(tag, &addr) {
+					return false
+				}
+
+			default:
+				panic(errors.New(fmt.Sprintf("Cannot apply Range to field with type '%v'", t.Type)))
+			}
+		}
+	}
+
+	return true
 }
