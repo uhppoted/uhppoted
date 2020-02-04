@@ -44,8 +44,8 @@
 - [x] Make watchdog check interval configurable 
 - [x] Include get-listener in health check
 - [ ] daemonize/darwin
-  - generate HMAC key
   - generate RSA keys
+- [ ] configurable watchdog parameters
 - [ ] daemonize/linux
 - [ ] daemonize/windows
 - [ ] 'dump config' command
