@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math/rand"
 	"net"
 	"os"
 	"regexp"
@@ -83,11 +84,6 @@ UT0311-L0x.{{$id}}.door.4 = {{index $device.Door 3}}
 {{end}}`
 
 type Config struct {
-	//	BindAddress         *net.UDPAddr  `conf:"bind.address"`
-	//	BroadcastAddress    *net.UDPAddr  `conf:"broadcast.address"`
-	//	ListenAddress       *net.UDPAddr  `conf:"listen.address"`
-	//	HealthCheckInterval time.Duration `conf:"monitoring.healthcheck.interval"`
-	//	WatchdogInterval    time.Duration `conf:"monitoring.watchdog.interval"`
 	System
 	Devices DeviceMap `conf:"/^UT0311-L0x\\.([0-9]+)\\.(.*)/"`
 	REST    `conf:"rest"`
@@ -135,7 +131,25 @@ func (c *Config) Load(path string) error {
 
 	defer f.Close()
 
-	return c.Read(f)
+	if err := c.Read(f); err != nil {
+		return err
+	}
+
+	// generate random 'temporary' HMAC key just to avoid defaulting to ""
+	if c.MQTT.HMAC.Key == "" {
+		const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+		rand.Seed(time.Now().UnixNano())
+
+		hmac := make([]byte, 32)
+		for i := range hmac {
+			hmac[i] = charset[rand.Intn(len(charset))]
+		}
+
+		c.MQTT.HMAC.Key = string(hmac)
+	}
+
+	return nil
 }
 
 func (c *Config) Read(r io.Reader) error {

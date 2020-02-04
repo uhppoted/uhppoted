@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"crypto/rand"
 	"flag"
 	"fmt"
 	"os"
@@ -230,6 +231,16 @@ func (d *Daemonize) conf(i *info) error {
 		}
 	}
 
+	// generate HMAC and RSA keys
+	if cfg.MQTT.HMAC.Key == "" {
+		hmac, err := hmac()
+		if err != nil {
+			return err
+		}
+
+		cfg.MQTT.HMAC.Key = hmac
+	}
+
 	// write back config with any updated information
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
@@ -321,4 +332,26 @@ func (c *Daemonize) firewall(i *info) error {
 	}
 
 	return nil
+}
+
+func hmac() (string, error) {
+	charset := []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789#!")
+	chars := make([]byte, 256)
+	err := error(nil)
+
+	copy(chars[0:64], charset)
+	copy(chars[64:128], charset)
+	copy(chars[128:192], charset)
+	copy(chars[192:256], charset)
+
+	bytes := make([]byte, 32)
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+
+	for i := 0; i < len(bytes); i++ {
+		bytes[i] = chars[bytes[i]]
+	}
+
+	return string(bytes), err
 }
