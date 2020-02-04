@@ -43,12 +43,12 @@
 - [x] watchdog
 - [x] Make watchdog check interval configurable 
 - [x] Include get-listener in health check
-- [ ] daemonize/darwin
-  - generate RSA keys
+- [x] daemonize/darwin
 - [ ] configurable watchdog parameters
 - [ ] daemonize/linux
 - [ ] daemonize/windows
 - [ ] 'dump config' command
+- [ ] Replace all "path" with "filepath"
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status
   - https://blog.golang.org/go1.13-errors
 
