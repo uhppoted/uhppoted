@@ -66,12 +66,12 @@ func NewRSA(keydir string, logger *log.Logger) (*RSA, error) {
 		return nil
 	}
 
-	r.signingKeys.key, err = loadPrivateKey(path.Join(r.signingKeys.directory, "private.key"))
+	r.signingKeys.key, err = loadPrivateKey(path.Join(r.signingKeys.directory, "mqttd.key"))
 	if err != nil {
 		log.Printf("WARN  %v", err)
 	}
 
-	r.encryptionKeys.key, err = loadPrivateKey(path.Join(r.encryptionKeys.directory, "private.key"))
+	r.encryptionKeys.key, err = loadPrivateKey(path.Join(r.encryptionKeys.directory, "mqttd.key"))
 	if err != nil {
 		log.Printf("WARN  %v", err)
 	}

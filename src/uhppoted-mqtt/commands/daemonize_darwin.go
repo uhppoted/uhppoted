@@ -1,8 +1,13 @@
 package commands
 
 import (
+	"bufio"
 	"context"
 	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/asn1"
+	"encoding/pem"
 	"flag"
 	"fmt"
 	"os"
@@ -80,6 +85,27 @@ func (d *Daemonize) Help() {
 }
 
 func (d *Daemonize) Execute(ctx context.Context) error {
+	dir := filepath.Dir(d.config)
+	r := bufio.NewReader(os.Stdin)
+
+	fmt.Println()
+	fmt.Printf("     **** PLEASE MAKE SURE YOU HAVE A BACKUP COPY OF THE CONFIGURATION INFORMATION AND KEYS IN %s ***\n", dir)
+	fmt.Println()
+	fmt.Printf("     Enter 'yes' to continue with the installation: ")
+
+	text, err := r.ReadString('\n')
+	if err != nil || strings.TrimSpace(text) != "yes" {
+		fmt.Println()
+		fmt.Printf("     -- installation cancelled --")
+		fmt.Println()
+		return nil
+	}
+
+	return d.execute(ctx)
+}
+
+func (d *Daemonize) execute(ctx context.Context) error {
+	fmt.Println()
 	fmt.Println("   ... daemonizing")
 
 	executable, err := os.Executable()
@@ -112,6 +138,10 @@ func (d *Daemonize) Execute(ctx context.Context) error {
 	}
 
 	if err := d.conf(&i); err != nil {
+		return err
+	}
+
+	if err := d.genkeys(&i); err != nil {
 		return err
 	}
 
@@ -332,6 +362,88 @@ func (c *Daemonize) firewall(i *info) error {
 	}
 
 	return nil
+}
+
+// Ref. https://gist.github.com/sdorra/1c95de8cb80da31610d2ad767cd6f251
+func (c *Daemonize) genkeys(i *info) error {
+	reader := rand.Reader
+	bits := 2048
+	root := filepath.Dir(c.config)
+
+	pk := filepath.Join(root, "mqtt", "rsa", "encryption", "mqttd.key")
+	pubkey := filepath.Join(root, "mqtt", "rsa", "encryption", "mqttd.pub")
+	_, err := os.Stat(pk)
+	if err != nil && !os.IsNotExist(err) {
+		return err
+	}
+
+	if os.IsNotExist(err) {
+		key, err := rsa.GenerateKey(reader, bits)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("   ... creating RSA encryption key '%s'\n", pk)
+		storePrivateKey(pk, key)
+		storePublicKey(pubkey, key.PublicKey)
+	}
+
+	pk = filepath.Join(root, "mqtt", "rsa", "signing", "mqttd.key")
+	pubkey = filepath.Join(root, "mqtt", "rsa", "signing", "mqttd.pub")
+	_, err = os.Stat(pk)
+	if err != nil && !os.IsNotExist(err) {
+		return err
+	}
+
+	if os.IsNotExist(err) {
+		key, err := rsa.GenerateKey(reader, bits)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("   ... creating RSA signing key '%s'\n", pk)
+		storePrivateKey(pk, key)
+		storePublicKey(pubkey, key.PublicKey)
+	}
+
+	return nil
+}
+
+func storePrivateKey(path string, key *rsa.PrivateKey) error {
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	var pemkey = &pem.Block{
+		Type:  "PRIVATE KEY",
+		Bytes: x509.MarshalPKCS1PrivateKey(key),
+	}
+
+	return pem.Encode(f, pemkey)
+}
+
+func storePublicKey(path string, key rsa.PublicKey) error {
+	bytes, err := asn1.Marshal(key)
+	if err != nil {
+		return err
+	}
+
+	var pemkey = &pem.Block{
+		Type:  "PUBLIC KEY",
+		Bytes: bytes,
+	}
+
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	return pem.Encode(f, pemkey)
 }
 
 func hmac() (string, error) {
