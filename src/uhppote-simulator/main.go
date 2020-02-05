@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"path"
 	"path/filepath"
 	"uhppote"
 	"uhppote-simulator/simulator"
@@ -63,7 +62,7 @@ func load(dir string) []simulator.Simulator {
 	}
 
 	for _, g := range list {
-		files, err := filepath.Glob(path.Join(dir, g.glob))
+		files, err := filepath.Glob(filepath.Join(dir, g.glob))
 		if err == nil {
 			for _, f := range files {
 				s, err := UT0311L04.Load(f, g.compressed)

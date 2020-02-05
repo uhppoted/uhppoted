@@ -14,7 +14,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -41,13 +41,13 @@ func NewRSA(keydir string, logger *log.Logger) (*RSA, error) {
 			guard:      sync.Mutex{},
 			key:        nil,
 			clientKeys: map[string]*rsa.PublicKey{},
-			directory:  path.Join(keydir, "signing"),
+			directory:  filepath.Join(keydir, "signing"),
 		},
 		encryptionKeys: keyset{
 			guard:      sync.Mutex{},
 			key:        nil,
 			clientKeys: map[string]*rsa.PublicKey{},
-			directory:  path.Join(keydir, "encryption"),
+			directory:  filepath.Join(keydir, "encryption"),
 		},
 		log: logger,
 	}
@@ -66,12 +66,12 @@ func NewRSA(keydir string, logger *log.Logger) (*RSA, error) {
 		return nil
 	}
 
-	r.signingKeys.key, err = loadPrivateKey(path.Join(r.signingKeys.directory, "mqttd.key"))
+	r.signingKeys.key, err = loadPrivateKey(filepath.Join(r.signingKeys.directory, "mqttd.key"))
 	if err != nil {
 		log.Printf("WARN  %v", err)
 	}
 
-	r.encryptionKeys.key, err = loadPrivateKey(path.Join(r.encryptionKeys.directory, "mqttd.key"))
+	r.encryptionKeys.key, err = loadPrivateKey(filepath.Join(r.encryptionKeys.directory, "mqttd.key"))
 	if err != nil {
 		log.Printf("WARN  %v", err)
 	}
@@ -246,11 +246,11 @@ func loadPublicKeys(dir string, log *log.Logger) (map[string]*rsa.PublicKey, err
 
 	for _, f := range list {
 		filename := f.Name()
-		ext := path.Ext(filename)
+		ext := filepath.Ext(filename)
 		if ext == ".pub" {
 			clientID := strings.TrimSuffix(filename, ext)
 
-			bytes, err := ioutil.ReadFile(path.Join(dir, filename))
+			bytes, err := ioutil.ReadFile(filepath.Join(dir, filename))
 			if err != nil {
 				log.Printf("WARN  %v", err)
 			}
