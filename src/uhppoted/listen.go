@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -13,7 +13,7 @@ import (
 )
 
 type EventMap struct {
-	filepath  string
+	file      string
 	retrieved map[uint32]uint32
 }
 
@@ -129,19 +129,19 @@ func (u *UHPPOTED) fetch(device uint32, first uint32, last uint32, handler Event
 	return retrieved
 }
 
-func NewEventMap(filepath string) *EventMap {
+func NewEventMap(file string) *EventMap {
 	return &EventMap{
-		filepath:  filepath,
+		file:      file,
 		retrieved: map[uint32]uint32{},
 	}
 }
 
 func (m *EventMap) Load(log *log.Logger) error {
-	if m.filepath == "" {
+	if m.file == "" {
 		return nil
 	}
 
-	f, err := os.Open(m.filepath)
+	f, err := os.Open(m.file)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return nil
@@ -174,13 +174,13 @@ func (m *EventMap) Load(log *log.Logger) error {
 }
 
 func (m *EventMap) store() error {
-	if m.filepath == "" {
+	if m.file == "" {
 		return nil
 	}
 
-	dir := path.Dir(m.filepath)
-	filename := path.Base(m.filepath) + ".tmp"
-	tmpfile := path.Join(dir, filename)
+	dir := filepath.Dir(m.file)
+	filename := filepath.Base(m.file) + ".tmp"
+	tmpfile := filepath.Join(dir, filename)
 
 	f, err := os.Create(tmpfile)
 	if err != nil {
@@ -197,5 +197,5 @@ func (m *EventMap) store() error {
 
 	f.Close()
 
-	return os.Rename(tmpfile, m.filepath)
+	return os.Rename(tmpfile, m.file)
 }

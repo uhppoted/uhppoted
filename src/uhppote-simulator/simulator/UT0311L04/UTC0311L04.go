@@ -10,7 +10,7 @@ import (
 	"math/rand"
 	"net"
 	"os"
-	"path"
+	"path/filepath"
 	"reflect"
 	"time"
 	"uhppote"
@@ -53,7 +53,7 @@ func NewUT0311L04(deviceID uint32, dir string, compressed bool) *UT0311L04 {
 	rand.Read(mac)
 
 	device := UT0311L04{
-		file:       path.Join(dir, filename),
+		file:       filepath.Join(dir, filename),
 		compressed: compressed,
 
 		SerialNumber: types.SerialNumber(deviceID),

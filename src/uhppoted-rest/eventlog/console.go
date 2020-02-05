@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -136,14 +135,14 @@ func (l *Console) archive() error {
 	return nil
 }
 
-func (l *Console) compress(filepath string) error {
-	_, filename := path.Split(filepath)
-	ext := path.Ext(filepath)
-	log.Printf("------------- G'ZIPPING: %v\n", filepath)
+func (l *Console) compress(file string) error {
+	_, filename := filepath.Split(file)
+	ext := filepath.Ext(file)
+	log.Printf("------------- G'ZIPPING: %v\n", file)
 	log.Printf("------------- G'ZIPPING: %v\n", filename)
 	log.Printf("------------- G'ZIPPING: %v\n", ext)
 
-	f, err := os.Open(filepath)
+	f, err := os.Open(file)
 	if err != nil {
 		return err
 	}
@@ -156,7 +155,7 @@ func (l *Console) compress(filepath string) error {
 
 	fmt.Printf("------------- G'ZIPPING: LEN %v\n", len(s))
 
-	gzfile := filepath + ".gz"
+	gzfile := file + ".gz"
 	gz, err := os.Create(gzfile)
 	if err != nil {
 		return err

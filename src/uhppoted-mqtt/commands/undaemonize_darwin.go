@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
 	"strings"
 	"syscall"
@@ -81,7 +80,7 @@ func (u *Undaemonize) Execute(ctx context.Context) error {
                working files in %s,
                and log files in %s
                were not removed and should be deleted manually
-`, path.Dir(u.config), u.workdir, u.logdir)
+`, filepath.Dir(u.config), u.workdir, u.logdir)
 	fmt.Println()
 
 	return nil

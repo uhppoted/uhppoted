@@ -6,7 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
-	"path"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"strings"
@@ -85,7 +85,7 @@ func (kv *KeyValueStore) LoadFromFile(filepath string) error {
 }
 
 // Ref. https://www.joeshaw.org/dont-defer-close-on-writable-files/
-func (kv *KeyValueStore) save(filepath string, log *log.Logger) {
+func (kv *KeyValueStore) save(file string, log *log.Logger) {
 	// ... copy current store
 
 	kv.guard.Lock()
@@ -103,13 +103,13 @@ func (kv *KeyValueStore) save(filepath string, log *log.Logger) {
 	kv.writeLock.Lock()
 	defer kv.writeLock.Unlock()
 
-	if filepath == "" {
+	if file == "" {
 		return
 	}
 
-	dir := path.Dir(filepath)
-	filename := fmt.Sprintf("%s.%d", path.Base(filepath), kv.version)
-	tmpfile := path.Join(dir, filename)
+	dir := filepath.Dir(file)
+	filename := fmt.Sprintf("%s.%d", filepath.Base(file), kv.version)
+	tmpfile := filepath.Join(dir, filename)
 
 	os.MkdirAll(dir, os.ModeDir|os.ModePerm)
 
@@ -139,7 +139,7 @@ func (kv *KeyValueStore) save(filepath string, log *log.Logger) {
 	}
 
 	if version > kv.stored {
-		if err := os.Rename(tmpfile, filepath); err != nil {
+		if err := os.Rename(tmpfile, file); err != nil {
 			log.Printf("ERROR: %s - %v", kv.name, err)
 		} else {
 			kv.stored = version

@@ -48,7 +48,7 @@
 - [ ] daemonize/linux
 - [ ] daemonize/windows
 - [ ] 'dump config' command
-- [ ] Replace all "path" with "filepath"
+- [x] Replace all "path" with "filepath"
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status
   - https://blog.golang.org/go1.13-errors
 - [ ] Fix weird error on restart after failure (might be related to filesystem permissions after daemonize)
