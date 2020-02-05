@@ -12,9 +12,11 @@ import (
 )
 
 type HealthCheck struct {
-	uhppote *uhppote.UHPPOTE
-	log     *log.Logger
-	state   struct {
+	uhppote    *uhppote.UHPPOTE
+	idleTime   time.Duration
+	ignoreTime time.Duration
+	log        *log.Logger
+	state      struct {
 		Started time.Time
 		Touched *time.Time
 		Devices struct {
@@ -46,10 +48,12 @@ type alerts struct {
 	listener     bool
 }
 
-func NewHealthCheck(u *uhppote.UHPPOTE, l *log.Logger) HealthCheck {
+func NewHealthCheck(u *uhppote.UHPPOTE, idleTime, ignoreTime time.Duration, l *log.Logger) HealthCheck {
 	return HealthCheck{
-		uhppote: u,
-		log:     l,
+		uhppote:    u,
+		idleTime:   idleTime,
+		ignoreTime: ignoreTime,
+		log:        l,
 		state: struct {
 			Started time.Time
 			Touched *time.Time
@@ -250,7 +254,7 @@ func (h *HealthCheck) unexpected(now time.Time, handler MonitoringHandler) (uint
 		}
 
 		touched := value.(status).Touched
-		if now.After(touched.Add(IGNORE)) {
+		if now.After(touched.Add(h.ignoreTime)) {
 			h.state.Devices.Status.Delete(key)
 			h.state.Devices.Errors.Delete(key)
 
@@ -294,7 +298,7 @@ func (h *HealthCheck) checkStatus(id uint32, now time.Time, alerted *alerts, han
 		dt := time.Since(t).Round(time.Second)
 		dtt := int64(math.Abs(time.Since(touched).Seconds()))
 
-		if now.After(touched.Add(IDLE)) {
+		if now.After(touched.Add(h.idleTime)) {
 			if known {
 				errors += 1
 			} else {
@@ -357,7 +361,7 @@ func (h *HealthCheck) checkListener(id uint32, now time.Time, alerted *alerts, h
 		address := v.(listener).Address
 		touched := v.(listener).Touched
 
-		if now.After(touched.Add(IDLE)) {
+		if now.After(touched.Add(h.idleTime)) {
 			if known {
 				errors += 1
 			} else {

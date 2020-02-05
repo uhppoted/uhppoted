@@ -200,10 +200,14 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 	mqttd.Encryption.RSA = rsa
 	mqttd.Encryption.Nonce = *nonce
 
+	// ... monitoring
+
+	healthcheck := monitoring.NewHealthCheck(&u, c.HealthCheckIdle, c.HealthCheckIgnore, logger)
+
 	// ... listen forever
 
 	for {
-		err := r.listen(&u, &mqttd, logger, interrupt)
+		err := r.listen(&u, &mqttd, &healthcheck, logger, interrupt)
 		if err != nil {
 			logger.Printf("ERROR %v", err)
 			continue
@@ -216,7 +220,12 @@ func (r *Run) run(c *config.Config, logger *log.Logger) {
 	logger.Printf("STOP")
 }
 
-func (r *Run) listen(u *uhppote.UHPPOTE, mqttd *mqtt.MQTTD, logger *log.Logger, interrupt chan os.Signal) error {
+func (r *Run) listen(
+	u *uhppote.UHPPOTE,
+	mqttd *mqtt.MQTTD,
+	healthcheck *monitoring.HealthCheck,
+	logger *log.Logger,
+	interrupt chan os.Signal) error {
 	// ... MQTT task
 
 	go func() {
@@ -228,8 +237,7 @@ func (r *Run) listen(u *uhppote.UHPPOTE, mqttd *mqtt.MQTTD, logger *log.Logger, 
 	// ... health-check task
 
 	monitor := mqtt.NewSystemMonitor(mqttd, logger)
-	healthcheck := monitoring.NewHealthCheck(u, logger)
-	watchdog := monitoring.NewWatchdog(&healthcheck, logger)
+	watchdog := monitoring.NewWatchdog(healthcheck, logger)
 	k := time.NewTicker(r.healthCheckInterval)
 
 	defer k.Stop()

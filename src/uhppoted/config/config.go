@@ -14,6 +14,7 @@ import (
 	"text/template"
 	"time"
 	"uhppote/encoding/conf"
+	"uhppoted/monitoring"
 )
 
 type DeviceMap map[uint32]*Device
@@ -96,6 +97,8 @@ type System struct {
 	BroadcastAddress    *net.UDPAddr  `conf:"broadcast.address"`
 	ListenAddress       *net.UDPAddr  `conf:"listen.address"`
 	HealthCheckInterval time.Duration `conf:"monitoring.healthcheck.interval"`
+	HealthCheckIdle     time.Duration `conf:"monitoring.healthcheck.idle"`
+	HealthCheckIgnore   time.Duration `conf:"monitoring.healthcheck.ignore"`
 	WatchdogInterval    time.Duration `conf:"monitoring.watchdog.interval"`
 }
 
@@ -108,6 +111,8 @@ func NewConfig() *Config {
 			BroadcastAddress:    &broadcast,
 			ListenAddress:       &listen,
 			HealthCheckInterval: 15 * time.Second,
+			HealthCheckIdle:     monitoring.IDLE,
+			HealthCheckIgnore:   monitoring.IGNORE,
 			WatchdogInterval:    5 * time.Second,
 		},
 		REST:    *NewREST(),
