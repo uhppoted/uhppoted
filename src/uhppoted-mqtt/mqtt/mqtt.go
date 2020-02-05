@@ -311,7 +311,7 @@ func (mqttd *MQTTD) send(destID *string, topic string, message interface{}, msgt
 		return err
 	}
 
-	if m != nil {
+	if m != nil && mqttd.connection != nil {
 		mqttd.connection.Publish(topic, 0, false, string(m)).Wait()
 	}
 
