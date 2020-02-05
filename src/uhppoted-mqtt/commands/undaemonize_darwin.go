@@ -26,10 +26,6 @@ type Undaemonize struct {
 	config  string
 }
 
-func NewUndaemonize() *Undaemonize {
-	return &Undaemonize{}
-}
-
 func (u *Undaemonize) Name() string {
 	return "undaemonize"
 }
