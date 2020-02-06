@@ -53,7 +53,6 @@
   - https://blog.golang.org/go1.13-errors
 - [ ] Fix weird error on restart after failure (might be related to filesystem permissions after daemonize)
   
-        ```
         2020/02/05 10:12:13 INFO  publishing events to twystd/uhppoted/gateway/events
         2020/02/05 10:12:13 WARN  0            listen               Failed to open UDP socket [listen udp 192.168.1.100:60001: bind: address already in use]
         2020/02/05 10:12:13 [net]      incoming stopped with error EOF
@@ -64,7 +63,6 @@
         2020/02/05 10:12:13 [net]      logic stopped
         2020/02/05 10:12:13 [net]      incoming stopped with error EOF
         2020/02/05 10:12:13 [net]      error triggered, stopping
-        ```
 
 - [x] subscribe
 - [x] error handling
