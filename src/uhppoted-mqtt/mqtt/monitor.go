@@ -17,6 +17,7 @@ var alive = sync.Map{}
 func NewSystemMonitor(mqttd *MQTTD, log *log.Logger) *SystemMonitor {
 	return &SystemMonitor{
 		mqttd: mqttd,
+		log:   log,
 	}
 }
 

@@ -142,6 +142,11 @@ func (d *Daemonize) execute(ctx context.Context) error {
 	fmt.Println()
 	fmt.Printf("   sudo launchctl load /Library/LaunchDaemons/com.github.twystd.%s.plist\n", SERVICE)
 	fmt.Println()
+	fmt.Println("   Please replace the default RSA keys for event and system messages:")
+	fmt.Printf("     - %s\n", filepath.Join(filepath.Dir(d.config), "mqtt", "rsa", "encryption", "event.pub"))
+	fmt.Printf("     - %s\n", filepath.Join(filepath.Dir(d.config), "mqtt", "rsa", "encryption", "system.pub"))
+	fmt.Println()
+	fmt.Println()
 
 	return nil
 }

@@ -29,7 +29,7 @@ func (mqttd *MQTTD) wrap(msgtype msgType, content interface{}, destID *string) (
 		return nil, err
 	}
 
-	body, key, err := mqttd.encrypt(bytes, destID)
+	body, key, err := mqttd.encrypt(bytes, destID, msgtype)
 	if err != nil {
 		return nil, err
 	}
@@ -163,13 +163,21 @@ func (m *MQTTD) verify(message []byte, mac *string) error {
 	return nil
 }
 
-func (m *MQTTD) encrypt(plaintext []byte, clientID *string) ([]byte, []byte, error) {
+func (m *MQTTD) encrypt(plaintext []byte, clientID *string, msgtype msgType) ([]byte, []byte, error) {
+	keytype := "request"
+	switch msgtype {
+	case msgEvent:
+		keytype = "event"
+	case msgSystem:
+		keytype = "system"
+	}
+
 	if m.Encryption.EncryptOutgoing {
 		if clientID == nil {
 			return nil, nil, fmt.Errorf("Missing client ID")
 		}
 
-		ciphertext, key, err := m.Encryption.RSA.Encrypt(plaintext, *clientID, "request")
+		ciphertext, key, err := m.Encryption.RSA.Encrypt(plaintext, *clientID, keytype)
 		if err != nil {
 			return nil, nil, err
 		}

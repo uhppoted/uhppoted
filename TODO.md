@@ -4,6 +4,12 @@
 
 ### uhppoted-mqtt
 
+- [x] subscribe
+- [x] error handling
+- [x] 'reply'
+- [x] TLS connection
+- [x] TLS connection: client authentication
+
 - [x] get-devices
 - [x] get-device
 - [x] get-status
@@ -43,14 +49,15 @@
 - [x] watchdog
 - [x] Make watchdog check interval configurable 
 - [x] Include get-listener in health check
-- [x] daemonize/darwin
 - [x] configurable healthcheck parameters
+
+- [ ] 'dump-config' command
+- [x] Set useful key type in outgoing messages
+- [x] daemonize/darwin
 - [ ] daemonize/linux
+   - error log ?
+   - create empty HOTP secrets file
 - [ ] daemonize/windows
-- [ ] 'dump config' command
-- [x] Replace all "path" with "filepath"
-- [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status
-  - https://blog.golang.org/go1.13-errors
 - [ ] Fix weird error on restart after failure (might be related to filesystem permissions after daemonize)
   
         2020/02/05 10:12:13 INFO  publishing events to twystd/uhppoted/gateway/events
@@ -64,17 +71,12 @@
         2020/02/05 10:12:13 [net]      incoming stopped with error EOF
         2020/02/05 10:12:13 [net]      error triggered, stopping
 
-- [x] subscribe
-- [x] error handling
-- [x] 'reply'
-- [x] TLS connection
-- [x] TLS connection: client authentication
 - [ ] Exit on error when multiple mqttd's are started (or generate unique client ID??? or .. lockfile)
 - [ ] Implement retry + backoff for connection to broker
 - [ ] Implement retry + backoff for 'listen'
 - [ ] Rework listen logic to handle errors robustly
-- [x] Identify UTO311-L01..L04 based on serial number prefix
 - [ ] Rework conf.Marshal to use Range
+- [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status (https://blog.golang.org/go1.13-errors)
 
 - [x] Fix go vet errors
 - [x] conf file decoder with reflection
@@ -83,6 +85,8 @@
 - [x] docker: simulator
 - [x] UT0311-L0x encoding: unmarshal arrays of structs (for broadcast)
 - [x] Move version to [LDFLAGS](https://stackoverflow.com/questions/28459102/golang-compile-environment-variable-into-binary)
+- [x] Replace all "path" with "filepath"
+- [x] Identify UTO311-L01..L04 based on serial number prefix
 
 ## TODO
 
