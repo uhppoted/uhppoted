@@ -183,6 +183,10 @@ func (d *Daemonize) execute(ctx context.Context) error {
 	fmt.Println()
 	fmt.Printf("     > sudo ufw allow from %s to any port 60000 proto udp\n", bind.IP)
 	fmt.Println()
+	fmt.Println("   Please replace the default RSA keys for event and system messages:")
+	fmt.Printf("     - %s\n", filepath.Join(filepath.Dir(d.config), "mqtt", "rsa", "encryption", "event.pub"))
+	fmt.Printf("     - %s\n", filepath.Join(filepath.Dir(d.config), "mqtt", "rsa", "encryption", "system.pub"))
+	fmt.Println()
 
 	return nil
 }
@@ -200,7 +204,7 @@ func (d *Daemonize) systemd(i *info) error {
 
 	defer f.Close()
 
-	return t.Execute(f, d)
+	return t.Execute(f, i)
 }
 
 func (d *Daemonize) mkdirs(i *info) error {
@@ -238,7 +242,7 @@ func (d *Daemonize) logrotate(i *info) error {
 
 	defer f.Close()
 
-	return t.Execute(f, d)
+	return t.Execute(f, i)
 }
 
 func (d *Daemonize) conf(i *info) error {
