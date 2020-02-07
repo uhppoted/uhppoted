@@ -20,6 +20,7 @@ var DAEMONIZE = Daemonize{
 	workdir:   "/var/uhppoted",
 	logdir:    "/var/log/uhppoted",
 	config:    "/etc/uhppoted/uhppoted.conf",
+	hotp:      "/etc/uhppoted/mqtt.hotp.secrets",
 }
 
 type usergroup string
@@ -73,6 +74,7 @@ type Daemonize struct {
 	workdir   string
 	logdir    string
 	config    string
+	hotp      string
 }
 
 func (d *Daemonize) Name() string {
@@ -286,7 +288,7 @@ func (d *Daemonize) conf(i *info) error {
 }
 
 func (d *Daemonize) genkeys(i *info) error {
-	return genkeys(filepath.Dir(d.config))
+	return genkeys(filepath.Dir(d.config), d.hotp)
 }
 
 // usergroup::flag.Value

@@ -42,6 +42,7 @@ var DAEMONIZE = Daemonize{
 	workdir: "/usr/local/var/com.github.twystd.uhppoted",
 	logdir:  "/usr/local/var/com.github.twystd.uhppoted/logs",
 	config:  "/usr/local/etc/com.github.twystd.uhppoted/uhppoted.conf",
+	hotp:    "/usr/local/etc/com.github.twystd.uhppoted/mqtt.hotp.secrets",
 }
 
 type Daemonize struct {
@@ -49,6 +50,7 @@ type Daemonize struct {
 	workdir string
 	logdir  string
 	config  string
+	hotp    string
 }
 
 func (d *Daemonize) Name() string {
@@ -360,7 +362,6 @@ func (c *Daemonize) firewall(i *info) error {
 	return nil
 }
 
-// Ref. https://gist.github.com/sdorra/1c95de8cb80da31610d2ad767cd6f251
 func (d *Daemonize) genkeys(i *info) error {
-	return genkeys(filepath.Dir(d.config))
+	return genkeys(filepath.Dir(d.config), d.hotp)
 }
