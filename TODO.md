@@ -54,10 +54,7 @@
 - [ ] 'dump-config' command
 - [x] Set useful key type in outgoing messages
 - [x] daemonize/darwin
-- [ ] daemonize/linux
-   - error log ?
-   - create empty HOTP secrets file
-   - clean up genkey()
+- [x] daemonize/linux
 - [ ] daemonize/windows
 - [ ] Fix weird error on restart after failure (might be related to filesystem permissions after daemonize)
   

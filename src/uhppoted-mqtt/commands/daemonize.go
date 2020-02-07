@@ -32,96 +32,85 @@ func hmac() (string, error) {
 	return string(bytes), err
 }
 
-// Ref. https://gist.github.com/sdorra/1c95de8cb80da31610d2ad767cd6f251
-func genkeys(root string) error {
+func genkeys(rsa, hotp string) error {
+	encryption := filepath.Join(rsa, "mqtt", "rsa", "encryption")
+	signing := filepath.Join(rsa, "mqtt", "rsa", "signing")
+
+	// ... encryption keys
+	pk := filepath.Join(encryption, "mqttd.key")
+	genkey(&pk, nil, "   ... creating RSA encryption key")
+
+	// ... signing keys
+	pk = filepath.Join(signing, "mqttd.key")
+	genkey(&pk, nil, "   ... creating RSA signing key")
+
+	// ... event message keys
+	pubkey := filepath.Join(encryption, "events.pub")
+	genkey(nil, &pubkey, "   ... creating RSA event message key")
+
+	// ... system message keys
+	pubkey = filepath.Join(encryption, "system.pub")
+	genkey(nil, &pubkey, "   ... creating RSA system message key")
+
+	// ... HOTP secrets
+
+	_, err := os.Stat(hotp)
+	if err != nil && !os.IsNotExist(err) {
+		return err
+	}
+
+	if os.IsNotExist(err) {
+		fmt.Printf("   ... creating HOTP secrets file '%s'\n", hotp)
+		f, err := os.Create(hotp)
+		if err != nil {
+			return err
+		}
+
+		f.Close()
+	}
+
+	return nil
+}
+
+func genkey(pk, pubkey *string, msg string) error {
 	reader := rand.Reader
 	bits := 2048
 
-	// ... encryption keys
-	pk := filepath.Join(root, "mqtt", "rsa", "encryption", "mqttd.key")
-	pubkey := filepath.Join(root, "mqtt", "rsa", "encryption", "mqttd.pub")
-	_, err := os.Stat(pk)
-	if err != nil && !os.IsNotExist(err) {
+	key, err := rsa.GenerateKey(reader, bits)
+	if err != nil {
 		return err
 	}
 
-	if os.IsNotExist(err) {
-		key, err := rsa.GenerateKey(reader, bits)
-		if err != nil {
+	if pk != nil {
+		_, err := os.Stat(*pk)
+		if err != nil && !os.IsNotExist(err) {
 			return err
 		}
 
-		fmt.Printf("   ... creating RSA encryption key '%s'\n", pk)
-		if err := storePrivateKey(pk, key); err != nil {
+		if os.IsNotExist(err) {
+			fmt.Printf("%s '%s'\n", msg, *pk)
+			if err := storePrivateKey(*pk, key); err != nil {
+				return err
+			}
+
+			if pubkey != nil {
+				fmt.Printf("%s '%s'\n", msg, *pubkey)
+				if err := storePublicKey(*pubkey, key.PublicKey); err != nil {
+					return err
+				}
+			}
+		}
+	} else if pubkey != nil {
+		_, err := os.Stat(*pubkey)
+		if err != nil && !os.IsNotExist(err) {
 			return err
 		}
 
-		if err := storePublicKey(pubkey, key.PublicKey); err != nil {
-			return err
-		}
-	}
-
-	// ... signing keys
-	pk = filepath.Join(root, "mqtt", "rsa", "signing", "mqttd.key")
-	pubkey = filepath.Join(root, "mqtt", "rsa", "signing", "mqttd.pub")
-	_, err = os.Stat(pk)
-	if err != nil && !os.IsNotExist(err) {
-		return err
-	}
-
-	if os.IsNotExist(err) {
-		key, err := rsa.GenerateKey(reader, bits)
-		if err != nil {
-			return err
-		}
-
-		fmt.Printf("   ... creating RSA signing key '%s'\n", pk)
-		if err := storePrivateKey(pk, key); err != nil {
-			return err
-		}
-
-		if err := storePublicKey(pubkey, key.PublicKey); err != nil {
-			return err
-		}
-	}
-
-	// ... event message keys
-	pk = filepath.Join(root, "mqtt", "rsa", "encryption", "events.key")
-	pubkey = filepath.Join(root, "mqtt", "rsa", "encryption", "events.pub")
-	_, err = os.Stat(pk)
-	if err != nil && !os.IsNotExist(err) {
-		return err
-	}
-
-	if os.IsNotExist(err) {
-		key, err := rsa.GenerateKey(reader, bits)
-		if err != nil {
-			return err
-		}
-
-		fmt.Printf("   ... creating RSA event message key '%s'\n", pk)
-		if err := storePublicKey(pubkey, key.PublicKey); err != nil {
-			return err
-		}
-	}
-
-	// ... system message keys
-	pk = filepath.Join(root, "mqtt", "rsa", "encryption", "system.key")
-	pubkey = filepath.Join(root, "mqtt", "rsa", "encryption", "system.pub")
-	_, err = os.Stat(pk)
-	if err != nil && !os.IsNotExist(err) {
-		return err
-	}
-
-	if os.IsNotExist(err) {
-		key, err := rsa.GenerateKey(reader, bits)
-		if err != nil {
-			return err
-		}
-
-		fmt.Printf("   ... creating RSA system message key '%s'\n", pk)
-		if err := storePublicKey(pubkey, key.PublicKey); err != nil {
-			return err
+		if os.IsNotExist(err) {
+			fmt.Printf("%s '%s'\n", msg, *pubkey)
+			if err := storePublicKey(*pubkey, key.PublicKey); err != nil {
+				return err
+			}
 		}
 	}
 
