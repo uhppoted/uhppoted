@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/eventlog"
 	"golang.org/x/sys/windows/svc/mgr"
 	"os"
@@ -73,6 +74,7 @@ func (u *Undaemonize) Execute(ctx context.Context) error {
 }
 
 func (u *Undaemonize) unregister() error {
+	fmt.Println("   ... unregistering %s as a Windows service", u.name)
 	m, err := mgr.Connect()
 	if err != nil {
 		return err
@@ -87,6 +89,14 @@ func (u *Undaemonize) unregister() error {
 
 	defer s.Close()
 
+	fmt.Printf("   ... stopping %s service\n", u.name)
+	status, err := s.Control(svc.Stop)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("   ... %s stopped: %v\n", u.name, status)
+
+	fmt.Printf("   ... deleting %s service\n", u.name)
 	err = s.Delete()
 	if err != nil {
 		return err
@@ -97,6 +107,7 @@ func (u *Undaemonize) unregister() error {
 		return fmt.Errorf("RemoveEventLogSource() failed: %s", err)
 	}
 
+	fmt.Printf("   ... %s unregistered from the list of Windows services\n", u.name)
 	return nil
 }
 
@@ -130,7 +141,10 @@ func (u *Undaemonize) clean() error {
 				return err
 			}
 
-			if syserr != syscall.ENOTEMPTY {
+			// Windows error is: ERROR_DIR_NOT_EMPTY (0x91). May be fixed in 1.14.
+			// Ref. https://github.com/golang/go/issues/32309
+			// Ref. https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-
+			if syserr != syscall.ENOTEMPTY && syserr != 0x91 {
 				return err
 			}
 

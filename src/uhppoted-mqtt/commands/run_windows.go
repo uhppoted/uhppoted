@@ -8,6 +8,7 @@ import (
 	"golang.org/x/sys/windows/svc/eventlog"
 	"log"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"sync"
 	"syscall"
@@ -78,7 +79,10 @@ func (r *Run) start(c *config.Config) error {
 	logger.Printf("%s service - start\n", SERVICE)
 
 	if r.console {
-		r.run(c, logger)
+		interrupt := make(chan os.Signal, 1)
+
+		signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM)
+		r.run(c, logger, interrupt)
 		return nil
 	}
 
@@ -91,7 +95,6 @@ func (r *Run) start(c *config.Config) error {
 
 	logger.Printf("%s service - starting\n", SERVICE)
 	err = svc.Run(SERVICE, &uhppoted)
-
 	if err != nil {
 		fmt.Printf("   Unable to execute ServiceManager.Run request (%v)\n", err)
 		fmt.Println()
@@ -121,17 +124,9 @@ func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		// for {
-		// 	err := s.cmd.listen(s.conf, s.logger, interrupt)
+		s.cmd.run(s.conf, s.logger, interrupt)
 
-		// 	if err != nil {
-		// 		s.logger.Printf("ERROR: %v", err)
-		// 		continue
-		// 	}
-
-		// 	s.logger.Printf("exit\n")
-		// 	break
-		// }
+		s.logger.Printf("exit\n")
 	}()
 
 	status <- svc.Status{State: svc.Running, Accepts: commands}

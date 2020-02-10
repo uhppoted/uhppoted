@@ -49,6 +49,9 @@ func (r *Run) Execute(ctx context.Context) error {
 
 func (r *Run) exec(c *config.Config) error {
 	logger := log.New(os.Stdout, "", log.LstdFlags)
+	interrupt := make(chan os.Signal, 1)
+
+	signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	if !r.console {
 		events := eventlog.Ticker{Filename: r.logFile, MaxSize: r.logFileSize}
@@ -66,7 +69,7 @@ func (r *Run) exec(c *config.Config) error {
 		}()
 	}
 
-	r.run(c, logger)
+	r.run(c, logger, interrupt)
 
 	return nil
 }

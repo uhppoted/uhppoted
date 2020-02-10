@@ -246,11 +246,16 @@ func (m *MQTTD) authenticate(clientID *string, request []byte, signature *string
 			return true, nil
 		}
 	}
+
 	if strings.Contains(m.Authentication, "NONE") {
 		return false, nil
 	}
 
-	return false, fmt.Errorf("Could not authenticate %s", *clientID)
+	if clientID == nil {
+		return false, fmt.Errorf("Could not authenticate request - missing 'client-id'")
+	}
+
+	return false, fmt.Errorf("Could not authenticate request for '%s'", *clientID)
 }
 
 func (m *MQTTD) sign(reply []byte) ([]byte, error) {
