@@ -19,13 +19,11 @@ var DAEMONIZE = Daemonize{
 	description: "UHPPOTE UTO311-L0x access card controllers service",
 	workdir:     workdir(),
 	logdir:      filepath.Join(workdir(), "logs"),
-	config:      workdir(),
+	config:      filepath.Join(workdir(), "uhppoted.conf"),
 	hotp:        filepath.Join(workdir(), "mqtt.hotp.secrets"),
 }
 
 type info struct {
-	// Name             string
-	// Description      string
 	Executable       string
 	WorkDir          string
 	LogDir           string
@@ -98,8 +96,6 @@ func (d *Daemonize) execute(ctx context.Context) error {
 	bind, broadcast, _ := config.DefaultIpAddresses()
 
 	i := info{
-		// Name:             SERVICE,
-		// Description:      "UHPPOTE UTO311-L0x access card controllers service/daemon",
 		Executable:       executable,
 		WorkDir:          d.workdir,
 		LogDir:           d.logdir,
@@ -128,7 +124,8 @@ func (d *Daemonize) execute(ctx context.Context) error {
 	fmt.Println("   The service will start automatically on the next system restart. Start it manually from the")
 	fmt.Println("   'Services' application or from the command line by executing the following command:")
 	fmt.Println()
-	fmt.Println("     > net start uhppoted-rest")
+	fmt.Printf("     > net start %s\n", SERVICE)
+	fmt.Printf("     > sc query %s\n", SERVICE)
 	fmt.Println()
 	fmt.Println("   Please replace the default RSA keys for event and system messages:")
 	fmt.Printf("     - %s\n", filepath.Join(filepath.Dir(d.config), "mqtt", "rsa", "encryption", "event.pub"))
@@ -180,9 +177,9 @@ func (d *Daemonize) mkdirs(i *info) error {
 		i.WorkDir,
 		i.LogDir,
 		filepath.Join(i.WorkDir, "mqtt"),
-		filepath.Join(i.WorkDir, "mqtt/rsa"),
-		filepath.Join(i.WorkDir, "mqtt/rsa/encryption"),
-		filepath.Join(i.WorkDir, "mqtt/rsa/signing"),
+		filepath.Join(i.WorkDir, "mqtt", "rsa"),
+		filepath.Join(i.WorkDir, "mqtt", "rsa", "encryption"),
+		filepath.Join(i.WorkDir, "mqtt", "rsa", "signing"),
 	}
 
 	for _, dir := range directories {

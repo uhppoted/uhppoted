@@ -11,9 +11,7 @@ import (
 	"log"
 	"net"
 	"os"
-	"os/signal"
 	"strings"
-	"syscall"
 	"time"
 	"uhppote"
 	"uhppoted-mqtt/auth"
@@ -85,17 +83,11 @@ func (r *Run) execute(ctx context.Context, f func(*config.Config) error) error {
 	return f(conf)
 }
 
-func (r *Run) run(c *config.Config, logger *log.Logger) {
+func (r *Run) run(c *config.Config, logger *log.Logger, interrupt chan os.Signal) {
 	logger.Printf("START")
 
 	r.healthCheckInterval = c.HealthCheckInterval
 	r.watchdogInterval = c.WatchdogInterval
-
-	// ... syscall SIG handlers
-
-	interrupt := make(chan os.Signal, 1)
-
-	signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	// ... initialise MQTT
 

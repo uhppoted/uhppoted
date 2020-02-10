@@ -55,7 +55,7 @@
 - [x] Set useful key type in outgoing messages
 - [x] daemonize/darwin
 - [x] daemonize/linux
-- [ ] daemonize/windows
+- [x] daemonize/windows
 - [ ] Fix weird error on restart after failure (might be related to filesystem permissions after daemonize)
   
         2020/02/05 10:12:13 INFO  publishing events to twystd/uhppoted/gateway/events
