@@ -72,7 +72,7 @@ release-tar: release
 
 debug: build
 #	go test -v src/uhppote/encoding/conf/*.go
-	sudo ./bin/uhppoted-mqtt daemonize
+	./bin/uhppoted-mqtt config
 
 simulator: build
 	./bin/uhppote-simulator --debug --bind 192.168.1.100:54321 --rest 192.168.1.100:8008 --devices "./runtime/simulation/devices"
