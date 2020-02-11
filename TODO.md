@@ -54,8 +54,8 @@
 - [x] daemonize/darwin
 - [x] daemonize/linux
 - [x] daemonize/windows
+- [x] 'dump-config' command
 
-- [ ] 'dump-config' command
 - [ ] Fix weird error on restart after failure (might be related to filesystem permissions after daemonize)
   
         2020/02/05 10:12:13 INFO  publishing events to twystd/uhppoted/gateway/events

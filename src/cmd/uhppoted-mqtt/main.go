@@ -11,6 +11,7 @@ import (
 var cli = []uhppoted.Command{
 	&commands.DAEMONIZE,
 	&commands.UNDAEMONIZE,
+	&commands.DUMP,
 	&uhppoted.VERSION,
 }
 
