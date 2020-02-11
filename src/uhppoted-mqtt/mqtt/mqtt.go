@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"time"
 	"uhppote"
 	"uhppoted"
 	"uhppoted-mqtt/auth"
@@ -182,6 +183,8 @@ func (m *MQTTD) subscribeAndServe(d *dispatcher) error {
 	options.AddBroker(m.Broker)
 	options.SetClientID("twystd-uhppoted-mqttd")
 	options.SetDefaultPublishHandler(f)
+	options.SetConnectRetry(true)
+	options.SetConnectRetryInterval(15 * time.Second)
 	options.SetTLSConfig(m.TLS)
 
 	m.connection = MQTT.NewClient(options)

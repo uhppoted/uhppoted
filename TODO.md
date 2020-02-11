@@ -55,6 +55,12 @@
 - [x] daemonize/linux
 - [x] daemonize/windows
 - [x] 'dump-config' command
+- [ ] Implement retry + backoff for connection to broker
+  - Only set 'sent' for watchdog/health-check if connection to broker is alive
+  - Implement lost connection handler
+  - Implement OnConnect handler and resubscribe on reconnect
+  - Set keep-alive
+- [ ] mqtt credentials (or username/password)
 
 - [ ] Fix weird error on restart after failure (might be related to filesystem permissions after daemonize)
   
@@ -70,7 +76,6 @@
         2020/02/05 10:12:13 [net]      error triggered, stopping
 
 - [ ] Exit on error when multiple mqttd's are started (or generate unique client ID??? or .. lockfile)
-- [ ] Implement retry + backoff for connection to broker
 - [ ] Implement retry + backoff for 'listen'
 - [ ] Rework listen logic to handle errors robustly
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status (https://blog.golang.org/go1.13-errors)
