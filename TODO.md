@@ -50,12 +50,12 @@
 - [x] Make watchdog check interval configurable 
 - [x] Include get-listener in health check
 - [x] configurable healthcheck parameters
-
-- [ ] 'dump-config' command
 - [x] Set useful key type in outgoing messages
 - [x] daemonize/darwin
 - [x] daemonize/linux
 - [x] daemonize/windows
+
+- [ ] 'dump-config' command
 - [ ] Fix weird error on restart after failure (might be related to filesystem permissions after daemonize)
   
         2020/02/05 10:12:13 INFO  publishing events to twystd/uhppoted/gateway/events
@@ -73,7 +73,6 @@
 - [ ] Implement retry + backoff for connection to broker
 - [ ] Implement retry + backoff for 'listen'
 - [ ] Rework listen logic to handle errors robustly
-- [ ] Rework conf.Marshal to use Range
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status (https://blog.golang.org/go1.13-errors)
 
 - [x] Fix go vet errors
