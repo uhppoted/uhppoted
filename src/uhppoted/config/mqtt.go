@@ -11,6 +11,7 @@ type MQTT struct {
 	ClientCertificate string      `conf:"client.certificate"`
 	ClientKey         string      `conf:"client.key"`
 	Topics            Topics      `conf:"topic"`
+	Alerts            Alerts      `conf:"alerts"`
 	EventsKeyID       string      `conf:"events.key"`
 	SystemKeyID       string      `conf:"system.key"`
 	EventIDs          string      `conf:"events.index.filepath"`
@@ -30,6 +31,11 @@ type Topics struct {
 	Replies  string `conf:"replies"`
 	Events   string `conf:"events"`
 	System   string `conf:"system"`
+}
+
+type Alerts struct {
+	QOS      byte `conf:"qos"`
+	Retained bool `conf:"retained"`
 }
 
 type HMAC struct {
@@ -84,6 +90,10 @@ func NewMQTT() *MQTT {
 			Replies:  "./replies",
 			Events:   "./events",
 			System:   "./system",
+		},
+		Alerts: Alerts{
+			QOS:      1,
+			Retained: true,
 		},
 		EventsKeyID:     "events",
 		SystemKeyID:     "system",

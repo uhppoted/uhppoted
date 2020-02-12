@@ -45,7 +45,7 @@ func (m *SystemMonitor) Alive(monitor monitoring.Monitor, msg string) error {
 		return nil
 	}
 
-	if err := m.mqttd.send(&m.mqttd.Encryption.SystemKeyID, m.mqttd.Topics.System, event, msgSystem); err != nil {
+	if err := m.mqttd.send(&m.mqttd.Encryption.SystemKeyID, m.mqttd.Topics.System, event, msgSystem, false); err != nil {
 		m.log.Printf("WARN  %-20s %v", "monitoring", err)
 		return err
 	}
@@ -71,7 +71,7 @@ func (m *SystemMonitor) Alert(monitor monitoring.Monitor, msg string) error {
 		},
 	}
 
-	if err := m.mqttd.send(&m.mqttd.Encryption.SystemKeyID, m.mqttd.Topics.System, event, msgSystem); err != nil {
+	if err := m.mqttd.send(&m.mqttd.Encryption.SystemKeyID, m.mqttd.Topics.System, event, msgSystem, true); err != nil {
 		m.log.Printf("WARN  %-20s %v", "monitoring", err)
 		return err
 	}

@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	MQTT "github.com/eclipse/paho.mqtt.golang"
+	paho "github.com/eclipse/paho.mqtt.golang"
 	"log"
 	"os"
 	"regexp"
@@ -21,6 +21,11 @@ type Topics struct {
 	Replies  string
 	Events   string
 	System   string
+}
+
+type Alerts struct {
+	QOS      byte
+	Retained bool
 }
 
 type Encryption struct {
@@ -38,6 +43,7 @@ type MQTTD struct {
 	Broker         string
 	TLS            *tls.Config
 	Topics         Topics
+	Alerts         Alerts
 	HMAC           auth.HMAC
 	Encryption     Encryption
 	Authentication string
@@ -45,7 +51,7 @@ type MQTTD struct {
 	EventMap       string
 	Debug          bool
 
-	connection MQTT.Client
+	connection paho.Client
 	interrupt  chan os.Signal
 }
 
@@ -101,13 +107,13 @@ var regex = struct {
 	base64: regexp.MustCompile(`^"[A-Za-z0-9+/]*[=]{0,2}"$`),
 }
 
-func (m *MQTTD) Run(u *uhppote.UHPPOTE, log *log.Logger) {
-	MQTT.CRITICAL = log
-	MQTT.ERROR = log
-	MQTT.WARN = log
+func (mqttd *MQTTD) Run(u *uhppote.UHPPOTE, log *log.Logger) {
+	paho.CRITICAL = log
+	paho.ERROR = log
+	paho.WARN = log
 
-	if m.Debug {
-		MQTT.DEBUG = log
+	if mqttd.Debug {
+		paho.DEBUG = log
 	}
 
 	api := uhppoted.UHPPOTED{
@@ -116,39 +122,42 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, log *log.Logger) {
 	}
 
 	d := dispatcher{
-		mqttd:    m,
+		mqttd:    mqttd,
 		uhppoted: &api,
 		uhppote:  u,
 		log:      log,
 		table: map[string]fdispatch{
-			m.Topics.Requests + "/devices:get":             fdispatch{"get-devices", (*MQTTD).getDevices},
-			m.Topics.Requests + "/device:get":              fdispatch{"get-device", (*MQTTD).getDevice},
-			m.Topics.Requests + "/device/status:get":       fdispatch{"get-status", (*MQTTD).getStatus},
-			m.Topics.Requests + "/device/time:get":         fdispatch{"get-time", (*MQTTD).getTime},
-			m.Topics.Requests + "/device/time:set":         fdispatch{"set-time", (*MQTTD).setTime},
-			m.Topics.Requests + "/device/door/delay:get":   fdispatch{"get-door-delay", (*MQTTD).getDoorDelay},
-			m.Topics.Requests + "/device/door/delay:set":   fdispatch{"set-door-delay", (*MQTTD).setDoorDelay},
-			m.Topics.Requests + "/device/door/control:get": fdispatch{"get-door-control", (*MQTTD).getDoorControl},
-			m.Topics.Requests + "/device/door/control:set": fdispatch{"set-door-control", (*MQTTD).setDoorControl},
-			m.Topics.Requests + "/device/cards:get":        fdispatch{"get-cards", (*MQTTD).getCards},
-			m.Topics.Requests + "/device/cards:delete":     fdispatch{"delete-cards", (*MQTTD).deleteCards},
-			m.Topics.Requests + "/device/card:get":         fdispatch{"get-card", (*MQTTD).getCard},
-			m.Topics.Requests + "/device/card:put":         fdispatch{"put-card", (*MQTTD).putCard},
-			m.Topics.Requests + "/device/card:delete":      fdispatch{"delete-card", (*MQTTD).deleteCard},
-			m.Topics.Requests + "/device/events:get":       fdispatch{"get-events", (*MQTTD).getEvents},
-			m.Topics.Requests + "/device/event:get":        fdispatch{"get-event", (*MQTTD).getEvent},
+			mqttd.Topics.Requests + "/devices:get":             fdispatch{"get-devices", (*MQTTD).getDevices},
+			mqttd.Topics.Requests + "/device:get":              fdispatch{"get-device", (*MQTTD).getDevice},
+			mqttd.Topics.Requests + "/device/status:get":       fdispatch{"get-status", (*MQTTD).getStatus},
+			mqttd.Topics.Requests + "/device/time:get":         fdispatch{"get-time", (*MQTTD).getTime},
+			mqttd.Topics.Requests + "/device/time:set":         fdispatch{"set-time", (*MQTTD).setTime},
+			mqttd.Topics.Requests + "/device/door/delay:get":   fdispatch{"get-door-delay", (*MQTTD).getDoorDelay},
+			mqttd.Topics.Requests + "/device/door/delay:set":   fdispatch{"set-door-delay", (*MQTTD).setDoorDelay},
+			mqttd.Topics.Requests + "/device/door/control:get": fdispatch{"get-door-control", (*MQTTD).getDoorControl},
+			mqttd.Topics.Requests + "/device/door/control:set": fdispatch{"set-door-control", (*MQTTD).setDoorControl},
+			mqttd.Topics.Requests + "/device/cards:get":        fdispatch{"get-cards", (*MQTTD).getCards},
+			mqttd.Topics.Requests + "/device/cards:delete":     fdispatch{"delete-cards", (*MQTTD).deleteCards},
+			mqttd.Topics.Requests + "/device/card:get":         fdispatch{"get-card", (*MQTTD).getCard},
+			mqttd.Topics.Requests + "/device/card:put":         fdispatch{"put-card", (*MQTTD).putCard},
+			mqttd.Topics.Requests + "/device/card:delete":      fdispatch{"delete-card", (*MQTTD).deleteCard},
+			mqttd.Topics.Requests + "/device/events:get":       fdispatch{"get-events", (*MQTTD).getEvents},
+			mqttd.Topics.Requests + "/device/event:get":        fdispatch{"get-event", (*MQTTD).getEvent},
 		},
 	}
 
-	if err := m.subscribeAndServe(&d, log); err != nil {
-		log.Printf("ERROR: Error connecting to '%s': %v", m.Broker, err)
-		m.Close(log)
+	client, err := mqttd.subscribeAndServe(&d, log)
+	if err != nil {
+		log.Printf("ERROR: Error connecting to '%s': %v", mqttd.Broker, err)
+		mqttd.Close(log)
 		return
 	}
 
-	if err := m.listen(&api, u, log); err != nil {
+	mqttd.connection = client
+
+	if err := mqttd.listen(&api, u, log); err != nil {
 		log.Printf("ERROR: Error binding to listen port '%d': %v", 12345, err)
-		m.Close(log)
+		mqttd.Close(log)
 		return
 	}
 }
@@ -167,19 +176,19 @@ func (m *MQTTD) Close(log *log.Logger) {
 	m.connection = nil
 }
 
-func (m *MQTTD) subscribeAndServe(d *dispatcher, log *log.Logger) error {
-	var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
+func (m *MQTTD) subscribeAndServe(d *dispatcher, log *log.Logger) (paho.Client, error) {
+	var handler paho.MessageHandler = func(client paho.Client, msg paho.Message) {
 		d.dispatch(client, msg)
 	}
 
-	var connected MQTT.OnConnectHandler = func(client MQTT.Client) {
+	var connected paho.OnConnectHandler = func(client paho.Client) {
 		options := client.OptionsReader()
 		servers := options.Servers()
 		for _, url := range servers {
 			log.Printf("INFO  connected to %s", url)
 		}
 
-		token := m.connection.Subscribe(m.Topics.Requests+"/#", 0, nil)
+		token := m.connection.Subscribe(m.Topics.Requests+"/#", 0, handler)
 		if err := token.Error(); err != nil {
 			log.Printf("ERROR unable to subscribe to %s (%v)", m.Topics.Requests, err)
 			return
@@ -188,23 +197,28 @@ func (m *MQTTD) subscribeAndServe(d *dispatcher, log *log.Logger) error {
 		log.Printf("INFO  subscribed to %s", m.Topics.Requests)
 	}
 
-	options := MQTT.
+	var disconnected paho.ConnectionLostHandler = func(client paho.Client, err error) {
+		log.Printf("ERROR connection to MQTT broker lost (%v)", err)
+	}
+
+	options := paho.
 		NewClientOptions().
 		AddBroker(m.Broker).
 		SetClientID("twystd-uhppoted-mqttd").
 		SetTLSConfig(m.TLS).
-		SetDefaultPublishHandler(f).
+		SetCleanSession(false).
 		SetConnectRetry(true).
-		SetConnectRetryInterval(15 * time.Second).
-		SetOnConnectHandler(connected)
+		SetConnectRetryInterval(30 * time.Second).
+		SetOnConnectHandler(connected).
+		SetConnectionLostHandler(disconnected)
 
-	m.connection = MQTT.NewClient(options)
-	token := m.connection.Connect()
+	client := paho.NewClient(options)
+	token := client.Connect()
 	if err := token.Error(); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return client, nil
 }
 
 func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, log *log.Logger) error {
@@ -217,7 +231,7 @@ func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, log *log.Logg
 	}
 
 	handler := func(event uhppoted.EventMessage) {
-		if err := m.send(&m.Encryption.EventsKeyID, m.Topics.Events, event, msgEvent); err != nil {
+		if err := m.send(&m.Encryption.EventsKeyID, m.Topics.Events, event, msgEvent, false); err != nil {
 			log.Printf("WARN  %-20s %v", "listen", err)
 		}
 	}
@@ -231,7 +245,7 @@ func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, log *log.Logg
 	return nil
 }
 
-func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
+func (d *dispatcher) dispatch(client paho.Client, msg paho.Message) {
 	ctx := context.WithValue(context.Background(), "client", client)
 	ctx = context.WithValue(ctx, "log", d.log)
 
@@ -280,14 +294,14 @@ func (d *dispatcher) dispatch(client MQTT.Client, msg MQTT.Message) {
 				d.log.Printf("WARN  %-20s %v", fn.method, err)
 
 				if errx, ok := err.(*errorx); ok {
-					if err := d.mqttd.send(rq.ClientID, replyTo, errx, msgError); err != nil {
+					if err := d.mqttd.send(rq.ClientID, replyTo, errx, msgError, false); err != nil {
 						d.log.Printf("WARN  %-20s %v", fn.method, err)
 					}
 				}
 			}
 
 			if reply != nil {
-				if err := d.mqttd.send(rq.ClientID, replyTo, reply, msgReply); err != nil {
+				if err := d.mqttd.send(rq.ClientID, replyTo, reply, msgReply, false); err != nil {
 					d.log.Printf("WARN  %-20s %v", fn.method, err)
 				}
 			}
@@ -313,7 +327,7 @@ func (m *MQTTD) authorise(clientID *string, topic string) error {
 }
 
 // TODO: add callback for published/failed
-func (mqttd *MQTTD) send(destID *string, topic string, message interface{}, msgtype msgType) error {
+func (mqttd *MQTTD) send(destID *string, topic string, message interface{}, msgtype msgType, critical bool) error {
 	if mqttd.connection == nil {
 		return errors.New("No connection to MQTT broker")
 	}
@@ -325,7 +339,14 @@ func (mqttd *MQTTD) send(destID *string, topic string, message interface{}, msgt
 		return errors.New("'wrap' failed to return a publishable message")
 	}
 
-	token := mqttd.connection.Publish(topic, 0, false, string(m))
+	qos := byte(0)
+	retained := false
+	if critical {
+		qos = mqttd.Alerts.QOS
+		retained = mqttd.Alerts.Retained
+	}
+
+	token := mqttd.connection.Publish(topic, qos, retained, string(m))
 	if token.Error() != nil {
 		return token.Error()
 	}

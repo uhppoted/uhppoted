@@ -55,9 +55,7 @@
 - [x] daemonize/linux
 - [x] daemonize/windows
 - [x] 'dump-config' command
-- [ ] Implement retry + backoff for connection to broker
-  - Only set 'sent' for watchdog/health-check if connection to broker is alive
-  - Set keep-alive
+- [x] Implement retry + backoff for connection to broker
 - [ ] mqtt credentials (or username/password)
   - Configurable client-id
 
