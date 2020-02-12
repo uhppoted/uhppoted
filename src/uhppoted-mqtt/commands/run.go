@@ -124,6 +124,10 @@ func (r *Run) run(c *config.Config, logger *log.Logger, interrupt chan os.Signal
 			Events:   c.Topics.Resolve(c.Topics.Events),
 			System:   c.Topics.Resolve(c.Topics.System),
 		},
+		Alerts: mqtt.Alerts{
+			QOS:      c.Alerts.QOS,
+			Retained: c.Alerts.Retained,
+		},
 		Encryption: mqtt.Encryption{
 			SignOutgoing:    c.SignOutgoing,
 			EncryptOutgoing: c.EncryptOutgoing,
@@ -258,6 +262,4 @@ func (r *Run) listen(
 			return nil
 		}
 	}
-
-	return nil
 }

@@ -57,6 +57,7 @@ udp.address = 192.168.1.100:54321
 interface.value = qwerty
 interface.pointer = uiop
 sys.enabled = true
+sys.byte = 127
 sys.integer = -13579
 sys.unsigned = 8081
 sys.unsigned16 = 65535
@@ -82,6 +83,7 @@ func TestMarshal(t *testing.T) {
 		Interface  testType      `conf:"interface.value"`
 		InterfaceP *testType     `conf:"interface.pointer"`
 		Enabled    bool          `conf:"sys.enabled"`
+		Byte       byte          `conf:"sys.byte"`
 		Integer    int           `conf:"sys.integer"`
 		Unsigned   uint          `conf:"sys.unsigned"`
 		Unsigned16 uint16        `conf:"sys.unsigned16"`
@@ -100,6 +102,7 @@ func TestMarshal(t *testing.T) {
 		Interface:  testType{"qwerty"},
 		InterfaceP: &testType{"uiop"},
 		Enabled:    true,
+		Byte:       127,
 		Integer:    -13579,
 		Unsigned:   8081,
 		Unsigned16: 65535,
@@ -132,6 +135,7 @@ func TestUnmarshal(t *testing.T) {
 		Interface  testType      `conf:"interface.value"`
 		InterfaceP *testType     `conf:"interface.pointer"`
 		Enabled    bool          `conf:"sys.enabled"`
+		Byte       byte          `conf:"sys.byte"`
 		Integer    int           `conf:"sys.integer"`
 		Unsigned   uint          `conf:"sys.unsigned"`
 		Unsigned16 uint16        `conf:"sys.unsigned16"`
@@ -183,6 +187,10 @@ func TestUnmarshal(t *testing.T) {
 		t.Errorf("Expected 'boolean' value '%v', got: '%v'", true, config.Enabled)
 	}
 
+	if config.Byte != byte(127) {
+		t.Errorf("Expected 'byte' value '%v', got: '%v'", 127, config.Byte)
+	}
+
 	if config.Integer != -13579 {
 		t.Errorf("Expected 'integer' value '%v', got: '%v'", -13579, config.Integer)
 	}
@@ -229,6 +237,7 @@ func TestRange(t *testing.T) {
 		Interface  testType      `conf:"interface.value"`
 		InterfaceP *testType     `conf:"interface.pointer"`
 		Enabled    bool          `conf:"sys.enabled"`
+		Byte       byte          `conf:"sys.byte"`
 		Integer    int           `conf:"sys.integer"`
 		Unsigned   uint          `conf:"sys.unsigned"`
 		Unsigned16 uint16        `conf:"sys.unsigned16"`
@@ -243,6 +252,7 @@ func TestRange(t *testing.T) {
 		Interface:  testType{"qwerty"},
 		InterfaceP: &testType{"uiop"},
 		Enabled:    true,
+		Byte:       127,
 		Integer:    -13579,
 		Unsigned:   8081,
 		Unsigned16: 65535,
@@ -261,6 +271,7 @@ func TestRange(t *testing.T) {
 		testKV{"interface.value", "qwerty"},
 		testKV{"interface.pointer", "uiop"},
 		testKV{"sys.enabled", true},
+		testKV{"sys.byte", byte(127)},
 		testKV{"sys.integer", -13579},
 		testKV{"sys.unsigned", uint(8081)},
 		testKV{"sys.unsigned16", uint16(65535)},

@@ -51,7 +51,6 @@ func (w *Watchdog) Exec(handler MonitoringHandler) error {
 	healthCheckRunning := false
 
 	// Verify health-check
-
 	dt := time.Since(w.state.Started).Round(time.Second)
 	if w.healthcheck.state.Touched != nil {
 		dt = time.Since(*w.healthcheck.state.Touched)
@@ -78,14 +77,12 @@ func (w *Watchdog) Exec(handler MonitoringHandler) error {
 	}
 
 	// Report on known devices
-
 	if healthCheckRunning {
 		warnings += w.healthcheck.state.Warnings
 		errors += w.healthcheck.state.Errors
 	}
 
 	// 'k, done
-
 	level := "INFO"
 	msg := "OK"
 

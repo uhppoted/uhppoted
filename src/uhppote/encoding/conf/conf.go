@@ -28,6 +28,7 @@ type Unmarshaler interface {
 
 var (
 	tBool     = reflect.TypeOf(bool(false))
+	tByte     = reflect.TypeOf(byte(0))
 	tInt      = reflect.TypeOf(int(0))
 	tUint     = reflect.TypeOf(uint(0))
 	tUint16   = reflect.TypeOf(uint16(0))
@@ -100,6 +101,9 @@ func marshal(s reflect.Value) ([]byte, error) {
 
 			switch t.Type {
 			case tBool:
+				fmt.Fprintf(&c, "%s = %v\n", tag, f)
+
+			case tByte:
 				fmt.Fprintf(&c, "%s = %v\n", tag, f)
 
 			case tInt:
@@ -227,6 +231,15 @@ func unmarshal(s reflect.Value, prefix string, values map[string]string) error {
 				} else {
 					return fmt.Errorf("Invalid boolean value: %s:", value)
 				}
+			}
+
+		case tByte:
+			if value, ok := values[tag]; ok {
+				i, err := strconv.ParseUint(value, 10, 8)
+				if err != nil {
+					return err
+				}
+				f.SetUint(i)
 			}
 
 		case tInt:
@@ -362,6 +375,11 @@ func iterate(parent string, s reflect.Value, g func(string, interface{}) bool) b
 			switch t.Type {
 			case tBool:
 				if !g(tag, f.Bool()) {
+					return false
+				}
+
+			case tByte:
+				if !g(tag, byte(f.Uint())) {
 					return false
 				}
 
