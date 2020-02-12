@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -226,7 +225,7 @@ func (r *Run) listen(
 
 	defer mqttd.Close(logger)
 
-	// ... health-check task
+	// ... monitoring
 
 	monitor := mqtt.NewSystemMonitor(mqttd, logger)
 	watchdog := monitoring.NewWatchdog(healthcheck, logger)
@@ -241,9 +240,8 @@ func (r *Run) listen(
 		}
 	}()
 
-	// ... wait until interrupted/closed
+	// ... wait until interrupted
 
-	closed := make(chan struct{})
 	w := time.NewTicker(r.watchdogInterval)
 
 	defer w.Stop()
@@ -258,10 +256,8 @@ func (r *Run) listen(
 		case <-interrupt:
 			logger.Printf("... interrupt")
 			return nil
-
-		case <-closed:
-			logger.Printf("... closed")
-			return errors.New("MQTT client error")
 		}
 	}
+
+	return nil
 }

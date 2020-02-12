@@ -101,25 +101,25 @@ var regex = struct {
 	base64: regexp.MustCompile(`^"[A-Za-z0-9+/]*[=]{0,2}"$`),
 }
 
-func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
-	MQTT.CRITICAL = l
-	MQTT.ERROR = l
-	MQTT.WARN = l
+func (m *MQTTD) Run(u *uhppote.UHPPOTE, log *log.Logger) {
+	MQTT.CRITICAL = log
+	MQTT.ERROR = log
+	MQTT.WARN = log
 
 	if m.Debug {
-		MQTT.DEBUG = l
+		MQTT.DEBUG = log
 	}
 
 	api := uhppoted.UHPPOTED{
 		Uhppote: u,
-		Log:     l,
+		Log:     log,
 	}
 
 	d := dispatcher{
 		mqttd:    m,
 		uhppoted: &api,
 		uhppote:  u,
-		log:      l,
+		log:      log,
 		table: map[string]fdispatch{
 			m.Topics.Requests + "/devices:get":             fdispatch{"get-devices", (*MQTTD).getDevices},
 			m.Topics.Requests + "/device:get":              fdispatch{"get-device", (*MQTTD).getDevice},
@@ -140,65 +140,69 @@ func (m *MQTTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 		},
 	}
 
-	if err := m.subscribeAndServe(&d); err != nil {
-		l.Printf("ERROR: Error connecting to '%s': %v", m.Broker, err)
-		m.Close(l)
+	if err := m.subscribeAndServe(&d, log); err != nil {
+		log.Printf("ERROR: Error connecting to '%s': %v", m.Broker, err)
+		m.Close(log)
 		return
 	}
 
-	log.Printf("INFO  connected to %s\n", m.Broker)
-
-	if err := m.listen(&api, u, l); err != nil {
-		l.Printf("ERROR: Error binding to listen port '%d': %v", 12345, err)
-		m.Close(l)
+	if err := m.listen(&api, u, log); err != nil {
+		log.Printf("ERROR: Error binding to listen port '%d': %v", 12345, err)
+		m.Close(log)
 		return
 	}
 }
 
-func (m *MQTTD) Close(l *log.Logger) {
+func (m *MQTTD) Close(log *log.Logger) {
 	if m.interrupt != nil {
 		close(m.interrupt)
 	}
 
 	if m.connection != nil {
 		log.Printf("INFO  closing connection to %s", m.Broker)
-		token := m.connection.Unsubscribe(m.Topics.Requests + "/#")
-		if token.Wait() && token.Error() != nil {
-			l.Printf("WARN  Error unsubscribing from topic '%s': %v", m.Topics.Requests, token.Error())
-		}
-
 		m.connection.Disconnect(250)
+		log.Printf("INFO  closed connection to %s", m.Broker)
 	}
 
 	m.connection = nil
 }
 
-func (m *MQTTD) subscribeAndServe(d *dispatcher) error {
+func (m *MQTTD) subscribeAndServe(d *dispatcher, log *log.Logger) error {
 	var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
 		d.dispatch(client, msg)
 	}
 
-	options := MQTT.NewClientOptions()
+	var connected MQTT.OnConnectHandler = func(client MQTT.Client) {
+		options := client.OptionsReader()
+		servers := options.Servers()
+		for _, url := range servers {
+			log.Printf("INFO  connected to %s", url)
+		}
 
-	options.AddBroker(m.Broker)
-	options.SetClientID("twystd-uhppoted-mqttd")
-	options.SetDefaultPublishHandler(f)
-	options.SetConnectRetry(true)
-	options.SetConnectRetryInterval(15 * time.Second)
-	options.SetTLSConfig(m.TLS)
+		token := m.connection.Subscribe(m.Topics.Requests+"/#", 0, nil)
+		if err := token.Error(); err != nil {
+			log.Printf("ERROR unable to subscribe to %s (%v)", m.Topics.Requests, err)
+			return
+		}
+
+		log.Printf("INFO  subscribed to %s", m.Topics.Requests)
+	}
+
+	options := MQTT.
+		NewClientOptions().
+		AddBroker(m.Broker).
+		SetClientID("twystd-uhppoted-mqttd").
+		SetTLSConfig(m.TLS).
+		SetDefaultPublishHandler(f).
+		SetConnectRetry(true).
+		SetConnectRetryInterval(15 * time.Second).
+		SetOnConnectHandler(connected)
 
 	m.connection = MQTT.NewClient(options)
 	token := m.connection.Connect()
-	if token.Wait() && token.Error() != nil {
-		return token.Error()
+	if err := token.Error(); err != nil {
+		return err
 	}
-
-	token = m.connection.Subscribe(m.Topics.Requests+"/#", 0, nil)
-	if token.Wait() && token.Error() != nil {
-		return token.Error()
-	}
-
-	log.Printf("INFO  subscribed to %s", m.Topics.Requests)
 
 	return nil
 }
@@ -308,14 +312,22 @@ func (m *MQTTD) authorise(clientID *string, topic string) error {
 	return nil
 }
 
+// TODO: add callback for published/failed
 func (mqttd *MQTTD) send(destID *string, topic string, message interface{}, msgtype msgType) error {
+	if mqttd.connection == nil {
+		return errors.New("No connection to MQTT broker")
+	}
+
 	m, err := mqttd.wrap(msgtype, message, destID)
 	if err != nil {
 		return err
+	} else if m == nil {
+		return errors.New("'wrap' failed to return a publishable message")
 	}
 
-	if m != nil && mqttd.connection != nil {
-		mqttd.connection.Publish(topic, 0, false, string(m)).Wait()
+	token := mqttd.connection.Publish(topic, 0, false, string(m))
+	if token.Error() != nil {
+		return token.Error()
 	}
 
 	return nil
