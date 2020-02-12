@@ -57,10 +57,9 @@
 - [x] 'dump-config' command
 - [ ] Implement retry + backoff for connection to broker
   - Only set 'sent' for watchdog/health-check if connection to broker is alive
-  - Implement lost connection handler
-  - Implement OnConnect handler and resubscribe on reconnect
   - Set keep-alive
 - [ ] mqtt credentials (or username/password)
+  - Configurable client-id
 
 - [ ] Fix weird error on restart after failure (might be related to filesystem permissions after daemonize)
   
@@ -138,6 +137,8 @@
 - [ ] Non-ephemeral key transport:  https://tools.ietf.org/html/rfc5990#appendix-A
 - [ ] user:open/get permissions require matching card number 
 - [ ] [AEAD](http://alexander.holbreich.org/message-authentication)
+- [ ] Support for multiple brokers
+- [ ] NACL/tweetnacl
 
 ### CLI
 - [ ] Rework grant/revoke for individual doors (labelled)
@@ -229,3 +230,6 @@
 27. [Node-RED](https://hackaday.com/2020/01/15/automate-your-life-with-node-red-plus-a-dash-of-mqtt)
 28. [Datomic ?](https://stackoverflow.com/questions/21245555/when-should-i-use-datomic)
 29. [OCF-Over-Thread](https://www.infoq.com/news/2016/07/ocf-thread/)
+30. Implement a lightweight end-to-end encryption protocol 
+     - [MLS](https://mrosenberg.pub/cryptography/2019/07/10/molasses.html)
+     - NACL/tweetnacl

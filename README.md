@@ -46,7 +46,7 @@ systems.
 | ----------------------------------- | ------------------------------------------------------ |
 | golang.org/x/sys/windows            | Support for Windows services                           |
 | golang.org/x/lint/golint            | Additional *lint* check for release builds             |
-| github.com/eclipse/paho.mqtt.golang | UT0311-L04 simulator for development use               |
+| github.com/eclipse/paho.mqtt.golang | Eclipse Paho MQTT client                               |
 | github.com/gorilla/websocket        | paho.mqtt.golang dependency                            |
 
 ### Binaries
@@ -118,10 +118,25 @@ Defaults to 'run' unless one of the commands below is specified:
 - help
 - version
 
-Supported options:
+Supported 'run' options:
 - --console
 - --debug
 
+## uhppoted-mqtt
+
+Usage: *uhppoted-mqtt \<command\> \<options\>*
+
+Defaults to 'run' unless one of the commands below is specified: 
+
+- daemonize
+- undaemonize
+- config
+- help
+- version
+
+Supported 'run' options:
+- --console
+- --debug
 
 ## uhppote-simulator
 
