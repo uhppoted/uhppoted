@@ -10,21 +10,24 @@ import (
 
 var configuration = []byte(`# SYSTEM
 bind.address = 192.168.1.100:54321
-broadcast.address = 192.168.1.255:60001
+broadcast.address = 192.168.1.255:30000
 listen.address = 192.168.1.100:12345
 
 monitoring.healthcheck.interval = 31s
-monitoring.watchdog.interval = 7s
+monitoring.healthcheck.idle = 67s
+monitoring.healthcheck.ignore = 97s
+monitoring.watchdog.interval = 23s
 
 # MQTT
-mqtt.broker = tls://127.0.0.63:8887
+mqtt.connection.broker = tls://127.0.0.63:8887
+mqtt.connection.client.ID = muppet
+mqtt.connection.broker.certificate = mqtt-broker.cert
+mqtt.connection.client.certificate = mqtt-client.cert
+mqtt.connection.client.key = mqtt-client.key
 mqtt.topic.root = twystd-qwerty
 mqtt.topic.replies = /uiop
 mqtt.topic.events = ./asdf
 mqtt.topic.system = sys
-mqtt.broker.certificate = mqtt-broker.cert
-mqtt.client.certificate = mqtt-client.cert
-mqtt.client.key = mqtt-client.key
 
 # DEVICES
 UT0311-L0x.405419896.address = 192.168.1.100:60000
@@ -36,87 +39,72 @@ UT0311-L0x.405419896.door.4 = Workshop
 
 func TestDefaultConfig(t *testing.T) {
 	bind, broadcast, listen := DefaultIpAddresses()
+
+	expected := Config{
+		System: System{
+			BindAddress:         &bind,
+			BroadcastAddress:    &broadcast,
+			ListenAddress:       &listen,
+			HealthCheckInterval: 15 * time.Second,
+			HealthCheckIdle:     60 * time.Second,
+			HealthCheckIgnore:   5 * time.Minute,
+			WatchdogInterval:    5 * time.Second,
+		},
+
+		MQTT: MQTT{
+			Connection: Connection{
+				ClientID: "twystd-uhppoted-mqttd",
+			},
+		},
+	}
+
 	config := NewConfig()
 
-	if !reflect.DeepEqual(config.BindAddress, &bind) {
-		t.Errorf("Expected 'bind.address' %s, got: %s", &bind, config.BindAddress)
+	if !reflect.DeepEqual(config.System, expected.System) {
+		t.Errorf("Incorrect system default configuration:\nexpected:%+v,\ngot:     %+v", expected.System, config.System)
 	}
 
-	if !reflect.DeepEqual(config.BroadcastAddress, &broadcast) {
-		t.Errorf("Expected 'broadcast.address' %s, got: %s", &broadcast, config.BroadcastAddress)
-	}
-
-	if !reflect.DeepEqual(config.ListenAddress, &listen) {
-		t.Errorf("Expected 'listen.address' %s, got: %s", &listen, config.ListenAddress)
-	}
-
-	if config.HealthCheckInterval != 15*time.Second {
-		t.Errorf("Expected 'monitoring.healthcheck.interval' %v, got: %v", 15*time.Second, config.HealthCheckInterval)
-	}
-
-	if config.WatchdogInterval != 5*time.Second {
-		t.Errorf("Expected 'monitoring.watchdog.interval' %v, got: %v", 5*time.Second, config.WatchdogInterval)
+	if config.MQTT.Connection.ClientID != expected.MQTT.Connection.ClientID {
+		t.Errorf("Expected mqtt.connection.client.ID: '%v', got: '%v'", expected.MQTT.Connection.ClientID, config.MQTT.Connection.ClientID)
 	}
 }
 
 func TestUnmarshal(t *testing.T) {
+	expected := Config{
+		System: System{
+			BindAddress:         &net.UDPAddr{[]byte{192, 168, 1, 100}, 54321, ""},
+			BroadcastAddress:    &net.UDPAddr{[]byte{192, 168, 1, 255}, 30000, ""},
+			ListenAddress:       &net.UDPAddr{[]byte{192, 168, 1, 100}, 12345, ""},
+			HealthCheckInterval: 31 * time.Second,
+			HealthCheckIdle:     67 * time.Second,
+			HealthCheckIgnore:   97 * time.Second,
+			WatchdogInterval:    23 * time.Second,
+		},
+
+		MQTT: MQTT{
+			Connection: Connection{
+				Broker:            "tls://127.0.0.63:8887",
+				ClientID:          "muppet",
+				BrokerCertificate: "mqtt-broker.cert",
+				ClientCertificate: "mqtt-client.cert",
+				ClientKey:         "mqtt-client.key",
+			},
+		},
+	}
+
 	config := NewConfig()
-
 	err := conf.Unmarshal(configuration, config)
-
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
 		return
 	}
 
-	address := net.UDPAddr{
-		IP:   []byte{192, 168, 1, 100},
-		Port: 54321,
-		Zone: "",
+	if !reflect.DeepEqual(config.System, expected.System) {
+		t.Errorf("Incorrect system configuration:\nexpected:%+v,\ngot:     %+v", expected.System, config.System)
 	}
 
-	if !reflect.DeepEqual(config.BindAddress, &address) {
-		t.Errorf("Expected 'bind.address' %s, got: %s", &address, config.BindAddress)
-	}
-
-	address = net.UDPAddr{
-		IP:   []byte{192, 168, 1, 255},
-		Port: 60001,
-		Zone: "",
-	}
-
-	if !reflect.DeepEqual(config.BroadcastAddress, &address) {
-		t.Errorf("Expected 'broadcast.address' %s, got:%s", &address, config.BroadcastAddress)
-	}
-
-	address = net.UDPAddr{
-		IP:   []byte{192, 168, 1, 100},
-		Port: 12345,
-		Zone: "",
-	}
-
-	if !reflect.DeepEqual(config.ListenAddress, &address) {
-		t.Errorf("Expected 'listen.address' %s, got: %s", &address, config.ListenAddress)
-	}
-
-	if config.Broker != "tls://127.0.0.63:8887" {
-		t.Errorf("Expected 'mqtt.broker' %s, got:%v", "tls://127.0.0.63:8887", config.Broker)
-	}
-
-	if config.HealthCheckInterval != 31*time.Second {
-		t.Errorf("Expected 'mqtt.monitoring.healthcheck.interval' %s, got:%v", 31*time.Second, config.HealthCheckInterval)
-	}
-
-	if config.BrokerCertificate != "mqtt-broker.cert" {
-		t.Errorf("Expected 'mqtt.broker.certificate' %s, got:%v", "mqtt-broker.cert", config.BrokerCertificate)
-	}
-
-	if config.ClientCertificate != "mqtt-client.cert" {
-		t.Errorf("Expected 'mqtt.client.certificate' %s, got:%v", "mqtt-client.cert", config.ClientCertificate)
-	}
-
-	if config.ClientKey != "mqtt-client.key" {
-		t.Errorf("Expected 'mqtt.client.key' %s, got:%v", "mqtt-client.key", config.ClientKey)
+	if !reflect.DeepEqual(config.Connection, expected.Connection) {
+		t.Errorf("Incorrect 'mqtt.connection' configuration:\nexpected:%+v,\ngot:     %+v", expected.Connection, config.Connection)
 	}
 
 	if config.Topics.Root != "twystd-qwerty" {
@@ -142,7 +130,7 @@ func TestUnmarshal(t *testing.T) {
 	if d, _ := config.Devices[405419896]; d == nil {
 		t.Errorf("Expected 'device' for ID '%v', got:'%v'", 405419896, d)
 	} else {
-		address = net.UDPAddr{
+		address := net.UDPAddr{
 			IP:   []byte{192, 168, 1, 100},
 			Port: 60000,
 			Zone: "",

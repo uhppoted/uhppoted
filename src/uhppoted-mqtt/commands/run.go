@@ -116,8 +116,11 @@ func (r *Run) run(c *config.Config, logger *log.Logger, interrupt chan os.Signal
 
 	mqttd := mqtt.MQTTD{
 		ServerID: c.ServerID,
-		Broker:   fmt.Sprintf(c.Broker),
 		TLS:      &tls.Config{},
+		Connection: mqtt.Connection{
+			Broker:   fmt.Sprintf(c.Connection.Broker),
+			ClientID: c.Connection.ClientID,
+		},
 		Topics: mqtt.Topics{
 			Requests: c.Topics.Resolve(c.Topics.Requests),
 			Replies:  c.Topics.Resolve(c.Topics.Replies),
@@ -143,8 +146,8 @@ func (r *Run) run(c *config.Config, logger *log.Logger, interrupt chan os.Signal
 
 	// ... TLS
 
-	if strings.HasPrefix(mqttd.Broker, "tls:") {
-		pem, err := ioutil.ReadFile(c.BrokerCertificate)
+	if strings.HasPrefix(mqttd.Connection.Broker, "tls:") {
+		pem, err := ioutil.ReadFile(c.Connection.BrokerCertificate)
 		if err != nil {
 			logger.Printf("ERROR: %v", err)
 		} else {
@@ -156,7 +159,7 @@ func (r *Run) run(c *config.Config, logger *log.Logger, interrupt chan os.Signal
 			}
 		}
 
-		certificate, err := tls.LoadX509KeyPair(c.ClientCertificate, c.ClientKey)
+		certificate, err := tls.LoadX509KeyPair(c.Connection.ClientCertificate, c.Connection.ClientKey)
 		if err != nil {
 			logger.Printf("ERROR: %v", err)
 		} else {
