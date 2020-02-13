@@ -223,7 +223,7 @@ func (u *UHPPOTE) receive(c *net.UDPConn, reply interface{}) error {
 	return codec.Unmarshal(m[:N], reply)
 }
 
-func (u *UHPPOTE) listen(p chan *Event, q chan os.Signal) error {
+func (u *UHPPOTE) listen(p chan *Event, q chan os.Signal, connected func()) error {
 	bind := u.listenAddress()
 	if bind.Port == 0 {
 		return errors.New("Listen requires a non-zero UDP port")
@@ -244,6 +244,8 @@ func (u *UHPPOTE) listen(p chan *Event, q chan os.Signal) error {
 		closed = true
 		c.Close()
 	}()
+
+	connected()
 
 	m := make([]byte, 2048)
 

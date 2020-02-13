@@ -11,8 +11,6 @@ type ListenCommand struct {
 }
 
 func (c *ListenCommand) Execute(ctx Context) error {
-	fmt.Printf("Listening...\n")
-
 	p := make(chan *types.Status)
 	q := make(chan os.Signal)
 
@@ -27,7 +25,11 @@ func (c *ListenCommand) Execute(ctx Context) error {
 
 	signal.Notify(q, os.Interrupt)
 
-	return ctx.uhppote.Listen(p, q)
+	connected := func() {
+		fmt.Printf("Listening...\n")
+	}
+
+	return ctx.uhppote.Listen(p, q, connected)
 }
 
 func (c *ListenCommand) CLI() string {

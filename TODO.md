@@ -57,9 +57,12 @@
 - [x] 'dump-config' command
 - [x] Implement retry + backoff for connection to broker
 - [x] Configurable MQTT client-id
-- [ ] Implement retry + backoff for 'listen'
-- [ ] mqtt credentials (or username/password)
+- [x] Implement retry + backoff for 'listen'
+- [ ] Rework listen logic to handle errors robustly
 
+- [ ] mqtt credentials (or username/password)
+- [ ] Exit on error when multiple mqttd's are started (or generate unique client ID??? or .. lockfile)
+- [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status (https://blog.golang.org/go1.13-errors)
 - [ ] Fix weird error on restart after failure (might be related to filesystem permissions after daemonize)
   
         2020/02/05 10:12:13 INFO  publishing events to twystd/uhppoted/gateway/events
@@ -72,10 +75,6 @@
         2020/02/05 10:12:13 [net]      logic stopped
         2020/02/05 10:12:13 [net]      incoming stopped with error EOF
         2020/02/05 10:12:13 [net]      error triggered, stopping
-
-- [ ] Exit on error when multiple mqttd's are started (or generate unique client ID??? or .. lockfile)
-- [ ] Rework listen logic to handle errors robustly
-- [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status (https://blog.golang.org/go1.13-errors)
 
 - [x] Fix go vet errors
 - [x] conf file decoder with reflection
