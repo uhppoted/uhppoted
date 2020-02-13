@@ -5,24 +5,29 @@ import (
 )
 
 type MQTT struct {
-	ServerID          string      `conf:"server.ID"`
-	Broker            string      `conf:"broker"`
-	BrokerCertificate string      `conf:"broker.certificate"`
-	ClientCertificate string      `conf:"client.certificate"`
-	ClientKey         string      `conf:"client.key"`
-	Topics            Topics      `conf:"topic"`
-	Alerts            Alerts      `conf:"alerts"`
-	EventsKeyID       string      `conf:"events.key"`
-	SystemKeyID       string      `conf:"system.key"`
-	EventIDs          string      `conf:"events.index.filepath"`
-	Permissions       Permissions `conf:"permissions"`
-	HMAC              HMAC        `conf:"security.HMAC"`
-	Authentication    string      `conf:"security.authentication"`
-	HOTP              HOTP        `conf:"security.hotp"`
-	RSA               RSA         `conf:"security.rsa"`
-	Nonce             Nonce       `conf:"security.nonce"`
-	SignOutgoing      bool        `conf:"security.outgoing.sign"`
-	EncryptOutgoing   bool        `conf:"security.outgoing.encrypt"`
+	ServerID        string      `conf:"server.ID"`
+	Connection      Connection  `conf:"connection"`
+	Topics          Topics      `conf:"topic"`
+	Alerts          Alerts      `conf:"alerts"`
+	EventsKeyID     string      `conf:"events.key"`
+	SystemKeyID     string      `conf:"system.key"`
+	EventIDs        string      `conf:"events.index.filepath"`
+	Permissions     Permissions `conf:"permissions"`
+	HMAC            HMAC        `conf:"security.HMAC"`
+	Authentication  string      `conf:"security.authentication"`
+	HOTP            HOTP        `conf:"security.hotp"`
+	RSA             RSA         `conf:"security.rsa"`
+	Nonce           Nonce       `conf:"security.nonce"`
+	SignOutgoing    bool        `conf:"security.outgoing.sign"`
+	EncryptOutgoing bool        `conf:"security.outgoing.encrypt"`
+}
+
+type Connection struct {
+	Broker            string `conf:"broker"`
+	ClientID          string `conf:"client.ID"`
+	BrokerCertificate string `conf:"broker.certificate"`
+	ClientCertificate string `conf:"client.certificate"`
+	ClientKey         string `conf:"client.key"`
 }
 
 type Topics struct {
@@ -79,11 +84,14 @@ func (t *Topics) Resolve(subtopic string) string {
 
 func NewMQTT() *MQTT {
 	return &MQTT{
-		ServerID:          "twystd-uhppoted",
-		Broker:            "tcp://127.0.0.1:1883",
-		BrokerCertificate: mqttBrokerCertificate,
-		ClientCertificate: mqttClientCertificate,
-		ClientKey:         mqttClientKey,
+		ServerID: "twystd-uhppoted",
+		Connection: Connection{
+			Broker:            "tcp://127.0.0.1:1883",
+			ClientID:          "twystd-uhppoted-mqttd",
+			BrokerCertificate: mqttBrokerCertificate,
+			ClientCertificate: mqttClientCertificate,
+			ClientKey:         mqttClientKey,
+		},
 		Topics: Topics{
 			Root:     "twystd/uhppoted/gateway",
 			Requests: "./requests",

@@ -16,6 +16,28 @@ import (
 	"uhppoted-mqtt/auth"
 )
 
+type MQTTD struct {
+	ServerID       string
+	Connection     Connection
+	TLS            *tls.Config
+	Topics         Topics
+	Alerts         Alerts
+	HMAC           auth.HMAC
+	Encryption     Encryption
+	Authentication string
+	Permissions    auth.Permissions
+	EventMap       string
+	Debug          bool
+
+	client    paho.Client
+	interrupt chan os.Signal
+}
+
+type Connection struct {
+	Broker   string
+	ClientID string
+}
+
 type Topics struct {
 	Requests string
 	Replies  string
@@ -36,23 +58,6 @@ type Encryption struct {
 	HOTP            *auth.HOTP
 	RSA             *auth.RSA
 	Nonce           auth.Nonce
-}
-
-type MQTTD struct {
-	ServerID       string
-	Broker         string
-	TLS            *tls.Config
-	Topics         Topics
-	Alerts         Alerts
-	HMAC           auth.HMAC
-	Encryption     Encryption
-	Authentication string
-	Permissions    auth.Permissions
-	EventMap       string
-	Debug          bool
-
-	connection paho.Client
-	interrupt  chan os.Signal
 }
 
 type fdispatch struct {
@@ -148,12 +153,12 @@ func (mqttd *MQTTD) Run(u *uhppote.UHPPOTE, log *log.Logger) {
 
 	client, err := mqttd.subscribeAndServe(&d, log)
 	if err != nil {
-		log.Printf("ERROR: Error connecting to '%s': %v", mqttd.Broker, err)
+		log.Printf("ERROR: Error connecting to '%s': %v", mqttd.Connection.Broker, err)
 		mqttd.Close(log)
 		return
 	}
 
-	mqttd.connection = client
+	mqttd.client = client
 
 	if err := mqttd.listen(&api, u, log); err != nil {
 		log.Printf("ERROR: Error binding to listen port '%d': %v", 12345, err)
@@ -167,13 +172,13 @@ func (m *MQTTD) Close(log *log.Logger) {
 		close(m.interrupt)
 	}
 
-	if m.connection != nil {
-		log.Printf("INFO  closing connection to %s", m.Broker)
-		m.connection.Disconnect(250)
-		log.Printf("INFO  closed connection to %s", m.Broker)
+	if m.client != nil {
+		log.Printf("INFO  closing connection to %s", m.Connection.Broker)
+		m.client.Disconnect(250)
+		log.Printf("INFO  closed connection to %s", m.Connection.Broker)
 	}
 
-	m.connection = nil
+	m.client = nil
 }
 
 func (m *MQTTD) subscribeAndServe(d *dispatcher, log *log.Logger) (paho.Client, error) {
@@ -188,7 +193,7 @@ func (m *MQTTD) subscribeAndServe(d *dispatcher, log *log.Logger) (paho.Client, 
 			log.Printf("INFO  connected to %s", url)
 		}
 
-		token := m.connection.Subscribe(m.Topics.Requests+"/#", 0, handler)
+		token := m.client.Subscribe(m.Topics.Requests+"/#", 0, handler)
 		if err := token.Error(); err != nil {
 			log.Printf("ERROR unable to subscribe to %s (%v)", m.Topics.Requests, err)
 			return
@@ -203,8 +208,8 @@ func (m *MQTTD) subscribeAndServe(d *dispatcher, log *log.Logger) (paho.Client, 
 
 	options := paho.
 		NewClientOptions().
-		AddBroker(m.Broker).
-		SetClientID("twystd-uhppoted-mqttd").
+		AddBroker(m.Connection.Broker).
+		SetClientID(m.Connection.ClientID).
 		SetTLSConfig(m.TLS).
 		SetCleanSession(false).
 		SetConnectRetry(true).
@@ -328,7 +333,7 @@ func (m *MQTTD) authorise(clientID *string, topic string) error {
 
 // TODO: add callback for published/failed
 func (mqttd *MQTTD) send(destID *string, topic string, message interface{}, msgtype msgType, critical bool) error {
-	if mqttd.connection == nil {
+	if mqttd.client == nil {
 		return errors.New("No connection to MQTT broker")
 	}
 
@@ -346,7 +351,7 @@ func (mqttd *MQTTD) send(destID *string, topic string, message interface{}, msgt
 		retained = mqttd.Alerts.Retained
 	}
 
-	token := mqttd.connection.Publish(topic, qos, retained, string(m))
+	token := mqttd.client.Publish(topic, qos, retained, string(m))
 	if token.Error() != nil {
 		return token.Error()
 	}
