@@ -35,11 +35,10 @@ type Event struct {
 	FireAlarm      byte               `uhppote:"offset:50"` // TODO verify
 }
 
-func (u *UHPPOTE) Listen(p chan *types.Status, q chan os.Signal) error {
+func (u *UHPPOTE) Listen(p chan *types.Status, q chan os.Signal, connected func()) error {
 	pipe := make(chan *Event)
 
 	defer close(pipe)
-	defer close(p)
 
 	go func() {
 		for {
@@ -51,7 +50,7 @@ func (u *UHPPOTE) Listen(p chan *types.Status, q chan os.Signal) error {
 		}
 	}()
 
-	return u.listen(pipe, q)
+	return u.listen(pipe, q, connected)
 }
 
 func (event *Event) transform() *types.Status {

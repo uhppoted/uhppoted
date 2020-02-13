@@ -27,7 +27,7 @@ func (u *UHPPOTED) debug(operation string, msg interface{}) {
 }
 
 func (u *UHPPOTED) info(deviceID uint32, operation string, msg interface{}) {
-	u.Log.Printf("INFO   %-12d %-20s %v", deviceID, operation, msg)
+	u.Log.Printf("INFO  %-12d %-20s %v", deviceID, operation, msg)
 }
 
 func (u *UHPPOTED) warn(deviceID uint32, operation string, err error) {

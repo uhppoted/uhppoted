@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 	"uhppote/types"
 )
 
@@ -54,11 +55,39 @@ func (u *UHPPOTED) Listen(handler EventHandler, received *EventMap, q chan os.Si
 }
 
 func (u *UHPPOTED) listen(handler EventHandler, received *EventMap, q chan os.Signal) {
+	backoffs := []time.Duration{
+		1 * time.Second,
+		2 * time.Second,
+		5 * time.Second,
+		10 * time.Second,
+		20 * time.Second,
+		30 * time.Second,
+		60 * time.Second,
+	}
+
 	p := make(chan *types.Status)
 
 	go func() {
-		if err := u.Uhppote.Listen(p, q); err != nil {
-			u.warn(0, "listen", err)
+		ix := 0
+
+		connected := func() {
+			u.info(0, "listen", "Connected")
+			ix = 0
+		}
+
+		for {
+			if err := u.Uhppote.Listen(p, q, connected); err != nil {
+				u.warn(0, "listen", err)
+
+				delay := 60 * time.Second
+				if ix < len(backoffs) {
+					delay = backoffs[ix]
+					ix++
+				}
+
+				u.info(0, "listen", fmt.Sprintf("Retrying in %v", delay))
+				time.Sleep(delay)
+			}
 		}
 	}()
 
