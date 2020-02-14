@@ -17,27 +17,23 @@ func (l *listener) OnConnected() {
 	fmt.Printf("Listening...\n")
 }
 
+func (l *listener) OnEvent(event *types.Status) {
+	fmt.Printf("%v\n", event)
+}
+
 func (l *listener) OnError(err error) bool {
 	fmt.Printf("ERROR: %v\n", err)
 	return true
 }
 
 func (c *ListenCommand) Execute(ctx Context) error {
-	p := make(chan *types.Status)
 	q := make(chan os.Signal)
 
 	defer close(q)
 
-	go func() {
-		for {
-			event := <-p
-			fmt.Printf("%v\n", event)
-		}
-	}()
-
 	signal.Notify(q, os.Interrupt)
 
-	return ctx.uhppote.Listen(p, q, &listener{})
+	return ctx.uhppote.Listen(&listener{}, q)
 }
 
 func (c *ListenCommand) CLI() string {

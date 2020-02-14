@@ -38,11 +38,20 @@ type EventHandler func(EventMessage)
 
 type listener struct {
 	connected func()
+	event     func(*types.Status)
 	errorh    func(error) bool
 }
 
 func (l *listener) OnConnected() {
-	l.connected()
+	go func() {
+		l.connected()
+	}()
+}
+
+func (l *listener) OnEvent(event *types.Status) {
+	go func() {
+		l.event(event)
+	}()
 }
 
 func (l *listener) OnError(err error) bool {
@@ -78,60 +87,50 @@ func (u *UHPPOTED) listen(handler EventHandler, received *EventMap, q chan os.Si
 		60 * time.Second,
 	}
 
-	p := make(chan *types.Status)
+	ix := 0
+	l := listener{
+		connected: func() {
+			u.info("listen", "Connected")
+			ix = 0
+		},
 
-	go func() {
-		ix := 0
+		event: func(e *types.Status) {
+			u.info("event", fmt.Sprintf("%+v", e))
 
-		l := listener{
-			connected: func() {
-				u.info("listen", "Connected")
-				ix = 0
-			},
-
-			errorh: func(err error) bool {
-				u.warn("listen", err)
-				return true
-			},
-		}
-
-		for {
-			if err := u.Uhppote.Listen(p, q, &l); err != nil {
-				u.warn("listen", err)
-
-				delay := 60 * time.Second
-				if ix < len(backoffs) {
-					delay = backoffs[ix]
-					ix++
-				}
-
-				u.info("listen", fmt.Sprintf("Retrying in %v", delay))
-				time.Sleep(delay)
+			device := uint32(e.SerialNumber)
+			last := e.LastIndex
+			first := last
+			retrieved, ok := received.retrieved[device]
+			if ok {
+				first = retrieved + 1
 			}
-		}
-	}()
+
+			if retrieved := u.fetch(device, first, last, handler); retrieved != 0 {
+				received.retrieved[device] = retrieved
+				if err := received.store(); err != nil {
+					u.warn("listen", err)
+				}
+			}
+		},
+
+		errorh: func(err error) bool {
+			u.warn("listen", err)
+			return true
+		},
+	}
 
 	for {
-		event := <-p
-		if event == nil {
-			break
-		}
+		if err := u.Uhppote.Listen(&l, q); err != nil {
+			u.warn("listen", err)
 
-		u.info("event", fmt.Sprintf("%+v", event))
-
-		device := uint32(event.SerialNumber)
-		last := event.LastIndex
-		first := last
-		retrieved, ok := received.retrieved[device]
-		if ok {
-			first = retrieved + 1
-		}
-
-		if retrieved := u.fetch(device, first, last, handler); retrieved != 0 {
-			received.retrieved[device] = retrieved
-			if err := received.store(); err != nil {
-				u.warn("listen", err)
+			delay := 60 * time.Second
+			if ix < len(backoffs) {
+				delay = backoffs[ix]
+				ix++
 			}
+
+			u.info("listen", fmt.Sprintf("Retrying in %v", delay))
+			time.Sleep(delay)
 		}
 	}
 }
