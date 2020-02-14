@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"strings"
+	"uhppote"
 	"uhppote-simulator/rest"
 	"uhppote-simulator/simulator"
 	codec "uhppote/encoding/UTO311-L0x"
@@ -109,11 +111,22 @@ func receive(c *net.UDPConn) ([]byte, *net.UDPAddr, error) {
 	return request[:N], remote, nil
 }
 
-func send(c *net.UDPConn, dest *net.UDPAddr, response interface{}) {
-	msg, err := codec.Marshal(response)
+func send(c *net.UDPConn, dest *net.UDPAddr, message interface{}) {
+	msg, err := codec.Marshal(message)
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 		return
+	}
+
+	// Ancient and decrepit boards apparently send 0x19 as the event message type
+	// Identify (for simulation purposes only) these boards as having a serial number
+	// that starts with '0'. This assumes the convention that one door controllers have
+	// a serial number starting with 1, two door controllers start with 2, etc.
+	if event, ok := message.(*uhppote.Event); ok {
+		deviceID := fmt.Sprintf("%09d", event.SerialNumber)
+		if strings.HasPrefix(deviceID, "0") {
+			msg[0] = 0x19
+		}
 	}
 
 	N, err := c.WriteTo(msg, dest)
