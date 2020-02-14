@@ -1,0 +1,41 @@
+{
+  "serial-number": 999,
+  "address": "192.168.1.100",
+  "subnet": "255.255.255.0",
+  "gateway": "192.168.1.1",
+  "MAC": "00:12:23:34:45:56",
+  "version": "0892",
+  "offset": "-8h0m0.06912s",
+  "doors": {
+    "1": {
+      "delay": "5s"
+    },
+    "2": {
+      "delay": "5s"
+    },
+    "3": {
+      "delay": "7s"
+    },
+    "4": {
+      "delay": "5s"
+    }
+  },
+  "listener": {
+    "IP": "192.168.1.100",
+    "Port": 60001,
+    "Zone": ""
+  },
+  "state": 0,
+  "packet-number": 0,
+  "backup": 0,
+  "special-message": 0,
+  "battery": 0,
+  "fire-alarm": 0,
+  "cards": [
+  ],
+  "events": {
+    "index": 0,
+    "events": [
+    ]
+  }
+}
