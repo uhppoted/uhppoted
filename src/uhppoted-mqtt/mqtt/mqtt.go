@@ -190,7 +190,7 @@ func (m *MQTTD) subscribeAndServe(d *dispatcher, log *log.Logger) (paho.Client, 
 		options := client.OptionsReader()
 		servers := options.Servers()
 		for _, url := range servers {
-			log.Printf("INFO  connected to %s", url)
+			log.Printf("%-5s %-12s %v", "INFO", "mqttd", fmt.Sprintf("Connected to %s", url))
 		}
 
 		token := m.client.Subscribe(m.Topics.Requests+"/#", 0, handler)
@@ -199,7 +199,7 @@ func (m *MQTTD) subscribeAndServe(d *dispatcher, log *log.Logger) (paho.Client, 
 			return
 		}
 
-		log.Printf("INFO  subscribed to %s", m.Topics.Requests)
+		log.Printf("%-5s %-12s %v", "INFO", "mqttd", fmt.Sprintf("Subscribed to %s", m.Topics.Requests))
 	}
 
 	var disconnected paho.ConnectionLostHandler = func(client paho.Client, err error) {
@@ -227,8 +227,8 @@ func (m *MQTTD) subscribeAndServe(d *dispatcher, log *log.Logger) (paho.Client, 
 }
 
 func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, log *log.Logger) error {
-	log.Printf("INFO  listening on %v", u.ListenAddress)
-	log.Printf("INFO  publishing events to %s", m.Topics.Events)
+	log.Printf("%-5s %-12s %v", "INFO", "mqttd", fmt.Sprintf("Listening on %v", u.ListenAddress))
+	log.Printf("%-5s %-12s %v", "INFO", "mqttd", fmt.Sprintf("Publishing events to %s", m.Topics.Events))
 
 	last := uhppoted.NewEventMap(m.EventMap)
 	if err := last.Load(log); err != nil {

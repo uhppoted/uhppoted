@@ -10,6 +10,18 @@ import (
 type ListenCommand struct {
 }
 
+type listener struct {
+}
+
+func (l *listener) OnConnected() {
+	fmt.Printf("Listening...\n")
+}
+
+func (l *listener) OnError(err error) bool {
+	fmt.Printf("ERROR: %v\n", err)
+	return true
+}
+
 func (c *ListenCommand) Execute(ctx Context) error {
 	p := make(chan *types.Status)
 	q := make(chan os.Signal)
@@ -25,11 +37,7 @@ func (c *ListenCommand) Execute(ctx Context) error {
 
 	signal.Notify(q, os.Interrupt)
 
-	connected := func() {
-		fmt.Printf("Listening...\n")
-	}
-
-	return ctx.uhppote.Listen(p, q, connected)
+	return ctx.uhppote.Listen(p, q, &listener{})
 }
 
 func (c *ListenCommand) CLI() string {

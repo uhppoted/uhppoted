@@ -18,18 +18,14 @@ type UHPPOTED struct {
 	Log     *log.Logger
 }
 
-func (u *UHPPOTED) log(tag string, deviceID uint32, msg string) {
-	u.Log.Printf("%-5s %-12d %s", tag, deviceID, msg)
+func (u *UHPPOTED) debug(tag string, msg interface{}) {
+	u.Log.Printf("DEBUG %-12s %v", tag, msg)
 }
 
-func (u *UHPPOTED) debug(operation string, msg interface{}) {
-	u.Log.Printf("DEBUG %-20s %v", operation, msg)
+func (u *UHPPOTED) info(tag string, msg interface{}) {
+	u.Log.Printf("INFO  %-12s %v", tag, msg)
 }
 
-func (u *UHPPOTED) info(deviceID uint32, operation string, msg interface{}) {
-	u.Log.Printf("INFO  %-12d %-20s %v", deviceID, operation, msg)
-}
-
-func (u *UHPPOTED) warn(deviceID uint32, operation string, err error) {
-	u.Log.Printf("WARN  %-12d %-20s %v", deviceID, operation, err)
+func (u *UHPPOTED) warn(tag string, err error) {
+	u.Log.Printf("WARN  %-12s %v", tag, err)
 }

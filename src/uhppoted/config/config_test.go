@@ -72,9 +72,9 @@ func TestDefaultConfig(t *testing.T) {
 func TestUnmarshal(t *testing.T) {
 	expected := Config{
 		System: System{
-			BindAddress:         &net.UDPAddr{[]byte{192, 168, 1, 100}, 54321, ""},
-			BroadcastAddress:    &net.UDPAddr{[]byte{192, 168, 1, 255}, 30000, ""},
-			ListenAddress:       &net.UDPAddr{[]byte{192, 168, 1, 100}, 12345, ""},
+			BindAddress:         &net.UDPAddr{IP: []byte{192, 168, 1, 100}, Port: 54321, Zone: ""},
+			BroadcastAddress:    &net.UDPAddr{IP: []byte{192, 168, 1, 255}, Port: 30000, Zone: ""},
+			ListenAddress:       &net.UDPAddr{IP: []byte{192, 168, 1, 100}, Port: 12345, Zone: ""},
 			HealthCheckInterval: 31 * time.Second,
 			HealthCheckIdle:     67 * time.Second,
 			HealthCheckIgnore:   97 * time.Second,

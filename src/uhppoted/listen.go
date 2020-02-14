@@ -36,16 +36,29 @@ type EventMessage struct {
 
 type EventHandler func(EventMessage)
 
+type listener struct {
+	connected func()
+	errorh    func(error) bool
+}
+
+func (l *listener) OnConnected() {
+	l.connected()
+}
+
+func (l *listener) OnError(err error) bool {
+	return l.errorh(err)
+}
+
 func (u *UHPPOTED) Listen(handler EventHandler, received *EventMap, q chan os.Signal) {
 	for device, index := range received.retrieved {
 		event, err := u.Uhppote.GetEvent(device, 0xffffffff)
 		if err != nil {
-			u.warn(0, "listen", err)
+			u.warn("listen", err)
 		} else {
 			if retrieved := u.fetch(device, index+1, event.Index, handler); retrieved != 0 {
 				received.retrieved[device] = retrieved
 				if err := received.store(); err != nil {
-					u.warn(0, "listen", err)
+					u.warn("listen", err)
 				}
 			}
 		}
@@ -70,14 +83,21 @@ func (u *UHPPOTED) listen(handler EventHandler, received *EventMap, q chan os.Si
 	go func() {
 		ix := 0
 
-		connected := func() {
-			u.info(0, "listen", "Connected")
-			ix = 0
+		l := listener{
+			connected: func() {
+				u.info("listen", "Connected")
+				ix = 0
+			},
+
+			errorh: func(err error) bool {
+				u.warn("listen", err)
+				return true
+			},
 		}
 
 		for {
-			if err := u.Uhppote.Listen(p, q, connected); err != nil {
-				u.warn(0, "listen", err)
+			if err := u.Uhppote.Listen(p, q, &l); err != nil {
+				u.warn("listen", err)
 
 				delay := 60 * time.Second
 				if ix < len(backoffs) {
@@ -85,7 +105,7 @@ func (u *UHPPOTED) listen(handler EventHandler, received *EventMap, q chan os.Si
 					ix++
 				}
 
-				u.info(0, "listen", fmt.Sprintf("Retrying in %v", delay))
+				u.info("listen", fmt.Sprintf("Retrying in %v", delay))
 				time.Sleep(delay)
 			}
 		}
@@ -97,7 +117,7 @@ func (u *UHPPOTED) listen(handler EventHandler, received *EventMap, q chan os.Si
 			break
 		}
 
-		u.log("EVENT", uint32(event.SerialNumber), fmt.Sprintf("%v", event))
+		u.info("event", fmt.Sprintf("%+v", event))
 
 		device := uint32(event.SerialNumber)
 		last := event.LastIndex
@@ -110,7 +130,7 @@ func (u *UHPPOTED) listen(handler EventHandler, received *EventMap, q chan os.Si
 		if retrieved := u.fetch(device, first, last, handler); retrieved != 0 {
 			received.retrieved[device] = retrieved
 			if err := received.store(); err != nil {
-				u.warn(0, "listen", err)
+				u.warn("listen", err)
 			}
 		}
 	}
@@ -122,17 +142,17 @@ func (u *UHPPOTED) fetch(device uint32, first uint32, last uint32, handler Event
 	for index := first; index <= last; index++ {
 		record, err := u.Uhppote.GetEvent(device, index)
 		if err != nil {
-			u.warn(device, "listen", fmt.Errorf("Failed to retrieve event ID %d", index))
+			u.warn("listen", fmt.Errorf("Failed to retrieve event for device %d, ID %d", device, index))
 			continue
 		}
 
 		if record == nil {
-			u.warn(device, "listen", fmt.Errorf("No event record for ID %d", index))
+			u.warn("listen", fmt.Errorf("No event record for device %d, ID %d", device, index))
 			continue
 		}
 
 		if record.Index != index {
-			u.warn(device, "listen", fmt.Errorf("No event record for ID %d", index))
+			u.warn("listen", fmt.Errorf("No event record for device %d, ID %d", device, index))
 			continue
 		}
 
