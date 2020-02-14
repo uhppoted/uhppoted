@@ -223,7 +223,7 @@ func (u *UHPPOTE) receive(c *net.UDPConn, reply interface{}) error {
 	return codec.Unmarshal(m[:N], reply)
 }
 
-func (u *UHPPOTE) listen(p chan *Event, q chan os.Signal, connected func()) error {
+func (u *UHPPOTE) listen(p chan *Event, q chan os.Signal, listener Listener) error {
 	bind := u.listenAddress()
 	if bind.Port == 0 {
 		return errors.New("Listen requires a non-zero UDP port")
@@ -245,7 +245,7 @@ func (u *UHPPOTE) listen(p chan *Event, q chan os.Signal, connected func()) erro
 		c.Close()
 	}()
 
-	connected()
+	listener.OnConnected()
 
 	m := make([]byte, 2048)
 
@@ -268,9 +268,12 @@ func (u *UHPPOTE) listen(p chan *Event, q chan os.Signal, connected func()) erro
 		}
 
 		event := Event{}
-		err = codec.Unmarshal(m[:N], &event)
-		if err != nil {
-			return fmt.Errorf("Error unmarshalling event [%v]", err)
+		if err := codec.Unmarshal(m[:N], &event); err != nil {
+			if !listener.OnError(err) {
+				return fmt.Errorf("FATAL ERROR: unable to unmarshal event [%v]", err)
+			}
+
+			continue
 		}
 
 		p <- &event

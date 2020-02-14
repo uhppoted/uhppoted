@@ -33,7 +33,7 @@ func (u *UHPPOTED) GetDevices(request GetDevicesRequest) (*GetDevicesResponse, i
 		go func() {
 			defer wg.Done()
 			if device, err := u.Uhppote.FindDevice(deviceID); err != nil {
-				u.warn(deviceID, "get-devices", err)
+				u.warn("find", fmt.Errorf("get-devices: %v %v", deviceID, err))
 			} else if device != nil {
 				list.Store(uint32(device.SerialNumber), DeviceSummary{
 					DeviceType: identify(device.SerialNumber),
@@ -47,7 +47,7 @@ func (u *UHPPOTED) GetDevices(request GetDevicesRequest) (*GetDevicesResponse, i
 	go func() {
 		defer wg.Done()
 		if devices, err := u.Uhppote.FindDevices(); err != nil {
-			u.warn(0, "get-devices", err)
+			u.warn("find", fmt.Errorf("get-devices: %v", err))
 		} else {
 			for _, d := range devices {
 				list.Store(uint32(d.SerialNumber), DeviceSummary{

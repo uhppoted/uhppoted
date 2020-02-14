@@ -58,7 +58,7 @@
 - [x] Implement retry + backoff for connection to broker
 - [x] Configurable MQTT client-id
 - [x] Implement retry + backoff for 'listen'
-- [ ] Rework listen logic to handle errors robustly
+- [x] Rework listen logic to handle errors robustly
 
 - [ ] mqtt credentials (or username/password)
 - [ ] Exit on error when multiple mqttd's are started (or generate unique client ID??? or .. lockfile)
@@ -136,6 +136,7 @@
 - [ ] [AEAD](http://alexander.holbreich.org/message-authentication)
 - [ ] Support for multiple brokers
 - [ ] NACL/tweetnacl
+- [ ] Report system events for e.g. listen bound/not bound
 
 ### CLI
 - [ ] Rework grant/revoke for individual doors (labelled)
@@ -230,3 +231,4 @@
 30. Implement a lightweight end-to-end encryption protocol 
      - [MLS](https://mrosenberg.pub/cryptography/2019/07/10/molasses.html)
      - NACL/tweetnacl
+31.  Consider moving to event bus architecture (?)
