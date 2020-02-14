@@ -37,10 +37,11 @@ type Event struct {
 
 type Listener interface {
 	OnConnected()
+	OnEvent(*types.Status)
 	OnError(error) bool
 }
 
-func (u *UHPPOTE) Listen(p chan *types.Status, q chan os.Signal, listener Listener) error {
+func (u *UHPPOTE) Listen(listener Listener, q chan os.Signal) error {
 	pipe := make(chan *Event)
 
 	defer close(pipe)
@@ -50,7 +51,7 @@ func (u *UHPPOTE) Listen(p chan *types.Status, q chan os.Signal, listener Listen
 			if event := <-pipe; event == nil {
 				break
 			} else {
-				p <- event.transform()
+				listener.OnEvent(event.transform())
 			}
 		}
 	}()
