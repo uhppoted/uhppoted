@@ -120,6 +120,8 @@ func (r *Run) run(c *config.Config, logger *log.Logger, interrupt chan os.Signal
 		Connection: mqtt.Connection{
 			Broker:   fmt.Sprintf(c.Connection.Broker),
 			ClientID: c.Connection.ClientID,
+			UserName: c.Connection.Username,
+			Password: c.Connection.Password,
 		},
 		Topics: mqtt.Topics{
 			Requests: c.Topics.Resolve(c.Topics.Requests),

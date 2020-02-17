@@ -59,12 +59,11 @@
 - [x] Configurable MQTT client-id
 - [x] Implement retry + backoff for 'listen'
 - [x] Rework listen logic to handle errors robustly
-
-- [ ] mqtt credentials (or username/password)
+- [x] mqtt credentials (or username/password)
 - [ ] Exit on error when multiple mqttd's are started (or generate unique client ID??? or .. lockfile)
+
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status (https://blog.golang.org/go1.13-errors)
 - [ ] Fix weird error on restart after failure (might be related to filesystem permissions after daemonize)
-  
         2020/02/05 10:12:13 INFO  publishing events to twystd/uhppoted/gateway/events
         2020/02/05 10:12:13 WARN  0            listen               Failed to open UDP socket [listen udp 192.168.1.100:60001: bind: address already in use]
         2020/02/05 10:12:13 [net]      incoming stopped with error EOF
@@ -203,6 +202,7 @@
     - [webview](https://github.com/zserge/webview)
     - [fyne](https://github.com/fyne-io/fyne)
     - https://instadeq.com/blog/posts/things-end-users-care-about-but-programmers-dont
+    - [Naked Objects](https://en.wikipedia.org/wiki/Naked_objects)
 18. PDL + go generate
     - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)
     - [Diva](http://www.diva-portal.org/smash/get/diva2:407713/FULLTEXT01.pdf)
@@ -232,3 +232,4 @@
      - [MLS](https://mrosenberg.pub/cryptography/2019/07/10/molasses.html)
      - NACL/tweetnacl
 31.  Consider moving to event bus architecture (?)
+32. [Open Policy Agent](https://github.com/open-policy-agent) - for permissions

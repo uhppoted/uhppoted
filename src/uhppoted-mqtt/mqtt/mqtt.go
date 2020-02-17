@@ -36,6 +36,8 @@ type MQTTD struct {
 type Connection struct {
 	Broker   string
 	ClientID string
+	UserName string
+	Password string
 }
 
 type Topics struct {
@@ -216,6 +218,13 @@ func (m *MQTTD) subscribeAndServe(d *dispatcher, log *log.Logger) (paho.Client, 
 		SetConnectRetryInterval(30 * time.Second).
 		SetOnConnectHandler(connected).
 		SetConnectionLostHandler(disconnected)
+
+	if m.Connection.UserName != "" {
+		options.SetUsername(m.Connection.UserName)
+		if m.Connection.Password != "" {
+			options.SetPassword(m.Connection.Password)
+		}
+	}
 
 	client := paho.NewClient(options)
 	token := client.Connect()

@@ -1,6 +1,6 @@
 # uhppote-go
 
-A set of cross-platform building blocks for access control systems based on the UHPPOTE UT0311-L0x TCP/IP 
+A set of cross-platform building blocks for access control systems based on the *UHPPOTE UT0311-L0x* TCP/IP 
 Wiegand access control boards. Currently available:
 
 - low level communication library

@@ -25,6 +25,8 @@ type MQTT struct {
 type Connection struct {
 	Broker            string `conf:"broker"`
 	ClientID          string `conf:"client.ID"`
+	Username          string `conf:"username"`
+	Password          string `conf:"password"`
 	BrokerCertificate string `conf:"broker.certificate"`
 	ClientCertificate string `conf:"client.certificate"`
 	ClientKey         string `conf:"client.key"`
