@@ -10,6 +10,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 	"uhppote"
@@ -71,12 +72,12 @@ func (r *Run) execute(ctx context.Context, f func(*config.Config) error) error {
 
 	pid := fmt.Sprintf("%d\n", os.Getpid())
 
-	_, err := os.Stat(r.pidFile)
-	if err == nil {
-		return fmt.Errorf("PID lockfile '%v' already in use", r.pidFile)
-	} else if !os.IsNotExist(err) {
-		return fmt.Errorf("Error checking PID lockfile '%v' (%v_)", r.pidFile, err)
-	}
+	// _, err := os.Stat(r.pidFile)
+	// if err == nil {
+	// 	return fmt.Errorf("PID lockfile '%v' already in use", r.pidFile)
+	// } else if !os.IsNotExist(err) {
+	// 	return fmt.Errorf("Error checking PID lockfile '%v' (%v_)", r.pidFile, err)
+	// }
 
 	if err := ioutil.WriteFile(r.pidFile, []byte(pid), 0644); err != nil {
 		return fmt.Errorf("Unable to create PID lockfile: %v", err)
@@ -211,20 +212,14 @@ func (r *Run) run(c *config.Config, logger *log.Logger, interrupt chan os.Signal
 
 	healthcheck := monitoring.NewHealthCheck(&u, c.HealthCheckIdle, c.HealthCheckIgnore, logger)
 
-	// ... listen forever
+	// ... listen
 
-	for {
-		err := r.listen(&u, &mqttd, &healthcheck, logger, interrupt)
-		if err != nil {
-			logger.Printf("ERROR %v", err)
-			continue
-		}
-
-		logger.Printf("INFO  exit\n")
-		break
+	err = r.listen(&u, &mqttd, &healthcheck, logger, interrupt)
+	if err != nil {
+		logger.Printf("ERROR %v", err)
 	}
 
-	logger.Printf("STOP")
+	logger.Printf("INFO  exit")
 }
 
 func (r *Run) listen(
@@ -233,11 +228,31 @@ func (r *Run) listen(
 	healthcheck *monitoring.HealthCheck,
 	logger *log.Logger,
 	interrupt chan os.Signal) error {
-	// ... MQTT task
 
-	go func() {
-		mqttd.Run(u, logger)
+	// ... MQTT
+
+	pid := fmt.Sprintf("%d\n", os.Getpid())
+	workdir := filepath.Dir(r.pidFile)
+	lockfile := filepath.Join(workdir, fmt.Sprintf("%s.lock", mqttd.Connection.ClientID))
+
+	_, err := os.Stat(lockfile)
+	if err == nil {
+		return fmt.Errorf("MQTT client lockfile '%v' already in use", lockfile)
+	} else if !os.IsNotExist(err) {
+		return fmt.Errorf("Error checking MQTT client lockfile '%v' (%v_)", lockfile, err)
+	}
+
+	if err := ioutil.WriteFile(lockfile, []byte(pid), 0644); err != nil {
+		return fmt.Errorf("Unable to create MQTT client lockfile: %v", err)
+	}
+
+	defer func() {
+		os.Remove(lockfile)
 	}()
+
+	if err := mqttd.Run(u, logger); err != nil {
+		return err
+	}
 
 	defer mqttd.Close(logger)
 

@@ -114,7 +114,7 @@ var regex = struct {
 	base64: regexp.MustCompile(`^"[A-Za-z0-9+/]*[=]{0,2}"$`),
 }
 
-func (mqttd *MQTTD) Run(u *uhppote.UHPPOTE, log *log.Logger) {
+func (mqttd *MQTTD) Run(u *uhppote.UHPPOTE, log *log.Logger) error {
 	paho.CRITICAL = log
 	paho.ERROR = log
 	paho.WARN = log
@@ -153,20 +153,17 @@ func (mqttd *MQTTD) Run(u *uhppote.UHPPOTE, log *log.Logger) {
 		},
 	}
 
-	client, err := mqttd.subscribeAndServe(&d, log)
-	if err != nil {
-		log.Printf("ERROR: Error connecting to '%s': %v", mqttd.Connection.Broker, err)
-		mqttd.Close(log)
-		return
+	if client, err := mqttd.subscribeAndServe(&d, log); err != nil {
+		return fmt.Errorf("ERROR: Error connecting to '%s': %v", mqttd.Connection.Broker, err)
+	} else {
+		mqttd.client = client
 	}
-
-	mqttd.client = client
 
 	if err := mqttd.listen(&api, u, log); err != nil {
-		log.Printf("ERROR: Error binding to listen port '%d': %v", 12345, err)
-		mqttd.Close(log)
-		return
+		return fmt.Errorf("ERROR: Failed to bind to listen port '%d': %v", 12345, err)
 	}
+
+	return nil
 }
 
 func (m *MQTTD) Close(log *log.Logger) {
