@@ -62,7 +62,7 @@ func (c *Run) Help() {
 func (r *Run) execute(ctx context.Context, f func(*config.Config) error) error {
 	conf := config.NewConfig()
 	if err := conf.Load(r.configuration); err != nil {
-		log.Printf("\n   WARN  Could not load configuration (%v)\n\n", err)
+		log.Printf("WARN  Could not load configuration (%v)", err)
 	}
 
 	if err := os.MkdirAll(r.dir, os.ModeDir|os.ModePerm); err != nil {
@@ -71,8 +71,15 @@ func (r *Run) execute(ctx context.Context, f func(*config.Config) error) error {
 
 	pid := fmt.Sprintf("%d\n", os.Getpid())
 
+	_, err := os.Stat(r.pidFile)
+	if err == nil {
+		return fmt.Errorf("PID lockfile '%v' already in use", r.pidFile)
+	} else if !os.IsNotExist(err) {
+		return fmt.Errorf("Error checking PID lockfile '%v' (%v_)", r.pidFile, err)
+	}
+
 	if err := ioutil.WriteFile(r.pidFile, []byte(pid), 0644); err != nil {
-		return fmt.Errorf("Unable to create pid file: %v\n", err)
+		return fmt.Errorf("Unable to create PID lockfile: %v", err)
 	}
 
 	defer func() {
