@@ -206,14 +206,26 @@ func (m *MQTTD) subscribeAndServe(d *dispatcher, log *log.Logger) (paho.Client, 
 
 	var disconnected paho.ConnectionLostHandler = func(client paho.Client, err error) {
 		log.Printf("ERROR connection to MQTT broker lost (%v)", err)
+		go func() {
+			time.Sleep(10 * time.Second)
+			log.Printf("INFO  retrying connection to MQTT broker %v", m.Connection.Broker)
+			token := client.Connect()
+			if err := token.Error(); err != nil {
+				log.Printf("ERROR failed to reconnect to MQTT broker (%v)", err)
+			}
+		}()
 	}
 
+	// NOTE: Paho auto-reconnect causes a retry storm if two MQTT clients are using the same client ID.
+	//       'Theoretically' (à la Terminator Genesys) the lockfile should prevent this but careful
+	//       misconfiguration is always a possibility.
 	options := paho.
 		NewClientOptions().
 		AddBroker(m.Connection.Broker).
 		SetClientID(m.Connection.ClientID).
 		SetTLSConfig(m.TLS).
 		SetCleanSession(false).
+		SetAutoReconnect(false).
 		SetConnectRetry(true).
 		SetConnectRetryInterval(30 * time.Second).
 		SetOnConnectHandler(connected).
