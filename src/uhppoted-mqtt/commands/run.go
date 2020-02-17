@@ -72,12 +72,12 @@ func (r *Run) execute(ctx context.Context, f func(*config.Config) error) error {
 
 	pid := fmt.Sprintf("%d\n", os.Getpid())
 
-	// _, err := os.Stat(r.pidFile)
-	// if err == nil {
-	// 	return fmt.Errorf("PID lockfile '%v' already in use", r.pidFile)
-	// } else if !os.IsNotExist(err) {
-	// 	return fmt.Errorf("Error checking PID lockfile '%v' (%v_)", r.pidFile, err)
-	// }
+	_, err := os.Stat(r.pidFile)
+	if err == nil {
+		return fmt.Errorf("PID lockfile '%v' already in use", r.pidFile)
+	} else if !os.IsNotExist(err) {
+		return fmt.Errorf("Error checking PID lockfile '%v' (%v_)", r.pidFile, err)
+	}
 
 	if err := ioutil.WriteFile(r.pidFile, []byte(pid), 0644); err != nil {
 		return fmt.Errorf("Unable to create PID lockfile: %v", err)
