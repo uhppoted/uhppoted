@@ -21,6 +21,8 @@ monitoring.watchdog.interval = 23s
 # MQTT
 mqtt.connection.broker = tls://127.0.0.63:8887
 mqtt.connection.client.ID = muppet
+mqtt.connection.username = me
+mqtt.connection.password = pickme
 mqtt.connection.broker.certificate = mqtt-broker.cert
 mqtt.connection.client.certificate = mqtt-client.cert
 mqtt.connection.client.key = mqtt-client.key
@@ -85,9 +87,19 @@ func TestUnmarshal(t *testing.T) {
 			Connection: Connection{
 				Broker:            "tls://127.0.0.63:8887",
 				ClientID:          "muppet",
+				Username:          "me",
+				Password:          "pickme",
 				BrokerCertificate: "mqtt-broker.cert",
 				ClientCertificate: "mqtt-client.cert",
 				ClientKey:         "mqtt-client.key",
+			},
+
+			Topics: Topics{
+				Root:     "twystd-qwerty",
+				Requests: "./requests",
+				Replies:  "/uiop",
+				Events:   "./asdf",
+				System:   "sys",
 			},
 		},
 	}
@@ -107,8 +119,8 @@ func TestUnmarshal(t *testing.T) {
 		t.Errorf("Incorrect 'mqtt.connection' configuration:\nexpected:%+v,\ngot:     %+v", expected.Connection, config.Connection)
 	}
 
-	if config.Topics.Root != "twystd-qwerty" {
-		t.Errorf("Expected 'mqtt::topic' %v, got:%v", "twystd-qwerty", config.Topics.Root)
+	if !reflect.DeepEqual(config.Topics, expected.Topics) {
+		t.Errorf("Incorrect 'mqtt.topics' configuration:\nexpected:%+v,\ngot:     %+v", expected.Topics, config.Topics)
 	}
 
 	if config.Topics.Resolve(config.Topics.Requests) != "twystd-qwerty/requests" {
