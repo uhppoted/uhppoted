@@ -55,12 +55,14 @@ type GetDoorDelayResponse struct {
 	Delay    uint8    `json:"delay"`
 }
 
-func (u *UHPPOTED) GetDoorDelay(request GetDoorDelayRequest) (*GetDoorDelayResponse, int, error) {
+func (u *UHPPOTED) GetDoorDelay(request GetDoorDelayRequest) (*GetDoorDelayResponse, error) {
 	u.debug("get-door-delay", fmt.Sprintf("request  %+v", request))
 
-	result, err := u.Uhppote.GetDoorControlState(uint32(request.DeviceID), request.Door)
+	device := uint32(request.DeviceID)
+	door := request.Door
+	result, err := u.Uhppote.GetDoorControlState(device, door)
 	if err != nil {
-		return nil, StatusInternalServerError, err
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting door %v delay for %v (%w)", door, device, err))
 	}
 
 	response := GetDoorDelayResponse{
@@ -71,7 +73,7 @@ func (u *UHPPOTED) GetDoorDelay(request GetDoorDelayRequest) (*GetDoorDelayRespo
 
 	u.debug("get-door-delay", fmt.Sprintf("response %+v", response))
 
-	return &response, StatusOK, nil
+	return &response, nil
 }
 
 type SetDoorDelayRequest struct {
@@ -86,17 +88,19 @@ type SetDoorDelayResponse struct {
 	Delay    uint8    `json:"delay"`
 }
 
-func (u *UHPPOTED) SetDoorDelay(request SetDoorDelayRequest) (*SetDoorDelayResponse, int, error) {
+func (u *UHPPOTED) SetDoorDelay(request SetDoorDelayRequest) (*SetDoorDelayResponse, error) {
 	u.debug("set-door-delay", fmt.Sprintf("request  %+v", request))
 
-	state, err := u.Uhppote.GetDoorControlState(uint32(request.DeviceID), request.Door)
+	device := uint32(request.DeviceID)
+	door := request.Door
+	state, err := u.Uhppote.GetDoorControlState(device, door)
 	if err != nil {
-		return nil, StatusInternalServerError, err
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting door %s delay for %v (%w)", door, device, err))
 	}
 
 	result, err := u.Uhppote.SetDoorControlState(uint32(request.DeviceID), request.Door, state.ControlState, request.Delay)
 	if err != nil {
-		return nil, StatusInternalServerError, err
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error setting door %v delay %v for %v (%w)", door, state.ControlState, device, err))
 	}
 
 	response := SetDoorDelayResponse{
@@ -107,7 +111,7 @@ func (u *UHPPOTED) SetDoorDelay(request SetDoorDelayRequest) (*SetDoorDelayRespo
 
 	u.debug("get-door-delay", fmt.Sprintf("response %+v", response))
 
-	return &response, StatusOK, nil
+	return &response, nil
 }
 
 type GetDoorControlRequest struct {
@@ -121,12 +125,14 @@ type GetDoorControlResponse struct {
 	Control  ControlState `json:"control"`
 }
 
-func (u *UHPPOTED) GetDoorControl(request GetDoorControlRequest) (*GetDoorControlResponse, int, error) {
+func (u *UHPPOTED) GetDoorControl(request GetDoorControlRequest) (*GetDoorControlResponse, error) {
 	u.debug("get-door-control", fmt.Sprintf("request  %+v", request))
 
-	result, err := u.Uhppote.GetDoorControlState(uint32(request.DeviceID), request.Door)
+	device := uint32(request.DeviceID)
+	door := request.Door
+	result, err := u.Uhppote.GetDoorControlState(device, door)
 	if err != nil {
-		return nil, StatusInternalServerError, err
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting door %s control for %v (%w)", door, device, err))
 	}
 
 	response := GetDoorControlResponse{
@@ -137,7 +143,7 @@ func (u *UHPPOTED) GetDoorControl(request GetDoorControlRequest) (*GetDoorContro
 
 	u.debug("get-door-control", fmt.Sprintf("response %+v", response))
 
-	return &response, StatusOK, nil
+	return &response, nil
 }
 
 type SetDoorControlRequest struct {
@@ -152,17 +158,19 @@ type SetDoorControlResponse struct {
 	Control  ControlState `json:"control"`
 }
 
-func (u *UHPPOTED) SetDoorControl(request SetDoorControlRequest) (*SetDoorControlResponse, int, error) {
+func (u *UHPPOTED) SetDoorControl(request SetDoorControlRequest) (*SetDoorControlResponse, error) {
 	u.debug("set-door-control", fmt.Sprintf("request  %+v", request))
 
-	state, err := u.Uhppote.GetDoorControlState(uint32(request.DeviceID), request.Door)
+	device := uint32(request.DeviceID)
+	door := request.Door
+	state, err := u.Uhppote.GetDoorControlState(device, door)
 	if err != nil {
-		return nil, StatusInternalServerError, err
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting door %s control for %v (%w)", door, device, err))
 	}
 
-	result, err := u.Uhppote.SetDoorControlState(uint32(request.DeviceID), request.Door, uint8(request.Control), state.Delay)
+	result, err := u.Uhppote.SetDoorControlState(device, door, uint8(request.Control), state.Delay)
 	if err != nil {
-		return nil, StatusInternalServerError, err
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error setting door %s control %v for %v (%w)", door, request.Control, device, err))
 	}
 
 	response := SetDoorControlResponse{
@@ -173,5 +181,5 @@ func (u *UHPPOTED) SetDoorControl(request SetDoorControlRequest) (*SetDoorContro
 
 	u.debug("set-door-control", fmt.Sprintf("response %+v", response))
 
-	return &response, StatusOK, nil
+	return &response, nil
 }
