@@ -21,7 +21,7 @@ type GetDevicesResponse struct {
 	Devices map[uint32]DeviceSummary `json:"devices"`
 }
 
-func (u *UHPPOTED) GetDevices(request GetDevicesRequest) (*GetDevicesResponse, int, error) {
+func (u *UHPPOTED) GetDevices(request GetDevicesRequest) (*GetDevicesResponse, error) {
 	u.debug("get-devices", fmt.Sprintf("request  %+v", request))
 
 	wg := sync.WaitGroup{}
@@ -71,7 +71,7 @@ func (u *UHPPOTED) GetDevices(request GetDevicesRequest) (*GetDevicesResponse, i
 
 	u.debug("get-devices", fmt.Sprintf("response %+v", response))
 
-	return &response, StatusOK, nil
+	return &response, nil
 }
 
 type GetDeviceRequest struct {
@@ -89,16 +89,16 @@ type GetDeviceResponse struct {
 	Date       types.Date       `json:"date"`
 }
 
-func (u *UHPPOTED) GetDevice(request GetDeviceRequest) (*GetDeviceResponse, int, error) {
+func (u *UHPPOTED) GetDevice(request GetDeviceRequest) (*GetDeviceResponse, error) {
 	u.debug("get-device", fmt.Sprintf("request  %+v", request))
 
 	device, err := u.Uhppote.FindDevice(uint32(request.DeviceID))
 	if err != nil {
-		return nil, StatusInternalServerError, err
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting device info for %v (%w)", device, err))
 	}
 
 	if device == nil {
-		return nil, StatusNotFound, fmt.Errorf("No device found for device ID %d", request.DeviceID)
+		return nil, fmt.Errorf("%w: %v", NotFound, fmt.Errorf("No device found for device ID %v", device))
 	}
 
 	response := GetDeviceResponse{
@@ -114,7 +114,7 @@ func (u *UHPPOTED) GetDevice(request GetDeviceRequest) (*GetDeviceResponse, int,
 
 	u.debug("get-device", fmt.Sprintf("response %+v", response))
 
-	return &response, StatusOK, nil
+	return &response, nil
 }
 
 func identify(deviceID types.SerialNumber) string {

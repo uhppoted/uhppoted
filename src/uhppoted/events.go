@@ -152,11 +152,11 @@ func (u *UHPPOTED) GetEvent(request GetEventRequest) (*GetEventResponse, error) 
 	}
 
 	if record == nil {
-		return nil, fmt.Errorf("%w: %v", NotFound, fmt.Errorf("No event record for ID %v for %v (%w)", eventID, device, err))
+		return nil, fmt.Errorf("%w: %v", NotFound, fmt.Errorf("No event record for ID %v for %v", eventID, device))
 	}
 
 	if record.Index != eventID {
-		return nil, fmt.Errorf("%w: %v", NotFound, fmt.Errorf("No event record for ID %v for %v (%w)", eventID, device, err))
+		return nil, fmt.Errorf("%w: %v", NotFound, fmt.Errorf("No event record for ID %v for %v", eventID, device))
 	}
 
 	response := GetEventResponse{

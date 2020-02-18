@@ -96,7 +96,7 @@ func (u *UHPPOTED) GetCard(request GetCardRequest) (*GetCardResponse, error) {
 	}
 
 	if card == nil {
-		return nil, fmt.Errorf("%w: %v", NotFound, fmt.Errorf("Error retrieving card %v from %v (%w)", card.CardNumber, device, err))
+		return nil, fmt.Errorf("%w: %v", NotFound, fmt.Errorf("Error retrieving card %v from %v", card.CardNumber, device))
 	}
 
 	response := GetCardResponse{
