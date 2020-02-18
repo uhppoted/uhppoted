@@ -59,6 +59,11 @@ func (l *listener) OnError(err error) bool {
 }
 
 func (u *UHPPOTED) Listen(handler EventHandler, received *EventMap, q chan os.Signal) {
+	// NOTE: this logic doesn't handle wrap around i.e. if the mqttd is not running
+	//       when the UHPPOTE controller event index increments from 4294967295 to 0,
+	//       then it won't retrieve any 'unfetched' events. At one event per second
+	//       wrap around happens every 3268 years so ... chatter from e.g. a bad relay
+	//       contact may invalidate that assumption.
 	for device, index := range received.retrieved {
 		event, err := u.Uhppote.GetEvent(device, 0xffffffff)
 		if err != nil {
