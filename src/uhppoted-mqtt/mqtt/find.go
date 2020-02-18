@@ -11,13 +11,9 @@ import (
 func (m *MQTTD) getDevices(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) (interface{}, error) {
 	rq := uhppoted.GetDevicesRequest{}
 
-	response, status, err := impl.GetDevices(rq)
+	response, err := impl.GetDevices(rq)
 	if err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    status,
-			Message: "Error searching for active devices",
-		}
+		return nil, ferror(err, "Error searching for active devices")
 	}
 
 	if response == nil {
@@ -58,13 +54,9 @@ func (m *MQTTD) getDevice(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Co
 		DeviceID: *body.DeviceID,
 	}
 
-	response, status, err := impl.GetDevice(rq)
+	response, err := impl.GetDevice(rq)
 	if err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    status,
-			Message: fmt.Sprintf("Could not retrieve device information for %d", *body.DeviceID),
-		}
+		return nil, ferror(err, fmt.Sprintf("Could not retrieve device information for %d", *body.DeviceID))
 	}
 
 	if response == nil {
