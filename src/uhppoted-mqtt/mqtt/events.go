@@ -50,13 +50,9 @@ func (m *MQTTD) getEvents(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Co
 		End:      (*types.DateTime)(body.End),
 	}
 
-	response, status, err := impl.GetEvents(rq)
+	response, err := impl.GetEvents(rq)
 	if err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    status,
-			Message: fmt.Sprintf("Error retrieving events from %v", *body.DeviceID),
-		}
+		return nil, ferror(err, fmt.Sprintf("Error retrieving events from %v", *body.DeviceID))
 	}
 
 	if response == nil {
@@ -107,13 +103,9 @@ func (m *MQTTD) getEvent(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Con
 		EventID:  *body.EventID,
 	}
 
-	response, status, err := impl.GetEvent(rq)
+	response, err := impl.GetEvent(rq)
 	if err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    status,
-			Message: fmt.Sprintf("Error retrieving events from %v", *body.DeviceID),
-		}
+		return nil, ferror(err, fmt.Sprintf("Error retrieving events from %v", *body.DeviceID))
 	}
 
 	if response == nil {
