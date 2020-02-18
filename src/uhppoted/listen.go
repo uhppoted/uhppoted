@@ -37,25 +37,25 @@ type EventMessage struct {
 type EventHandler func(EventMessage)
 
 type listener struct {
-	connected func()
-	event     func(*types.Status)
-	errorh    func(error) bool
+	onConnected func()
+	onEvent     func(*types.Status)
+	onError     func(error) bool
 }
 
 func (l *listener) OnConnected() {
 	go func() {
-		l.connected()
+		l.onConnected()
 	}()
 }
 
 func (l *listener) OnEvent(event *types.Status) {
 	go func() {
-		l.event(event)
+		l.onEvent(event)
 	}()
 }
 
 func (l *listener) OnError(err error) bool {
-	return l.errorh(err)
+	return l.onError(err)
 }
 
 func (u *UHPPOTED) Listen(handler EventHandler, received *EventMap, q chan os.Signal) {
@@ -89,31 +89,16 @@ func (u *UHPPOTED) listen(handler EventHandler, received *EventMap, q chan os.Si
 
 	ix := 0
 	l := listener{
-		connected: func() {
+		onConnected: func() {
 			u.info("listen", "Connected")
 			ix = 0
 		},
 
-		event: func(e *types.Status) {
-			u.info("event", fmt.Sprintf("%+v", e))
-
-			device := uint32(e.SerialNumber)
-			last := e.LastIndex
-			first := last
-			retrieved, ok := received.retrieved[device]
-			if ok {
-				first = retrieved + 1
-			}
-
-			if retrieved := u.fetch(device, first, last, handler); retrieved != 0 {
-				received.retrieved[device] = retrieved
-				if err := received.store(); err != nil {
-					u.warn("listen", err)
-				}
-			}
+		onEvent: func(e *types.Status) {
+			u.onEvent(e, received, handler)
 		},
 
-		errorh: func(err error) bool {
+		onError: func(err error) bool {
 			u.warn("listen", err)
 			return true
 		},
@@ -131,6 +116,27 @@ func (u *UHPPOTED) listen(handler EventHandler, received *EventMap, q chan os.Si
 
 			u.info("listen", fmt.Sprintf("Retrying in %v", delay))
 			time.Sleep(delay)
+		}
+	}
+}
+
+func (u *UHPPOTED) onEvent(e *types.Status, received *EventMap, handler EventHandler) {
+	u.info("event", fmt.Sprintf("%+v", e))
+
+	device := uint32(e.SerialNumber)
+	last := e.LastIndex
+	first := last
+	retrieved, ok := received.retrieved[device]
+	if ok && retrieved < last {
+		first = retrieved + 1
+	}
+
+	if eventID := u.fetch(device, first, last, handler); retrieved != 0 {
+		if !ok || eventID > retrieved {
+			received.retrieved[device] = eventID
+			if err := received.store(); err != nil {
+				u.warn("listen", err)
+			}
 		}
 	}
 }

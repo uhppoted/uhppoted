@@ -61,8 +61,10 @@
 - [x] Rework listen logic to handle errors robustly
 - [x] mqtt credentials (or username/password)
 - [x] Add lockfile+logic to avoid retry strom when multiple mqttd's have same client ID
+- [x] Reset/ignore stored event ID's for fresh events
 - [ ] Close 'listen' more gracefully on stop service
 - [ ] Rework uhppoted API functions to use errors.Is(..) rather than returning status (https://blog.golang.org/go1.13-errors)
+- [ ] restd: rework GetDevices to also find 'known' devices
 
 - [x] Fix go vet errors
 - [x] conf file decoder with reflection
@@ -107,7 +109,6 @@
 ### uhppoted-rest
 - [ ] Get events after XXX
 - [ ] Client certificate revocation list
-- [ ] Rework GetDevices to also find 'known' devices
 - [ ] uhppoted-rest: PUT card
 - [ ] uhppoted-rest: DELETE card
 - [ ] uhppoted-rest: get-events date/id range
