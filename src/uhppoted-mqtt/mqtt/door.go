@@ -43,13 +43,9 @@ func (m *MQTTD) getDoorDelay(meta metainfo, impl *uhppoted.UHPPOTED, ctx context
 		Door:     *body.Door,
 	}
 
-	response, status, err := impl.GetDoorDelay(rq)
+	response, err := impl.GetDoorDelay(rq)
 	if err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    status,
-			Message: fmt.Sprintf("Error retrieving door %v delay", *body.Door),
-		}
+		return nil, ferror(err, fmt.Sprintf("Error retrieving door %v delay", *body.Door))
 	}
 
 	if response == nil {
@@ -110,13 +106,9 @@ func (m *MQTTD) setDoorDelay(meta metainfo, impl *uhppoted.UHPPOTED, ctx context
 		Delay:    *body.Delay,
 	}
 
-	response, status, err := impl.SetDoorDelay(rq)
+	response, err := impl.SetDoorDelay(rq)
 	if err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    status,
-			Message: fmt.Sprintf("Error setting door %v delay", *body.Door),
-		}
+		return nil, ferror(err, fmt.Sprintf("Error setting door %v delay", *body.Door))
 	}
 
 	if response == nil {
@@ -167,13 +159,9 @@ func (m *MQTTD) getDoorControl(meta metainfo, impl *uhppoted.UHPPOTED, ctx conte
 		Door:     *body.Door,
 	}
 
-	response, status, err := impl.GetDoorControl(rq)
+	response, err := impl.GetDoorControl(rq)
 	if err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    status,
-			Message: fmt.Sprintf("Error getting door %v control", *body.Door),
-		}
+		return nil, ferror(err, fmt.Sprintf("Error getting door %v control", *body.Door))
 	}
 
 	if response == nil {
@@ -234,13 +222,9 @@ func (m *MQTTD) setDoorControl(meta metainfo, impl *uhppoted.UHPPOTED, ctx conte
 		Control:  *body.Control,
 	}
 
-	response, status, err := impl.SetDoorControl(rq)
+	response, err := impl.SetDoorControl(rq)
 	if err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    status,
-			Message: fmt.Sprintf("Error setting door %v control", *body.Door),
-		}
+		return nil, ferror(err, fmt.Sprintf("Error setting door %v control", *body.Door))
 	}
 
 	if response == nil {
