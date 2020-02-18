@@ -37,9 +37,10 @@ type GetStatusResponse struct {
 func (u *UHPPOTED) GetStatus(request GetStatusRequest) (*GetStatusResponse, error) {
 	u.debug("get-status", fmt.Sprintf("request  %+v", request))
 
-	status, err := u.Uhppote.GetStatus(uint32(request.DeviceID))
+	device := uint32(request.DeviceID)
+	status, err := u.Uhppote.GetStatus(device)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Sprintf("Error retrieving status for %v (%w)", device, err))
 	}
 
 	response := GetStatusResponse{
