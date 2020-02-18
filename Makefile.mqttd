@@ -1,29 +1,29 @@
 include Makefile
 
-mqttd-help: build
+help: build
 	./bin/mqttd help
 	./bin/mqttd help commands
 	./bin/mqttd help version
 	./bin/mqttd help help
 
-mqttd-version: build
+version: build
 	./bin/mqttd version
 
-mqttd-get-devices:
+get-devices:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/devices:get' \
                  --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                         "client-id":  "QWERTY54", \
                                                         "reply-to":   "twystd/uhppoted/reply/97531", \
                                                         "nonce":      5 }}}'
 
-mqttd-get-devices-hotp:
+get-devices-hotp:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/devices:get' \
                  --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                         "client-id":  "QWERTY54", \
                                                         "reply-to":   "twystd/uhppoted/reply/97531", \
                                                         "hotp":       "586787" }}}'
 
-mqttd-get-devices-rsa:
+get-devices-rsa:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/devices:get' \
                  --message '{ "message": { "signature": "VXLQgzQOHnjIFW6UFftWBYtdwluM3M7nbQD6fjLdSkuk/L8ahLfHsIEPCQF9ofkqEGaBG2Dl6QJtqYF825z8dLPsxbQA1bgMrdbpiVKiS09Vn4ubONIGmShQKcuoZuAzgsVeNbCsDW2MhSq/f6W/DUlKmD9PwgxMkzeKUCjM8bQ=",\
                                            "request": { "request-id": "AH173635G3", \
@@ -31,13 +31,13 @@ mqttd-get-devices-rsa:
                                                         "reply-to":   "twystd/uhppoted/reply/97531", \
                                                         "nonce":      8 }}}'
 
-mqttd-get-device:
+get-device:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device:get' \
                  --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                         "client-id":  "QWERTY54", \
                                                         "device-id":  405419896 }}}'
 
-mqttd-get-device-hotp:
+get-device-hotp:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device:get' \
                  --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                         "client-id":  "QWERTY54", \
@@ -46,7 +46,7 @@ mqttd-get-device-hotp:
                                                         "nonce":      8, \
                                                         "device-id":  405419896 }}}'
 
-mqttd-get-device-rsa:
+get-device-rsa:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device:get' \
                  --message '{ "message": { "signature": "Dd6qGX0lvKA4i0jltpZry1K6hePCATuC0L1Pv7YkHtTNb9cqP+CI4lTOVlq5uWnKB0kVfqdLSGa6dsCRzzw3VFqojhC1ZG8rQtpg4iFno7S73g7O6jF/UEfQ6jHqwubrxcZI8W2P9bcO5f7UR6aiZt6+/nHJlPTLycQ1jlNeM3c=",\
                                            "request": { "request-id":  "AH173635G3", \
@@ -54,7 +54,7 @@ mqttd-get-device-rsa:
                                                         "reply-to":   "twystd/uhppoted/reply/97531", \
                                                         "nonce":      8, \
                                                         "device-id":   405419896 }}}'
-mqttd-get-device-encrypted:
+get-device-encrypted:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device:get' \
                  --message '{ "message": { "key":       "LRtq7KaKvsCP8VvaRXRsoc2+R5T8fhZ1x/cjFpknQmEbrtYmxe/5t1MSbRl2BxFRnEvCuGk6n64govDWcTvi58gU2Xn1XIQLOdBlg7Rk5bluEHdwM+nWRVqSBGTBe1UbvKbzeJ8Vm7jCFbYNVeBYDHRTgkfAnb4vpM/3KjYVDXlGLHO75ou16XPSNXyEvKwZUY5mKeAuS6O7igPkwkhdOgI4wUIBeqiKq5710pyOxitCv1b3CJvpo3lUIrwkGVNFn2fEUAEN3kCQUPpAxKeMOazEsRuQHJEm/thbFWIt0HrWE/XuqHtZZU17oAXiIgKioSUUJ6+cpXursNJWmI3nSQ==", \
                                            "signature": "G/3cEtzhZ+5iyms3sWYbh842ZbHYpJxKDrY8whkhlDmlXZis+P2l7PCfSH8l9hIeGvKUvIwL+wrkPkFwIZbNRJ0oYX9F1SXNVyEzjsKZZ6x4dJ57LnyK/YB8ygx/EBsESsSRo81QiBBD7XAHpKgVB/uqRTk9Tgq6J1YLYzyahv8=",\
@@ -62,7 +62,7 @@ mqttd-get-device-encrypted:
                                          }, \
                               "hmac": "5a0d5ffdafc73f8f386e6673faf93b77ca64b8e9ec665a770efacb64258bba27" }'
 
-mqttd-get-device-encrypted-old:
+get-device-encrypted-old:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device:get' \
                  --message '{ "message": { "key":       "LRtq7KaKvsCP8VvaRXRsoc2+R5T8fhZ1x/cjFpknQmEbrtYmxe/5t1MSbRl2BxFRnEvCuGk6n64govDWcTvi58gU2Xn1XIQLOdBlg7Rk5bluEHdwM+nWRVqSBGTBe1UbvKbzeJ8Vm7jCFbYNVeBYDHRTgkfAnb4vpM/3KjYVDXlGLHO75ou16XPSNXyEvKwZUY5mKeAuS6O7igPkwkhdOgI4wUIBeqiKq5710pyOxitCv1b3CJvpo3lUIrwkGVNFn2fEUAEN3kCQUPpAxKeMOazEsRuQHJEm/thbFWIt0HrWE/XuqHtZZU17oAXiIgKioSUUJ6+cpXursNJWmI3nSQ==", \
                                            "iv":        "109A3994D8DF625FDA4811762E8758AC",\
@@ -72,21 +72,21 @@ mqttd-get-device-encrypted-old:
                               "hmac": "46410fe2d18183452982ed22cec52dedf843436263d1097074454c3c30caa75a" }'
 
 
-mqttd-get-status:
+get-status:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/status:get' \
                  --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                         "client-id":  "QWERTY54", \
                                                         "reply-to":   "twystd/uhppoted/reply/97531", \
                                                         "device-id":  405419896 }}}'
 
-mqttd-get-time:
+get-time:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/time:get' \
                  --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                         "client-id":  "QWERTY54", \
                                                         "reply-to":   "twystd/uhppoted/reply/97531", \
                                                         "device-id":  405419896 }}}'
 
-mqttd-set-time:
+set-time:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/time:set' \
                  --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                         "client-id":  "QWERTY54", \
@@ -94,7 +94,7 @@ mqttd-set-time:
                                                         "device-id":  405419896, \
                                                         "date-time":  "$(DATETIME)" }}}'
 
-mqttd-get-door-delay:
+get-door-delay:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/door/delay:get' \
               --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                      "client-id":  "QWERTY54", \
@@ -102,7 +102,7 @@ mqttd-get-door-delay:
                                                      "device-id":  405419896, \
                                                      "door":       3 }}}'
 
-mqttd-set-door-delay:
+set-door-delay:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/door/delay:set' \
                --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                       "client-id":  "QWERTY54", \
@@ -111,7 +111,7 @@ mqttd-set-door-delay:
                                                       "door":       3, \
                                                       "delay":      8 }}}'
 
-mqttd-get-door-control:
+get-door-control:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/door/control:get' \
                --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                       "client-id":  "QWERTY54", \
@@ -119,7 +119,7 @@ mqttd-get-door-control:
                                                       "device-id":  405419896, \
                                                         "door":       3 }}}'
 
-mqttd-set-door-control:
+set-door-control:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/door/control:set' \
               --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                      "client-id":  "QWERTY54", \
@@ -128,21 +128,21 @@ mqttd-set-door-control:
                                                      "door":       3, \
                                                      "control":    "normally closed" }}}'
 
-mqttd-get-cards:
+get-cards:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/cards:get' \
                --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                        "client-id":  "QWERTY54", \
                                                        "reply-to":   "twystd/uhppoted/reply/97531", \
                                                        "device-id":  405419896 }}}'
 
-mqttd-delete-cards:
+delete-cards:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/cards:delete' \
                --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                       "client-id":  "QWERTY54", \
                                                       "reply-to":   "twystd/uhppoted/reply/97531", \
                                                       "device-id":  405419896 }}}'
 
-mqttd-get-card:
+get-card:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/card:get' \
                  --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                         "client-id":  "QWERTY54", \
@@ -150,7 +150,7 @@ mqttd-get-card:
                                                         "device-id":  405419896, \
                                                         "card-number": 65537 }}}'
 
-mqttd-put-card:
+put-card:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/card:put' \
                --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                       "client-id":  "QWERTY54", \
@@ -162,7 +162,7 @@ mqttd-put-card:
                                                                 "doors": [true,false,false,true] } \
                                                     }}}'
 
-mqttd-delete-card:
+delete-card:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/card:delete' \
                --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                       "client-id":  "QWERTY54", \
@@ -170,7 +170,7 @@ mqttd-delete-card:
                                                       "device-id":  405419896, \
                                                       "card-number": 1327679 }}}'
 
-mqttd-get-events:
+get-events:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/events:get' \
                --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                       "client-id":  "QWERTY54", \
@@ -179,7 +179,7 @@ mqttd-get-events:
                                                       "start":      "2019-08-05", \
                                                       "end":        "2019-08-09" }}}'
 
-mqttd-get-event:
+get-event:
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/event:get' \
                --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                       "client-id":  "QWERTY54", \
