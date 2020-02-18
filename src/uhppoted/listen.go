@@ -132,11 +132,9 @@ func (u *UHPPOTED) onEvent(e *types.Status, received *EventMap, handler EventHan
 	}
 
 	if eventID := u.fetch(device, first, last, handler); retrieved != 0 {
-		if !ok || eventID > retrieved {
-			received.retrieved[device] = eventID
-			if err := received.store(); err != nil {
-				u.warn("listen", err)
-			}
+		received.retrieved[device] = eventID
+		if err := received.store(); err != nil {
+			u.warn("listen", err)
 		}
 	}
 }
