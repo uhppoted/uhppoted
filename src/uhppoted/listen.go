@@ -109,6 +109,8 @@ func (u *UHPPOTED) listen(handler EventHandler, received *EventMap, q chan os.Si
 		},
 	}
 
+	// NTS: use for {..} because 'for err := u.Uhppote.Listen; ..' only ever executes the
+	//      'Listen' once - on loop initialization
 	for {
 		if err := u.Uhppote.Listen(&l, q); err != nil {
 			u.warn("listen", err)
@@ -121,7 +123,10 @@ func (u *UHPPOTED) listen(handler EventHandler, received *EventMap, q chan os.Si
 
 			u.info("listen", fmt.Sprintf("Retrying in %v", delay))
 			time.Sleep(delay)
+			continue
 		}
+
+		break
 	}
 }
 
