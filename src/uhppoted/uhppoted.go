@@ -1,6 +1,7 @@
 package uhppoted
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"uhppote"
@@ -11,6 +12,10 @@ const (
 	StatusBadRequest          = http.StatusBadRequest
 	StatusNotFound            = http.StatusNotFound
 	StatusInternalServerError = http.StatusInternalServerError
+)
+
+var (
+	InternalServerError = errors.New("INTERNAL SERVER ERROR")
 )
 
 type UHPPOTED struct {

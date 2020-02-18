@@ -15,12 +15,12 @@ type GetTimeResponse struct {
 	DateTime types.DateTime `json:"date-time"`
 }
 
-func (u *UHPPOTED) GetTime(request GetTimeRequest) (*GetTimeResponse, int, error) {
+func (u *UHPPOTED) GetTime(request GetTimeRequest) (*GetTimeResponse, error) {
 	u.debug("get-time", fmt.Sprintf("request  %+v", request))
 
 	result, err := u.Uhppote.GetTime(uint32(request.DeviceID))
 	if err != nil {
-		return nil, StatusInternalServerError, err
+		return nil, fmt.Errorf("%w: %v", InternalServerError, err)
 	}
 
 	response := GetTimeResponse{
@@ -30,7 +30,7 @@ func (u *UHPPOTED) GetTime(request GetTimeRequest) (*GetTimeResponse, int, error
 
 	u.debug("get-time", fmt.Sprintf("response %+v", response))
 
-	return &response, StatusOK, nil
+	return &response, nil
 }
 
 type SetTimeRequest struct {
@@ -43,12 +43,12 @@ type SetTimeResponse struct {
 	DateTime types.DateTime `json:"date-time"`
 }
 
-func (u *UHPPOTED) SetTime(request SetTimeRequest) (*SetTimeResponse, int, error) {
+func (u *UHPPOTED) SetTime(request SetTimeRequest) (*SetTimeResponse, error) {
 	u.debug("set-time", fmt.Sprintf("request  %+v", request))
 
 	result, err := u.Uhppote.SetTime(uint32(request.DeviceID), time.Time(request.DateTime))
 	if err != nil {
-		return nil, StatusInternalServerError, err
+		return nil, fmt.Errorf("%w: %v", InternalServerError, err)
 	}
 
 	response := SetTimeResponse{
@@ -58,5 +58,5 @@ func (u *UHPPOTED) SetTime(request SetTimeRequest) (*SetTimeResponse, int, error
 
 	u.debug("set-time", fmt.Sprintf("response %+v", response))
 
-	return &response, StatusOK, nil
+	return &response, nil
 }

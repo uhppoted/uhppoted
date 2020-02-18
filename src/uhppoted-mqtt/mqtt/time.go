@@ -33,13 +33,9 @@ func (m *MQTTD) getTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 		DeviceID: *body.DeviceID,
 	}
 
-	response, status, err := impl.GetTime(rq)
+	response, err := impl.GetTime(rq)
 	if err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    status,
-			Message: "Error retrieving device time",
-		}
+		return nil, ferror(err, "Error retrieving device time")
 	}
 
 	if response == nil {
@@ -90,13 +86,9 @@ func (m *MQTTD) setTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 		DateTime: *body.DateTime,
 	}
 
-	response, status, err := impl.SetTime(rq)
+	response, err := impl.SetTime(rq)
 	if err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    status,
-			Message: "Error setting device date/time",
-		}
+		return nil, ferror(err, "Error setting device date/time")
 	}
 
 	if response == nil {

@@ -90,12 +90,6 @@ type metainfo struct {
 	Nonce     fnonce  `json:"nonce,omitempty"`
 }
 
-type errorx struct {
-	Err     error  `json:"-"`
-	Code    int    `json:"error-code"`
-	Message string `json:"message"`
-}
-
 func (e *errorx) Error() string {
 	return fmt.Sprintf("%v", e.Err)
 }
@@ -313,8 +307,8 @@ func (d *dispatcher) dispatch(client paho.Client, msg paho.Message) {
 			reply, err := fn.f(d.mqttd, meta, d.uhppoted, ctx, rq.Request)
 
 			if err != nil {
-				d.log.Printf("DEBUG %-20s %s", fn.method, string(rq.Request))
-				d.log.Printf("WARN  %-20s %v", fn.method, err)
+				d.log.Printf("DEBUG %-12s %s", fn.method, string(rq.Request))
+				d.log.Printf("WARN  %-12s %v", fn.method, err)
 
 				if errx, ok := err.(*errorx); ok {
 					if err := d.mqttd.send(rq.ClientID, replyTo, errx, msgError, false); err != nil {
