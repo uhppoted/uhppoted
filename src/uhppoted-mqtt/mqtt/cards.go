@@ -34,13 +34,9 @@ func (m *MQTTD) getCards(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Con
 		DeviceID: *body.DeviceID,
 	}
 
-	response, status, err := impl.GetCards(rq)
+	response, err := impl.GetCards(rq)
 	if err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    status,
-			Message: fmt.Sprintf("Error retrieving card list for %v", *body.DeviceID),
-		}
+		return nil, ferror(err, fmt.Sprintf("Error retrieving card list for %v", *body.DeviceID))
 	}
 
 	if response == nil {
@@ -81,13 +77,9 @@ func (m *MQTTD) deleteCards(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.
 		DeviceID: *body.DeviceID,
 	}
 
-	response, status, err := impl.DeleteCards(rq)
+	response, err := impl.DeleteCards(rq)
 	if err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    status,
-			Message: fmt.Sprintf("Error deleting card list for %v", *body.DeviceID),
-		}
+		return nil, ferror(err, fmt.Sprintf("Error deleting card list for %v", *body.DeviceID))
 	}
 
 	if response == nil {
@@ -138,13 +130,9 @@ func (m *MQTTD) getCard(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 		CardNumber: *body.CardNumber,
 	}
 
-	response, status, err := impl.GetCard(rq)
+	response, err := impl.GetCard(rq)
 	if err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    status,
-			Message: fmt.Sprintf("Error retrieving card %v", *body.CardNumber),
-		}
+		return nil, ferror(err, fmt.Sprintf("Error retrieving card %v", *body.CardNumber))
 	}
 
 	if response == nil {
@@ -195,13 +183,9 @@ func (m *MQTTD) putCard(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 		Card:     *body.Card,
 	}
 
-	response, status, err := impl.PutCard(rq)
+	response, err := impl.PutCard(rq)
 	if err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    status,
-			Message: fmt.Sprintf("Error storing card %v", body.Card.CardNumber),
-		}
+		return nil, ferror(err, fmt.Sprintf("Error storing card %v", body.Card.CardNumber))
 	}
 
 	if response == nil {
@@ -252,13 +236,9 @@ func (m *MQTTD) deleteCard(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.C
 		CardNumber: *body.CardNumber,
 	}
 
-	response, status, err := impl.DeleteCard(rq)
+	response, err := impl.DeleteCard(rq)
 	if err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    status,
-			Message: fmt.Sprintf("Error deleting card %v", *body.CardNumber),
-		}
+		return nil, ferror(err, fmt.Sprintf("Error deleting card %v", *body.CardNumber))
 	}
 
 	if response == nil {
