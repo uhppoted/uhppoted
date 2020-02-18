@@ -69,7 +69,7 @@ type event struct {
 	Result     uint8          `json:"event-result"`
 }
 
-func (u *UHPPOTED) GetEvents(request GetEventsRequest) (*GetEventsResponse, int, error) {
+func (u *UHPPOTED) GetEvents(request GetEventsRequest) (*GetEventsResponse, error) {
 	u.debug("get-events", fmt.Sprintf("request  %+v", request))
 
 	device := uint32(request.DeviceID)
@@ -78,7 +78,7 @@ func (u *UHPPOTED) GetEvents(request GetEventsRequest) (*GetEventsResponse, int,
 
 	event, err := u.Uhppote.GetEvent(device, 0xffffffff)
 	if err != nil {
-		return nil, StatusInternalServerError, err
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting last event index from %v (%w)", device, err))
 	}
 
 	first := uint32(0)
@@ -99,7 +99,7 @@ func (u *UHPPOTED) GetEvents(request GetEventsRequest) (*GetEventsResponse, int,
 			for index := event.Index; index > 0; index-- {
 				record, err := u.Uhppote.GetEvent(device, index)
 				if err != nil {
-					return nil, StatusInternalServerError, err
+					return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting event for index %v from %v (%w)", index, device, err))
 				}
 
 				if start != nil && !time.Time(record.Timestamp).Before(time.Time(*start)) && record.Index < first {
@@ -137,10 +137,10 @@ func (u *UHPPOTED) GetEvents(request GetEventsRequest) (*GetEventsResponse, int,
 
 	u.debug("get-events", fmt.Sprintf("response %+v", response))
 
-	return &response, StatusOK, nil
+	return &response, nil
 }
 
-func (u *UHPPOTED) GetEvent(request GetEventRequest) (*GetEventResponse, int, error) {
+func (u *UHPPOTED) GetEvent(request GetEventRequest) (*GetEventResponse, error) {
 	u.debug("get-events", fmt.Sprintf("request  %+v", request))
 
 	device := uint32(request.DeviceID)
@@ -148,15 +148,15 @@ func (u *UHPPOTED) GetEvent(request GetEventRequest) (*GetEventResponse, int, er
 
 	record, err := u.Uhppote.GetEvent(device, eventID)
 	if err != nil {
-		return nil, StatusInternalServerError, fmt.Errorf("Failed to retrieve event ID %d", eventID)
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting event for ID %v from %v (%w)", eventID, device, err))
 	}
 
 	if record == nil {
-		return nil, StatusNotFound, fmt.Errorf("No event record for ID %d", eventID)
+		return nil, fmt.Errorf("%w: %v", NotFound, fmt.Errorf("No event record for ID %v for %v (%w)", eventID, device, err))
 	}
 
 	if record.Index != eventID {
-		return nil, StatusNotFound, fmt.Errorf("No event record for ID %d", eventID)
+		return nil, fmt.Errorf("%w: %v", NotFound, fmt.Errorf("No event record for ID %v for %v (%w)", eventID, device, err))
 	}
 
 	response := GetEventResponse{
@@ -175,5 +175,5 @@ func (u *UHPPOTED) GetEvent(request GetEventRequest) (*GetEventResponse, int, er
 
 	u.debug("get-event", fmt.Sprintf("response %+v", response))
 
-	return &response, StatusOK, nil
+	return &response, nil
 }
