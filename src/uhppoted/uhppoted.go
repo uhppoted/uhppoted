@@ -16,6 +16,7 @@ const (
 
 var (
 	InternalServerError = errors.New("INTERNAL SERVER ERROR")
+	NotFound            = errors.New("Not Found")
 )
 
 type UHPPOTED struct {

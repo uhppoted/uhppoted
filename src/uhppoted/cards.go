@@ -14,14 +14,14 @@ type GetCardsResponse struct {
 	Cards    []uint32 `json:"cards"`
 }
 
-func (u *UHPPOTED) GetCards(request GetCardsRequest) (*GetCardsResponse, int, error) {
+func (u *UHPPOTED) GetCards(request GetCardsRequest) (*GetCardsResponse, error) {
 	u.debug("get-cards", fmt.Sprintf("request  %+v", request))
 
 	device := uint32(request.DeviceID)
 
 	N, err := u.Uhppote.GetCards(device)
 	if err != nil {
-		return nil, StatusInternalServerError, fmt.Errorf("Error retrieving cards from %v", device)
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error retrieving cards from %v (%w)", device, err))
 	}
 
 	cards := make([]uint32, 0)
@@ -29,7 +29,7 @@ func (u *UHPPOTED) GetCards(request GetCardsRequest) (*GetCardsResponse, int, er
 	for index := uint32(0); index < N.Records; index++ {
 		record, err := u.Uhppote.GetCardByIndex(device, index+1)
 		if err != nil {
-			return nil, StatusInternalServerError, fmt.Errorf("Error retrieving cards from %v", device)
+			return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error retrieving cards from %v (%w)", device, err))
 		}
 
 		cards = append(cards, record.CardNumber)
@@ -42,7 +42,7 @@ func (u *UHPPOTED) GetCards(request GetCardsRequest) (*GetCardsResponse, int, er
 
 	u.debug("get-cards", fmt.Sprintf("response %+v", response))
 
-	return &response, StatusOK, nil
+	return &response, nil
 }
 
 type DeleteCardsRequest struct {
@@ -54,14 +54,14 @@ type DeleteCardsResponse struct {
 	Deleted  bool     `json:"deleted"`
 }
 
-func (u *UHPPOTED) DeleteCards(request DeleteCardsRequest) (*DeleteCardsResponse, int, error) {
+func (u *UHPPOTED) DeleteCards(request DeleteCardsRequest) (*DeleteCardsResponse, error) {
 	u.debug("delete-cards", fmt.Sprintf("request  %+v", request))
 
 	device := uint32(request.DeviceID)
 
 	deleted, err := u.Uhppote.DeleteCards(device)
 	if err != nil {
-		return nil, StatusInternalServerError, fmt.Errorf("Error deleting cards from %v", device)
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error deleting cards from %v (%w)", device, err))
 	}
 
 	response := DeleteCardsResponse{
@@ -71,7 +71,7 @@ func (u *UHPPOTED) DeleteCards(request DeleteCardsRequest) (*DeleteCardsResponse
 
 	u.debug("delete-cards", fmt.Sprintf("response %+v", response))
 
-	return &response, StatusOK, nil
+	return &response, nil
 }
 
 type GetCardRequest struct {
@@ -84,7 +84,7 @@ type GetCardResponse struct {
 	Card     types.Card `json:"card"`
 }
 
-func (u *UHPPOTED) GetCard(request GetCardRequest) (*GetCardResponse, int, error) {
+func (u *UHPPOTED) GetCard(request GetCardRequest) (*GetCardResponse, error) {
 	u.debug("get-card", fmt.Sprintf("request  %+v", request))
 
 	device := uint32(request.DeviceID)
@@ -92,11 +92,11 @@ func (u *UHPPOTED) GetCard(request GetCardRequest) (*GetCardResponse, int, error
 
 	card, err := u.Uhppote.GetCardByID(device, cardID)
 	if err != nil {
-		return nil, StatusInternalServerError, fmt.Errorf("Error retrieving card %v from %v", cardID, device)
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Sprintf("Error retrieving card %v from %v (%w)", card.CardNumber, device, err))
 	}
 
 	if card == nil {
-		return nil, StatusNotFound, fmt.Errorf("No record for card %v on %v", cardID, device)
+		return nil, fmt.Errorf("%w: %v", NotFound, fmt.Errorf("Error retrieving card %v from %v (%w)", card.CardNumber, device, err))
 	}
 
 	response := GetCardResponse{
@@ -106,7 +106,7 @@ func (u *UHPPOTED) GetCard(request GetCardRequest) (*GetCardResponse, int, error
 
 	u.debug("get-card", fmt.Sprintf("response %+v", response))
 
-	return &response, StatusOK, nil
+	return &response, nil
 }
 
 type PutCardRequest struct {
@@ -119,7 +119,7 @@ type PutCardResponse struct {
 	Card     types.Card `json:"card"`
 }
 
-func (u *UHPPOTED) PutCard(request PutCardRequest) (*PutCardResponse, int, error) {
+func (u *UHPPOTED) PutCard(request PutCardRequest) (*PutCardResponse, error) {
 	u.debug("put-card", fmt.Sprintf("request  %+v", request))
 
 	device := uint32(request.DeviceID)
@@ -127,11 +127,11 @@ func (u *UHPPOTED) PutCard(request PutCardRequest) (*PutCardResponse, int, error
 
 	authorised, err := u.Uhppote.PutCard(device, card)
 	if err != nil {
-		return nil, StatusInternalServerError, fmt.Errorf("Error storing card %v to %v", card.CardNumber, device)
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error storing card %v to %v (%w)", card.CardNumber, device, err))
 	}
 
 	if !authorised.Succeeded {
-		return nil, StatusInternalServerError, fmt.Errorf("Error storing card %v to %v", card.CardNumber, device)
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error storing card %v to %v (%w)", card.CardNumber, device, err))
 	}
 
 	response := PutCardResponse{
@@ -141,7 +141,7 @@ func (u *UHPPOTED) PutCard(request PutCardRequest) (*PutCardResponse, int, error
 
 	u.debug("put-card", fmt.Sprintf("response %+v", response))
 
-	return &response, StatusOK, nil
+	return &response, nil
 }
 
 type DeleteCardRequest struct {
@@ -155,7 +155,7 @@ type DeleteCardResponse struct {
 	Deleted    bool     `json:"deleted"`
 }
 
-func (u *UHPPOTED) DeleteCard(request DeleteCardRequest) (*DeleteCardResponse, int, error) {
+func (u *UHPPOTED) DeleteCard(request DeleteCardRequest) (*DeleteCardResponse, error) {
 	u.debug("delete-card", fmt.Sprintf("request  %+v", request))
 
 	device := uint32(request.DeviceID)
@@ -163,7 +163,7 @@ func (u *UHPPOTED) DeleteCard(request DeleteCardRequest) (*DeleteCardResponse, i
 
 	deleted, err := u.Uhppote.DeleteCard(device, cardNo)
 	if err != nil {
-		return nil, StatusInternalServerError, fmt.Errorf("Error deleting card %v from %v", cardNo, device)
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error deleting card %v from %v (%w)", cardNo, device, err))
 	}
 
 	response := DeleteCardResponse{
@@ -174,5 +174,5 @@ func (u *UHPPOTED) DeleteCard(request DeleteCardRequest) (*DeleteCardResponse, i
 
 	u.debug("delete-card", fmt.Sprintf("response %+v", response))
 
-	return &response, StatusOK, nil
+	return &response, nil
 }
