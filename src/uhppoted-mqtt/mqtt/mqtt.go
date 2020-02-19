@@ -90,10 +90,6 @@ type metainfo struct {
 	Nonce     fnonce  `json:"nonce,omitempty"`
 }
 
-func (e *errorx) Error() string {
-	return fmt.Sprintf("%v", e.Err)
-}
-
 type fnonce func() uint64
 
 func (f fnonce) MarshalJSON() ([]byte, error) {
@@ -310,7 +306,7 @@ func (d *dispatcher) dispatch(client paho.Client, msg paho.Message) {
 				d.log.Printf("DEBUG %-12s %s", fn.method, string(rq.Request))
 				d.log.Printf("WARN  %-12s %v", fn.method, err)
 
-				if errx, ok := err.(*errorx); ok {
+				if errx, ok := err.(*ierror); ok {
 					if err := d.mqttd.send(rq.ClientID, replyTo, errx, msgError, false); err != nil {
 						d.log.Printf("WARN  %-20s %v", fn.method, err)
 					}

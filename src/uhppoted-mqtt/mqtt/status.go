@@ -3,7 +3,6 @@ package mqtt
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"uhppoted"
 )
@@ -14,19 +13,11 @@ func (m *MQTTD) getStatus(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Co
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Cannot parse request",
-		}
+		return nil, ferror(fmt.Errorf("%w: %v", uhppoted.BadRequest, err), "Cannot parse request")
 	}
 
 	if body.DeviceID == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing device ID"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing device ID",
-		}
+		return nil, InvalidDeviceID
 	}
 
 	rq := uhppoted.GetStatusRequest{
@@ -35,11 +26,7 @@ func (m *MQTTD) getStatus(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Co
 
 	response, err := impl.GetStatus(rq)
 	if err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    uhppoted.StatusInternalServerError,
-			Message: fmt.Sprintf("Could not retrieve status for %d", *body.DeviceID),
-		}
+		return nil, ferror(err, fmt.Sprintf("Error retrieving status for %v", *body.DeviceID))
 	}
 
 	if response != nil {

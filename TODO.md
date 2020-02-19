@@ -66,6 +66,7 @@
 - [x] Rework uhppoted API functions to use errors.Is(..) rather than returning status (https://blog.golang.org/go1.13-errors)
 - [ ] Hunt down miscellaneous 'listen' warnings on startup
 - [ ] restd: rework GetDevices to also find 'known' devices
+- [ ] Handle wrap-around for get-event/listen
 
 - [x] Fix go vet errors
 - [x] conf file decoder with reflection

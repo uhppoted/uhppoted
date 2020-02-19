@@ -3,7 +3,6 @@ package mqtt
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"time"
 	"uhppote/types"
@@ -21,27 +20,15 @@ func (m *MQTTD) getEvents(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Co
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Cannot parse request",
-		}
+		return nil, ferror(fmt.Errorf("%w: %v", uhppoted.BadRequest, err), "Cannot parse request")
 	}
 
 	if body.DeviceID == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing device ID"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing device ID",
-		}
+		return nil, InvalidDeviceID
 	}
 
 	if body.Start != nil && body.End != nil && time.Time(*body.End).Before(time.Time(*body.Start)) {
-		return nil, &errorx{
-			Err:     fmt.Errorf("Invalid event date range: %v to %v", body.Start, body.End),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing event date range",
-		}
+		return nil, ferror(fmt.Errorf("Invalid event date range: %v to %v", body.Start, body.End), "Missing event date range")
 	}
 
 	rq := uhppoted.GetEventsRequest{
@@ -75,27 +62,15 @@ func (m *MQTTD) getEvent(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Con
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Cannot parse request",
-		}
+		return nil, ferror(fmt.Errorf("%w: %v", uhppoted.BadRequest, err), "Cannot parse request")
 	}
 
 	if body.DeviceID == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing device ID"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing device ID",
-		}
+		return nil, InvalidDeviceID
 	}
 
 	if body.EventID == nil || *body.EventID == 0 {
-		return nil, &errorx{
-			Err:     errors.New("Missing/invalid event ID"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing/invalid event ID",
-		}
+		return nil, InvalidEventID
 	}
 
 	rq := uhppoted.GetEventRequest{
