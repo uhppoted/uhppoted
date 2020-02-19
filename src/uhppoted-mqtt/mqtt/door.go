@@ -3,7 +3,6 @@ package mqtt
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"uhppoted"
 )
@@ -15,27 +14,15 @@ func (m *MQTTD) getDoorDelay(meta metainfo, impl *uhppoted.UHPPOTED, ctx context
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Cannot parse request",
-		}
+		return nil, ferror(fmt.Errorf("%w: %v", uhppoted.BadRequest, err), "Cannot parse request")
 	}
 
 	if body.DeviceID == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing device ID"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing device ID",
-		}
+		return nil, InvalidDeviceID
 	}
 
 	if body.Door == nil || *body.Door < 1 || *body.Door > 4 {
-		return nil, &errorx{
-			Err:     errors.New("Missing/invalid door"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing/invalid door",
-		}
+		return nil, InvalidDoorID
 	}
 
 	rq := uhppoted.GetDoorDelayRequest{
@@ -69,35 +56,19 @@ func (m *MQTTD) setDoorDelay(meta metainfo, impl *uhppoted.UHPPOTED, ctx context
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Cannot parse request",
-		}
+		return nil, ferror(fmt.Errorf("%w: %v", uhppoted.BadRequest, err), "Cannot parse request")
 	}
 
 	if body.DeviceID == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing device ID"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing device ID",
-		}
+		return nil, InvalidDeviceID
 	}
 
 	if body.Door == nil || *body.Door < 1 || *body.Door > 4 {
-		return nil, &errorx{
-			Err:     errors.New("Missing/invalid door"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing/invalid door",
-		}
+		return nil, InvalidDoorID
 	}
 
 	if body.Delay == nil || *body.Delay == 0 || *body.Delay > 60 {
-		return nil, &errorx{
-			Err:     errors.New("Missing/invalid door delay"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing/invalid door delay",
-		}
+		return nil, InvalidDoorDelay
 	}
 
 	rq := uhppoted.SetDoorDelayRequest{
@@ -131,27 +102,15 @@ func (m *MQTTD) getDoorControl(meta metainfo, impl *uhppoted.UHPPOTED, ctx conte
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Cannot parse request",
-		}
+		return nil, ferror(fmt.Errorf("%w: %v", uhppoted.BadRequest, err), "Cannot parse request")
 	}
 
 	if body.DeviceID == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing device ID"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing device ID",
-		}
+		return nil, InvalidDeviceID
 	}
 
 	if body.Door == nil || *body.Door < 1 || *body.Door > 4 {
-		return nil, &errorx{
-			Err:     errors.New("Missing/invalid door"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing/invalid door",
-		}
+		return nil, InvalidDoorID
 	}
 
 	rq := uhppoted.GetDoorControlRequest{
@@ -185,35 +144,19 @@ func (m *MQTTD) setDoorControl(meta metainfo, impl *uhppoted.UHPPOTED, ctx conte
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Cannot parse request",
-		}
+		return nil, ferror(fmt.Errorf("%w: %v", uhppoted.BadRequest, err), "Cannot parse request")
 	}
 
 	if body.DeviceID == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing device ID"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing device ID",
-		}
+		return nil, InvalidDeviceID
 	}
 
 	if body.Door == nil || *body.Door < 1 || *body.Door > 4 {
-		return nil, &errorx{
-			Err:     errors.New("Missing/invalid door"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing/invalid door",
-		}
+		return nil, InvalidDoorID
 	}
 
 	if body.Control == nil || *body.Control < 1 || *body.Control > 3 {
-		return nil, &errorx{
-			Err:     errors.New("Missing/invalid door control value"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing/invalid door control value",
-		}
+		return nil, InvalidDoorControl
 	}
 
 	rq := uhppoted.SetDoorControlRequest{

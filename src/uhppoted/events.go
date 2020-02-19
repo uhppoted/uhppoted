@@ -95,6 +95,8 @@ func (u *UHPPOTED) GetEvents(request GetEventsRequest) (*GetEventsResponse, erro
 			last = 1
 		}
 
+		// TODO: this logic doesn't handle wrap around i.e. when the UHPPOTE controller event index
+		// increments from 100000 to 0
 		if start != nil || end != nil {
 			for index := event.Index; index > 0; index-- {
 				record, err := u.Uhppote.GetEvent(device, index)

@@ -3,7 +3,7 @@ package mqtt
 import (
 	"context"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"uhppote/types"
 	"uhppoted"
 )
@@ -14,19 +14,11 @@ func (m *MQTTD) getTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Cannot parse request",
-		}
+		return nil, ferror(fmt.Errorf("%w: %v", uhppoted.BadRequest, err), "Cannot parse request")
 	}
 
 	if body.DeviceID == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing device ID"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing device ID",
-		}
+		return nil, InvalidDeviceID
 	}
 
 	rq := uhppoted.GetTimeRequest{
@@ -58,27 +50,15 @@ func (m *MQTTD) setTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Cannot parse request",
-		}
+		return nil, ferror(fmt.Errorf("%w: %v", uhppoted.BadRequest, err), "Cannot parse request")
 	}
 
 	if body.DeviceID == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing device ID"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing device ID",
-		}
+		return nil, InvalidDeviceID
 	}
 
 	if body.DateTime == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing/invalid date-time"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing/invalid date-time",
-		}
+		return nil, InvalidDateTime
 	}
 
 	rq := uhppoted.SetTimeRequest{

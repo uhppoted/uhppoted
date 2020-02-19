@@ -3,7 +3,6 @@ package mqtt
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"uhppote/types"
 	"uhppoted"
@@ -15,19 +14,11 @@ func (m *MQTTD) getCards(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Con
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Cannot parse request",
-		}
+		return nil, ferror(fmt.Errorf("%w: %v", uhppoted.BadRequest, err), "Cannot parse request")
 	}
 
 	if body.DeviceID == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing device ID"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing device ID",
-		}
+		return nil, InvalidDeviceID
 	}
 
 	rq := uhppoted.GetCardsRequest{
@@ -58,19 +49,11 @@ func (m *MQTTD) deleteCards(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Cannot parse request",
-		}
+		return nil, ferror(fmt.Errorf("%w: %v", uhppoted.BadRequest, err), "Cannot parse request")
 	}
 
 	if body.DeviceID == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing device ID"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing device ID",
-		}
+		return nil, InvalidDeviceID
 	}
 
 	rq := uhppoted.DeleteCardsRequest{
@@ -102,27 +85,15 @@ func (m *MQTTD) getCard(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Cannot parse request",
-		}
+		return nil, ferror(fmt.Errorf("%w: %v", uhppoted.BadRequest, err), "Cannot parse request")
 	}
 
 	if body.DeviceID == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing device ID"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing device ID",
-		}
+		return nil, InvalidDeviceID
 	}
 
 	if body.CardNumber == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing/invalid card number"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing/invalid card number",
-		}
+		return nil, InvalidCardNumber
 	}
 
 	rq := uhppoted.GetCardRequest{
@@ -155,27 +126,15 @@ func (m *MQTTD) putCard(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Cont
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Cannot parse request",
-		}
+		return nil, ferror(fmt.Errorf("%w: %v", uhppoted.BadRequest, err), "Cannot parse request")
 	}
 
 	if body.DeviceID == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing device ID"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing device ID",
-		}
+		return nil, InvalidDeviceID
 	}
 
 	if body.Card == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing/invalid card number"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing/invalid card number",
-		}
+		return nil, InvalidCardNumber
 	}
 
 	rq := uhppoted.PutCardRequest{
@@ -208,27 +167,15 @@ func (m *MQTTD) deleteCard(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.C
 	}{}
 
 	if err := json.Unmarshal(request, &body); err != nil {
-		return nil, &errorx{
-			Err:     err,
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Cannot parse request",
-		}
+		return nil, ferror(fmt.Errorf("%w: %v", uhppoted.BadRequest, err), "Cannot parse request")
 	}
 
 	if body.DeviceID == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing device ID"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing device ID",
-		}
+		return nil, InvalidDeviceID
 	}
 
 	if body.CardNumber == nil {
-		return nil, &errorx{
-			Err:     errors.New("Missing/invalid card number"),
-			Code:    uhppoted.StatusBadRequest,
-			Message: "Missing/invalid card number",
-		}
+		return nil, InvalidCardNumber
 	}
 
 	rq := uhppoted.DeleteCardRequest{
