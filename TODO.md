@@ -65,7 +65,7 @@
 - [x] Close 'listen' more gracefully on stop service
 - [x] Rework uhppoted API functions to use errors.Is(..) rather than returning status (https://blog.golang.org/go1.13-errors)
 - [x] Hunt down miscellaneous 'listen' warnings on startup
-- [ ] restd: rework GetDevices to also find 'known' devices
+- [x] restd: rework GetDevices to also find 'known' devices
 - [ ] Handle wrap-around for get-event/listen
 
 - [x] Fix go vet errors

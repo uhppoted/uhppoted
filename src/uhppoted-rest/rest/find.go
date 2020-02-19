@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"uhppote"
 	"uhppote/types"
 )
@@ -19,26 +20,60 @@ type device struct {
 func getDevices(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	debug(ctx, 0, "get-devices", r)
 
-	devices, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).FindDevices()
+	u := ctx.Value("uhppote").(*uhppote.UHPPOTE)
+	wg := sync.WaitGroup{}
+	list := sync.Map{}
 
-	if err != nil {
-		warn(ctx, 0, "get-devices", err)
-		http.Error(w, "Error retrieving device list", http.StatusInternalServerError)
-		return
+	for id, _ := range u.Devices {
+		deviceID := id
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if device, err := u.FindDevice(deviceID); err != nil {
+				warn(ctx, deviceID, "get-devices", err)
+			} else if device != nil {
+				list.Store(uint32(device.SerialNumber), device)
+			}
+		}()
 	}
 
-	list := make([]device, 0)
-	for _, d := range devices {
-		list = append(list, device{
-			SerialNumber: d.SerialNumber,
-			DeviceType:   identify(d.SerialNumber),
-		})
-	}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		if devices, err := u.FindDevices(); err != nil {
+			warn(ctx, 0, "get-devices", err)
+		} else {
+			for _, d := range devices {
+				list.Store(uint32(d.SerialNumber), d)
+			}
+		}
+	}()
+
+	wg.Wait()
+
+	devices := make([]device, 0)
+	list.Range(func(key, value interface{}) bool {
+		if d, ok := value.(types.Device); ok {
+			devices = append(devices, device{
+				SerialNumber: d.SerialNumber,
+				DeviceType:   identify(d.SerialNumber),
+			})
+		}
+
+		if d, ok := value.(*types.Device); ok {
+			devices = append(devices, device{
+				SerialNumber: d.SerialNumber,
+				DeviceType:   identify(d.SerialNumber),
+			})
+		}
+
+		return true
+	})
 
 	response := struct {
 		Devices []device `json:"devices"`
 	}{
-		Devices: list,
+		Devices: devices,
 	}
 
 	reply(ctx, w, response)

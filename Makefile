@@ -81,7 +81,7 @@ simulator-device: build
 	./bin/uhppote-simulator --debug --devices "runtime/simulation/devices" new-device 678
 
 uhppoted-rest: build
-	./bin/uhppoted-rest --console --debug 
+	./bin/uhppoted-rest --console
 
 uhppoted-mqtt: build
 	./bin/uhppoted-mqtt --console
