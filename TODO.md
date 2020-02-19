@@ -64,7 +64,7 @@
 - [x] Reset/ignore stored event ID's for fresh events
 - [x] Close 'listen' more gracefully on stop service
 - [x] Rework uhppoted API functions to use errors.Is(..) rather than returning status (https://blog.golang.org/go1.13-errors)
-- [ ] Hunt down miscellaneous 'listen' warnings on startup
+- [x] Hunt down miscellaneous 'listen' warnings on startup
 - [ ] restd: rework GetDevices to also find 'known' devices
 - [ ] Handle wrap-around for get-event/listen
 
@@ -225,3 +225,4 @@
      - NACL/tweetnacl
 31.  Consider moving to event bus architecture (?)
 32. [Open Policy Agent](https://github.com/open-policy-agent) - for permissions
+33. CouchBase (for JSON DB)
