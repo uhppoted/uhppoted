@@ -213,7 +213,7 @@ func (u *UHPPOTE) receive(c *net.UDPConn, reply interface{}) error {
 
 	N, remote, err := c.ReadFromUDP(m)
 	if err != nil {
-		return fmt.Errorf("Failed to read from UDP socket [%v]", err)
+		return err
 	}
 
 	if u.Debug {

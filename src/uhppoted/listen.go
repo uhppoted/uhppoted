@@ -62,15 +62,18 @@ func (u *UHPPOTED) Listen(handler EventHandler, received *EventMap, q chan os.Si
 	// NOTE: this logic doesn't handle wrap around i.e. if the mqttd is not running
 	//       when the UHPPOTE controller event index increments from 100000 (the apparent
 	//       limit on the controllers) to 0, then it won't retrieve any 'unfetched' events.
-	for device, index := range received.retrieved {
-		event, err := u.Uhppote.GetEvent(device, 0xffffffff)
-		if err != nil {
-			u.warn("listen", err)
-		} else {
-			if retrieved := u.fetch(device, index+1, event.Index, handler); retrieved != 0 {
-				received.retrieved[device] = retrieved
-				if err := received.store(); err != nil {
-					u.warn("listen", err)
+	for device, _ := range u.Uhppote.Devices {
+		if index, ok := received.retrieved[device]; ok {
+			u.info("listen", fmt.Sprintf("Fetching unretrieved events for device ID %v", device))
+			event, err := u.Uhppote.GetEvent(device, 0xffffffff)
+			if err != nil {
+				u.warn("listen", fmt.Errorf("Unable to retrieve events for device ID %v (%w)", device, err))
+			} else {
+				if retrieved := u.fetch(device, index+1, event.Index, handler); retrieved != 0 {
+					received.retrieved[device] = retrieved
+					if err := received.store(); err != nil {
+						u.warn("listen", err)
+					}
 				}
 			}
 		}
@@ -107,7 +110,7 @@ func (u *UHPPOTED) listen(handler EventHandler, received *EventMap, q chan os.Si
 		},
 	}
 
-	// NTS: use for {..} because 'for err := u.Uhppote.Listen; ..' only ever executes the
+	// NTS: use 'for {..}' because 'for err := u.Uhppote.Listen; ..' only ever executes the
 	//      'Listen' once - on loop initialization
 	for {
 		if err := u.Uhppote.Listen(&l, q); err != nil {
