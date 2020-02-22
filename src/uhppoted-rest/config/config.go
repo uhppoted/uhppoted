@@ -9,14 +9,16 @@ import (
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
 	"uhppote/encoding/conf"
 )
 
 type DeviceMap map[uint32]*Device
 
 type Device struct {
-	Address *net.UDPAddr
-	Door    []string
+	Address  *net.UDPAddr
+	Rollover uint32
+	Door     []string
 }
 
 type REST struct {
@@ -42,6 +44,8 @@ type Config struct {
 	REST             `conf:"rest"`
 	OpenApi          `conf:"openapi"`
 }
+
+const ROLLOVER = 100000
 
 func NewConfig() *Config {
 	bind, broadcast := DefaultIpAddresses()
@@ -158,7 +162,8 @@ func (f *DeviceMap) UnmarshalConf(tag string, values map[string]string) (interfa
 			d, ok := (*f)[uint32(id)]
 			if !ok || d == nil {
 				d = &Device{
-					Door: make([]string, 4),
+					Door:     make([]string, 4),
+					Rollover: ROLLOVER,
 				}
 
 				(*f)[uint32(id)] = d
@@ -177,6 +182,14 @@ func (f *DeviceMap) UnmarshalConf(tag string, values map[string]string) (interfa
 					}
 
 					copy(d.Address.IP, address.IP.To4())
+				}
+
+			case "rollover":
+				rollover, err := strconv.ParseUint(strings.TrimSpace(value), 10, 32)
+				if err != nil {
+					return f, fmt.Errorf("Device %v, invalid rollover '%s': %v", id, value, err)
+				} else {
+					d.Rollover = uint32(rollover)
 				}
 
 			case "door.1":

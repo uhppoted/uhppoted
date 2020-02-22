@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"log"
 	"math"
-	"net"
 	"os"
 	"os/signal"
 	"sync"
@@ -149,13 +148,14 @@ func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Sig
 	u := uhppote.UHPPOTE{
 		BindAddress:      c.BindAddress,
 		BroadcastAddress: c.BroadcastAddress,
-		Devices:          make(map[uint32]*net.UDPAddr),
+		Devices:          make(map[uint32]*uhppote.Device),
 		Debug:            r.debug,
 	}
 
 	for id, d := range c.Devices {
-		if d.Address != nil {
-			u.Devices[id] = d.Address
+		u.Devices[id] = &uhppote.Device{
+			Address:  d.Address,
+			Rollover: d.Rollover,
 		}
 	}
 

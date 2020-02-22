@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"fmt"
 	"uhppote/types"
 )
 
@@ -52,16 +51,18 @@ func (l *EventList) Add(event *Event) {
 }
 
 func (l *EventList) Get(index uint32) *Event {
-	if index == 0 {
-		return &l.Events[l.First-1]
-	}
+	if len(l.Events) > 0 {
+		if index == 0 {
+			return &l.Events[l.First-1]
+		}
 
-	if index == 0xffffffff {
-		return &l.Events[l.Last-1]
-	}
+		if index == 0xffffffff || index > uint32(len(l.Events)) {
+			return &l.Events[l.Last-1]
+		}
 
-	if index > 0 && int(index) <= len(l.Events) {
-		return &l.Events[index-1]
+		if index > 0 && int(index) <= len(l.Events) {
+			return &l.Events[index-1]
+		}
 	}
 
 	return nil
