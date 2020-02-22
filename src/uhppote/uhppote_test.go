@@ -25,7 +25,7 @@ func TestBroadcastAddressRequest(t *testing.T) {
 	}
 
 	u := UHPPOTE{
-		Devices:          make(map[uint32]*net.UDPAddr),
+		Devices:          make(map[uint32]*Device),
 		Debug:            true,
 		BindAddress:      resolve("127.0.0.1:12345", t),
 		BroadcastAddress: resolve("127.0.0.1:60000", t),
@@ -85,9 +85,18 @@ func TestSequentialRequests(t *testing.T) {
 		Debug:            true,
 		BindAddress:      resolve("127.0.0.1:12345", t),
 		BroadcastAddress: resolve("127.0.0.1:60000", t),
-		Devices: map[uint32]*net.UDPAddr{
-			423187757: resolve("127.0.0.1:65001", t),
-			757781324: resolve("127.0.0.1:65002", t),
+		Devices: map[uint32]*Device{
+			423187757: &Device{
+				Address:  resolve("127.0.0.1:65001", t),
+				Rollover: 100000,
+				Doors:    []string{},
+			},
+
+			757781324: &Device{
+				Address:  resolve("127.0.0.1:65002", t),
+				Rollover: 100000,
+				Doors:    []string{},
+			},
 		},
 	}
 
@@ -159,9 +168,18 @@ func TestConcurrentRequestsWithUnboundPort(t *testing.T) {
 		Debug:            true,
 		BindAddress:      resolve("127.0.0.1:0", t),
 		BroadcastAddress: resolve("127.0.0.1:60000", t),
-		Devices: map[uint32]*net.UDPAddr{
-			423187757: resolve("127.0.0.1:65001", t),
-			757781324: resolve("127.0.0.1:65002", t),
+		Devices: map[uint32]*Device{
+			423187757: &Device{
+				Address:  resolve("127.0.0.1:65001", t),
+				Rollover: 100000,
+				Doors:    []string{},
+			},
+
+			757781324: &Device{
+				Address:  resolve("127.0.0.1:65002", t),
+				Rollover: 100000,
+				Doors:    []string{},
+			},
 		},
 	}
 
@@ -243,9 +261,18 @@ func TestConcurrentRequestsWithBoundPort(t *testing.T) {
 		Debug:            true,
 		BindAddress:      resolve("127.0.0.1:12345", t),
 		BroadcastAddress: resolve("127.0.0.1:60000", t),
-		Devices: map[uint32]*net.UDPAddr{
-			423187757: resolve("127.0.0.1:65001", t),
-			757781324: resolve("127.0.0.1:65002", t),
+		Devices: map[uint32]*Device{
+			423187757: &Device{
+				Address:  resolve("127.0.0.1:65001", t),
+				Rollover: 100000,
+				Doors:    []string{},
+			},
+
+			757781324: &Device{
+				Address:  resolve("127.0.0.1:65002", t),
+				Rollover: 100000,
+				Doors:    []string{},
+			},
 		},
 	}
 

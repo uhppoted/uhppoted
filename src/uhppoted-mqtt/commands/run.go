@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net"
 	"os"
 	"path/filepath"
 	"strings"
@@ -102,13 +101,14 @@ func (r *Run) run(c *config.Config, logger *log.Logger, interrupt chan os.Signal
 		BindAddress:      c.BindAddress,
 		BroadcastAddress: c.BroadcastAddress,
 		ListenAddress:    c.ListenAddress,
-		Devices:          make(map[uint32]*net.UDPAddr),
+		Devices:          make(map[uint32]*uhppote.Device),
 		Debug:            r.debug,
 	}
 
 	for id, d := range c.Devices {
-		if d.Address != nil {
-			u.Devices[id] = d.Address
+		u.Devices[id] = &uhppote.Device{
+			Address:  d.Address,
+			Rollover: d.Rollover,
 		}
 	}
 

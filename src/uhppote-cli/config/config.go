@@ -13,8 +13,9 @@ import (
 )
 
 type Device struct {
-	Address *net.UDPAddr
-	Door    []string
+	Address  *net.UDPAddr
+	Rollover uint32
+	Door     []string
 }
 
 type Config struct {
@@ -35,6 +36,8 @@ var parsers = []struct {
 	{regexp.MustCompile("^UT0311-L0x\\.[0-9]+\\.address\\s*=.*"), address},
 	{regexp.MustCompile("^UT0311-L0x\\.[0-9]+\\.door\\.[1-4]\\s*=.*"), door},
 }
+
+const ROLLOVER = 100000
 
 func NewConfig() *Config {
 	bind, broadcast, listen := DefaultIpAddresses()
@@ -166,7 +169,10 @@ func address(l string, c *Config) *Config {
 		k := uint32(serialNo)
 		d := c.Devices[k]
 		if d == nil {
-			d = &Device{Door: make([]string, 4)}
+			d = &Device{
+				Door:     make([]string, 4),
+				Rollover: ROLLOVER,
+			}
 		}
 
 		d.Address = address
@@ -196,7 +202,10 @@ func door(l string, c *Config) *Config {
 		k := uint32(serialNo)
 		d := c.Devices[k]
 		if d == nil {
-			d = &Device{Door: make([]string, 4)}
+			d = &Device{
+				Door:     make([]string, 4),
+				Rollover: ROLLOVER,
+			}
 		}
 
 		d.Door[door-1] = strings.TrimSpace(match[3])

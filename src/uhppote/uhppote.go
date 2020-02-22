@@ -18,16 +18,24 @@ type UHPPOTE struct {
 	BindAddress      *net.UDPAddr
 	BroadcastAddress *net.UDPAddr
 	ListenAddress    *net.UDPAddr
-	Devices          map[uint32]*net.UDPAddr
+	Devices          map[uint32]*Device
 	Debug            bool
+}
+
+type Device struct {
+	Address  *net.UDPAddr
+	Rollover uint32
+	Doors    []string
 }
 
 func (u *UHPPOTE) Send(serialNumber uint32, request interface{}) (messages.Response, error) {
 	bind := u.bindAddress()
-	dest := u.Devices[serialNumber]
+	dest := u.broadcastAddress()
 
-	if dest == nil {
-		dest = u.broadcastAddress()
+	if device, ok := u.Devices[serialNumber]; ok {
+		if device.Address != nil {
+			dest = device.Address
+		}
 	}
 
 	c, err := u.open(bind)
@@ -68,10 +76,12 @@ func (u *UHPPOTE) Send(serialNumber uint32, request interface{}) (messages.Respo
 
 func (u *UHPPOTE) Execute(serialNumber uint32, request, reply interface{}) error {
 	bind := u.bindAddress()
-	dest := u.Devices[serialNumber]
+	dest := u.broadcastAddress()
 
-	if dest == nil {
-		dest = u.broadcastAddress()
+	if device, ok := u.Devices[serialNumber]; ok {
+		if device.Address != nil {
+			dest = device.Address
+		}
 	}
 
 	c, err := u.open(bind)
@@ -103,9 +113,12 @@ func (u *UHPPOTE) Broadcast(request, replies interface{}) error {
 // Sends a UDP message to a specific device but anticipates replies from more than one device because
 // it may fall back to the broadcast address if the device ID has no configured IP address.
 func (u *UHPPOTE) DirectedBroadcast(serialNumber uint32, request, replies interface{}) error {
-	dest := u.Devices[serialNumber]
-	if dest == nil {
-		dest = u.broadcastAddress()
+	dest := u.broadcastAddress()
+
+	if device, ok := u.Devices[serialNumber]; ok {
+		if device.Address != nil {
+			dest = device.Address
+		}
 	}
 
 	if m, err := u.broadcast(request, dest); err != nil {

@@ -55,7 +55,7 @@ type EventRange struct {
 	Last  uint32 `json:"last"`
 }
 
-const ROLLOVER = 100000
+const ROLLOVER = uint32(100000)
 
 func (e *EventRange) String() string {
 	return fmt.Sprintf("{ First:%v, Last:%v }", e.First, e.Last)
@@ -78,6 +78,13 @@ func (u *UHPPOTED) GetEvents(request GetEventsRequest) (*GetEventsResponse, erro
 	device := uint32(request.DeviceID)
 	start := request.Start
 	end := request.End
+	rollover := ROLLOVER
+
+	if d, ok := u.Uhppote.Devices[device]; ok {
+		if d.Rollover != 0 {
+			rollover = d.Rollover
+		}
+	}
 
 	f, err := u.Uhppote.GetEvent(device, 0)
 	if err != nil {
@@ -100,7 +107,7 @@ func (u *UHPPOTED) GetEvents(request GetEventsRequest) (*GetEventsResponse, erro
 	var last *types.Event
 
 	if start != nil || end != nil {
-		for index := l.Index; index != decrement(f.Index, ROLLOVER); index = decrement(index, ROLLOVER) {
+		for index := l.Index; index != decrement(f.Index, rollover); index = decrement(index, rollover) {
 			record, err := u.Uhppote.GetEvent(device, index)
 			if err != nil {
 				return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting event for index %v from %v (%w)", index, device, err))

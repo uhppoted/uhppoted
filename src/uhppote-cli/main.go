@@ -64,7 +64,7 @@ func main() {
 	flag.Parse()
 
 	u := uhppote.UHPPOTE{
-		Devices: make(map[uint32]*net.UDPAddr),
+		Devices: make(map[uint32]*uhppote.Device),
 		Debug:   options.debug,
 	}
 
@@ -79,8 +79,9 @@ func main() {
 	u.ListenAddress = conf.ListenAddress
 
 	for s, d := range conf.Devices {
-		if d.Address != nil {
-			u.Devices[s] = d.Address
+		u.Devices[s] = &uhppote.Device{
+			Address:  d.Address,
+			Rollover: d.Rollover,
 		}
 	}
 

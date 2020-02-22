@@ -20,8 +20,9 @@ import (
 type DeviceMap map[uint32]*Device
 
 type Device struct {
-	Address *net.UDPAddr
-	Door    []string
+	Address  *net.UDPAddr
+	Rollover uint32
+	Door     []string
 }
 
 type kv struct {
@@ -101,6 +102,8 @@ type System struct {
 	HealthCheckIgnore   time.Duration `conf:"monitoring.healthcheck.ignore"`
 	WatchdogInterval    time.Duration `conf:"monitoring.watchdog.interval"`
 }
+
+const ROLLOVER = 100000
 
 func NewConfig() *Config {
 	bind, broadcast, listen := DefaultIpAddresses()
@@ -265,6 +268,7 @@ func (f DeviceMap) MarshalConf(tag string) ([]byte, error) {
 		fmt.Fprintf(&s, "# DEVICES\n")
 		for id, device := range f {
 			fmt.Fprintf(&s, "UTO311-L0x.%d.address = %s\n", id, device.Address)
+			fmt.Fprintf(&s, "UTO311-L0x.%d.rollover = %d\n", id, device.Rollover)
 			for d, door := range device.Door {
 				fmt.Fprintf(&s, "UTO311-L0x.%d.door.%d = %s\n", id, d+1, door)
 			}
@@ -298,7 +302,8 @@ func (f *DeviceMap) UnmarshalConf(tag string, values map[string]string) (interfa
 			d, ok := (*f)[uint32(id)]
 			if !ok || d == nil {
 				d = &Device{
-					Door: make([]string, 4),
+					Door:     make([]string, 4),
+					Rollover: ROLLOVER,
 				}
 
 				(*f)[uint32(id)] = d
@@ -317,6 +322,14 @@ func (f *DeviceMap) UnmarshalConf(tag string, values map[string]string) (interfa
 					}
 
 					copy(d.Address.IP, address.IP.To4())
+				}
+
+			case "rollover":
+				rollover, err := strconv.ParseUint(strings.TrimSpace(value), 10, 32)
+				if err != nil {
+					return f, fmt.Errorf("Device %v, invalid rollover '%s': %v", id, value, err)
+				} else {
+					d.Rollover = uint32(rollover)
 				}
 
 			case "door.1":
