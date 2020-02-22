@@ -1,6 +1,7 @@
 package uhppoted
 
 import (
+	"errors"
 	"fmt"
 	"time"
 	"uhppote/types"
@@ -54,6 +55,8 @@ type EventRange struct {
 	Last  uint32 `json:"last"`
 }
 
+const ROLLOVER = 100000
+
 func (e *EventRange) String() string {
 	return fmt.Sprintf("{ First:%v, Last:%v }", e.First, e.Last)
 }
@@ -76,41 +79,44 @@ func (u *UHPPOTED) GetEvents(request GetEventsRequest) (*GetEventsResponse, erro
 	start := request.Start
 	end := request.End
 
-	event, err := u.Uhppote.GetEvent(device, 0xffffffff)
+	f, err := u.Uhppote.GetEvent(device, 0)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting last event index from %v (%w)", device, err))
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting first event index from %v (%w)", device, err))
+	} else if f == nil {
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting first event index from %v (%w)", device, errors.New("Record not found")))
 	}
 
-	first := uint32(0)
-	last := uint32(0)
-	if event != nil {
-		first = 1
-		last = event.Index
+	l, err := u.Uhppote.GetEvent(device, 0xffffffff)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting last event index from %v (%w)", device, err))
+	} else if l == nil {
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting last event index from %v (%w)", device, errors.New("Record not found")))
+	}
 
-		if start != nil {
-			first = last
-		}
+	// The indexing logic below 'decrements' the index from l(ast) to f(irst) assuming that the on-device event store has
+	// a circular event buffer of size ROLLOVER. The logic assumes the events are ordered by datetime, which is reasonable
+	// but not necessarily true e.g. if the start/end interval includes a significant device time change.
+	var first *types.Event
+	var last *types.Event
 
-		if end != nil {
-			last = 1
-		}
+	if start != nil || end != nil {
+		for index := l.Index; index != decrement(f.Index, ROLLOVER); index = decrement(index, ROLLOVER) {
+			record, err := u.Uhppote.GetEvent(device, index)
+			if err != nil {
+				return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting event for index %v from %v (%w)", index, device, err))
+			}
 
-		// TODO: this logic doesn't handle wrap around i.e. when the UHPPOTE controller event index
-		// increments from 100000 to 0
-		if start != nil || end != nil {
-			for index := event.Index; index > 0; index-- {
-				record, err := u.Uhppote.GetEvent(device, index)
-				if err != nil {
-					return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting event for index %v from %v (%w)", index, device, err))
+			if in(record, start, end) {
+				if last == nil {
+					last = record
 				}
 
-				if start != nil && !time.Time(record.Timestamp).Before(time.Time(*start)) && record.Index < first {
-					first = record.Index
-				}
+				first = record
+				continue
+			}
 
-				if end != nil && !time.Time(*end).Before(time.Time(record.Timestamp)) && record.Index > last {
-					last = record.Index
-				}
+			if first != nil || last != nil {
+				break
 			}
 		}
 	}
@@ -124,10 +130,10 @@ func (u *UHPPOTED) GetEvents(request GetEventsRequest) (*GetEventsResponse, erro
 	}
 
 	events := (*EventRange)(nil)
-	if first != 0 || last != 0 {
+	if first != nil && last != nil {
 		events = &EventRange{
-			First: first,
-			Last:  last,
+			First: first.Index,
+			Last:  last.Index,
 		}
 	}
 
@@ -140,6 +146,30 @@ func (u *UHPPOTED) GetEvents(request GetEventsRequest) (*GetEventsResponse, erro
 	u.debug("get-events", fmt.Sprintf("response %+v", response))
 
 	return &response, nil
+}
+
+func decrement(index, rollover uint32) uint32 {
+	if index <= 1 {
+		return rollover
+	}
+
+	if index > rollover {
+		return rollover
+	}
+
+	return index - 1
+}
+
+func in(record *types.Event, start, end *types.DateTime) bool {
+	if start != nil && time.Time(record.Timestamp).Before(time.Time(*start)) {
+		return false
+	}
+
+	if end != nil && time.Time(record.Timestamp).After(time.Time(*end)) {
+		return false
+	}
+
+	return true
 }
 
 func (u *UHPPOTED) GetEvent(request GetEventRequest) (*GetEventResponse, error) {

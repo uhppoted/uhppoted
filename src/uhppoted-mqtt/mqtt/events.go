@@ -69,7 +69,7 @@ func (m *MQTTD) getEvent(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Con
 		return nil, InvalidDeviceID
 	}
 
-	if body.EventID == nil || *body.EventID == 0 {
+	if body.EventID == nil {
 		return nil, InvalidEventID
 	}
 

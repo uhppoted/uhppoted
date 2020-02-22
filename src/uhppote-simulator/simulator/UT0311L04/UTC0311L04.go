@@ -218,6 +218,14 @@ func load(filepath string) (*UT0311L04, error) {
 		}
 	}
 
+	if simulator.Events.First == 0 {
+		simulator.Events.First = 1
+	}
+
+	if simulator.Events.Last == 0 {
+		simulator.Events.Last = uint32(len(simulator.Events.Events))
+	}
+
 	return simulator, nil
 }
 
@@ -300,7 +308,7 @@ func (s *UT0311L04) add(e *entities.Event) uint32 {
 		datetime := utc.Add(time.Duration(s.TimeOffset))
 		event := uhppote.Event{
 			SerialNumber:   s.SerialNumber,
-			LastIndex:      s.Events.LastIndex(),
+			LastIndex:      s.Events.Last,
 			SystemState:    s.SystemState,
 			SystemDate:     types.SystemDate(datetime),
 			SystemTime:     types.SystemTime(datetime),
@@ -331,7 +339,7 @@ func (s *UT0311L04) add(e *entities.Event) uint32 {
 
 		s.send(s.Listener, &event)
 
-		return s.Events.LastIndex()
+		return s.Events.Last
 	}
 
 	return 0

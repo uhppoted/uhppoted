@@ -71,8 +71,15 @@ release-tar: release
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
 
 debug: build
-#	go test -v src/uhppote/encoding/conf/*.go
-	./bin/uhppoted-mqtt config
+#	go test src/uhppoted/*.go
+	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/events:get' \
+               --message '{ "message": { "request": { "request-id": "AH173635G3", \
+                                                      "client-id":  "QWERTY54", \
+                                                      "reply-to":   "twystd/uhppoted/reply/97531", \
+                                                      "device-id":  201020304, \
+                                                      "start":      "2019-08-05", \
+                                                      "end":        "2019-08-09" }}}'
+
 
 simulator: build
 	./bin/uhppote-simulator --debug --bind 192.168.1.100:54321 --rest 192.168.1.100:8008 --devices "./runtime/simulation/devices"

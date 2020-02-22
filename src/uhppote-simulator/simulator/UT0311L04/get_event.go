@@ -8,14 +8,11 @@ import (
 func (s *UT0311L04) getEvent(addr *net.UDPAddr, request *messages.GetEventRequest) {
 	if s.SerialNumber == request.SerialNumber {
 		index := request.Index
-		if index > s.Events.LastIndex() {
-			index = s.Events.LastIndex()
-		}
 
 		if event := s.Events.Get(index); event != nil {
 			response := messages.GetEventResponse{
 				SerialNumber: s.SerialNumber,
-				Index:        index,
+				Index:        event.RecordNumber,
 				Type:         event.Type,
 				Granted:      event.Granted,
 				Door:         event.Door,
