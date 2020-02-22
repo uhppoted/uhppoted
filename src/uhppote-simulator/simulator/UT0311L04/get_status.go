@@ -11,11 +11,11 @@ func (s *UT0311L04) getStatus(addr *net.UDPAddr, request *messages.GetStatusRequ
 	if s.SerialNumber == request.SerialNumber {
 		utc := time.Now().UTC()
 		datetime := utc.Add(time.Duration(s.TimeOffset))
-		event := s.Events.Get(s.Events.LastIndex())
+		event := s.Events.Get(s.Events.Last)
 
 		response := messages.GetStatusResponse{
 			SerialNumber:   s.SerialNumber,
-			LastIndex:      s.Events.LastIndex(),
+			LastIndex:      s.Events.Last,
 			SystemState:    s.SystemState,
 			SystemDate:     types.SystemDate(datetime),
 			SystemTime:     types.SystemTime(datetime),
