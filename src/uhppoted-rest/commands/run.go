@@ -153,10 +153,7 @@ func (r *Run) listen(c *config.Config, logger *log.Logger, interrupt chan os.Sig
 	}
 
 	for id, d := range c.Devices {
-		u.Devices[id] = &uhppote.Device{
-			Address:  d.Address,
-			Rollover: d.Rollover,
-		}
+		u.Devices[id] = uhppote.NewDevice(id, d.Address, d.Rollover)
 	}
 
 	// ... REST task

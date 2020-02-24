@@ -23,9 +23,19 @@ type UHPPOTE struct {
 }
 
 type Device struct {
+	DeviceID uint32
 	Address  *net.UDPAddr
 	Rollover uint32
 	Doors    []string
+}
+
+func NewDevice(deviceID uint32, address *net.UDPAddr, rollover uint32) *Device {
+	return &Device{
+		DeviceID: deviceID,
+		Address:  address,
+		Rollover: rollover,
+		Doors:    []string{},
+	}
 }
 
 func (u *UHPPOTE) Send(serialNumber uint32, request interface{}) (messages.Response, error) {

@@ -107,7 +107,8 @@ func (u *UHPPOTED) GetEventRange(request GetEventRangeRequest) (*GetEventRangeRe
 	var last *types.Event
 
 	if start != nil || end != nil {
-		for index := l.Index; index != decrement(f.Index, rollover); index = decrement(index, rollover) {
+		marker := types.DecrementEventIndex(f.Index, rollover)
+		for index := l.Index; index != marker; index = types.DecrementEventIndex(index, rollover) {
 			record, err := u.Uhppote.GetEvent(device, index)
 			if err != nil {
 				return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting event for index %v from %v (%w)", index, device, err))
@@ -153,18 +154,6 @@ func (u *UHPPOTED) GetEventRange(request GetEventRangeRequest) (*GetEventRangeRe
 	u.debug("get-events", fmt.Sprintf("response %+v", response))
 
 	return &response, nil
-}
-
-func decrement(index, rollover uint32) uint32 {
-	if index <= 1 {
-		return rollover
-	}
-
-	if index > rollover {
-		return rollover
-	}
-
-	return index - 1
 }
 
 func in(record *types.Event, start, end *types.DateTime) bool {

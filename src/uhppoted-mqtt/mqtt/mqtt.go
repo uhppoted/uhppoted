@@ -114,8 +114,9 @@ func (mqttd *MQTTD) Run(u *uhppote.UHPPOTE, log *log.Logger) error {
 	}
 
 	api := uhppoted.UHPPOTED{
-		Uhppote: u,
-		Log:     log,
+		Uhppote:         u,
+		ListenBatchSize: 32,
+		Log:             log,
 	}
 
 	d := dispatcher{
@@ -243,10 +244,13 @@ func (m *MQTTD) listen(api *uhppoted.UHPPOTED, u *uhppote.UHPPOTE, log *log.Logg
 		log.Printf("WARN  Error loading event map [%v]", err)
 	}
 
-	handler := func(event uhppoted.EventMessage) {
-		if err := m.send(&m.Encryption.EventsKeyID, m.Topics.Events, event, msgEvent, false); err != nil {
-			log.Printf("WARN  %-20s %v", "listen", err)
+	handler := func(event uhppoted.EventMessage) bool {
+		if err := m.send(&m.Encryption.EventsKeyID, m.Topics.Events, event, msgEvent, true); err != nil {
+			log.Printf("WARN  %-12s %v", "listen", err)
+			return false
 		}
+
+		return true
 	}
 
 	m.interrupt = make(chan os.Signal)
@@ -341,7 +345,7 @@ func (m *MQTTD) authorise(clientID *string, topic string) error {
 
 // TODO: add callback for published/failed
 func (mqttd *MQTTD) send(destID *string, topic string, message interface{}, msgtype msgType, critical bool) error {
-	if mqttd.client == nil {
+	if mqttd.client == nil || !mqttd.client.IsConnected() {
 		return errors.New("No connection to MQTT broker")
 	}
 

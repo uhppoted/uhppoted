@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 	"uhppote/types"
 )
@@ -34,7 +35,7 @@ type EventMessage struct {
 	Event ListenEvent `json:"event"`
 }
 
-type EventHandler func(EventMessage)
+type EventHandler func(EventMessage) bool
 
 type listener struct {
 	onConnected func()
@@ -58,31 +59,61 @@ func (l *listener) OnError(err error) bool {
 	return l.onError(err)
 }
 
+const BATCHSIZE = 32
+
 func (u *UHPPOTED) Listen(handler EventHandler, received *EventMap, q chan os.Signal) {
-	// NOTE: this logic doesn't handle wrap around i.e. if the mqttd is not running
-	//       when the UHPPOTE controller event index increments from 100000 (the apparent
-	//       limit on the controllers) to 0, then it won't retrieve any 'unfetched' events.
-	for device, _ := range u.Uhppote.Devices {
-		if index, ok := received.retrieved[device]; ok {
-			u.info("listen", fmt.Sprintf("Fetching unretrieved events for device ID %v", device))
-			event, err := u.Uhppote.GetEvent(device, 0xffffffff)
-			if err != nil {
-				u.warn("listen", fmt.Errorf("Unable to retrieve events for device ID %v (%w)", device, err))
-			} else {
-				if retrieved := u.fetch(device, index+1, event.Index, handler); retrieved != 0 {
-					received.retrieved[device] = retrieved
-					if err := received.store(); err != nil {
-						u.warn("listen", err)
-					}
-				}
-			}
-		}
+	var wg sync.WaitGroup
+
+	for _, d := range u.Uhppote.Devices {
+		deviceID := d.DeviceID
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			u.fetchEvents(deviceID, received, handler)
+		}()
 	}
+
+	wg.Wait()
 
 	u.listen(handler, received, q)
 }
 
+func (u *UHPPOTED) fetchEvents(deviceID uint32, received *EventMap, handler EventHandler) {
+	if index, ok := received.retrieved[deviceID]; ok {
+		u.info("listen", fmt.Sprintf("Fetching unretrieved events for device ID %v", deviceID))
+
+		event, err := u.Uhppote.GetEvent(deviceID, 0xffffffff)
+		if err != nil {
+			u.warn("listen", fmt.Errorf("Unable to retrieve events for device ID %v (%w)", deviceID, err))
+			return
+		}
+
+		if event.Index == index {
+			u.info("listen", fmt.Sprintf("No unretrieved events for device ID %v", deviceID))
+			return
+		}
+
+		rollover := ROLLOVER
+		if d, ok := u.Uhppote.Devices[deviceID]; ok {
+			if d.Rollover != 0 {
+				rollover = d.Rollover
+			}
+		}
+
+		index = types.IncrementEventIndex(index, rollover)
+
+		if retrieved := u.fetch(deviceID, index, event.Index, handler); retrieved != 0 {
+			received.retrieved[deviceID] = retrieved
+			if err := received.store(); err != nil {
+				u.warn("listen", err)
+			}
+		}
+	}
+}
+
 func (u *UHPPOTED) listen(handler EventHandler, received *EventMap, q chan os.Signal) {
+	u.info("listen", "Initialising event listener")
+
 	backoffs := []time.Duration{
 		1 * time.Second,
 		2 * time.Second,
@@ -96,7 +127,7 @@ func (u *UHPPOTED) listen(handler EventHandler, received *EventMap, q chan os.Si
 	ix := 0
 	l := listener{
 		onConnected: func() {
-			u.info("listen", "Connected")
+			u.info("listen", "Listening")
 			ix = 0
 		},
 
@@ -150,27 +181,79 @@ func (u *UHPPOTED) onEvent(e *types.Status, received *EventMap, handler EventHan
 	}
 }
 
-func (u *UHPPOTED) fetch(device uint32, first uint32, last uint32, handler EventHandler) uint32 {
-	retrieved := uint32(0)
+func (u *UHPPOTED) fetch(deviceID uint32, from uint32, to uint32, handler EventHandler) (retrieved uint32) {
+	batchSize := BATCHSIZE
+	rollover := ROLLOVER
 
-	for index := first; index <= last; index++ {
-		record, err := u.Uhppote.GetEvent(device, index)
+	if u.ListenBatchSize > 0 {
+		batchSize = u.ListenBatchSize
+	}
+
+	if d, ok := u.Uhppote.Devices[deviceID]; ok {
+		if d.Rollover != 0 {
+			rollover = d.Rollover
+		}
+	}
+
+	first, err := u.Uhppote.GetEvent(deviceID, 0)
+	if err != nil {
+		u.warn("listen", fmt.Errorf("Failed to retrieve 'first' event for device %d (%w)", deviceID, err))
+		return
+	} else if first == nil {
+		u.warn("listen", fmt.Errorf("No 'first' event record returned for device %d", deviceID))
+		return
+	}
+
+	last, err := u.Uhppote.GetEvent(deviceID, 0xffffffff)
+	if err != nil {
+		u.warn("listen", fmt.Errorf("Failed to retrieve 'last' event for device %d (%w)", deviceID, err))
+		return
+	} else if first == nil {
+		u.warn("listen", fmt.Errorf("No 'last' event record returned for device %d", deviceID))
+		return
+	}
+
+	if last.Index >= first.Index {
+		if from < first.Index || from > last.Index {
+			from = first.Index
+		}
+
+		if to < first.Index || to > last.Index {
+			to = last.Index
+		}
+	} else {
+		if from < first.Index && from > last.Index {
+			from = first.Index
+		}
+
+		if to < first.Index && to > last.Index {
+			to = last.Index
+		}
+	}
+
+	count := 0
+	for index := from; index != to; index = types.IncrementEventIndex(index, rollover) {
+		count += 1
+		if count > batchSize {
+			return
+		}
+
+		record, err := u.Uhppote.GetEvent(deviceID, index)
 		if err != nil {
-			u.warn("listen", fmt.Errorf("Failed to retrieve event for device %d, ID %d", device, index))
+			u.warn("listen", fmt.Errorf("Failed to retrieve event for device %d, ID %d (%w)", deviceID, index, err))
 			continue
 		}
 
 		if record == nil {
-			u.warn("listen", fmt.Errorf("No event record for device %d, ID %d", device, index))
+			u.warn("listen", fmt.Errorf("No event record for device %d, ID %d", deviceID, index))
 			continue
 		}
 
 		if record.Index != index {
-			u.warn("listen", fmt.Errorf("No event record for device %d, ID %d", device, index))
+			u.warn("listen", fmt.Errorf("No event record for device %d, ID %d", deviceID, index))
 			continue
 		}
 
-		retrieved = record.Index
 		message := EventMessage{
 			Event: ListenEvent{
 				DeviceID:   DeviceID(record.SerialNumber),
@@ -186,10 +269,14 @@ func (u *UHPPOTED) fetch(device uint32, first uint32, last uint32, handler Event
 		}
 
 		u.debug("listen", fmt.Sprintf("event %v", message))
-		handler(message)
+		if !handler(message) {
+			break
+		}
+
+		retrieved = record.Index
 	}
 
-	return retrieved
+	return
 }
 
 func NewEventMap(file string) *EventMap {
