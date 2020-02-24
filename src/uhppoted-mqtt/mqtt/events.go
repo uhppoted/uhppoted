@@ -31,13 +31,13 @@ func (m *MQTTD) getEvents(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Co
 		return nil, ferror(fmt.Errorf("Invalid event date range: %v to %v", body.Start, body.End), "Missing event date range")
 	}
 
-	rq := uhppoted.GetEventsRequest{
+	rq := uhppoted.GetEventRangeRequest{
 		DeviceID: *body.DeviceID,
 		Start:    (*types.DateTime)(body.Start),
 		End:      (*types.DateTime)(body.End),
 	}
 
-	response, err := impl.GetEvents(rq)
+	response, err := impl.GetEventRange(rq)
 	if err != nil {
 		return nil, ferror(err, fmt.Sprintf("Error retrieving events from %v", *body.DeviceID))
 	}
@@ -48,10 +48,10 @@ func (m *MQTTD) getEvents(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Co
 
 	return struct {
 		metainfo
-		uhppoted.GetEventsResponse
+		uhppoted.GetEventRangeResponse
 	}{
-		metainfo:          meta,
-		GetEventsResponse: *response,
+		metainfo:              meta,
+		GetEventRangeResponse: *response,
 	}, nil
 }
 

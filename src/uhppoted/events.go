@@ -7,13 +7,13 @@ import (
 	"uhppote/types"
 )
 
-type GetEventsRequest struct {
+type GetEventRangeRequest struct {
 	DeviceID DeviceID
 	Start    *types.DateTime
 	End      *types.DateTime
 }
 
-type GetEventsResponse struct {
+type GetEventRangeResponse struct {
 	DeviceID DeviceID    `json:"device-id,omitempty"`
 	Dates    *DateRange  `json:"dates,omitempty"`
 	Events   *EventRange `json:"events,omitempty"`
@@ -72,7 +72,7 @@ type event struct {
 	Result     uint8          `json:"event-result"`
 }
 
-func (u *UHPPOTED) GetEvents(request GetEventsRequest) (*GetEventsResponse, error) {
+func (u *UHPPOTED) GetEventRange(request GetEventRangeRequest) (*GetEventRangeResponse, error) {
 	u.debug("get-events", fmt.Sprintf("request  %+v", request))
 
 	device := uint32(request.DeviceID)
@@ -144,7 +144,7 @@ func (u *UHPPOTED) GetEvents(request GetEventsRequest) (*GetEventsResponse, erro
 		}
 	}
 
-	response := GetEventsResponse{
+	response := GetEventRangeResponse{
 		DeviceID: DeviceID(device),
 		Dates:    dates,
 		Events:   events,
