@@ -191,6 +191,7 @@
     - concurrent connections
     - HOTP counter update
     - key-value stores
+    - event buffer logic
 17. GUI
     - [Muon](https://github.com/ImVexed/muon) 
     - [webview](https://github.com/zserge/webview)

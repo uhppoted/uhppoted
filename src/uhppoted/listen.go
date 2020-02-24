@@ -165,16 +165,23 @@ func (u *UHPPOTED) listen(handler EventHandler, received *EventMap, q chan os.Si
 func (u *UHPPOTED) onEvent(e *types.Status, received *EventMap, handler EventHandler) {
 	u.info("event", fmt.Sprintf("%+v", e))
 
-	device := uint32(e.SerialNumber)
-	last := e.LastIndex
-	first := last
-	retrieved, ok := received.retrieved[device]
-	if ok && retrieved < last {
-		first = retrieved + 1
+	deviceID := uint32(e.SerialNumber)
+	rollover := ROLLOVER
+	if d, ok := u.Uhppote.Devices[deviceID]; ok {
+		if d.Rollover != 0 {
+			rollover = d.Rollover
+		}
 	}
 
-	if eventID := u.fetch(device, first, last, handler); retrieved != 0 {
-		received.retrieved[device] = eventID
+	last := e.LastIndex
+	first := types.DecrementEventIndex(last, rollover)
+	retrieved, ok := received.retrieved[deviceID]
+	if ok && retrieved != last {
+		first = types.IncrementEventIndex(retrieved, rollover)
+	}
+
+	if eventID := u.fetch(deviceID, first, last, handler); eventID != 0 {
+		received.retrieved[deviceID] = eventID
 		if err := received.store(); err != nil {
 			u.warn("listen", err)
 		}
