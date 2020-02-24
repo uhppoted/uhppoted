@@ -71,7 +71,9 @@ release-tar: release
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
 
 debug: build
-#	go test src/uhppoted/*.go
+	go test src/uhppote/types/*.go
+
+debugx: build
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/events:get' \
                --message '{ "message": { "request": { "request-id": "AH173635G3", \
                                                       "client-id":  "QWERTY54", \

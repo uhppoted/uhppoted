@@ -21,8 +21,9 @@ var (
 )
 
 type UHPPOTED struct {
-	Uhppote *uhppote.UHPPOTE
-	Log     *log.Logger
+	Uhppote         *uhppote.UHPPOTE
+	ListenBatchSize int
+	Log             *log.Logger
 }
 
 func (u *UHPPOTED) debug(tag string, msg interface{}) {
