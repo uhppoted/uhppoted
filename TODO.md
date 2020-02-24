@@ -66,7 +66,8 @@
 - [x] Rework uhppoted API functions to use errors.Is(..) rather than returning status (https://blog.golang.org/go1.13-errors)
 - [x] Hunt down miscellaneous 'listen' warnings on startup
 - [x] restd: rework GetDevices to also find 'known' devices
-- [x] Handle wrap-around for get-event/listen
+- [x] Handle wrap-around for get-events
+- [ ] Handle wrap-around for listen
 
 - [x] Fix go vet errors
 - [x] conf file decoder with reflection
@@ -226,3 +227,4 @@
 31.  Consider moving to event bus architecture (?)
 32. [Open Policy Agent](https://github.com/open-policy-agent) - for permissions
 33. CouchBase (for JSON DB)
+34. [AnyLog](https://blog.acolyer.org/2020/02/24/anylog)
