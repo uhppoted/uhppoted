@@ -1,7 +1,5 @@
 ## v0.50
 
-## IN PROGRESS
-
 ### uhppoted-mqtt
 
 - [x] subscribe
