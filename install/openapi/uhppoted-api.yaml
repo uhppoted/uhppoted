@@ -478,12 +478,12 @@ paths:
         default:
           description: "Request failed"
 
-  /device/{device-id}/event:
+  /device/{device-id}/events:
     get:
       tags:
         - uhppote
-      summary: "Retrieves the device event list"
-      description: "Retrieves the list of stored events"
+      summary: "Retrieves the device event list indices"
+      description: "Retrieves the indices of the first and last stored events"
       operationId: getEvents
       parameters:
         - name: device-id
@@ -500,7 +500,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: "#/components/schemas/EventList"        
+                  $ref: "#/components/schemas/Events"        
         '404':
           description: "No device with ID matching device-id"
         '405':
@@ -798,15 +798,19 @@ components:
              example: true, false, false, true
           description: "List of doors and access"
         
-    EventList:
+    Events:
       required: 
-        - events
+        - first
+        - last
       properties:
-        devices:
-          type: array
-          items:
-            $ref: "#/components/schemas/Event"        
-          description: "List of events"
+        first:
+          type: number
+          format: uint32
+          description: "Index of the first stored event"
+        last:
+          type: number
+          format: uint32
+          description: "Index of the last stored event"
           
     Event:
       required: 

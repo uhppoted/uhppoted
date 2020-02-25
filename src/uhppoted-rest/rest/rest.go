@@ -92,7 +92,7 @@ func (r *RESTD) Run(u *uhppote.UHPPOTE, l *log.Logger) {
 			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/card/[0-9]+$"), http.MethodGet, getCard},
 			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/card$"), http.MethodDelete, deleteCards},
 			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/card/[0-9]+$"), http.MethodDelete, deleteCard},
-			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/event$"), http.MethodGet, getEvents},
+			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/events$"), http.MethodGet, getEvents},
 			handler{regexp.MustCompile("^/uhppote/device/[0-9]+/event/[0-9]+$"), http.MethodGet, getEvent},
 		},
 		log:         l,
