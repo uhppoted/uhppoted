@@ -3,9 +3,9 @@ package uhppoted
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -326,28 +326,25 @@ func (m *EventMap) Load(log *log.Logger) error {
 }
 
 func (m *EventMap) store() error {
-	if m.file == "" {
+	if m.file == "" || IsDevNull(m.file) {
 		return nil
 	}
 
-	dir := filepath.Dir(m.file)
-	filename := filepath.Base(m.file) + ".tmp"
-	tmpfile := filepath.Join(dir, filename)
-
-	f, err := os.Create(tmpfile)
+	f, err := ioutil.TempFile(os.TempDir(), "uhppoted*.tmp")
 	if err != nil {
 		return err
 	}
 
-	defer f.Close()
+	defer os.Remove(f.Name())
 
 	for key, value := range m.retrieved {
 		if _, err := fmt.Fprintf(f, "%-16d %v\n", key, value); err != nil {
+			f.Close()
 			return err
 		}
 	}
 
 	f.Close()
 
-	return os.Rename(tmpfile, m.file)
+	return os.Rename(f.Name(), m.file)
 }
