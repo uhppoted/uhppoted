@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"uhppote"
+	"uhppote-simulator/commands"
 	"uhppote-simulator/simulator"
 	"uhppote-simulator/simulator/UT0311L04"
 )
@@ -45,7 +46,7 @@ func main() {
 		DeviceList:  simulator.NewDeviceList(load(options.dir)),
 	}
 
-	simulate(&ctx)
+	commands.Simulate(&ctx, options.debug)
 }
 
 func load(dir string) []simulator.Simulator {

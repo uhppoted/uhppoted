@@ -1,4 +1,4 @@
-package main
+package commands
 
 import (
 	"encoding/hex"
@@ -16,7 +16,10 @@ import (
 	"uhppote/messages"
 )
 
-func simulate(ctx *simulator.Context) {
+var debug bool = false
+
+func Simulate(ctx *simulator.Context, dbg bool) {
+	debug = dbg
 	bind, err := net.ResolveUDPAddr("udp4", ctx.BindAddress)
 	if err != nil {
 		fmt.Printf("%v\n", errors.New(fmt.Sprintf("Failed to resolve UDP bind address [%v]", err)))
@@ -104,7 +107,7 @@ func receive(c *net.UDPConn) ([]byte, *net.UDPAddr, error) {
 		return []byte{}, nil, errors.New(fmt.Sprintf("Failed to read from UDP socket [%v]", err))
 	}
 
-	if options.debug {
+	if debug {
 		fmt.Printf(" ... received %v bytes from %v\n%s\n", N, remote, dump(request[0:N], " ...          "))
 	}
 
@@ -133,7 +136,7 @@ func send(c *net.UDPConn, dest *net.UDPAddr, message interface{}) {
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", errors.New(fmt.Sprintf("Failed to write to UDP socket [%v]", err)))
 	} else {
-		if options.debug {
+		if debug {
 			fmt.Printf(" ... sent %v bytes to %v\n%s\n", N, dest, dump(msg[0:N], " ...          "))
 		}
 	}

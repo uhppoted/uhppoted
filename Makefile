@@ -25,7 +25,7 @@ build: format
 	go install $(LDFLAGS) cmd/uhppote-cli
 	go install $(LDFLAGS) cmd/uhppoted-rest
 	go install $(LDFLAGS) cmd/uhppoted-mqtt
-	go install $(LDFLAGS) uhppote-simulator
+	go install $(LDFLAGS) cmd/uhppote-simulator
 
 test: build
 	go test uhppote...
@@ -66,10 +66,10 @@ release: test vet
 	env GOOS=linux   GOARCH=arm   GOARM=7 go build -o dist/$(DIST)/arm/arm7/uhppoted-mqtt        cmd/uhppoted-mqtt
 	env GOOS=darwin  GOARCH=amd64         go build -o dist/$(DIST)/darwin/uhppoted-mqtt          cmd/uhppoted-mqtt
 	env GOOS=windows GOARCH=amd64         go build -o dist/$(DIST)/windows/uhppoted-mqtt.exe     cmd/uhppoted-mqtt
-	env GOOS=linux   GOARCH=amd64         go build -o dist/$(DIST)/linux/uhppote-simulator       uhppote-simulator
-	env GOOS=linux   GOARCH=arm   GOARM=7 go build -o dist/$(DIST)/arm/arm7/uhppote-simulator    uhppote-simulator
-	env GOOS=darwin  GOARCH=amd64         go build -o dist/$(DIST)/darwin/uhppote-simulator      uhppote-simulator
-	env GOOS=windows GOARCH=amd64         go build -o dist/$(DIST)/windows/uhppote-simulator.exe uhppote-simulator
+	env GOOS=linux   GOARCH=amd64         go build -o dist/$(DIST)/linux/uhppote-simulator       cmd/uhppote-simulator
+	env GOOS=linux   GOARCH=arm   GOARM=7 go build -o dist/$(DIST)/arm/arm7/uhppote-simulator    cmd/uhppote-simulator
+	env GOOS=darwin  GOARCH=amd64         go build -o dist/$(DIST)/darwin/uhppote-simulator      cmd/uhppote-simulator
+	env GOOS=windows GOARCH=amd64         go build -o dist/$(DIST)/windows/uhppote-simulator.exe cmd/uhppote-simulator
 	cp -r install/openapi/* dist/$(DIST)/openapi/
 
 release-tar: release
@@ -95,10 +95,10 @@ swagger:
 	open http://127.0.0.1:80
 
 docker: build
-	env GOOS=linux GOARCH=amd64 go build -o docker/simulator/uhppote-simulator     uhppote-simulator
-	env GOOS=linux GOARCH=amd64 go build -o docker/uhppoted-rest/uhppote-simulator uhppote-simulator
-	env GOOS=linux GOARCH=amd64 go build -o docker/uhppoted-rest/uhppoted-rest     uhppoted-rest
-	env GOOS=linux GOARCH=amd64 go build -o docker/integration-tests/simulator/uhppote-simulator uhppote-simulator
+	env GOOS=linux GOARCH=amd64 go build -o docker/simulator/uhppote-simulator                   cmd/uhppote-simulator
+	env GOOS=linux GOARCH=amd64 go build -o docker/uhppoted-rest/uhppote-simulator               cmd/uhppote-simulator
+	env GOOS=linux GOARCH=amd64 go build -o docker/uhppoted-rest/uhppoted-rest                   cmd/uhppoted-rest
+	env GOOS=linux GOARCH=amd64 go build -o docker/integration-tests/simulator/uhppote-simulator cmd/uhppote-simulator
 	docker image     prune -f
 	docker container prune -f
 	docker build -f ./docker/simulator/Dockerfile     -t simulator       . 
