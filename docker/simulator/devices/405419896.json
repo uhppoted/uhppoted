@@ -67,6 +67,7 @@
     }
   ],
   "events": {
+    "size": 256,
     "index": 23,
     "events": [
       {

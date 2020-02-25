@@ -16,6 +16,7 @@
   "fire-alarm": 0,
   "cards": null,
   "events": {
+    "size": 256,
     "index": 0,
     "events": null
   }
