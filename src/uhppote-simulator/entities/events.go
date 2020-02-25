@@ -16,25 +16,24 @@ type Event struct {
 }
 
 type EventList struct {
+	Size   uint32  `json:"size"`
 	First  uint32  `json:"first"`
 	Last   uint32  `json:"last"`
 	Index  uint32  `json:"index"`
 	Events []Event `json:"events"`
 }
 
-const ROLLOVER = 100000
-
 // TODO: implement Marshal/Unmarshal
 func (l *EventList) Add(event *Event) {
 	if event != nil {
 		l.Last = l.Last + 1
-		if l.Last > ROLLOVER {
+		if l.Last > l.Size {
 			l.Last = 1
 		}
 
 		if l.Last == l.First {
 			l.First = l.First + 1
-			if l.First > ROLLOVER {
+			if l.First > l.Size {
 				l.First = 1
 			}
 		}
