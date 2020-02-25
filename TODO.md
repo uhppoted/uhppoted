@@ -68,6 +68,7 @@
 - [x] restd: rework GetDevices to also find 'known' devices
 - [x] Handle event buffer wrap-around for get-events
 - [x] Handle event buffer wrap-around for listen
+- [ ] Add 'fetch old events' to configuration
 
 - [x] Fix go vet errors
 - [x] conf file decoder with reflection

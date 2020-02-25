@@ -36,27 +36,3 @@ func (s *EventIndexResult) String() string {
 func (s *Event) String() string {
 	return fmt.Sprintf("%s %-4d %s %-12d %1d %-5v %-4d", s.SerialNumber, s.Index, s.Timestamp.String(), s.UserID, s.Door, s.Granted, s.Result)
 }
-
-func IncrementEventIndex(index, rollover uint32) uint32 {
-	if index < 1 {
-		return 1
-	}
-
-	if index >= rollover {
-		return 1
-	}
-
-	return index + 1
-}
-
-func DecrementEventIndex(index, rollover uint32) uint32 {
-	if index <= 1 {
-		return rollover
-	}
-
-	if index > rollover {
-		return rollover
-	}
-
-	return index - 1
-}

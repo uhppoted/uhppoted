@@ -71,7 +71,7 @@ release-tar: release
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
 
 debug: build
-	go test src/uhppote/types/*.go
+	go test src/uhppoted/*.go
 
 debugx: build
 	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/events:get' \
