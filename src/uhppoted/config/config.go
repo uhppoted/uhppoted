@@ -45,6 +45,7 @@ const pretty = `# SYSTEM{{range .system}}
 
 # DEVICES{{range $id,$device := .devices}}
 UT0311-L0x.{{$id}}.address = {{$device.Address}}
+UT0311-L0x.{{$id}}.rollover = {{$device.Rollover}}
 UT0311-L0x.{{$id}}.door.1 = {{index $device.Door 0}}
 UT0311-L0x.{{$id}}.door.2 = {{index $device.Door 1}}
 UT0311-L0x.{{$id}}.door.3 = {{index $device.Door 2}}
@@ -52,6 +53,7 @@ UT0311-L0x.{{$id}}.door.4 = {{index $device.Door 3}}
 {{else}}
 # Example configuration for UTO311-L04 with serial number 405419896
 # UT0311-L0x.405419896.address = 192.168.1.100:60000
+# UT0311-L0x.405419896.rollover = 100000
 # UT0311-L0x.405419896.door.1 = Front Door
 # UT0311-L0x.405419896.door.2 = Side Door
 # UT0311-L0x.405419896.door.3 = Garage
