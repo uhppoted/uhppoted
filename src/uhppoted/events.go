@@ -7,6 +7,8 @@ import (
 	"uhppote/types"
 )
 
+const ROLLOVER = uint32(100000)
+
 type GetEventRangeRequest struct {
 	DeviceID DeviceID
 	Start    *types.DateTime
@@ -55,10 +57,38 @@ type EventRange struct {
 	Last  uint32 `json:"last"`
 }
 
-const ROLLOVER = uint32(100000)
-
 func (e *EventRange) String() string {
 	return fmt.Sprintf("{ First:%v, Last:%v }", e.First, e.Last)
+}
+
+type EventIndex uint32
+
+func (index EventIndex) increment(rollover uint32) EventIndex {
+	ix := uint32(index)
+
+	if ix < 1 {
+		ix = 1
+	} else if ix >= rollover {
+		ix = 1
+	} else {
+		ix += 1
+	}
+
+	return EventIndex(ix)
+}
+
+func (index EventIndex) decrement(rollover uint32) EventIndex {
+	ix := uint32(index)
+
+	if ix <= 1 {
+		ix = rollover
+	} else if ix > rollover {
+		ix = rollover
+	} else {
+		ix -= 1
+	}
+
+	return EventIndex(ix)
 }
 
 type event struct {
@@ -107,9 +137,9 @@ func (u *UHPPOTED) GetEventRange(request GetEventRangeRequest) (*GetEventRangeRe
 	var last *types.Event
 
 	if start != nil || end != nil {
-		marker := types.DecrementEventIndex(f.Index, rollover)
-		for index := l.Index; index != marker; index = types.DecrementEventIndex(index, rollover) {
-			record, err := u.Uhppote.GetEvent(device, index)
+		index := EventIndex(l.Index)
+		for {
+			record, err := u.Uhppote.GetEvent(device, uint32(index))
 			if err != nil {
 				return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error getting event for index %v from %v (%w)", index, device, err))
 			}
@@ -120,12 +150,15 @@ func (u *UHPPOTED) GetEventRange(request GetEventRangeRequest) (*GetEventRangeRe
 				}
 
 				first = record
-				continue
-			}
-
-			if first != nil || last != nil {
+			} else if first != nil || last != nil {
 				break
 			}
+
+			if uint32(index) == f.Index {
+				break
+			}
+
+			index = index.decrement(rollover)
 		}
 	}
 

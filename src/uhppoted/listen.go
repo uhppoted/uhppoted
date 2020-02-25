@@ -69,7 +69,7 @@ func (u *UHPPOTED) Listen(handler EventHandler, received *EventMap, q chan os.Si
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			u.fetchEvents(deviceID, received, handler)
+			u.retrieve(deviceID, received, handler)
 		}()
 	}
 
@@ -78,7 +78,7 @@ func (u *UHPPOTED) Listen(handler EventHandler, received *EventMap, q chan os.Si
 	u.listen(handler, received, q)
 }
 
-func (u *UHPPOTED) fetchEvents(deviceID uint32, received *EventMap, handler EventHandler) {
+func (u *UHPPOTED) retrieve(deviceID uint32, received *EventMap, handler EventHandler) {
 	if index, ok := received.retrieved[deviceID]; ok {
 		u.info("listen", fmt.Sprintf("Fetching unretrieved events for device ID %v", deviceID))
 
@@ -88,7 +88,7 @@ func (u *UHPPOTED) fetchEvents(deviceID uint32, received *EventMap, handler Even
 			return
 		}
 
-		if event.Index == index {
+		if event.Index == uint32(index) {
 			u.info("listen", fmt.Sprintf("No unretrieved events for device ID %v", deviceID))
 			return
 		}
@@ -100,9 +100,10 @@ func (u *UHPPOTED) fetchEvents(deviceID uint32, received *EventMap, handler Even
 			}
 		}
 
-		index = types.IncrementEventIndex(index, rollover)
+		from := EventIndex(index)
+		to := EventIndex(event.Index)
 
-		if retrieved := u.fetch(deviceID, index, event.Index, handler); retrieved != 0 {
+		if retrieved := u.fetch(deviceID, from.increment(rollover), to, handler); retrieved != 0 {
 			received.retrieved[deviceID] = retrieved
 			if err := received.store(); err != nil {
 				u.warn("listen", err)
@@ -166,18 +167,12 @@ func (u *UHPPOTED) onEvent(e *types.Status, received *EventMap, handler EventHan
 	u.info("event", fmt.Sprintf("%+v", e))
 
 	deviceID := uint32(e.SerialNumber)
-	rollover := ROLLOVER
-	if d, ok := u.Uhppote.Devices[deviceID]; ok {
-		if d.Rollover != 0 {
-			rollover = d.Rollover
-		}
-	}
+	last := EventIndex(e.LastIndex)
+	first := EventIndex(e.LastIndex)
 
-	last := e.LastIndex
-	first := types.DecrementEventIndex(last, rollover)
 	retrieved, ok := received.retrieved[deviceID]
-	if ok && retrieved != last {
-		first = types.IncrementEventIndex(retrieved, rollover)
+	if ok && retrieved != uint32(last) {
+		first = EventIndex(retrieved)
 	}
 
 	if eventID := u.fetch(deviceID, first, last, handler); eventID != 0 {
@@ -188,7 +183,7 @@ func (u *UHPPOTED) onEvent(e *types.Status, received *EventMap, handler EventHan
 	}
 }
 
-func (u *UHPPOTED) fetch(deviceID uint32, from uint32, to uint32, handler EventHandler) (retrieved uint32) {
+func (u *UHPPOTED) fetch(deviceID uint32, from, to EventIndex, handler EventHandler) (retrieved uint32) {
 	batchSize := BATCHSIZE
 	rollover := ROLLOVER
 
@@ -221,66 +216,66 @@ func (u *UHPPOTED) fetch(deviceID uint32, from uint32, to uint32, handler EventH
 	}
 
 	if last.Index >= first.Index {
-		if from < first.Index || from > last.Index {
-			from = first.Index
+		if uint32(from) < first.Index || uint32(from) > last.Index {
+			from = EventIndex(first.Index)
 		}
 
-		if to < first.Index || to > last.Index {
-			to = last.Index
+		if uint32(to) < first.Index || uint32(to) > last.Index {
+			to = EventIndex(last.Index)
 		}
 	} else {
-		if from < first.Index && from > last.Index {
-			from = first.Index
+		if uint32(from) < first.Index && uint32(from) > last.Index {
+			from = EventIndex(first.Index)
 		}
 
-		if to < first.Index && to > last.Index {
-			to = last.Index
+		if uint32(to) < first.Index && uint32(to) > last.Index {
+			to = EventIndex(last.Index)
 		}
 	}
 
 	count := 0
-	for index := from; index != to; index = types.IncrementEventIndex(index, rollover) {
+	index := from
+	for {
 		count += 1
 		if count > batchSize {
 			return
 		}
 
-		record, err := u.Uhppote.GetEvent(deviceID, index)
+		record, err := u.Uhppote.GetEvent(deviceID, uint32(index))
 		if err != nil {
 			u.warn("listen", fmt.Errorf("Failed to retrieve event for device %d, ID %d (%w)", deviceID, index, err))
-			continue
-		}
-
-		if record == nil {
+		} else if record == nil {
 			u.warn("listen", fmt.Errorf("No event record for device %d, ID %d", deviceID, index))
-			continue
-		}
-
-		if record.Index != index {
+		} else if record.Index != uint32(index) {
 			u.warn("listen", fmt.Errorf("No event record for device %d, ID %d", deviceID, index))
-			continue
+		} else {
+			message := EventMessage{
+				Event: ListenEvent{
+					DeviceID:   DeviceID(record.SerialNumber),
+					EventID:    record.Index,
+					Type:       record.Type,
+					Granted:    record.Granted,
+					Door:       record.Door,
+					DoorOpened: record.DoorOpened,
+					UserID:     record.UserID,
+					Timestamp:  record.Timestamp,
+					Result:     record.Result,
+				},
+			}
+
+			u.debug("listen", fmt.Sprintf("event %v", message))
+			if !handler(message) {
+				break
+			}
+
+			retrieved = record.Index
 		}
 
-		message := EventMessage{
-			Event: ListenEvent{
-				DeviceID:   DeviceID(record.SerialNumber),
-				EventID:    record.Index,
-				Type:       record.Type,
-				Granted:    record.Granted,
-				Door:       record.Door,
-				DoorOpened: record.DoorOpened,
-				UserID:     record.UserID,
-				Timestamp:  record.Timestamp,
-				Result:     record.Result,
-			},
-		}
-
-		u.debug("listen", fmt.Sprintf("event %v", message))
-		if !handler(message) {
+		if index == to {
 			break
 		}
 
-		retrieved = record.Index
+		index = index.increment(rollover)
 	}
 
 	return
