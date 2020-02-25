@@ -52,22 +52,22 @@ release: test vet
 	mkdir -p dist/$(DIST)/windows
 	mkdir -p dist/$(DIST)/darwin
 	mkdir -p dist/$(DIST)/linux
-	mkdir -p dist/$(DIST)/arm/arm7
+	mkdir -p dist/$(DIST)/arm7
 	mkdir -p dist/$(DIST)/openapi
 	env GOOS=linux   GOARCH=amd64         go build -o dist/$(DIST)/linux/uhppote-cli             cmd/uhppote-cli
-	env GOOS=linux   GOARCH=arm   GOARM=7 go build -o dist/$(DIST)/arm/arm7/uhppote-cli          cmd/uhppote-cli
+	env GOOS=linux   GOARCH=arm   GOARM=7 go build -o dist/$(DIST)/arm7/uhppote-cli              cmd/uhppote-cli
 	env GOOS=darwin  GOARCH=amd64         go build -o dist/$(DIST)/darwin/uhppote-cli            cmd/uhppote-cli
 	env GOOS=windows GOARCH=amd64         go build -o dist/$(DIST)/windows/uhppote-cli.exe       cmd/uhppote-cli
 	env GOOS=linux   GOARCH=amd64         go build -o dist/$(DIST)/linux/uhppoted-rest           cmd/uhppoted-rest
-	env GOOS=linux   GOARCH=arm   GOARM=7 go build -o dist/$(DIST)/arm/arm7/uhppoted-rest        cmd/uhppoted-rest
+	env GOOS=linux   GOARCH=arm   GOARM=7 go build -o dist/$(DIST)/arm7/uhppoted-rest            cmd/uhppoted-rest
 	env GOOS=darwin  GOARCH=amd64         go build -o dist/$(DIST)/darwin/uhppoted-rest          cmd/uhppoted-rest
 	env GOOS=windows GOARCH=amd64         go build -o dist/$(DIST)/windows/uhppoted-rest.exe     cmd/uhppoted-rest
 	env GOOS=linux   GOARCH=amd64         go build -o dist/$(DIST)/linux/uhppoted-mqtt           cmd/uhppoted-mqtt
-	env GOOS=linux   GOARCH=arm   GOARM=7 go build -o dist/$(DIST)/arm/arm7/uhppoted-mqtt        cmd/uhppoted-mqtt
+	env GOOS=linux   GOARCH=arm   GOARM=7 go build -o dist/$(DIST)/arm7/uhppoted-mqtt            cmd/uhppoted-mqtt
 	env GOOS=darwin  GOARCH=amd64         go build -o dist/$(DIST)/darwin/uhppoted-mqtt          cmd/uhppoted-mqtt
 	env GOOS=windows GOARCH=amd64         go build -o dist/$(DIST)/windows/uhppoted-mqtt.exe     cmd/uhppoted-mqtt
 	env GOOS=linux   GOARCH=amd64         go build -o dist/$(DIST)/linux/uhppote-simulator       cmd/uhppote-simulator
-	env GOOS=linux   GOARCH=arm   GOARM=7 go build -o dist/$(DIST)/arm/arm7/uhppote-simulator    cmd/uhppote-simulator
+	env GOOS=linux   GOARCH=arm   GOARM=7 go build -o dist/$(DIST)/arm7/uhppote-simulator        cmd/uhppote-simulator
 	env GOOS=darwin  GOARCH=amd64         go build -o dist/$(DIST)/darwin/uhppote-simulator      cmd/uhppote-simulator
 	env GOOS=windows GOARCH=amd64         go build -o dist/$(DIST)/windows/uhppote-simulator.exe cmd/uhppote-simulator
 	cp -r install/openapi/* dist/$(DIST)/openapi/
