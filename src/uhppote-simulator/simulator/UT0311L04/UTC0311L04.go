@@ -218,6 +218,10 @@ func load(filepath string) (*UT0311L04, error) {
 		}
 	}
 
+	if simulator.Events.Size <= 0 {
+		simulator.Events.Size = 256
+	}
+
 	if simulator.Events.First == 0 {
 		simulator.Events.First = 1
 	}

@@ -69,7 +69,8 @@
 - [x] Handle event buffer wrap-around for get-events
 - [x] Handle event buffer wrap-around for listen
 - [x] Optionally ignore "old events"
-- [ ] Rework CLI get-events
+- [x] Limit simulator event buffer size
+- [x] Rework CLI get-events
 
 - [x] Fix go vet errors
 - [x] conf file decoder with reflection
@@ -80,6 +81,7 @@
 - [x] Move version to [LDFLAGS](https://stackoverflow.com/questions/28459102/golang-compile-environment-variable-into-binary)
 - [x] Replace all "path" with "filepath"
 - [x] Identify UTO311-L01..L04 based on serial number prefix
+- [ ] Add ARM7 target to release build
 
 ## TODO
 
@@ -90,7 +92,6 @@
 - [ ] commonalise configuration
 - [ ] make types consistent across API
 - [ ] Genericize message unit tests
-- [ ] Add Rasbian/ARM7 target to build
 - [ ] Convert to 1.13 error handling
 - [ ] Rework UHPPOTE response messages to use factory
 - [ ] Fix golint errors
