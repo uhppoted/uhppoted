@@ -13,6 +13,8 @@
 
 #### Windows
 
+1. [/dev/null](https://stackoverflow.com/questions/313111/is-there-a-dev-null-on-windows)
+
 ### uhppoted
 
 #### Certificate Authority

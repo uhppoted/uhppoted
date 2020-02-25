@@ -68,7 +68,8 @@
 - [x] restd: rework GetDevices to also find 'known' devices
 - [x] Handle event buffer wrap-around for get-events
 - [x] Handle event buffer wrap-around for listen
-- [ ] Add 'fetch old events' to configuration
+- [x] Optionally ignore "old events"
+- [ ] Rework CLI get-events
 
 - [x] Fix go vet errors
 - [x] conf file decoder with reflection
@@ -231,3 +232,4 @@
 32. [Open Policy Agent](https://github.com/open-policy-agent) - for permissions
 33. CouchBase (for JSON DB)
 34. [AnyLog](https://blog.acolyer.org/2020/02/24/anylog)
+35. [gRPC](https://www.programmableweb.com/news/how-to-build-streaming-api-using-grpc/how-to/2020/02/21)
