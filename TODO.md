@@ -81,7 +81,7 @@
 - [x] Move version to [LDFLAGS](https://stackoverflow.com/questions/28459102/golang-compile-environment-variable-into-binary)
 - [x] Replace all "path" with "filepath"
 - [x] Identify UTO311-L01..L04 based on serial number prefix
-- [ ] Add ARM7 target to release build
+- [x] Add ARM7 target to release build
 
 ## TODO
 

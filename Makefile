@@ -52,36 +52,31 @@ release: test vet
 	mkdir -p dist/$(DIST)/windows
 	mkdir -p dist/$(DIST)/darwin
 	mkdir -p dist/$(DIST)/linux
+	mkdir -p dist/$(DIST)/arm/arm7
 	mkdir -p dist/$(DIST)/openapi
-	env GOOS=linux   GOARCH=amd64  go build -o dist/$(DIST)/linux/uhppote-cli             uhppote-cli
-	env GOOS=darwin  GOARCH=amd64  go build -o dist/$(DIST)/darwin/uhppote-cli            uhppote-cli
-	env GOOS=windows GOARCH=amd64  go build -o dist/$(DIST)/windows/uhppote-cli.exe       uhppote-cli
-	env GOOS=linux   GOARCH=amd64  go build -o dist/$(DIST)/linux/uhppoted-rest           uhppoted-rest
-	env GOOS=darwin  GOARCH=amd64  go build -o dist/$(DIST)/darwin/uhppoted-rest          uhppoted-rest
-	env GOOS=windows GOARCH=amd64  go build -o dist/$(DIST)/windows/uhppoted-rest.exe     uhppoted-rest
-	env GOOS=linux   GOARCH=amd64  go build -o dist/$(DIST)/linux/uhppoted-mqtt           cmd/uhppoted-mqtt
-	env GOOS=darwin  GOARCH=amd64  go build -o dist/$(DIST)/darwin/uhppoted-mqtt          cmd/uhppoted-mqtt
-	env GOOS=windows GOARCH=amd64  go build -o dist/$(DIST)/windows/uhppoted-mqtt.exe     cmd/uhppoted-mqtt
-	env GOOS=linux   GOARCH=amd64  go build -o dist/$(DIST)/linux/uhppote-simulator       uhppote-simulator
-	env GOOS=darwin  GOARCH=amd64  go build -o dist/$(DIST)/darwin/uhppote-simulator      uhppote-simulator
-	env GOOS=windows GOARCH=amd64  go build -o dist/$(DIST)/windows/uhppote-simulator.exe uhppote-simulator
+	env GOOS=linux   GOARCH=amd64         go build -o dist/$(DIST)/linux/uhppote-cli             uhppote-cli
+	env GOOS=linux   GOARCH=arm   GOARM=7 go build -o dist/$(DIST)/arm/arm7/uhppote-cli          uhppote-cli
+	env GOOS=darwin  GOARCH=amd64         go build -o dist/$(DIST)/darwin/uhppote-cli            uhppote-cli
+	env GOOS=windows GOARCH=amd64         go build -o dist/$(DIST)/windows/uhppote-cli.exe       uhppote-cli
+	env GOOS=linux   GOARCH=amd64         go build -o dist/$(DIST)/linux/uhppoted-rest           uhppoted-rest
+	env GOOS=linux   GOARCH=arm   GOARM=7 go build -o dist/$(DIST)/arm/arm7/uhppoted-rest        uhppoted-rest
+	env GOOS=darwin  GOARCH=amd64         go build -o dist/$(DIST)/darwin/uhppoted-rest          uhppoted-rest
+	env GOOS=windows GOARCH=amd64         go build -o dist/$(DIST)/windows/uhppoted-rest.exe     uhppoted-rest
+	env GOOS=linux   GOARCH=amd64         go build -o dist/$(DIST)/linux/uhppoted-mqtt           cmd/uhppoted-mqtt
+	env GOOS=linux   GOARCH=arm   GOARM=7 go build -o dist/$(DIST)/arm/arm7/uhppoted-mqtt        cmd/uhppoted-mqtt
+	env GOOS=darwin  GOARCH=amd64         go build -o dist/$(DIST)/darwin/uhppoted-mqtt          cmd/uhppoted-mqtt
+	env GOOS=windows GOARCH=amd64         go build -o dist/$(DIST)/windows/uhppoted-mqtt.exe     cmd/uhppoted-mqtt
+	env GOOS=linux   GOARCH=amd64         go build -o dist/$(DIST)/linux/uhppote-simulator       uhppote-simulator
+	env GOOS=linux   GOARCH=arm   GOARM=7 go build -o dist/$(DIST)/arm/arm7/uhppote-simulator    uhppote-simulator
+	env GOOS=darwin  GOARCH=amd64         go build -o dist/$(DIST)/darwin/uhppote-simulator      uhppote-simulator
+	env GOOS=windows GOARCH=amd64         go build -o dist/$(DIST)/windows/uhppote-simulator.exe uhppote-simulator
 	cp -r install/openapi/* dist/$(DIST)/openapi/
 
 release-tar: release
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
 
 debug: build
-	go test src/uhppoted/*.go
-
-debugx: build
-	mqtt publish --topic 'twystd/uhppoted/gateway/requests/device/events:get' \
-               --message '{ "message": { "request": { "request-id": "AH173635G3", \
-                                                      "client-id":  "QWERTY54", \
-                                                      "reply-to":   "twystd/uhppoted/reply/97531", \
-                                                      "device-id":  201020304, \
-                                                      "start":      "2019-08-05", \
-                                                      "end":        "2019-08-09" }}}'
-
+	./bin/uhppote-cli --debug --broadcast 192.168.1.100:54321 get-events 201020304
 
 simulator: build
 	./bin/uhppote-simulator --debug --bind 192.168.1.100:54321 --rest 192.168.1.100:8008 --devices "./runtime/simulation/devices"
