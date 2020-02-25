@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"uhppote"
 	"uhppote/types"
@@ -21,6 +22,19 @@ type event struct {
 func getEvents(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	deviceID := ctx.Value("device-id").(uint32)
 
+	first, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(deviceID, 0)
+	if err != nil {
+		warn(ctx, deviceID, "get-events", err)
+		http.Error(w, "Error retrieving events", http.StatusInternalServerError)
+		return
+	}
+
+	if first == nil {
+		warn(ctx, deviceID, "get-events", errors.New("No record returned for 'first' event"))
+		http.Error(w, "Error retrieving events", http.StatusInternalServerError)
+		return
+	}
+
 	last, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(deviceID, 0xffffffff)
 	if err != nil {
 		warn(ctx, deviceID, "get-events", err)
@@ -28,34 +42,25 @@ func getEvents(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	events := make([]event, 0)
-
-	if last != nil {
-		for index := last.Index; index > 0; index-- {
-			record, err := ctx.Value("uhppote").(*uhppote.UHPPOTE).GetEvent(deviceID, index)
-			if err != nil {
-				warn(ctx, deviceID, "get-event", err)
-				http.Error(w, "Error retrieving event", http.StatusInternalServerError)
-				return
-			}
-
-			events = append(events, event{
-				Index:      record.Index,
-				Type:       record.Type,
-				Granted:    record.Granted,
-				Door:       record.Door,
-				DoorOpened: record.DoorOpened,
-				UserID:     record.UserID,
-				Timestamp:  record.Timestamp,
-				Result:     record.Result,
-			})
-		}
+	if last == nil {
+		warn(ctx, deviceID, "get-events", errors.New("No record returned for 'last' event"))
+		http.Error(w, "Error retrieving events", http.StatusInternalServerError)
+		return
 	}
 
 	response := struct {
-		Events []event `json:"events"`
+		Events struct {
+			First uint32 `json:"first"`
+			Last  uint32 `json:"last"`
+		} `json:"events"`
 	}{
-		Events: events,
+		Events: struct {
+			First uint32 `json:"first"`
+			Last  uint32 `json:"last"`
+		}{
+			First: first.Index,
+			Last:  last.Index,
+		},
 	}
 
 	reply(ctx, w, response)
