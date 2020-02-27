@@ -7,7 +7,7 @@ SERIALNO ?= 423187757
 DOOR ?= 3
 DIST ?= development
 DATETIME = $(shell date "+%Y-%m-%d %H:%M:%S")
-VERSION = v0.6.x
+VERSION = v0.5.1x
 LDFLAGS = -ldflags "-X uhppote.VERSION=$(VERSION)" 
 
 all: test      \
