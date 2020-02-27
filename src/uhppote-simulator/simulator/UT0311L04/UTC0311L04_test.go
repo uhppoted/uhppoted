@@ -1,13 +1,13 @@
 package UT0311L04
 
 import (
+	"github.com/uhppoted/uhppoted/src/uhppote-simulator/entities"
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"net"
 	"reflect"
 	"testing"
 	"time"
-	"uhppote-simulator/entities"
-	"uhppote/messages"
-	"uhppote/types"
 )
 
 // TODO: ignore date/time fields

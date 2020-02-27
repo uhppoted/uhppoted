@@ -2,10 +2,10 @@ package auth
 
 import (
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppoted/kvs"
 	"log"
 	"regexp"
 	"strings"
-	"uhppoted/kvs"
 )
 
 type Permissions struct {

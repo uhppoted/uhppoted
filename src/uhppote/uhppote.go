@@ -4,12 +4,12 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	codec "github.com/uhppoted/uhppoted/src/uhppote/encoding/UTO311-L0x"
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
 	"net"
 	"os"
 	"regexp"
 	"time"
-	codec "uhppote/encoding/UTO311-L0x"
-	"uhppote/messages"
 )
 
 var VERSION string = "v0.5.1"

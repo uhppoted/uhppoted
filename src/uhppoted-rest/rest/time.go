@@ -3,11 +3,11 @@ package rest
 import (
 	"context"
 	"encoding/json"
+	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"io/ioutil"
 	"net/http"
 	"time"
-	"uhppote"
-	"uhppote/types"
 )
 
 func getTime(ctx context.Context, w http.ResponseWriter, r *http.Request) {

@@ -1,10 +1,10 @@
 package auth
 
 import (
+	"github.com/uhppoted/uhppoted/src/uhppoted/kvs"
 	"log"
 	"strconv"
 	"testing"
-	"uhppoted/kvs"
 )
 
 func TestValidateHOTPWithValidOTP(t *testing.T) {

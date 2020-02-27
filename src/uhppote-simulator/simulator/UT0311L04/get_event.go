@@ -1,8 +1,8 @@
 package UT0311L04
 
 import (
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
 	"net"
-	"uhppote/messages"
 )
 
 func (s *UT0311L04) getEvent(addr *net.UDPAddr, request *messages.GetEventRequest) {

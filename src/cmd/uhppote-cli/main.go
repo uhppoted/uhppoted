@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppote-cli/commands"
+	"github.com/uhppoted/uhppoted/src/uhppote-cli/config"
 	"net"
 	"os"
-	"uhppote"
-	"uhppote-cli/commands"
-	"uhppote-cli/config"
 )
 
 type addr struct {

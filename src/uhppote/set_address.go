@@ -3,9 +3,9 @@ package uhppote
 import (
 	"errors"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"net"
-	"uhppote/messages"
-	"uhppote/types"
 )
 
 func (u *UHPPOTE) SetAddress(serialNumber uint32, address, mask, gateway net.IP) (*types.Result, error) {

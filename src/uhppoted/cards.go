@@ -2,7 +2,7 @@ package uhppoted
 
 import (
 	"fmt"
-	"uhppote/types"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 )
 
 type GetCardsRequest struct {
@@ -92,7 +92,7 @@ func (u *UHPPOTED) GetCard(request GetCardRequest) (*GetCardResponse, error) {
 
 	card, err := u.Uhppote.GetCardByID(device, cardID)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Sprintf("Error retrieving card %v from %v (%w)", card.CardNumber, device, err))
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error retrieving card %v from %v (%w)", card.CardNumber, device, err))
 	}
 
 	if card == nil {

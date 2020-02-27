@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote"
 	"io/ioutil"
 	"net/http"
-	"uhppote"
 )
 
 func getDoorDelay(ctx context.Context, w http.ResponseWriter, r *http.Request) {

@@ -4,11 +4,11 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"net"
 	"reflect"
 	"regexp"
 	"strconv"
-	"uhppote/types"
 )
 
 type Marshaler interface {

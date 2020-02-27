@@ -1,11 +1,11 @@
 package messages
 
 import (
+	codec "github.com/uhppoted/uhppoted/src/uhppote/encoding/UTO311-L0x"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"reflect"
 	"testing"
 	"time"
-	codec "uhppote/encoding/UTO311-L0x"
-	"uhppote/types"
 )
 
 func TestMarshalGetCardByIndexRequest(t *testing.T) {

@@ -7,12 +7,12 @@ import (
 	"encoding/base32"
 	"encoding/binary"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppoted/kvs"
 	"hash"
 	"log"
 	"math"
 	"strconv"
 	"strings"
-	"uhppoted/kvs"
 )
 
 type HOTP struct {

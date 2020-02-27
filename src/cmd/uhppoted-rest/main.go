@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppoted-rest/commands"
+	"github.com/uhppoted/uhppoted/src/uhppoted/command"
 	"os"
-	"uhppoted-rest/commands"
-	"uhppoted/command"
 )
 
 var cli = []uhppoted.Command{

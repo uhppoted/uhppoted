@@ -1,7 +1,7 @@
 package messages
 
 import (
-	"uhppote/types"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 )
 
 type GetCardsRequest struct {

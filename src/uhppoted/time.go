@@ -2,8 +2,8 @@ package uhppoted
 
 import (
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"time"
-	"uhppote/types"
 )
 
 type GetTimeRequest struct {

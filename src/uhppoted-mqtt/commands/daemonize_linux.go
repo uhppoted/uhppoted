@@ -5,6 +5,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppoted/config"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -12,7 +13,6 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
-	"uhppoted/config"
 )
 
 var DAEMONIZE = Daemonize{

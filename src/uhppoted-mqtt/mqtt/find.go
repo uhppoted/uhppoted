@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"uhppoted"
+	"github.com/uhppoted/uhppoted/src/uhppoted"
 )
 
 func (m *MQTTD) getDevices(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) (interface{}, error) {

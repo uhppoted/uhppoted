@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"uhppote/types"
-	"uhppoted"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
+	"github.com/uhppoted/uhppoted/src/uhppoted"
 )
 
 func (m *MQTTD) getTime(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) (interface{}, error) {

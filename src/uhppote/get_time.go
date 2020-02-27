@@ -1,8 +1,8 @@
 package uhppote
 
 import (
-	"uhppote/messages"
-	"uhppote/types"
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 )
 
 func (u *UHPPOTE) GetTime(serialNumber uint32) (*types.Time, error) {

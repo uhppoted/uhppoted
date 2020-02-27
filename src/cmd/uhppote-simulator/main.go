@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppote-simulator/commands"
+	"github.com/uhppoted/uhppoted/src/uhppote-simulator/simulator"
+	"github.com/uhppoted/uhppoted/src/uhppote-simulator/simulator/UT0311L04"
 	"path/filepath"
-	"uhppote"
-	"uhppote-simulator/commands"
-	"uhppote-simulator/simulator"
-	"uhppote-simulator/simulator/UT0311L04"
 )
 
 var options = struct {

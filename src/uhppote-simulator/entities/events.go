@@ -1,7 +1,7 @@
 package entities
 
 import (
-	"uhppote/types"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 )
 
 type Event struct {

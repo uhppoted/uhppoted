@@ -2,9 +2,9 @@ package uhppoted
 
 import (
 	"errors"
+	"github.com/uhppoted/uhppoted/src/uhppote"
 	"log"
 	"net/http"
-	"uhppote"
 )
 
 const (

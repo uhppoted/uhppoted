@@ -2,10 +2,10 @@ package monitoring
 
 import (
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"log"
 	"math"
 	"time"
-	"uhppote/types"
 )
 
 type Watchdog struct {

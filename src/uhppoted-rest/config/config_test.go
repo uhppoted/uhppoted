@@ -1,10 +1,10 @@
 package config
 
 import (
+	"github.com/uhppoted/uhppoted/src/uhppote/encoding/conf"
 	"net"
 	"reflect"
 	"testing"
-	"uhppote/encoding/conf"
 )
 
 var configuration = []byte(`# UDP

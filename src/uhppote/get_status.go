@@ -1,9 +1,9 @@
 package uhppote
 
 import (
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"time"
-	"uhppote/messages"
-	"uhppote/types"
 )
 
 func (u *UHPPOTE) GetStatus(serialNumber uint32) (*types.Status, error) {

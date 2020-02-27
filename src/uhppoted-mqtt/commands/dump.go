@@ -2,9 +2,9 @@ package commands
 
 import (
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppoted/config"
 	"os"
 	"strings"
-	"uhppoted/config"
 )
 
 func dump(path string) error {

@@ -4,14 +4,14 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppoted-rest/config"
+	xpath "github.com/uhppoted/uhppoted/src/uhppoted-rest/encoding/plist"
 	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"text/template"
-	"uhppoted-rest/config"
-	xpath "uhppoted-rest/encoding/plist"
 )
 
 type info struct {

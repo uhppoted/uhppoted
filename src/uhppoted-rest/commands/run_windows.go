@@ -4,6 +4,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppoted-rest/config"
+	filelogger "github.com/uhppoted/uhppoted/src/uhppoted-rest/eventlog"
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/eventlog"
 	"log"
@@ -11,9 +14,6 @@ import (
 	"path/filepath"
 	"sync"
 	"syscall"
-	"uhppote"
-	"uhppoted-rest/config"
-	filelogger "uhppoted-rest/eventlog"
 )
 
 type Run struct {

@@ -2,11 +2,11 @@ package UT0311L04
 
 import (
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote-simulator/entities"
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"net"
 	"time"
-	"uhppote-simulator/entities"
-	"uhppote/messages"
-	"uhppote/types"
 )
 
 func (s *UT0311L04) setTime(addr *net.UDPAddr, request *messages.SetTimeRequest) {

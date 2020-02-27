@@ -5,13 +5,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppoted/config"
 	"golang.org/x/sys/windows/svc/eventlog"
 	"golang.org/x/sys/windows/svc/mgr"
 	"net"
 	"os"
 	"path/filepath"
 	"strings"
-	"uhppoted/config"
 )
 
 var DAEMONIZE = Daemonize{

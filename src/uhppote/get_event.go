@@ -1,8 +1,8 @@
 package uhppote
 
 import (
-	"uhppote/messages"
-	"uhppote/types"
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 )
 
 func (u *UHPPOTE) GetEvent(serialNumber, index uint32) (*types.Event, error) {

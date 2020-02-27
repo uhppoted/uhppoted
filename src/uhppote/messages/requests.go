@@ -2,7 +2,7 @@ package messages
 
 import (
 	"fmt"
-	codec "uhppote/encoding/UTO311-L0x"
+	codec "github.com/uhppoted/uhppoted/src/uhppote/encoding/UTO311-L0x"
 )
 
 type handler struct {

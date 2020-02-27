@@ -3,6 +3,8 @@ package config
 import (
 	"encoding/binary"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote/encoding/conf"
+	"github.com/uhppoted/uhppoted/src/uhppoted/monitoring"
 	"io"
 	"io/ioutil"
 	"math/rand"
@@ -13,8 +15,6 @@ import (
 	"strings"
 	"text/template"
 	"time"
-	"uhppote/encoding/conf"
-	"uhppoted/monitoring"
 )
 
 type DeviceMap map[uint32]*Device

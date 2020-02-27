@@ -3,8 +3,8 @@ package uhppote
 import (
 	"errors"
 	"fmt"
-	"uhppote/messages"
-	"uhppote/types"
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 )
 
 func (u *UHPPOTE) PutCard(serialNumber uint32, card types.Card) (*types.Result, error) {

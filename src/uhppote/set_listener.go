@@ -3,9 +3,9 @@ package uhppote
 import (
 	"errors"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"net"
-	"uhppote/messages"
-	"uhppote/types"
 )
 
 func (u *UHPPOTE) SetListener(serialNumber uint32, address net.UDPAddr) (*types.Result, error) {

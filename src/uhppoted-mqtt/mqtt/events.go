@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
+	"github.com/uhppoted/uhppoted/src/uhppoted"
 	"time"
-	"uhppote/types"
-	"uhppoted"
 )
 
 type startdate time.Time

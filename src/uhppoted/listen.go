@@ -3,6 +3,7 @@ package uhppoted
 import (
 	"bufio"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"io/ioutil"
 	"log"
 	"os"
@@ -11,7 +12,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"uhppote/types"
 )
 
 type EventMap struct {

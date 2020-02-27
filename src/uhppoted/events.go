@@ -3,8 +3,8 @@ package uhppoted
 import (
 	"errors"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"time"
-	"uhppote/types"
 )
 
 const ROLLOVER = uint32(100000)

@@ -2,13 +2,13 @@ package monitoring
 
 import (
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"log"
 	"math"
 	"net"
 	"sync"
 	"time"
-	"uhppote"
-	"uhppote/types"
 )
 
 type HealthCheck struct {

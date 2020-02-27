@@ -4,12 +4,12 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	xpath "github.com/uhppoted/uhppoted/src/uhppoted-rest/encoding/plist"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"syscall"
-	xpath "uhppoted-rest/encoding/plist"
 )
 
 var UNDAEMONIZE = Undaemonize{

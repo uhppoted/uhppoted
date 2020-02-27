@@ -7,6 +7,7 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -14,7 +15,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"uhppote"
 )
 
 // OpenAPI is a container for the runtime flags for the Open API user interface
