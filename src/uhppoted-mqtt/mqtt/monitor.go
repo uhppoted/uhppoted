@@ -1,10 +1,10 @@
 package mqtt
 
 import (
+	"github.com/uhppoted/uhppoted/src/uhppoted/monitoring"
 	"log"
 	"sync"
 	"time"
-	"uhppoted/monitoring"
 )
 
 type SystemMonitor struct {

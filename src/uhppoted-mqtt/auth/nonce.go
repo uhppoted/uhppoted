@@ -3,9 +3,9 @@ package auth
 import (
 	"errors"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppoted/kvs"
 	"log"
 	"strconv"
-	"uhppoted/kvs"
 )
 
 type Nonce struct {

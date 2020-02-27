@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/binary"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote/encoding/conf"
 	"io/ioutil"
 	"net"
 	"os"
@@ -10,7 +11,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"uhppote/encoding/conf"
 )
 
 type DeviceMap map[uint32]*Device

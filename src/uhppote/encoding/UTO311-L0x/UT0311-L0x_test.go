@@ -3,12 +3,12 @@ package UTO311_L0x
 import (
 	"encoding/hex"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"net"
 	"reflect"
 	"regexp"
 	"testing"
 	"time"
-	"uhppote/types"
 )
 
 type testType struct {

@@ -5,11 +5,11 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote-cli/config"
+	"github.com/uhppoted/uhppoted/src/uhppote-cli/parsers"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"os"
 	"reflect"
-	"uhppote-cli/config"
-	"uhppote-cli/parsers"
-	"uhppote/types"
 )
 
 type Load struct {

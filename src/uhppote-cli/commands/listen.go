@@ -2,9 +2,9 @@ package commands
 
 import (
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"os"
 	"os/signal"
-	"uhppote/types"
 )
 
 type ListenCommand struct {

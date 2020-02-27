@@ -1,10 +1,10 @@
 package UT0311L04
 
 import (
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"net"
 	"time"
-	"uhppote/messages"
-	"uhppote/types"
 )
 
 func (s *UT0311L04) getStatus(addr *net.UDPAddr, request *messages.GetStatusRequest) {

@@ -3,13 +3,13 @@ package rest
 import (
 	"context"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"net"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
-	"uhppote"
-	"uhppote/types"
 )
 
 type device struct {

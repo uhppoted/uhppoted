@@ -1,9 +1,9 @@
 package uhppote
 
 import (
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"net"
-	"uhppote/messages"
-	"uhppote/types"
 )
 
 type GetListenerResponse struct {

@@ -3,9 +3,9 @@ package rest
 import (
 	"context"
 	"errors"
+	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"net/http"
-	"uhppote"
-	"uhppote/types"
 )
 
 func getCards(ctx context.Context, w http.ResponseWriter, r *http.Request) {

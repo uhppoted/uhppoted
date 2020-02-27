@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppote"
 )
 
 type VersionCommand struct {

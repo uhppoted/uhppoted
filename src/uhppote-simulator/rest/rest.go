@@ -3,12 +3,12 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote-simulator/simulator"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
 	"strconv"
-	"uhppote-simulator/simulator"
 )
 
 type Device struct {

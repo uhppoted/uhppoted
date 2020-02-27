@@ -7,13 +7,13 @@ import (
 	"errors"
 	"fmt"
 	paho "github.com/eclipse/paho.mqtt.golang"
+	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppoted"
+	"github.com/uhppoted/uhppoted/src/uhppoted-mqtt/auth"
 	"log"
 	"os"
 	"regexp"
 	"time"
-	"uhppote"
-	"uhppoted"
-	"uhppoted-mqtt/auth"
 )
 
 type MQTTD struct {

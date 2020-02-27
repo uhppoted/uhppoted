@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppoted-rest/config"
 	"golang.org/x/sys/windows/svc/eventlog"
 	"golang.org/x/sys/windows/svc/mgr"
 	"net"
@@ -11,7 +12,6 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
-	"uhppoted-rest/config"
 )
 
 type Daemonize struct {

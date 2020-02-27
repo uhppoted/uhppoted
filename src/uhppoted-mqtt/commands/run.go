@@ -6,17 +6,17 @@ import (
 	"crypto/x509"
 	"flag"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppoted-mqtt/auth"
+	"github.com/uhppoted/uhppoted/src/uhppoted-mqtt/mqtt"
+	"github.com/uhppoted/uhppoted/src/uhppoted/config"
+	"github.com/uhppoted/uhppoted/src/uhppoted/monitoring"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
-	"uhppote"
-	"uhppoted-mqtt/auth"
-	"uhppoted-mqtt/mqtt"
-	"uhppoted/config"
-	"uhppoted/monitoring"
 )
 
 type Run struct {

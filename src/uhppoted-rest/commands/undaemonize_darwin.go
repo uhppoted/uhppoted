@@ -4,11 +4,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	xml "github.com/uhppoted/uhppoted/src/uhppoted-rest/encoding/plist"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
-	xml "uhppoted-rest/encoding/plist"
 )
 
 type Undaemonize struct {

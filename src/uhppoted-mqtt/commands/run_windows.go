@@ -4,6 +4,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppoted/config"
+	filelogger "github.com/uhppoted/uhppoted/src/uhppoted/eventlog"
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/eventlog"
 	"log"
@@ -12,9 +15,6 @@ import (
 	"path/filepath"
 	"sync"
 	"syscall"
-	"uhppote"
-	"uhppoted/config"
-	filelogger "uhppoted/eventlog"
 )
 
 type service struct {

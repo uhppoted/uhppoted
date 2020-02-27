@@ -1,8 +1,8 @@
 package messages
 
 import (
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"net"
-	"uhppote/types"
 )
 
 type SetAddressRequest struct {

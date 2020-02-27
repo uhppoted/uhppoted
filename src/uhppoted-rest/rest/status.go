@@ -2,9 +2,9 @@ package rest
 
 import (
 	"context"
+	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"net/http"
-	"uhppote"
-	"uhppote/types"
 )
 
 func getStatus(ctx context.Context, w http.ResponseWriter, r *http.Request) {

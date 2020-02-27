@@ -1,10 +1,10 @@
 package messages
 
 import (
+	codec "github.com/uhppoted/uhppoted/src/uhppote/encoding/UTO311-L0x"
 	"net"
 	"reflect"
 	"testing"
-	codec "uhppote/encoding/UTO311-L0x"
 )
 
 func TestMarshalGetListenerRequest(t *testing.T) {

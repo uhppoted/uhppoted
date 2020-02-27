@@ -3,8 +3,8 @@ package types
 import (
 	"errors"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote/encoding/bcd"
 	"time"
-	"uhppote/encoding/bcd"
 )
 
 type SystemTime time.Time

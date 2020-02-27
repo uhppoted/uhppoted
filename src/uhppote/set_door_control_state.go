@@ -1,8 +1,8 @@
 package uhppote
 
 import (
-	"uhppote/messages"
-	"uhppote/types"
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 )
 
 func (u *UHPPOTE) SetDoorControlState(serialNumber uint32, door uint8, state uint8, delay uint8) (*types.DoorControlState, error) {

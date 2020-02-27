@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppoted-rest/config"
 	"net"
 	"os"
 	"os/user"
@@ -12,7 +13,6 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
-	"uhppoted-rest/config"
 )
 
 type usergroup string

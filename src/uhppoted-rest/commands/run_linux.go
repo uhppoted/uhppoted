@@ -3,13 +3,13 @@ package commands
 import (
 	"context"
 	"flag"
+	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppoted-rest/config"
+	"github.com/uhppoted/uhppoted/src/uhppoted-rest/eventlog"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
-	"uhppote"
-	"uhppoted-rest/config"
-	"uhppoted-rest/eventlog"
 )
 
 type Run struct {

@@ -1,9 +1,9 @@
 package uhppote
 
 import (
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"os"
 	"time"
-	"uhppote/types"
 )
 
 type Event struct {

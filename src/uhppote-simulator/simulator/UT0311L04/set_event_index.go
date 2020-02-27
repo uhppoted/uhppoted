@@ -2,8 +2,8 @@ package UT0311L04
 
 import (
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
 	"net"
-	"uhppote/messages"
 )
 
 func (s *UT0311L04) setEventIndex(addr *net.UDPAddr, request *messages.SetEventIndexRequest) {

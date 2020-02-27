@@ -1,8 +1,8 @@
 package simulator
 
 import (
-	"uhppote-simulator/entities"
-	"uhppote-simulator/simulator/UT0311L04"
+	"github.com/uhppoted/uhppoted/src/uhppote-simulator/entities"
+	"github.com/uhppoted/uhppoted/src/uhppote-simulator/simulator/UT0311L04"
 )
 
 type DeviceList struct {

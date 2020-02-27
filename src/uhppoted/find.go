@@ -2,11 +2,11 @@ package uhppoted
 
 import (
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"net"
 	"strconv"
 	"strings"
 	"sync"
-	"uhppote/types"
 )
 
 type DeviceSummary struct {

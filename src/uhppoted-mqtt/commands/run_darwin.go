@@ -4,13 +4,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppoted/config"
+	"github.com/uhppoted/uhppoted/src/uhppoted/eventlog"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
-	"uhppote"
-	"uhppoted/config"
-	"uhppoted/eventlog"
 )
 
 var RUN = Run{

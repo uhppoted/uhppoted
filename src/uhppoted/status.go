@@ -2,7 +2,7 @@ package uhppoted
 
 import (
 	"fmt"
-	"uhppote/types"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 )
 
 type Status struct {
@@ -40,7 +40,7 @@ func (u *UHPPOTED) GetStatus(request GetStatusRequest) (*GetStatusResponse, erro
 	device := uint32(request.DeviceID)
 	status, err := u.Uhppote.GetStatus(device)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Sprintf("Error retrieving status for %v (%w)", device, err))
+		return nil, fmt.Errorf("%w: %v", InternalServerError, fmt.Errorf("Error retrieving status for %v (%w)", device, err))
 	}
 
 	response := GetStatusResponse{

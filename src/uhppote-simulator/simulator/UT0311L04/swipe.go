@@ -1,9 +1,9 @@
 package UT0311L04
 
 import (
+	"github.com/uhppoted/uhppoted/src/uhppote-simulator/entities"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"time"
-	"uhppote-simulator/entities"
-	"uhppote/types"
 )
 
 func (s *UT0311L04) Swipe(deviceID uint32, cardNumber uint32, door uint8) (bool, uint32) {

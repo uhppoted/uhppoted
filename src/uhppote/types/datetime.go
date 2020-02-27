@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote/encoding/bcd"
 	"time"
-	"uhppote/encoding/bcd"
 )
 
 type DateTime time.Time

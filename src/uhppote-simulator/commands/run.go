@@ -4,16 +4,16 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppote-simulator/rest"
+	"github.com/uhppoted/uhppoted/src/uhppote-simulator/simulator"
+	codec "github.com/uhppoted/uhppoted/src/uhppote/encoding/UTO311-L0x"
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
 	"net"
 	"os"
 	"os/signal"
 	"regexp"
 	"strings"
-	"uhppote"
-	"uhppote-simulator/rest"
-	"uhppote-simulator/simulator"
-	codec "uhppote/encoding/UTO311-L0x"
-	"uhppote/messages"
 )
 
 var debug bool = false

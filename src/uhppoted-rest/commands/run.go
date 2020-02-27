@@ -5,6 +5,10 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
+	"github.com/uhppoted/uhppoted/src/uhppoted-rest/config"
+	"github.com/uhppoted/uhppoted/src/uhppoted-rest/rest"
 	"io/ioutil"
 	"log"
 	"math"
@@ -13,10 +17,6 @@ import (
 	"sync"
 	"syscall"
 	"time"
-	"uhppote"
-	"uhppote/types"
-	"uhppoted-rest/config"
-	"uhppoted-rest/rest"
 )
 
 type status struct {

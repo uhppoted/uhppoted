@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"uhppote/types"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 )
 
 type GrantCommand struct {

@@ -3,8 +3,8 @@ package uhppote
 import (
 	"errors"
 	"fmt"
-	"uhppote/messages"
-	"uhppote/types"
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 )
 
 func (u *UHPPOTE) GetCardByIndex(serialNumber, index uint32) (*types.Card, error) {

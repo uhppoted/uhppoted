@@ -1,9 +1,9 @@
 package simulator
 
 import (
+	"github.com/uhppoted/uhppoted/src/uhppote-simulator/entities"
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
 	"net"
-	"uhppote-simulator/entities"
-	"uhppote/messages"
 )
 
 type Simulator interface {

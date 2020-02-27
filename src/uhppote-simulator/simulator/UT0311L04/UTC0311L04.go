@@ -6,6 +6,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppoted/src/uhppote-simulator/entities"
+	"github.com/uhppoted/uhppoted/src/uhppote/messages"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"io/ioutil"
 	"math/rand"
 	"net"
@@ -13,10 +17,6 @@ import (
 	"path/filepath"
 	"reflect"
 	"time"
-	"uhppote"
-	"uhppote-simulator/entities"
-	"uhppote/messages"
-	"uhppote/types"
 )
 
 type UT0311L04 struct {

@@ -5,12 +5,12 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"github.com/uhppoted/uhppoted/src/uhppote-cli/config"
+	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"io"
 	"strconv"
 	"strings"
 	"time"
-	"uhppote-cli/config"
-	"uhppote/types"
 )
 
 type ACL map[uint32]map[uint32]*types.Card
