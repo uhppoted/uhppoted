@@ -5,7 +5,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/uhppoted/uhppoted/src/uhppoted/config"
+	"github.com/uhppoted/uhppoted-api/config"
 	"os"
 	"os/user"
 	"path/filepath"

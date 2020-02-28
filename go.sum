@@ -2,8 +2,10 @@ github.com/eclipse/paho.mqtt.golang v1.2.1-0.20200121105743-0d940dd29fd2 h1:DW6W
 github.com/eclipse/paho.mqtt.golang v1.2.1-0.20200121105743-0d940dd29fd2/go.mod h1:H9keYFcgq3Qr5OUJm/JZI/i6U7joQ8SYLhZwfeOo6Ts=
 github.com/gorilla/websocket v1.4.1 h1:q7AeDBpnBk8AogcD4DSag/Ukw/KV+YhzLj2bP5HvKCM=
 github.com/gorilla/websocket v1.4.1/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
-github.com/uhppoted/uhppote-core v0.0.0-20200228183546-e07b56589fff h1:u/ctwg+ZJgl2HSOOUTHPVFc5Di/ld47yOz99AcpXyHQ=
-github.com/uhppoted/uhppote-core v0.0.0-20200228183546-e07b56589fff/go.mod h1:vNtTfp28e+/hhDtHXdlCEhdqt8063rlnA06wbzWSuz0=
+github.com/uhppoted/uhppote-core v0.0.0-20200228192138-00c62a4d6ea3 h1:S4AJq8DbPsfLF9WjRUOhsTlBl4x0rYO2FqPi6vRTAak=
+github.com/uhppoted/uhppote-core v0.0.0-20200228192138-00c62a4d6ea3/go.mod h1:vNtTfp28e+/hhDtHXdlCEhdqt8063rlnA06wbzWSuz0=
+github.com/uhppoted/uhppoted-api v0.0.0-20200228192257-44cb6a08b74d h1:RN5az+yNnzyE6kHUJRZ7yVJLN+XSOI9iPhp8LBWdlnM=
+github.com/uhppoted/uhppoted-api v0.0.0-20200228192257-44cb6a08b74d/go.mod h1:yEzk/seFbjOEg7b2HSt4cqfwRM3vbm9tYxLZe+1aNyk=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/net v0.0.0-20200226121028-0de0cce0169b h1:0mm1VjtFUOIlE1SbDlwjYaDxZVDP2S5ou6y0gSgXHu8=
 golang.org/x/net v0.0.0-20200226121028-0de0cce0169b/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=

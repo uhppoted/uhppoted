@@ -7,7 +7,7 @@ import (
 	"encoding/base32"
 	"encoding/binary"
 	"fmt"
-	"github.com/uhppoted/uhppoted/src/uhppoted/kvs"
+	"github.com/uhppoted/uhppoted-api/kvs"
 	"hash"
 	"log"
 	"math"

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/uhppoted/uhppoted/src/uhppoted"
+	"github.com/uhppoted/uhppoted-api/uhppoted"
 )
 
 func (m *MQTTD) getStatus(meta metainfo, impl *uhppoted.UHPPOTED, ctx context.Context, request []byte) (interface{}, error) {

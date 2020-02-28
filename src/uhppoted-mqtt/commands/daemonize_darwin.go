@@ -6,7 +6,7 @@ import (
 	"flag"
 	"fmt"
 	xpath "github.com/uhppoted/uhppoted/src/uhppoted-rest/encoding/plist"
-	"github.com/uhppoted/uhppoted/src/uhppoted/config"
+	"github.com/uhppoted/uhppoted-api/config"
 	"os"
 	"os/exec"
 	"path/filepath"

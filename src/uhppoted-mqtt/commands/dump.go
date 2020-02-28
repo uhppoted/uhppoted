@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"github.com/uhppoted/uhppoted/src/uhppoted/config"
+	"github.com/uhppoted/uhppoted-api/config"
 	"os"
 	"strings"
 )
