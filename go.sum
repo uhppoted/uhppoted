@@ -4,6 +4,8 @@ github.com/gorilla/websocket v1.4.1 h1:q7AeDBpnBk8AogcD4DSag/Ukw/KV+YhzLj2bP5HvK
 github.com/gorilla/websocket v1.4.1/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/uhppoted/uhppote-core v0.0.0-20200228192138-00c62a4d6ea3 h1:S4AJq8DbPsfLF9WjRUOhsTlBl4x0rYO2FqPi6vRTAak=
 github.com/uhppoted/uhppote-core v0.0.0-20200228192138-00c62a4d6ea3/go.mod h1:vNtTfp28e+/hhDtHXdlCEhdqt8063rlnA06wbzWSuz0=
+github.com/uhppoted/uhppote-simulator v0.0.0-20200228200141-9dc275f56ffd h1:XtE52sfMU9p/uSTkNNy/OIkXSgru2jSad+pe4tTyKqw=
+github.com/uhppoted/uhppote-simulator v0.0.0-20200228200141-9dc275f56ffd/go.mod h1:z003qnER8tJpS9MfW4c/MVd5XB3OjHryfgq6jAK5Bfg=
 github.com/uhppoted/uhppoted-api v0.0.0-20200228193801-50772c63f263 h1:ZW08lSdu/iVLqlL3Qs9QCYCwha7ijKx5z+RlTEe12CM=
 github.com/uhppoted/uhppoted-api v0.0.0-20200228193801-50772c63f263/go.mod h1:yEzk/seFbjOEg7b2HSt4cqfwRM3vbm9tYxLZe+1aNyk=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
