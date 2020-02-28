@@ -3,7 +3,7 @@ package mqtt
 import (
 	"errors"
 	"fmt"
-	"github.com/uhppoted/uhppoted/src/uhppoted"
+	"github.com/uhppoted/uhppoted-api/uhppoted"
 )
 
 type ierror struct {

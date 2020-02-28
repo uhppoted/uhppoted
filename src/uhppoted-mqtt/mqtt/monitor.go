@@ -1,7 +1,7 @@
 package mqtt
 
 import (
-	"github.com/uhppoted/uhppoted/src/uhppoted/monitoring"
+	"github.com/uhppoted/uhppoted-api/monitoring"
 	"log"
 	"sync"
 	"time"

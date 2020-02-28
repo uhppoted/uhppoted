@@ -8,7 +8,7 @@ import (
 	"fmt"
 	paho "github.com/eclipse/paho.mqtt.golang"
 	"github.com/uhppoted/uhppote-core/uhppote"
-	"github.com/uhppoted/uhppoted/src/uhppoted"
+	"github.com/uhppoted/uhppoted-api/uhppoted"
 	"github.com/uhppoted/uhppoted/src/uhppoted-mqtt/auth"
 	"log"
 	"os"
