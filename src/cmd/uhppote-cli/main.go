@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/uhppoted/uhppote-cli/commands"
+	"github.com/uhppoted/uhppote-cli/config"
 	"github.com/uhppoted/uhppote-core/uhppote"
-	"github.com/uhppoted/uhppoted/src/uhppote-cli/commands"
-	"github.com/uhppoted/uhppoted/src/uhppote-cli/config"
 	"net"
 	"os"
 )
