@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted/src/uhppote-simulator/commands"
 	"github.com/uhppoted/uhppoted/src/uhppote-simulator/simulator"
 	"github.com/uhppoted/uhppoted/src/uhppote-simulator/simulator/UT0311L04"
-	"github.com/uhppoted/uhppote-core/uhppote"
 	"path/filepath"
 )
 

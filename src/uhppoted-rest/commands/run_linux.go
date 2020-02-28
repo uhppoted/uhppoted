@@ -3,9 +3,9 @@ package commands
 import (
 	"context"
 	"flag"
+	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted/src/uhppoted-rest/config"
 	"github.com/uhppoted/uhppoted/src/uhppoted-rest/eventlog"
-	"github.com/uhppoted/uhppote-core/uhppote"
 	"log"
 	"os"
 	"os/signal"
