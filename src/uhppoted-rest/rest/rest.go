@@ -7,7 +7,7 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppote-core/uhppote"
 	"io/ioutil"
 	"log"
 	"net/http"

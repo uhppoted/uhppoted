@@ -3,8 +3,8 @@ package rest
 import (
 	"context"
 	"errors"
-	"github.com/uhppoted/uhppoted/src/uhppote"
-	"github.com/uhppoted/uhppoted/src/uhppote/types"
+	"github.com/uhppoted/uhppote-core/types"
+	"github.com/uhppoted/uhppote-core/uhppote"
 	"net/http"
 )
 

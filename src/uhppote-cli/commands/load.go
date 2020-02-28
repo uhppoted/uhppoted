@@ -5,9 +5,9 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted/src/uhppote-cli/config"
 	"github.com/uhppoted/uhppoted/src/uhppote-cli/parsers"
-	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"os"
 	"reflect"
 )

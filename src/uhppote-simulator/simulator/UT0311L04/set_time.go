@@ -2,9 +2,9 @@ package UT0311L04
 
 import (
 	"fmt"
+	"github.com/uhppoted/uhppote-core/messages"
+	"github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted/src/uhppote-simulator/entities"
-	"github.com/uhppoted/uhppoted/src/uhppote/messages"
-	"github.com/uhppoted/uhppoted/src/uhppote/types"
 	"net"
 	"time"
 )

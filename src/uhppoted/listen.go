@@ -3,7 +3,7 @@ package uhppoted
 import (
 	"bufio"
 	"fmt"
-	"github.com/uhppoted/uhppoted/src/uhppote/types"
+	"github.com/uhppoted/uhppote-core/types"
 	"io/ioutil"
 	"log"
 	"os"
