@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/eclipse/paho.mqtt.golang v1.2.1-0.20200121105743-0d940dd29fd2
 	github.com/gorilla/websocket v1.4.1 // indirect
+	github.com/uhppoted/uhppote-cli v0.0.0-20200228202133-c3f7228e2f9e
 	github.com/uhppoted/uhppote-core v0.0.0-20200228192138-00c62a4d6ea3
 	github.com/uhppoted/uhppote-simulator v0.0.0-20200228200141-9dc275f56ffd
 	github.com/uhppoted/uhppoted-api v0.0.0-20200228193801-50772c63f263

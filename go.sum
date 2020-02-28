@@ -2,6 +2,8 @@ github.com/eclipse/paho.mqtt.golang v1.2.1-0.20200121105743-0d940dd29fd2 h1:DW6W
 github.com/eclipse/paho.mqtt.golang v1.2.1-0.20200121105743-0d940dd29fd2/go.mod h1:H9keYFcgq3Qr5OUJm/JZI/i6U7joQ8SYLhZwfeOo6Ts=
 github.com/gorilla/websocket v1.4.1 h1:q7AeDBpnBk8AogcD4DSag/Ukw/KV+YhzLj2bP5HvKCM=
 github.com/gorilla/websocket v1.4.1/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
+github.com/uhppoted/uhppote-cli v0.0.0-20200228202133-c3f7228e2f9e h1:XrTWTLKrdpEEW/Mnhvk+X5oH4axhh++Zup4ifnMtIOo=
+github.com/uhppoted/uhppote-cli v0.0.0-20200228202133-c3f7228e2f9e/go.mod h1:ZQ/pPoOcyVC4PxrGkd8vVp9FbUuhhCR1jj2s5ZB2xV0=
 github.com/uhppoted/uhppote-core v0.0.0-20200228192138-00c62a4d6ea3 h1:S4AJq8DbPsfLF9WjRUOhsTlBl4x0rYO2FqPi6vRTAak=
 github.com/uhppoted/uhppote-core v0.0.0-20200228192138-00c62a4d6ea3/go.mod h1:vNtTfp28e+/hhDtHXdlCEhdqt8063rlnA06wbzWSuz0=
 github.com/uhppoted/uhppote-simulator v0.0.0-20200228200141-9dc275f56ffd h1:XtE52sfMU9p/uSTkNNy/OIkXSgru2jSad+pe4tTyKqw=
