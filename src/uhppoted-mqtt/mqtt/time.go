@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/uhppoted/uhppoted/src/uhppote/types"
+	"github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted/src/uhppoted"
 )
 

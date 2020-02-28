@@ -1,8 +1,8 @@
 package simulator
 
 import (
+	"github.com/uhppoted/uhppote-core/messages"
 	"github.com/uhppoted/uhppoted/src/uhppote-simulator/entities"
-	"github.com/uhppoted/uhppoted/src/uhppote/messages"
 	"net"
 )
 

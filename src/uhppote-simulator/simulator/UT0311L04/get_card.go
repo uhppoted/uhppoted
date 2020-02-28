@@ -1,7 +1,7 @@
 package UT0311L04
 
 import (
-	"github.com/uhppoted/uhppoted/src/uhppote/messages"
+	"github.com/uhppoted/uhppote-core/messages"
 	"net"
 )
 

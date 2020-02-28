@@ -2,7 +2,7 @@ package uhppoted
 
 import (
 	"errors"
-	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppote-core/uhppote"
 	"log"
 	"net/http"
 )

@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"github.com/uhppoted/uhppoted/src/uhppote"
 	"github.com/uhppoted/uhppoted/src/uhppote-cli/config"
+	"github.com/uhppoted/uhppote-core/uhppote"
 )
 
 type Context struct {

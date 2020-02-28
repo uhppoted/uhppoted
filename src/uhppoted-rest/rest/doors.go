@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppote-core/uhppote"
 	"io/ioutil"
 	"net/http"
 )

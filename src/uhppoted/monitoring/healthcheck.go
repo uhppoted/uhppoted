@@ -2,8 +2,8 @@ package monitoring
 
 import (
 	"fmt"
-	"github.com/uhppoted/uhppoted/src/uhppote"
-	"github.com/uhppoted/uhppoted/src/uhppote/types"
+	"github.com/uhppoted/uhppote-core/types"
+	"github.com/uhppoted/uhppote-core/uhppote"
 	"log"
 	"math"
 	"net"

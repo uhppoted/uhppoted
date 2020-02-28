@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/uhppoted/uhppoted/src/uhppote"
+	"github.com/uhppoted/uhppote-core/uhppote"
 )
 
 var VERSION = Version{

@@ -3,7 +3,7 @@ package config
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/uhppoted/uhppoted/src/uhppote/encoding/conf"
+	"github.com/uhppoted/uhppote-core/encoding/conf"
 	"github.com/uhppoted/uhppoted/src/uhppoted/monitoring"
 	"io"
 	"io/ioutil"

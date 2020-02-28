@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/uhppoted/uhppoted/src/uhppote/encoding/conf"
+	"github.com/uhppoted/uhppote-core/encoding/conf"
 	"net"
 	"reflect"
 	"testing"
