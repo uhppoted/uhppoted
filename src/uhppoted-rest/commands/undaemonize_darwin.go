@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	xml "github.com/uhppoted/uhppoted/src/uhppoted-rest/encoding/plist"
+	xml "github.com/uhppoted/uhppoted-api/encoding/plist"
 	"os"
 	"os/exec"
 	"path/filepath"
