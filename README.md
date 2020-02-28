@@ -6,7 +6,7 @@ Wiegand access control boards. Currently available:
 - low level communication library
 - CLI for scripting and system administration
 - REST service for integration with HTTP servers and mobile clients
-- *(in development) MQTT endpoint for integration with IOT systems*
+- MQTT endpoint for integration with IOT systems*
 
 Supported operating systems:
 - Linux
@@ -20,6 +20,7 @@ systems.
 
 ## Releases
 
+- v0.5.0: Add MQTT endpoint for remote access to UT0311-L0x controllers
 - v0.4.2: Reworked `GetDevice` REST API to use directed broadcast and added get-device to CLI
 - v0.4.1: Get/set door control state functionality added to simulator, CLI and REST API
 - v0.4.0: REST API service
@@ -29,12 +30,13 @@ systems.
 
 ## Modules
 
-| *Module*          | *Description*                                                            |
-| ----------------- | ------------------------------------------------------------------------ |
-| uhppote           | core library, implements the UDP interface to UT0311-L0x controllers     |
-| uhppote-simulator | UT0311-L04 simulator for development use                                 |
-| uhppote-cli       | command line interface                                                   |
-| uhppoted-rest     | daemon/service with REST API for remote access to UT0311-L0x controllers |
+| *Module*          | *Description*                                                                 |
+| ----------------- | ----------------------------------------------------------------------------- |
+| uhppote           | core library, implements the UDP interface to UT0311-L0x controllers          |
+| uhppote-simulator | UT0311-L04 simulator for development use                                      |
+| uhppote-cli       | command line interface                                                        |
+| uhppoted-rest     | daemon/service with REST API for remote access to UT0311-L0x controllers      |
+| uhppoted-mqtt     | daemon/service with MQTT endpoint for remote access to UT0311-L0x controllers |
 
 ## Installation
 
@@ -42,12 +44,18 @@ systems.
 
 #### Dependencies
 
-| *Dependency*                        | *Description*                                          |
-| ----------------------------------- | ------------------------------------------------------ |
-| golang.org/x/sys/windows            | Support for Windows services                           |
-| golang.org/x/lint/golint            | Additional *lint* check for release builds             |
-| github.com/eclipse/paho.mqtt.golang | Eclipse Paho MQTT client                               |
-| github.com/gorilla/websocket        | paho.mqtt.golang dependency                            |
+| *Dependency*                          | *Description*                                          |
+| ------------------------------------- | ------------------------------------------------------ |
+| com.github/uhppoted/uhppote-core      | Device level API implementation                        |
+| com.github/uhppoted/uhppoted-api      | External API implementation                            |
+| com.github/uhppoted/uhppote-cli       | CLI user application                                   |
+| com.github/uhppoted/uhppoted-rest     | REST API                                               |
+| com.github/uhppoted/uhppoted-mqtt     | MQTT endpoint                                          |
+| com.github/uhppoted/uhppote-simulator | Device simulator for development use                   |
+| golang.org/x/sys/windows              | Support for Windows services                           |
+| golang.org/x/lint/golint              | Additional *lint* check for release builds             |
+| github.com/eclipse/paho.mqtt.golang   | Eclipse Paho MQTT client                               |
+| github.com/gorilla/websocket          | paho.mqtt.golang dependency                            |
 
 ### Binaries
 
