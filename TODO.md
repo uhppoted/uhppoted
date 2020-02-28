@@ -1,4 +1,8 @@
-## v0.60
+## v0.5.1x
+
+** IN PROGRESS **
+
+1. Restructure for Go modules and git submodules
 
 ## TODO
 
