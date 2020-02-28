@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/uhppoted/uhppoted/src/uhppoted-mqtt/commands"
 	"github.com/uhppoted/uhppoted-api/command"
+	"github.com/uhppoted/uhppoted/src/uhppoted-mqtt/commands"
 	"os"
 )
 
