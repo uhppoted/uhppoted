@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/uhppoted/uhppoted-api/command"
-	"github.com/uhppoted/uhppoted/src/uhppoted-rest/commands"
+	"github.com/uhppoted/uhppoted-rest/commands"
 	"os"
 )
 
