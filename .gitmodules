@@ -1,3 +1,6 @@
 [submodule "uhppote-core"]
 	path = uhppote-core
 	url = https://github.com/uhppoted/uhppote-core.git
+[submodule "uhppoted-api"]
+	path = uhppoted-api
+	url = https://github.com/uhppoted/uhppoted-api.git
