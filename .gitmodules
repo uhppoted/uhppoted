@@ -10,3 +10,6 @@
 [submodule "uhppote-cli"]
 	path = uhppote-cli
 	url = https://github.com/uhppoted/uhppote-cli.git
+[submodule "uhppoted-rest"]
+	path = uhppoted-rest
+	url = https://github.com/uhppoted/uhppoted-rest.git
