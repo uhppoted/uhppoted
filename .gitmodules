@@ -13,3 +13,6 @@
 [submodule "uhppoted-rest"]
 	path = uhppoted-rest
 	url = https://github.com/uhppoted/uhppoted-rest.git
+[submodule "uhppoted-mqtt"]
+	path = uhppoted-mqtt
+	url = https://github.com/uhppoted/uhppoted-mqtt.git
