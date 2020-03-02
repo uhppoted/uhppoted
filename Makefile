@@ -10,6 +10,8 @@ DATETIME = $(shell date "+%Y-%m-%d %H:%M:%S")
 VERSION = v0.5.1x
 LDFLAGS = -ldflags "-X uhppote.VERSION=$(VERSION)" 
 
+.PHONY: docker
+
 all: test      \
 	 benchmark \
      coverage
@@ -24,6 +26,7 @@ format:
 build: format
 	mkdir -p bin
 	go build -o bin ./...
+	cd uhppote-simulator; go build -o ../bin/ ./...
 
 test: build
 	go test ./...
@@ -79,8 +82,8 @@ debug: build
 simulator: build
 	./bin/uhppote-simulator --debug --bind 192.168.1.100:54321 --rest 192.168.1.100:8008 --devices "./runtime/simulation/devices"
 
-simulator-device: build
-	./bin/uhppote-simulator --debug --devices "runtime/simulation/devices" new-device 678
+# simulator-device: build
+#	./bin/uhppote-simulator --debug --devices "runtime/simulation/devices" new-device 678
 
 uhppoted-rest: build
 	./bin/uhppoted-rest --console
@@ -92,11 +95,12 @@ swagger:
 	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
 	open http://127.0.0.1:80
 
-docker: build
-	env GOOS=linux GOARCH=amd64 go build -o docker/simulator/uhppote-simulator                   cmd/uhppote-simulator
-	env GOOS=linux GOARCH=amd64 go build -o docker/uhppoted-rest/uhppote-simulator               cmd/uhppote-simulator
-	env GOOS=linux GOARCH=amd64 go build -o docker/uhppoted-rest/uhppoted-rest                   cmd/uhppoted-rest
-	env GOOS=linux GOARCH=amd64 go build -o docker/integration-tests/simulator/uhppote-simulator cmd/uhppote-simulator
+docker:
+	cd uhppote-simulator; env GOOS=linux GOARCH=amd64 go build -o ../docker/simulator     ./...
+	cd uhppote-simulator; env GOOS=linux GOARCH=amd64 go build -o ../docker/uhppoted-rest ./...
+	cd uhppote-simulator; env GOOS=linux GOARCH=amd64 go build -o ../docker/integration-tests/simulator ./...
+	cd uhppoted-rest;     env GOOS=linux GOARCH=amd64 go build -o ../docker/uhppoted-rest ./...
+	
 	docker image     prune -f
 	docker container prune -f
 	docker build -f ./docker/simulator/Dockerfile     -t simulator       . 
