@@ -6,8 +6,8 @@ github.com/uhppoted/uhppote-cli v0.0.0-20200228202133-c3f7228e2f9e h1:XrTWTLKrdp
 github.com/uhppoted/uhppote-cli v0.0.0-20200228202133-c3f7228e2f9e/go.mod h1:ZQ/pPoOcyVC4PxrGkd8vVp9FbUuhhCR1jj2s5ZB2xV0=
 github.com/uhppoted/uhppote-simulator v0.0.0-20200228200141-9dc275f56ffd h1:XtE52sfMU9p/uSTkNNy/OIkXSgru2jSad+pe4tTyKqw=
 github.com/uhppoted/uhppote-simulator v0.0.0-20200228200141-9dc275f56ffd/go.mod h1:z003qnER8tJpS9MfW4c/MVd5XB3OjHryfgq6jAK5Bfg=
-github.com/uhppoted/uhppoted-api v0.0.0-20200228200222-5bade7b61e14 h1:0+HMc9wjcuHc/T2XXnXVkxc6gdE+rDUHhR54RDVYEhA=
-github.com/uhppoted/uhppoted-api v0.0.0-20200228200222-5bade7b61e14/go.mod h1:yEzk/seFbjOEg7b2HSt4cqfwRM3vbm9tYxLZe+1aNyk=
+github.com/uhppoted/uhppoted-api v0.0.0-20200302181311-56c5fea77afc h1:HRRuKCf9t0EQ2YcXLhws9behLylsB5qneU9l8LGnfIk=
+github.com/uhppoted/uhppoted-api v0.0.0-20200302181311-56c5fea77afc/go.mod h1:VPIaCJus9e/i4wRgKZRzxnMf1r0LSND1td46VuHpL6E=
 github.com/uhppoted/uhppoted-mqtt v0.0.0-20200228205150-28235df3168b h1:CDsyITbBn+QHHx7SLEG50SZ/UUDdkg3B6uwvxu4/cCI=
 github.com/uhppoted/uhppoted-mqtt v0.0.0-20200228205150-28235df3168b/go.mod h1:Sd/ICP4Bx74uCl5rIKdvrtcn+9+XD9rq4906+MxiACg=
 github.com/uhppoted/uhppoted-rest v0.0.0-20200228203739-02973e5c3803 h1:tBZTmhZDCv4jUW4Q76rsjQGlmYYUdhMj8gpXN9NsZR0=
