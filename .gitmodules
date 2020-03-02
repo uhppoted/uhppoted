@@ -7,3 +7,6 @@
 [submodule "uhppote-simulator"]
 	path = uhppote-simulator
 	url = https://github.com/uhppoted/uhppote-simulator.git
+[submodule "uhppote-cli"]
+	path = uhppote-cli
+	url = https://github.com/uhppoted/uhppote-cli.git
