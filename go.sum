@@ -4,8 +4,6 @@ github.com/gorilla/websocket v1.4.1 h1:q7AeDBpnBk8AogcD4DSag/Ukw/KV+YhzLj2bP5HvK
 github.com/gorilla/websocket v1.4.1/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/uhppoted/uhppoted-mqtt v0.0.0-20200228205150-28235df3168b h1:CDsyITbBn+QHHx7SLEG50SZ/UUDdkg3B6uwvxu4/cCI=
 github.com/uhppoted/uhppoted-mqtt v0.0.0-20200228205150-28235df3168b/go.mod h1:Sd/ICP4Bx74uCl5rIKdvrtcn+9+XD9rq4906+MxiACg=
-github.com/uhppoted/uhppoted-rest v0.0.0-20200228203739-02973e5c3803 h1:tBZTmhZDCv4jUW4Q76rsjQGlmYYUdhMj8gpXN9NsZR0=
-github.com/uhppoted/uhppoted-rest v0.0.0-20200228203739-02973e5c3803/go.mod h1:PS0aPQK8y6BxHeYz/kDMz+0uue0XoxAlxvwYQaNZGMc=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/net v0.0.0-20200226121028-0de0cce0169b h1:0mm1VjtFUOIlE1SbDlwjYaDxZVDP2S5ou6y0gSgXHu8=
 golang.org/x/net v0.0.0-20200226121028-0de0cce0169b/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
