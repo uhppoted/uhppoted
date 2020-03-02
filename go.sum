@@ -4,8 +4,6 @@ github.com/gorilla/websocket v1.4.1 h1:q7AeDBpnBk8AogcD4DSag/Ukw/KV+YhzLj2bP5HvK
 github.com/gorilla/websocket v1.4.1/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/uhppoted/uhppote-cli v0.0.0-20200228202133-c3f7228e2f9e h1:XrTWTLKrdpEEW/Mnhvk+X5oH4axhh++Zup4ifnMtIOo=
 github.com/uhppoted/uhppote-cli v0.0.0-20200228202133-c3f7228e2f9e/go.mod h1:ZQ/pPoOcyVC4PxrGkd8vVp9FbUuhhCR1jj2s5ZB2xV0=
-github.com/uhppoted/uhppote-core v0.0.0-20200228192138-00c62a4d6ea3 h1:S4AJq8DbPsfLF9WjRUOhsTlBl4x0rYO2FqPi6vRTAak=
-github.com/uhppoted/uhppote-core v0.0.0-20200228192138-00c62a4d6ea3/go.mod h1:vNtTfp28e+/hhDtHXdlCEhdqt8063rlnA06wbzWSuz0=
 github.com/uhppoted/uhppote-simulator v0.0.0-20200228200141-9dc275f56ffd h1:XtE52sfMU9p/uSTkNNy/OIkXSgru2jSad+pe4tTyKqw=
 github.com/uhppoted/uhppote-simulator v0.0.0-20200228200141-9dc275f56ffd/go.mod h1:z003qnER8tJpS9MfW4c/MVd5XB3OjHryfgq6jAK5Bfg=
 github.com/uhppoted/uhppoted-api v0.0.0-20200228200222-5bade7b61e14 h1:0+HMc9wjcuHc/T2XXnXVkxc6gdE+rDUHhR54RDVYEhA=
