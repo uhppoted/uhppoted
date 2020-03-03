@@ -12,6 +12,8 @@ LDFLAGS = -ldflags "-X uhppote.VERSION=$(VERSION)"
 
 .PHONY: docker
 .PHONY: simulator
+.PHONY: uhppoted-rest
+.PHONY: uhppoted-mqtt
 
 all: test      \
 	 benchmark \
@@ -37,7 +39,7 @@ build: format
 	cd uhppote-simulator; go build -o ../bin/ ./...
 	cd uhppote-cli;       go build -o ../bin/ ./...
 	cd uhppoted-rest;     go build -o ../bin/ ./...
-	go build -o bin ./...
+	cd uhppoted-mqtt;     go build -o ../bin/ ./...
 
 test: build
 	cd uhppote-core;      go test ./...
@@ -99,10 +101,10 @@ debug: build
 simulator: 
 	./bin/uhppote-simulator --debug --bind 0.0.0.0:60000 --rest 0.0.0.0:8000 --devices "./runtime/simulation/devices"
 
-uhppoted-rest: build
+uhppoted-rest:
 	./bin/uhppoted-rest --console
 
-uhppoted-mqtt: build
+uhppoted-mqtt: 
 	./bin/uhppoted-mqtt --console
 
 swagger: 
