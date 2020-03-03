@@ -1,0 +1,244 @@
+{
+  "serial-number": 666,
+  "address": "192.168.1.100",
+  "subnet": "255.255.255.0",
+  "gateway": "192.168.1.1",
+  "MAC": "00:00:00:00:02:9a",
+  "version": "0892",
+  "offset": "0s",
+  "doors": {
+    "1": {
+      "control": 3,
+      "delay": "5s"
+    },
+    "2": {
+      "control": 3,
+      "delay": "5s"
+    },
+    "3": {
+      "control": 3,
+      "delay": "5s"
+    },
+    "4": {
+      "control": 3,
+      "delay": "5s"
+    }
+  },
+  "listener": {
+    "IP": "192.168.1.100",
+    "Port": 60001,
+    "Zone": ""
+  },
+  "state": 0,
+  "packet-number": 0,
+  "backup": 0,
+  "special-message": 0,
+  "battery": 0,
+  "fire-alarm": 0,
+  "cards": null,
+  "events": {
+    "index": 0,
+    "events": [
+      {
+        "record-number": 1,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 19:44:55",
+        "result": 6
+      },
+      {
+        "record-number": 2,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 19:48:40",
+        "result": 6
+      },
+      {
+        "record-number": 3,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 19:48:42",
+        "result": 6
+      },
+      {
+        "record-number": 4,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 19:49:02",
+        "result": 6
+      },
+      {
+        "record-number": 5,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 19:50:04",
+        "result": 6
+      },
+      {
+        "record-number": 6,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 19:50:16",
+        "result": 6
+      },
+      {
+        "record-number": 7,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 19:50:53",
+        "result": 6
+      },
+      {
+        "record-number": 8,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 19:51:03",
+        "result": 6
+      },
+      {
+        "record-number": 9,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 19:52:01",
+        "result": 6
+      },
+      {
+        "record-number": 10,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 19:55:31",
+        "result": 6
+      },
+      {
+        "record-number": 11,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 19:55:52",
+        "result": 6
+      },
+      {
+        "record-number": 12,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 19:56:09",
+        "result": 6
+      },
+      {
+        "record-number": 13,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 19:56:46",
+        "result": 6
+      },
+      {
+        "record-number": 14,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 19:59:30",
+        "result": 6
+      },
+      {
+        "record-number": 15,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 20:01:03",
+        "result": 6
+      },
+      {
+        "record-number": 16,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 20:01:09",
+        "result": 6
+      },
+      {
+        "record-number": 17,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 20:01:14",
+        "result": 6
+      },
+      {
+        "record-number": 18,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 20:01:18",
+        "result": 6
+      },
+      {
+        "record-number": 19,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 20:09:26",
+        "result": 6
+      },
+      {
+        "record-number": 20,
+        "type": 1,
+        "granted": false,
+        "door": 4,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-02-14 20:18:12",
+        "result": 6
+      }
+    ]
+  }
+}
