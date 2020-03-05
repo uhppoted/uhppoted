@@ -1,28 +1,35 @@
 # uhppoted
 
-A set of cross-platform building blocks for access control systems based on the *UHPPOTE UT0311-L0x* TCP/IP 
-Wiegand access control boards. Currently available:
+`uhppoted` implements a set of cross-platform building blocks for access control systems based on the 
+*UHPPOTE UT0311-L0x* TCP/IP Wiegand access control boards. Currently available:
 
-- low level communication library
+- device API
+- external application API
 - CLI for scripting and system administration
 - REST service for integration with HTTP servers and mobile clients
-- MQTT endpoint for integration with IOT systems*
+- MQTT endpoint for integration with IOT systems
 
 Supported operating systems:
 - Linux
 - MacOS
 - Windows
 
-This project is a fork of the original [Go CLI](https://github.com/twystd/uhppote-go) - the project had outgrown
-its initial scope and was relocated to a dedicated set of repositories to simplify future development.
+This project is a fork of the original [Go CLI](https://github.com/twystd/uhppote-go) project which had outgrown
+its initial scope and was relocated to [uhppoted](https://github.com/uhppoted) to simplify future development.
 
 ## Raison d'être
 
 The components supplement the manufacturer supplied application which is 'Windows-only' and provides limited support 
-for integration with other systems.
+for integration with other systems. 
+
+The components are intended to simplify the integration of access control into systems based on:
+- standard REST architectecture
+- [AWS IoT](https://aws.amazon.com/iot)
+- [Google Cloud IoT](https://cloud.google.com/solutions/iot)
 
 ## Releases
 
+- v0.5.1: Initial release following restructuring into standalone Go *modules* and *git submodules*
 - v0.5.0: Add MQTT endpoint for remote access to UT0311-L0x controllers
 - v0.4.2: Reworked `GetDevice` REST API to use directed broadcast and added get-device to CLI
 - v0.4.1: Get/set door control state functionality added to simulator, CLI and REST API
@@ -72,23 +79,20 @@ To pull upstream changes for all submodules:
 git submodule update --remote
 ```
 
-NOTE: The `go.mod` file for the master branch uses `replace` to reference the local copies of the submodules. The 
-`go.mod` for a tagged release will reference the tagged version.
-
 #### Dependencies
 
-| *Dependency*                          | *Description*                                          |
-| ------------------------------------- | ------------------------------------------------------ |
-| com.github/uhppoted/uhppote-core      | Device level API implementation                        |
-| com.github/uhppoted/uhppoted-api      | External API implementation                            |
-| com.github/uhppoted/uhppote-cli       | CLI user application                                   |
-| com.github/uhppoted/uhppoted-rest     | REST API                                               |
-| com.github/uhppoted/uhppoted-mqtt     | MQTT endpoint                                          |
-| com.github/uhppoted/uhppote-simulator | Device simulator for development use                   |
-| golang.org/x/sys/windows              | Support for Windows services                           |
-| golang.org/x/lint/golint              | Additional *lint* check for release builds             |
-| github.com/eclipse/paho.mqtt.golang   | Eclipse Paho MQTT client                               |
-| github.com/gorilla/websocket          | paho.mqtt.golang dependency                            |
+| *Dependency*                             | *Description*                                          |
+| ---------------------------------------- | ------------------------------------------------------ |
+| com.github/uhppoted/uhppote-core[1]      | Device level API implementation                        |
+| com.github/uhppoted/uhppoted-api[2]      | External API implementation                            |
+| com.github/uhppoted/uhppote-cli[4]       | CLI user application                                   |
+| com.github/uhppoted/uhppoted-rest[5]     | REST API                                               |
+| com.github/uhppoted/uhppoted-mqtt[6]     | MQTT endpoint                                          |
+| com.github/uhppoted/uhppote-simulator[3] | Device simulator for development use                   |
+| golang.org/x/sys/windows                 | Support for Windows services                           |
+| golang.org/x/lint/golint                 | Additional *lint* check for release builds             |
+| github.com/eclipse/paho.mqtt.golang      | Eclipse Paho MQTT client                               |
+| github.com/gorilla/websocket             | paho.mqtt.golang dependency                            |
 
 ## References and Related Projects
 
