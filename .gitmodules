@@ -16,3 +16,6 @@
 [submodule "uhppoted-mqtt"]
 	path = uhppoted-mqtt
 	url = https://github.com/uhppoted/uhppoted-mqtt.git
+[submodule "uhppoted-acl-s3"]
+	path = uhppoted-acl-s3
+	url = https://github.com/uhppoted/uhppoted-acl-s3.git
