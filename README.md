@@ -26,6 +26,7 @@ The components are intended to simplify the integration of access control into s
 - standard REST architectecture
 - [AWS IoT](https://aws.amazon.com/iot)
 - [Google Cloud IoT](https://cloud.google.com/solutions/iot)
+- [IBM Watson IoT Platform](https://internetofthings.ibmcloud.com)
 
 ## Releases
 
