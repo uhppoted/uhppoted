@@ -1,4 +1,4 @@
-Card Number	From	To	Workshop	Side Door	Front Door	Garage	D1	D2	D3	D4
+Card Number	From	To	Entrance	Upstairs	Downstairs	Lady's Chamber	D1	D2	D3	D4
 65537	2020-01-01	2020-12-31	N	N	Y	N	N	N	N	N
 65538	2020-01-01	2020-12-31	Y	N	Y	N	N	N	N	N
 65539	2020-01-01	2020-12-31	N	N	N	N	N	N	N	N
