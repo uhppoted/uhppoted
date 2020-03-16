@@ -2,24 +2,26 @@
 
 ## IN PROGRESS
 
+- [ ] Commonalise ACL
+
 ## TODO
 
 ### uhppote
 - [ ] concurrent requests
 - [ ] update tests with Errorf + return to Fatalf
-- [ ] commonalise ACL
 - [ ] commonalise configuration
 - [ ] make types consistent across API
 - [ ] Genericize message unit tests
-- [ ] Convert to 1.13 error handling
+- [ ] Convert to 1.13 error handling throughout
 - [ ] Rework UHPPOTE response messages to use factory
 - [ ] Fix golint errors
 - [ ] Invert conf Unmarshal so that it iterates struct rather than file (simplifies e.g. DeviceMap)
 - [ ] Rework plist encoder/decoder to be only for launchd (and remove 'parse' from daemonize/undaemonize)
 - [ ] Unify event buffer operations
 
-### uhppoted
+### uhppoted-api
 - [ ] websocket + GraphQL (?)
+      - [Hasura](https://hasura.io)
 - [ ] IFTTT
 - [ ] Braid (?)
 - [ ] MacOS launchd socket handoff
@@ -88,40 +90,37 @@
 
 ### Other
 
-1.  Update to use modules
-    - Refactor uhppoted as uhppoted-api
-    - Rename and restructure repo
-2.  Rework uhppote to use bidirectional channel to serialize requests
-3.  Consistently include device serial number in output e.g. of get-time
-4.  Look into UDP multicast
-5.  Look into ARP for set-address
-6.  github project page
-7.  Integration tests
-8.  Verify fields in listen events/status replies against SDK:
+1.  Rework uhppote to use bidirectional channel to serialize requests
+2.  Consistently include device serial number in output e.g. of get-time
+3.  Look into UDP multicast
+4.  Look into ARP for set-address
+5.  github project page
+6.  Integration tests
+7.  Verify fields in listen events/status replies against SDK:
     - battery status can be (at least) 0x00, 0x01 and 0x04
-9.  Mojave/HomeKit
-10. Phoenix UI
-11. Update build system to [CMake or Meson](http://anadoxin.org/blog/is-it-worth-using-make.html)
-12. step-ca (https://smallstep.com/blog/private-acme-server)
-13. fuse
-14. EventLogger 
+8.  Mojave/HomeKit
+9.  Phoenix UI
+10. Update build system to [CMake or Meson](http://anadoxin.org/blog/is-it-worth-using-make.html)
+11. step-ca (https://smallstep.com/blog/private-acme-server)
+12. fuse
+13. EventLogger 
     - MacOS: use [system logging](https://developer.apple.com/documentation/os/logging)
     - Windows: event logging
-15. [Streamsheets](https://github.com/cedalo/streamsheets)
-16. TLA+/Alloy models:
+14. [Streamsheets](https://github.com/cedalo/streamsheets)
+15. TLA+/Alloy models:
     - watchdog/health-check
     - concurrent connections
     - HOTP counter update
     - key-value stores
     - event buffer logic
-17. GUI
+16. GUI
     - [Muon](https://github.com/ImVexed/muon) 
     - [webview](https://github.com/zserge/webview)
     - [fyne](https://github.com/fyne-io/fyne)
     - https://instadeq.com/blog/posts/things-end-users-care-about-but-programmers-dont
     - [Naked Objects](https://en.wikipedia.org/wiki/Naked_objects)
     - [GIO](https://gioui.org)
-18. PDL + go generate
+17. PDL + go generate
     - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)
     - [Diva](http://www.diva-portal.org/smash/get/diva2:407713/FULLTEXT01.pdf)
     - [PADS/ML](https://pads.cs.tufts.edu/papers/tfp07.pdf)
@@ -132,25 +131,27 @@
     - [Mozilla IPDL](https://developer.mozilla.org/en-US/docs/Mozilla/IPDL/Tutorial)
     - [PDL: Failure Semanics](https://www.researchgate.net/publication/2784726_A_Protocol_Description_Language_for_Customizing_Failure_Semantics)
     - https://en.wikipedia.org/wiki/Abstract_Syntax_Notation_One
-19. Update file watchers to fsnotify when that is merged into the standard library (1.4 ?)
+18. Update file watchers to fsnotify when that is merged into the standard library (1.4 ?)
     - https://github.com/golang/go/issues/4068
-20. [Ballerina](https://ballerina.io)
-21. [Eclipse Kura](https://www.eclipse.org/kura)
-22. [Klee](https://klee.github.io)
-23. [Fernet](https://github.com/fernet/spec/blob/master/Spec.md)
+19. [Ballerina](https://ballerina.io)
+20. [Eclipse Kura](https://www.eclipse.org/kura)
+21. [Klee](https://klee.github.io)
+22. [Fernet](https://github.com/fernet/spec/blob/master/Spec.md)
      - [cryptography.io:fernet](https://cryptography.io/en/latest/fernet)
-24. [AsyncAPI](https://www.asyncapi.coms)
+23. [AsyncAPI](https://www.asyncapi.coms)
      - https://modeling-languages.com/asyncapi-modeling-editor-code-generator
-25. go-fuzz
-26. [OPA](https://github.com/open-policy-agent/opa) for permissions (?)
-27. [Node-RED](https://hackaday.com/2020/01/15/automate-your-life-with-node-red-plus-a-dash-of-mqtt)
-28. [Datomic ?](https://stackoverflow.com/questions/21245555/when-should-i-use-datomic)
-29. [OCF-Over-Thread](https://www.infoq.com/news/2016/07/ocf-thread/)
-30. Implement a lightweight end-to-end encryption protocol 
+24. go-fuzz
+25. [OPA](https://github.com/open-policy-agent/opa) for permissions (?)
+26. [Node-RED](https://hackaday.com/2020/01/15/automate-your-life-with-node-red-plus-a-dash-of-mqtt)
+27. [Datomic ?](https://stackoverflow.com/questions/21245555/when-should-i-use-datomic)
+28. [OCF-Over-Thread](https://www.infoq.com/news/2016/07/ocf-thread/)
+29. Implement a lightweight end-to-end encryption protocol 
      - [MLS](https://mrosenberg.pub/cryptography/2019/07/10/molasses.html)
      - NACL/tweetnacl
-31.  Consider moving to event bus architecture (?)
-32. [Open Policy Agent](https://github.com/open-policy-agent) - for permissions
-33. CouchBase (for JSON DB)
-34. [AnyLog](https://blog.acolyer.org/2020/02/24/anylog)
-35. [gRPC](https://www.programmableweb.com/news/how-to-build-streaming-api-using-grpc/how-to/2020/02/21)
+30.  Consider moving to event bus architecture (?)
+31. [Open Policy Agent](https://github.com/open-policy-agent) - for permissions
+32. CouchBase (for JSON DB)
+33. [AnyLog](https://blog.acolyer.org/2020/02/24/anylog)
+34. [gRPC](https://www.programmableweb.com/news/how-to-build-streaming-api-using-grpc/how-to/2020/02/21)
+35. [NodeRed/GreenGrass](https://iot.stackexchange.com/questions/2646/deploy-scripts-to-aws-greengrass-without-aws-lambda)
+

@@ -41,14 +41,14 @@ The components are intended to simplify the integration of access control into s
 
 ## Modules
 
-| *Module*               | *Description*                                                                 |
-| ---------------------- | ----------------------------------------------------------------------------- |
-| [uhppote-core][1]      | core library, implements the UDP interface to UT0311-L0x controllers          |
-| [uhppoted-api][2]      | common API for external applications                                          |
-| [uhppote-simulator][3] | UT0311-L04 simulator for development use                                      |
-| [uhppote-cli][4]       | command line interface                                                        |
-| [uhppoted-rest][5]     | daemon/service with REST API for remote access to UT0311-L0x controllers      |
-| [uhppoted-mqtt][6]     | daemon/service with MQTT endpoint for remote access to UT0311-L0x controllers |
+| *Module*                                                           | *Description*                                                                 |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| [uhppote-core][https://github.com/uhppoted/uhppote-core]           | core library, implements the UDP interface to UT0311-L0x controllers          |
+| [uhppoted-api][https://github.com/uhppoted/uhppoted-api]           | common API for external applications                                          |
+| [uhppote-simulator][https://github.com/uhppoted/uhppote-simulator] | UT0311-L04 simulator for development use                                      |
+| [uhppote-cli][https://github.com/uhppoted/uhppote-cli]             | command line interface                                                        |
+| [uhppoted-rest][https://github.com/uhppoted/uhppoted-rest]         | daemon/service with REST API for remote access to UT0311-L0x controllers      |
+| [uhppoted-mqtt][https://github.com/uhppoted/uhppoted-mqtt]         | daemon/service with MQTT endpoint for remote access to UT0311-L0x controllers |
 
 ## Installation
 
@@ -102,14 +102,4 @@ git submodule update --remote
 2. [andrewvaughan/uhppote-rfid](https://github.com/andrewvaughan/uhppote-rfid) `Python`
 3. [tachoknight/uhppote-tools](https://github.com/tachoknight/uhppote-tools): `Go`
 4. [jjhuff/uhppote-go](https://github.com/jjhuff/uhppote-go): `Go`
-
-[1]: https://github.com/uhppoted/uhppote-core
-[2]: https://github.com/uhppoted/uhppoted-api
-[3]: https://github.com/uhppoted/uhppote-simulator
-[4]: https://github.com/uhppoted/uhppote-cli
-[5]: https://github.com/uhppoted/uhppoted-rest
-[6]: https://github.com/uhppoted/uhppoted-mqtt
-
-
-
 
