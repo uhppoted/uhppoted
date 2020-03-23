@@ -120,6 +120,8 @@
     - https://instadeq.com/blog/posts/things-end-users-care-about-but-programmers-dont
     - [Naked Objects](https://en.wikipedia.org/wiki/Naked_objects)
     - [GIO](https://gioui.org)
+    - [Revery](https://www.outrunlabs.com/revery)
+    
 17. PDL + go generate
     - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)
     - [Diva](http://www.diva-portal.org/smash/get/diva2:407713/FULLTEXT01.pdf)
