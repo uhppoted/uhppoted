@@ -1,4 +1,4 @@
-## v0.6.0x
+## v0.6.x
 
 ## IN PROGRESS
 
@@ -157,4 +157,6 @@
 33. [AnyLog](https://blog.acolyer.org/2020/02/24/anylog)
 34. [gRPC](https://www.programmableweb.com/news/how-to-build-streaming-api-using-grpc/how-to/2020/02/21)
 35. [NodeRed/GreenGrass](https://iot.stackexchange.com/questions/2646/deploy-scripts-to-aws-greengrass-without-aws-lambda)
+36. [dolt](https://github.com/liquidata-inc/dolt)
+37. [Go/OpenAPI](https://stackoverflow.com/questions/48752908/openapi-spec-validation-in-golang)
 
