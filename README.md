@@ -30,6 +30,8 @@ The components are intended to simplify the integration of access control into s
 
 ## Releases
 
+- v0.6.1: Added access control list commands to `uhppote-cli`
+- v0.6.0: `uhppoted-acl-s3` module
 - v0.5.1: Initial release following restructuring into standalone Go *modules* and *git submodules*
 - v0.5.0: Add MQTT endpoint for remote access to UT0311-L0x controllers
 - v0.4.2: Reworked `GetDevice` REST API to use directed broadcast and added get-device to CLI
@@ -49,6 +51,7 @@ The components are intended to simplify the integration of access control into s
 | [uhppote-cli][https://github.com/uhppoted/uhppote-cli]             | command line interface                                                        |
 | [uhppoted-rest][https://github.com/uhppoted/uhppoted-rest]         | daemon/service with REST API for remote access to UT0311-L0x controllers      |
 | [uhppoted-mqtt][https://github.com/uhppoted/uhppoted-mqtt]         | daemon/service with MQTT endpoint for remote access to UT0311-L0x controllers |
+| [uhppoted-acl-s3][https://github.com/uhppoted/uhppoted-acl-s3]     | cron'able utility to download/upload access control lists from/to AWS S3      |
 
 ## Installation
 
@@ -82,18 +85,19 @@ git submodule update --remote
 
 #### Dependencies
 
-| *Dependency*                             | *Description*                                          |
-| ---------------------------------------- | ------------------------------------------------------ |
-| com.github/uhppoted/uhppote-core[1]      | Device level API implementation                        |
-| com.github/uhppoted/uhppoted-api[2]      | External API implementation                            |
-| com.github/uhppoted/uhppote-cli[4]       | CLI user application                                   |
-| com.github/uhppoted/uhppoted-rest[5]     | REST API                                               |
-| com.github/uhppoted/uhppoted-mqtt[6]     | MQTT endpoint                                          |
-| com.github/uhppoted/uhppote-simulator[3] | Device simulator for development use                   |
-| golang.org/x/sys/windows                 | Support for Windows services                           |
-| golang.org/x/lint/golint                 | Additional *lint* check for release builds             |
-| github.com/eclipse/paho.mqtt.golang      | Eclipse Paho MQTT client                               |
-| github.com/gorilla/websocket             | paho.mqtt.golang dependency                            |
+| *Dependency*                                                                       | *Description*                                          |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| [com.github/uhppoted/uhppote-core](https://github.com/uhppoted/uhppote-core)       | Device level API implementation                        |
+| [com.github/uhppoted/uhppoted-api](https://github.com/uhppoted/uhppoted-api)       | External API implementation                            |
+| [com.github/uhppoted/uhppote-cli](https://github.com/uhppoted/uhppote-cli)         | CLI user application                                   |
+| [com.github/uhppoted/uhppoted-rest](https://github.com/uhppoted/uhppoted-rest)     | REST API                                               |
+| [com.github/uhppoted/uhppoted-mqtt](https://github.com/uhppoted/uhppoted-mqtt)     | MQTT endpoint                                          |
+| [com.github/uhppoted/uhppoted-acl-s3](https://github.com/uhppoted/uhppoted-acl-s3) | cron'able access control management                    |
+| [com.github/uhppoted/uhppote-simulator]                                            | Device simulator for development use                   |
+| golang.org/x/sys/windows                                                           | Support for Windows services                           |
+| golang.org/x/lint/golint                                                           | Additional *lint* check for release builds             |
+| github.com/eclipse/paho.mqtt.golang                                                | Eclipse Paho MQTT client                               |
+| github.com/gorilla/websocket                                                       | paho.mqtt.golang dependency                            |
 
 ## References and Related Projects
 
