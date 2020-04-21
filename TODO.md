@@ -160,4 +160,5 @@
 35. [NodeRed/GreenGrass](https://iot.stackexchange.com/questions/2646/deploy-scripts-to-aws-greengrass-without-aws-lambda)
 36. [dolt](https://github.com/liquidata-inc/dolt)
 37. [Go/OpenAPI](https://stackoverflow.com/questions/48752908/openapi-spec-validation-in-golang)
+38. [Datasette](https://datasette.readthedocs.io/en/stable)
 
