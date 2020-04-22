@@ -1,7 +1,7 @@
 openapi: "3.0.2"
 
 info:
-  version: 0.6.1
+  version: 0.6.2
   title: "twystd-uhppoted"
   description: "REST API for the twystd UHPPOTE service"
   license:
@@ -408,7 +408,7 @@ paths:
       tags:
         - uhppote
       summary: "Retrieves card access information"
-      description: "Retrieves the access permissions associated with the card number"
+      description: "Retrieves the access permissions associated with a card number"
       operationId: getCard
       parameters:
         - name: device-id
@@ -443,6 +443,48 @@ paths:
         default:
           description: "Request failed"
           
+    put:
+      tags:
+        - uhppote
+      summary: "Adds or updates a card"
+      description: "Adds or updates the access permissions associated with a card number"
+      operationId: putCard
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: card-number
+          in: path
+          description: "Card number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 192837465
+      requestBody:
+        description: "Card valid dates and access permissions"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CardDetails"        
+      responses:
+        '200':
+          description: "Card details added/updated"
+        '404':
+          description: "No matching device and/or card"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+                  
     delete:
       tags:
         - uhppote
@@ -622,7 +664,7 @@ components:
           type: string
           format: yyyy-mm-dd
           description: "Device current date"
-          example: "2019-08-28"
+          example: "2020-03-28"
 
     DeviceStatus:
       required: 
@@ -678,7 +720,7 @@ components:
           type: string
           format: yyyy-mm-dd HH:mm:ss
           description: "Event timestamp"
-          example: "2019-08-28 15:32:29"
+          example: "2020-03-28 15:32:29"
         event-result:  
           type: integer
           format: event result code
@@ -703,7 +745,7 @@ components:
           type: string
           format: yyyy-mm-dd HH:mm:ss
           description: "Current system date and time"
-          example: "2019-08-28 15:32:29"
+          example: "2020-03-28 15:32:29"
         packet-number:  
           type: integer
           format: uint8
@@ -736,7 +778,7 @@ components:
           type: string
           format: yyyy-mm-dd HH:mm:ss
           description: "Current device date/time"
-          example: "2019-08-28 15:32:29"
+          example: "2020-03-28 15:32:29"
 
     DoorDelay:
       properties:
@@ -783,12 +825,37 @@ components:
           type: string
           format: yyyy-MM-dd
           description: "First date card is valid"
-          example: "2019-01-01"
+          example: "2020-01-01"
         end-date:  
           type: string
           format: yyyy-MM-dd
           description: "Last date card is valid"
-          example: "2019-12-31"
+          example: "2020-12-31"
+        doors:  
+          type: array
+          items:
+             type: boolean
+             format: true/false
+             description: "Door access granted"
+             example: true, false, false, true
+          description: "List of doors and access"
+
+    CardDetails:
+      required: 
+        - start-date
+        - end-date
+        - doors
+      properties:
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "First date card is valid"
+          example: "2020-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Last date card is valid"
+          example: "2020-12-31"
         doors:  
           type: array
           items:
@@ -852,7 +919,7 @@ components:
           type: string
           format: yyyy-MM-dd HH:mm:ss
           description: "Event timestamp"
-          example: "2019-03-27 12:34:56"
+          example: "2020-03-27 12:34:56"
         event-result:  
           type: number
           format: uint8

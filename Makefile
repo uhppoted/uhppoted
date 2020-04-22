@@ -119,7 +119,7 @@ uhppoted-mqtt:
 	./bin/uhppoted-mqtt --console
 
 swagger: 
-	docker run --detach --publish 80:8080 --rm swaggerapi/swagger-editor 
+	docker run --detach --publish 80:8080 --name swagger --rm swaggerapi/swagger-editor 
 	open http://127.0.0.1:80
 
 docker:
