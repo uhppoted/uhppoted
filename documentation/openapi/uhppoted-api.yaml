@@ -3,10 +3,10 @@ openapi: "3.0.2"
 info:
   version: 0.6.2
   title: "twystd-uhppoted"
-  description: "REST API for the twystd UHPPOTE service"
+  description: "REST API for the twystd UHPPOTE service. The API currently supports both device level functions and higher level access control list management."
   license:
     name: "MIT"
-    url: "https://github.com/twystd/uhppote-go/blob/master/LICENSE"
+    url: "https://github.com/uhppoted/uhppoted/blob/master/LICENSE"
     
 servers:    
   - url: "http://127.0.0.1:8080/uhppote"
@@ -14,7 +14,7 @@ servers:
   
 tags:
   - name: "uhppote"
-    description: "UHPPOTE service REST interface"
+    description: "UHPPOTE service REST API"
 
 paths:
   /device:
@@ -592,6 +592,39 @@ paths:
         default:
           description: "Request failed"
         
+  /acl/card/{card-number}:
+    put:
+      tags:
+        - acl
+      summary: "Grants card access permisssions system-wide"
+      description: "Grants access permissions associated with a card number across the set of configured controllers. The requested permissions are added to the existing permissions - use 'delete' to remove unwanted permissions."
+      operationId: aclGrant
+      parameters:
+        - name: card-number
+          in: path
+          description: "Card number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 192837465
+      requestBody:
+        description: "Card valid dates and access permissions"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Grant"        
+      responses:
+        '200':
+          description: "Access permissions granted"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+                  
 components:
   schemas:
     DeviceList:
@@ -837,7 +870,7 @@ components:
              type: boolean
              format: true/false
              description: "Door access granted"
-             example: true, false, false, true
+             example: [ true, false, false, true ]
           description: "List of doors and access"
 
     CardDetails:
@@ -861,8 +894,8 @@ components:
           items:
              type: boolean
              format: true/false
-             description: "Door access granted"
-             example: true, false, false, true
+             description: "4 element boolean array corresponding to the door access permission"
+             example: [ true, false, false, true ]
           description: "List of doors and access"
         
     Events:
@@ -925,3 +958,29 @@ components:
           format: uint8
           description: "Event result"
           example: 6
+          
+    Grant:
+      required: 
+        - start-date
+        - end-date
+        - doors
+      properties:
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "First date card is valid"
+          example: "2020-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Last date card is valid"
+          example: "2020-12-31"
+        doors:  
+          type: array
+          items:
+             type: string
+             format: List of door ID's
+             description: "Doors to which access should be granted. Door names are case- and space-insensitive and should match the door names in the uhppoted.conf file."
+             example: [ "Entrance", "Downstairs", "D1", "D3" ]
+          description: "List of doors and access"
+          

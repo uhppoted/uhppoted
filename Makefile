@@ -97,6 +97,8 @@ release: test vet
 	cd uhppote-simulator; env GOOS=darwin  GOARCH=amd64       go build -o ../dist/darwin/$(DIST)  ./...
 	cd uhppote-simulator; env GOOS=windows GOARCH=amd64       go build -o ../dist/windows/$(DIST) ./...
 
+	cp uhppoted-rest/documentation/uhppoted-api.yaml documentation/openapi
+	cp uhppoted-rest/documentation/uhppoted-api.yaml install/openapi
 	cp -r install/openapi/* dist/openapi/$(DIST)/
 
 release-tar: release
