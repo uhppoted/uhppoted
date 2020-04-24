@@ -592,12 +592,12 @@ paths:
         default:
           description: "Request failed"
         
-  /acl/card/{card-number}:
+  /acl/card/{card-number}/doors/{door*}:
     put:
       tags:
         - acl
-      summary: "Grants card access permisssions system-wide"
-      description: "Grants access permissions associated with a card number across the set of configured controllers. The requested permissions are added to the existing permissions - use 'delete' to remove unwanted permissions."
+      summary: "Grants a card access to a door (or doors)"
+      description: "Grants a card access to a 'named' door, using the configuration to resolve the door ID to the controller + door number. A 'granted' access is added to the existing permissions for the card and access dates are 'widened' to accommodate the earliest 'start' date and the latest 'end' date."
       operationId: aclGrant
       parameters:
         - name: card-number
@@ -608,23 +608,66 @@ paths:
             type: integer
             format: uint32
             example: 192837465
+        - name: door*
+          in: path
+          description: "Door ID's ('ALL' will grant access to all doors)"
+          required: true
+          explode: true
+          schema:
+            type: string
+            format: Alphanumeric door name (space- and case-insensitive).
+            example: "Entrance, Upstairs"
       requestBody:
-        description: "Card valid dates and access permissions"
+        description: "Card valid dates"
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Grant"        
+              $ref: "#/components/schemas/DateRange"        
       responses:
         '200':
-          description: "Access permissions granted"
+          description: "Access granted"
         '405':
           description: "Invalid request"
         '500':
           description: "Internal system error"
         default:
           description: "Request failed"
-                  
+
+    delete:
+      tags:
+        - acl
+      summary: "Revokes a card access to a door (or doors)"
+      description: "Revokes a card's access to a 'named' door, using the configuration to resolve the door ID to the controller + door number. A 'revoked' access is removed from the existing permissions for the card without modifying the card start/end dates."
+      operationId: aclRevoke
+      parameters:
+        - name: card-number
+          in: path
+          description: "Card number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 192837465
+        - name: door*
+          in: path
+          description: "Door ID's ('ALL' will revoke access to all doors)"
+          required: true
+          explode: true
+          schema:
+            type: string
+            format: Alphanumeric door name (space- and case-insensitive).
+            example: "Entrance"
+      responses:
+        '200':
+          description: "Access revoked"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
 components:
   schemas:
     DeviceList:
@@ -870,7 +913,7 @@ components:
              type: boolean
              format: true/false
              description: "Door access granted"
-             example: [ true, false, false, true ]
+          example: [ true, false, false, true ]
           description: "List of doors and access"
 
     CardDetails:
@@ -895,7 +938,7 @@ components:
              type: boolean
              format: true/false
              description: "4 element boolean array corresponding to the door access permission"
-             example: [ true, false, false, true ]
+          example: [ true, false, false, true ]
           description: "List of doors and access"
         
     Events:
@@ -958,12 +1001,11 @@ components:
           format: uint8
           description: "Event result"
           example: 6
-          
-    Grant:
+
+    DateRange:
       required: 
         - start-date
         - end-date
-        - doors
       properties:
         start-date:  
           type: string
@@ -975,12 +1017,3 @@ components:
           format: yyyy-MM-dd
           description: "Last date card is valid"
           example: "2020-12-31"
-        doors:  
-          type: array
-          items:
-             type: string
-             format: List of door ID's
-             description: "Doors to which access should be granted. Door names are case- and space-insensitive and should match the door names in the uhppoted.conf file."
-             example: [ "Entrance", "Downstairs", "D1", "D3" ]
-          description: "List of doors and access"
-          
