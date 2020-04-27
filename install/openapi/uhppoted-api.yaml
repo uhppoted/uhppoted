@@ -13,14 +13,16 @@ servers:
   - url: "https://127.0.0.1:8443/uhppote"
   
 tags:
-  - name: "uhppote"
-    description: "UHPPOTE service REST API"
+  - name: "device"
+    description: "Low level device API"
+  - name: "acl"
+    description: "Access control list API"
 
 paths:
   /device:
     get:
       tags:
-        - uhppote
+        - device
       summary: "Retrieves a list of active devices"
       description: "Retrieves the list of active UHPPOTE devices"
       operationId: listDevices
@@ -41,7 +43,7 @@ paths:
   /device/{device-id}:
     get:
       tags:
-        - uhppote
+        - device
       summary: "Retrieves a single device information"
       description: "Retrieves the basic configuration for a UHPPOTE device"
       operationId: getDevice
@@ -73,7 +75,7 @@ paths:
   /device/{device-id}/status:
     get:
       tags:
-        - uhppote
+        - device
       summary: "Retrieves the device status"
       description: "Retrieves the current status of a device"
       operationId: getDeviceStatus
@@ -105,7 +107,7 @@ paths:
   /device/{device-id}/time:
     get:
       tags:
-        - uhppote
+        - device
       summary: "Retrieves the device time"
       description: "Retrieves the device current date/time"
       operationId: getDeviceTime
@@ -136,7 +138,7 @@ paths:
 
     put:
       tags:
-        - uhppote
+        - device
       summary: "Sets the device time"
       description: "Sets the device current date/time"
       operationId: putDeviceTime
@@ -175,7 +177,7 @@ paths:
   /device/{device-id}/door/{door}/delay:
     get:
       tags:
-        - uhppote
+        - device
       summary: "Retrieves the door delay"
       description: "Retrieves the door delay setting in seconds"
       operationId: getDoorDelay
@@ -214,7 +216,7 @@ paths:
 
     put:
       tags:
-        - uhppote
+        - device
       summary: "Sets the door delay"
       description: "Sets the door delay in seconds"
       operationId: putDoorDelay
@@ -261,7 +263,7 @@ paths:
   /device/{device-id}/door/{door}/control:
     get:
       tags:
-        - uhppote
+        - device
       summary: "Retrieves the door control state"
       description: "Retrieves the door control state (normally open, normally closed or controlled)"
       operationId: getDoorControlState
@@ -300,7 +302,7 @@ paths:
 
     put:
       tags:
-        - uhppote
+        - device
       summary: "Sets the door control state"
       description: "Sets the door control state (normally open, normally closed or controlled"
       operationId: putDoorControlState
@@ -347,7 +349,7 @@ paths:
   /device/{device-id}/card:
     get:
       tags:
-        - uhppote
+        - device
       summary: "Retrieves the device card list"
       description: "Retrieves the list of stored card numbers"
       operationId: getCards
@@ -378,7 +380,7 @@ paths:
 
     delete:
       tags:
-        - uhppote
+        - device
       summary: "Deletes the entire device card list"
       description: "Deletes all stored card numbers"
       operationId: deleteCards
@@ -406,7 +408,7 @@ paths:
   /device/{device-id}/card/{card-number}:
     get:
       tags:
-        - uhppote
+        - device
       summary: "Retrieves card access information"
       description: "Retrieves the access permissions associated with a card number"
       operationId: getCard
@@ -445,7 +447,7 @@ paths:
           
     put:
       tags:
-        - uhppote
+        - device
       summary: "Adds or updates a card"
       description: "Adds or updates the access permissions associated with a card number"
       operationId: putCard
@@ -487,7 +489,7 @@ paths:
                   
     delete:
       tags:
-        - uhppote
+        - device
       summary: "Deletes a card"
       description: "Removes the card associated with the card number from the stored card list"
       operationId: deleteCard
@@ -523,7 +525,7 @@ paths:
   /device/{device-id}/events:
     get:
       tags:
-        - uhppote
+        - device
       summary: "Retrieves the device event list indices"
       description: "Retrieves the indices of the first and last stored events"
       operationId: getEvents
@@ -555,7 +557,7 @@ paths:
   /device/{device-id}/event/{event-id}:
     get:
       tags:
-        - uhppote
+        - device
       summary: "Retrieves a single event record"
       description: "Retrieves the event record for an event ID"
       operationId: getEvent
@@ -585,6 +587,36 @@ paths:
                   $ref: "#/components/schemas/Event"        
         '404':
           description: "No matching device and/or event"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+        
+  /acl/card/{card-number}:
+    get:
+      tags:
+        - acl
+      summary: "Retrieves the access permissions for a card"
+      description: "Retrieves the access permissions for a card, using the configuration to resolve the door ID to the controller + door number."
+      operationId: aclShow
+      parameters:
+        - name: card-number
+          in: path
+          description: "Card number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 192837465
+      responses:
+        '200':
+          description: "List of current card access permissions"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/CardPermissions"        
         '405':
           description: "Invalid request"
         '500':
@@ -882,7 +914,7 @@ components:
              type: number
              format: uint32
              description: "Card number"
-             example: 192837465
+          example: 192837465
           description: "List of card numbers"
 
     Card:
@@ -940,7 +972,40 @@ components:
              description: "4 element boolean array corresponding to the door access permission"
           example: [ true, false, false, true ]
           description: "List of doors and access"
-        
+
+    CardPermissions:
+      required:
+        - permissions
+      properties:
+        permissions:
+          type: array
+          items:
+            $ref: "#/components/schemas/CardPermission"        
+          description: "List of doors to which the card has been granted access, along with associated access date ranges"
+          example: [ { "door":"Entrance", "start-date":"2020-01-01", "end-date":"2020-12-31" },{ "door":"Workshop", "start-date":"2020-01-01", "end-date":"2020-12-31" },]
+          
+    CardPermission:
+      required: 
+        - door
+        - start-date
+        - end-date
+      properties:
+        door:  
+          type: string
+          format: door ID
+          description: "Door ID corresponding to an entry in the controller configuration"
+          example: "Entrance"
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "First date card access is enabled (as from 00:00)"
+          example: "2020-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Last date card is enabled (until 23:59)"
+          example: "2020-12-31"
+
     Events:
       required: 
         - first
