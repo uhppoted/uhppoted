@@ -700,6 +700,32 @@ paths:
         default:
           description: "Request failed"
 
+  /acl:
+    put:
+      tags:
+        - acl
+      summary: "Loads an access control list to a set of controllers"
+      description: "Updates the cards on a set of controllers from an access control list that specifies the access permissions for all users."
+      operationId: aclLoad
+      requestBody:
+        description: "Access control list"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/AccessListRecord"        
+      responses:
+        '200':
+          description: "Access control lists updated"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
 components:
   schemas:
     DeviceList:
@@ -1006,6 +1032,37 @@ components:
           description: "Last date card is enabled (until 23:59)"
           example: "2020-12-31"
 
+    AccessListRecord:
+      required: 
+        - card-number
+        - door
+        - start-date
+        - end-date
+        - doors
+      properties:
+        card-number:  
+          type: number
+          format: uint32
+          description: "Card number"
+          example: 192837465
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "First date card access is enabled (as from 00:00)"
+          example: "2020-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Last date card is enabled (until 23:59)"
+          example: "2020-12-31"
+        doors:
+          type: array
+          items:
+            type: string
+            format: door ID
+            description: "Door ID that matches entry in configuration"
+          example: ["Entrance", "Upstairs", "Downstairs"]
+                    
     Events:
       required: 
         - first
