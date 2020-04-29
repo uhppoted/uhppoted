@@ -161,4 +161,6 @@
 36. [dolt](https://github.com/liquidata-inc/dolt)
 37. [Go/OpenAPI](https://stackoverflow.com/questions/48752908/openapi-spec-validation-in-golang)
 38. [Datasette](https://datasette.readthedocs.io/en/stable)
+39. [IDP: KeyClock](https://www.keycloak.org)
+40. [IDP: shibboleth](https://www.shibboleth.net/products/identity-provider)
 
