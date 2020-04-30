@@ -701,12 +701,34 @@ paths:
           description: "Request failed"
 
   /acl:
+    get:
+      tags:
+        - acl
+      summary: "Retrieves an access control list from a set of controllers"
+      description: "Retrieves and consolidates the card lists from a set of controllers into a list of access permissions associated with each card."
+      operationId: aclGet
+      responses:
+        '200':
+          description: "Consolidated access control lists"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccessListRecord"        
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+  
     put:
       tags:
         - acl
       summary: "Loads an access control list to a set of controllers"
       description: "Updates the cards on a set of controllers from an access control list that specifies the access permissions for all users."
-      operationId: aclLoad
+      operationId: aclPut
       requestBody:
         description: "Access control list"
         required: true
@@ -718,7 +740,11 @@ paths:
                 $ref: "#/components/schemas/AccessListRecord"        
       responses:
         '200':
-          description: "Access control lists updated"
+          description: "Result of access control lists update"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/PutACLResult"        
         '405':
           description: "Invalid request"
         '500':
@@ -1000,15 +1026,11 @@ components:
           description: "List of doors and access"
 
     CardPermissions:
-      required:
-        - permissions
-      properties:
-        permissions:
-          type: array
-          items:
-            $ref: "#/components/schemas/CardPermission"        
-          description: "List of doors to which the card has been granted access, along with associated access date ranges"
-          example: [ { "door":"Entrance", "start-date":"2020-01-01", "end-date":"2020-12-31" },{ "door":"Workshop", "start-date":"2020-01-01", "end-date":"2020-12-31" },]
+      description: "List of doors to which the card has been granted access, along with associated access date ranges"      
+      type: array
+      items:
+        $ref: "#/components/schemas/CardPermission"        
+      example: [ { "door":"Entrance", "start-date":"2020-01-01", "end-date":"2020-12-31" },{ "door":"Workshop", "start-date":"2020-01-01", "end-date":"2020-12-31" },]
           
     CardPermission:
       required: 
@@ -1062,7 +1084,56 @@ components:
             format: door ID
             description: "Door ID that matches entry in configuration"
           example: ["Entrance", "Upstairs", "Downstairs"]
-                    
+
+    PutACLResult:
+      type: array
+      items: 
+          $ref: "#/components/schemas/PutACLResultRecord"        
+      description: "Summary list of changes made to controller card lists"
+      example: [ { "device-id":405419896, "unchanged":1, "updated":3, "added": 2, "deleted":1, "failed":0 } ]
+        
+    PutACLResultRecord:
+      required: 
+        - device-id
+        - unchanged
+        - updated
+        - added
+        - deleted
+        - failed
+      properties:
+        device-id:  
+          type: number
+          format: uint32
+          description: "UHPPOTE device serial number"
+          example: 405419896
+        unchanged:  
+          type: number
+          format: integer
+          description: "Number of records unaffected by ACL update"
+          example: 3
+        updated:  
+          type: number
+          format: integer
+          description: "Number of records updated by ACL update"
+          example: 5
+        added:  
+          type: number
+          format: integer
+          description: "Number of records added by ACL update"
+          example: 3
+        deleted:  
+          type: number
+          format: integer
+          description: "Number of records deleted by ACL update"
+          example: 1
+        failed:  
+          type: number
+          format: integer
+          description: "Number of records failed to updated by ACL update"
+          example: 0
+      description: "Summary list of changes made to a controller card list"
+      example: { "device-id":405419896, "unchanged":2, "updated":5, "added": 3, "deleted":1, "failed":0 }
+      
     Events:
       required: 
         - first
