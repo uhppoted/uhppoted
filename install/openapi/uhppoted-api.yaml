@@ -94,7 +94,10 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: "#/components/schemas/DeviceStatus"        
+                type: object
+                properties:
+                  status:
+                    $ref: "#/components/schemas/DeviceStatus"        
         '404':
           description: "No device with ID matching device-id"
         '405':
@@ -762,7 +765,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DeviceID"        
-          description: "List of simulator devices"
+          description: "List of 'found' devices"
 
     DeviceID:
       required: 
@@ -804,7 +807,7 @@ components:
           type: string
           format: IPv4 address
           description: "Device IP subnet mask"
-          example: "255.25.255.0"
+          example: "255.255.255.0"
         gateway-address:  
           type: string
           format: IPv4 address
