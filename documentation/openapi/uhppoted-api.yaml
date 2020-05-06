@@ -349,7 +349,7 @@ paths:
         default:
           description: "Request failed"
 
-  /device/{device-id}/card:
+  /device/{device-id}/cards:
     get:
       tags:
         - device
@@ -963,13 +963,13 @@ components:
       required: 
         - cards
       properties:
-        devices:
+        cards:
           type: array
           items:
              type: number
              format: uint32
              description: "Card number"
-          example: 192837465
+          example: [ 192837465, 564738291 ]
           description: "List of card numbers"
 
     Card:
