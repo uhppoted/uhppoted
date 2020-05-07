@@ -1136,8 +1136,15 @@ components:
           example: 0
       description: "Summary list of changes made to a controller card list"
       example: { "device-id":405419896, "unchanged":2, "updated":5, "added": 3, "deleted":1, "failed":0 }
-      
+
     Events:
+      required: 
+        - events
+      properties:
+        events:
+          $ref: "#/components/schemas/EventRange"        
+
+    EventRange:
       required: 
         - first
         - last
@@ -1146,10 +1153,12 @@ components:
           type: number
           format: uint32
           description: "Index of the first stored event"
+          example: 3
         last:
           type: number
           format: uint32
           description: "Index of the last stored event"
+          example: 78
           
     Event:
       required: 
