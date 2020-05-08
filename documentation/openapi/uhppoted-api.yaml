@@ -2,8 +2,8 @@ openapi: "3.0.2"
 
 info:
   version: 0.6.2
-  title: "twystd-uhppoted"
-  description: "REST API for the twystd UHPPOTE service. The API currently supports both device level functions and higher level access control list management."
+  title: "uhppoted"
+  description: "REST API for the uhppoted-rest service. The API currently supports both device level functions and higher level access control list management."
   license:
     name: "MIT"
     url: "https://github.com/uhppoted/uhppoted/blob/master/LICENSE"
@@ -597,6 +597,54 @@ paths:
         default:
           description: "Request failed"
         
+  /acl:
+    get:
+      tags:
+        - acl
+      summary: "Retrieves an access control list from a set of controllers"
+      description: "Retrieves and consolidates the card lists from a set of controllers into a list of access permissions associated with each card."
+      operationId: aclGet
+      responses:
+        '200':
+          description: "Consolidated access control lists"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ACL"        
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+  
+    put:
+      tags:
+        - acl
+      summary: "Loads an access control list to a set of controllers"
+      description: "Updates the cards on a set of controllers from an access control list that specifies the access permissions for all users."
+      operationId: aclPut
+      requestBody:
+        description: "Access control list"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ACL"        
+      responses:
+        '200':
+          description: "Result of access control lists update"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/PutACLResult"        
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+        
   /acl/card/{card-number}:
     get:
       tags:
@@ -626,14 +674,14 @@ paths:
           description: "Internal system error"
         default:
           description: "Request failed"
-        
-  /acl/card/{card-number}/doors/{door*}:
+
+  /acl/card/{card-number}/door/{door}:
     put:
       tags:
         - acl
-      summary: "Grants a card access to a door (or doors)"
-      description: "Grants a card access to a 'named' door, using the configuration to resolve the door ID to the controller + door number. A 'granted' access is added to the existing permissions for the card and access dates are 'widened' to accommodate the earliest 'start' date and the latest 'end' date."
-      operationId: aclGrant
+      summary: "Grants a card access to a door"
+      description: "Grants a card access to a single named door, using the configuration to resolve the door ID to the controller + door number. A granted access is added to the existing permissions for the card and access dates are widened to accommodate the earliest start date and the latest end date. The ALL door will grant access to all configured doors."
+      operationId: aclGrantDoor
       parameters:
         - name: card-number
           in: path
@@ -641,17 +689,17 @@ paths:
           required: true
           schema:
             type: integer
-            format: uint32
+            format: uint32åç
             example: 192837465
-        - name: door*
+        - name: door
           in: path
-          description: "Door ID's ('ALL' will grant access to all doors)"
+          description: "Door ID ('ALL' will grant access to all doors)"
           required: true
           explode: true
           schema:
             type: string
             format: Alphanumeric door name (space- and case-insensitive).
-            example: "Entrance, Upstairs"
+            example: "Entrance"
       requestBody:
         description: "Card valid dates"
         required: true
@@ -672,9 +720,9 @@ paths:
     delete:
       tags:
         - acl
-      summary: "Revokes a card access to a door (or doors)"
-      description: "Revokes a card's access to a 'named' door, using the configuration to resolve the door ID to the controller + door number. A 'revoked' access is removed from the existing permissions for the card without modifying the card start/end dates."
-      operationId: aclRevoke
+      summary: "Revokes a card access to a door"
+      description: "Revokes a card's access to a door, using the configuration to resolve the door ID to the controller + door number. A revoked access is removed from the existing permissions for the card without modifying the card start/end dates or removing the card from the controllers' internal lists."
+      operationId: aclRevokeDoor
       parameters:
         - name: card-number
           in: path
@@ -684,9 +732,9 @@ paths:
             type: integer
             format: uint32
             example: 192837465
-        - name: door*
+        - name: door
           in: path
-          description: "Door ID's ('ALL' will revoke access to all doors)"
+          description: "Door ID ('ALL' will revoke access to all doors)"
           required: true
           explode: true
           schema:
@@ -696,58 +744,6 @@ paths:
       responses:
         '200':
           description: "Access revoked"
-        '405':
-          description: "Invalid request"
-        '500':
-          description: "Internal system error"
-        default:
-          description: "Request failed"
-
-  /acl:
-    get:
-      tags:
-        - acl
-      summary: "Retrieves an access control list from a set of controllers"
-      description: "Retrieves and consolidates the card lists from a set of controllers into a list of access permissions associated with each card."
-      operationId: aclGet
-      responses:
-        '200':
-          description: "Consolidated access control lists"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/AccessListRecord"        
-        '405':
-          description: "Invalid request"
-        '500':
-          description: "Internal system error"
-        default:
-          description: "Request failed"
-  
-    put:
-      tags:
-        - acl
-      summary: "Loads an access control list to a set of controllers"
-      description: "Updates the cards on a set of controllers from an access control list that specifies the access permissions for all users."
-      operationId: aclPut
-      requestBody:
-        description: "Access control list"
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: "#/components/schemas/AccessListRecord"        
-      responses:
-        '200':
-          description: "Result of access control lists update"
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/PutACLResult"        
         '405':
           description: "Invalid request"
         '500':
@@ -1029,11 +1025,15 @@ components:
           description: "List of doors and access"
 
     CardPermissions:
+      required:
+        - permissions
+      properties:
+        permissions:
+          type: array
+          items:
+            $ref: "#/components/schemas/CardPermission"                
       description: "List of doors to which the card has been granted access, along with associated access date ranges"      
-      type: array
-      items:
-        $ref: "#/components/schemas/CardPermission"        
-      example: [ { "door":"Entrance", "start-date":"2020-01-01", "end-date":"2020-12-31" },{ "door":"Workshop", "start-date":"2020-01-01", "end-date":"2020-12-31" },]
+      example: { "permissions": [ { "door":"Entrance", "start-date":"2020-01-01", "end-date":"2020-12-31" },{ "door":"Workshop", "start-date":"2020-01-01", "end-date":"2020-12-31" }] }
           
     CardPermission:
       required: 
@@ -1057,6 +1057,16 @@ components:
           description: "Last date card is enabled (until 23:59)"
           example: "2020-12-31"
 
+    ACL:
+      required:
+        - acl
+      properties:
+        acl:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccessListRecord"                
+          description: "List of cards and doors to which the cards have been granted access, along with associated card access date ranges"      
+          
     AccessListRecord:
       required: 
         - card-number
@@ -1089,11 +1099,15 @@ components:
           example: ["Entrance", "Upstairs", "Downstairs"]
 
     PutACLResult:
-      type: array
-      items: 
-          $ref: "#/components/schemas/PutACLResultRecord"        
+      required:
+        - report
+      properties:
+        report:
+          type: array
+          items: 
+            $ref: "#/components/schemas/PutACLResultRecord"        
       description: "Summary list of changes made to controller card lists"
-      example: [ { "device-id":405419896, "unchanged":1, "updated":3, "added": 2, "deleted":1, "failed":0 } ]
+      example: { "report": [ { "device-id":405419896, "unchanged":1, "updated":3, "added": 2, "deleted":1, "failed":0 } ] }
         
     PutACLResultRecord:
       required: 
