@@ -613,10 +613,22 @@ paths:
                 $ref: "#/components/schemas/ACL"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
   
     put:
       tags:
@@ -640,10 +652,22 @@ paths:
                   $ref: "#/components/schemas/PutACLResult"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         
   /acl/card/{card-number}:
     get:
@@ -670,10 +694,22 @@ paths:
                   $ref: "#/components/schemas/CardPermissions"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
 
   /acl/card/{card-number}/door/{door}:
     put:
@@ -712,10 +748,22 @@ paths:
           description: "Access granted"
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
 
     delete:
       tags:
@@ -746,10 +794,18 @@ paths:
           description: "Access revoked"
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
 
 components:
   schemas:
@@ -1236,3 +1292,25 @@ components:
           format: yyyy-MM-dd
           description: "Last date card is valid"
           example: "2020-12-31"
+
+    Error:
+      required: 
+        - tag
+        - message
+        - debug
+      properties:
+        tag:  
+          type: string
+          format: string
+          description: "Operation identifier"
+          example: "get-acl"
+        message:  
+          type: string
+          format: string
+          description: "User level error message"
+          example: "Invalid card number"
+        debug:  
+          type: string
+          format: string
+          description: "Detailed internal error message"
+          example: "Card number does not match Wiegand format"

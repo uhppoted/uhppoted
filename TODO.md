@@ -163,4 +163,7 @@
 38. [Datasette](https://datasette.readthedocs.io/en/stable)
 39. [IDP: KeyClock](https://www.keycloak.org)
 40. [IDP: shibboleth](https://www.shibboleth.net/products/identity-provider)
+41. [Observability](https://charity.wtf/2020/03/03/observability-is-a-many-splendored-thing)
+    -  auditor/monitor subsystem
+42. [keys.pub](https://keys.pub/#what-is-it)
 
