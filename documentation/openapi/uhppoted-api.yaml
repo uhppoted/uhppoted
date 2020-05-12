@@ -35,10 +35,22 @@ paths:
                   $ref: "#/components/schemas/DeviceList"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
 
   /device/{device-id}:
     get:
@@ -65,12 +77,28 @@ paths:
                   $ref: "#/components/schemas/Device"        
         '404':
           description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
           
   /device/{device-id}/status:
     get:
@@ -100,12 +128,28 @@ paths:
                     $ref: "#/components/schemas/DeviceStatus"        
         '404':
           description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
 
   /device/{device-id}/time:
     get:
@@ -132,12 +176,28 @@ paths:
                   $ref: "#/components/schemas/DeviceTime"        
         '404':
           description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
 
     put:
       tags:
@@ -170,12 +230,28 @@ paths:
                   $ref: "#/components/schemas/DeviceTime"        
         '404':
           description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
 
   /device/{device-id}/door/{door}/delay:
     get:
@@ -210,12 +286,28 @@ paths:
                   $ref: "#/components/schemas/DoorDelay"        
         '404':
           description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
 
     put:
       tags:
@@ -256,12 +348,28 @@ paths:
                   $ref: "#/components/schemas/DoorDelay"        
         '404':
           description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
 
   /device/{device-id}/door/{door}/control:
     get:
@@ -296,12 +404,28 @@ paths:
                   $ref: "#/components/schemas/DoorControlState"
         '404':
           description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
 
     put:
       tags:
@@ -342,12 +466,28 @@ paths:
                   $ref: "#/components/schemas/DoorControlState"
         '404':
           description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
 
   /device/{device-id}/cards:
     get:
@@ -374,12 +514,28 @@ paths:
                   $ref: "#/components/schemas/CardList"        
         '404':
           description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
 
     delete:
       tags:
@@ -401,12 +557,28 @@ paths:
           description: "Stored card list cleared"
         '404':
           description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
 
   /device/{device-id}/card/{card-number}:
     get:
@@ -441,13 +613,25 @@ paths:
                   $ref: "#/components/schemas/Card"        
         '404':
           description: "No matching device and/or card"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
         default:
           description: "Request failed"
-          
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
     put:
       tags:
         - device
@@ -483,13 +667,25 @@ paths:
           description: "Card details added/updated"
         '404':
           description: "No matching device and/or card"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
         default:
           description: "Request failed"
-                  
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
     delete:
       tags:
         - device
@@ -518,12 +714,28 @@ paths:
           description: "Card deleted"
         '404':
           description: "No matching device and/or card"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
 
   /device/{device-id}/events:
     get:
@@ -550,12 +762,28 @@ paths:
                   $ref: "#/components/schemas/Events"        
         '404':
           description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
 
   /device/{device-id}/event/{event-id}:
     get:
@@ -590,12 +818,28 @@ paths:
                   $ref: "#/components/schemas/Event"        
         '404':
           description: "No matching device and/or event"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '405':
           description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         
   /acl:
     get:
@@ -1297,7 +1541,6 @@ components:
       required: 
         - tag
         - message
-        - debug
       properties:
         tag:  
           type: string
@@ -1309,8 +1552,3 @@ components:
           format: string
           description: "User level error message"
           example: "Invalid card number"
-        debug:  
-          type: string
-          format: string
-          description: "Detailed internal error message"
-          example: "Card number does not match Wiegand format"
