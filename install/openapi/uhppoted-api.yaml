@@ -74,7 +74,10 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: "#/components/schemas/Device"        
+                type: object
+                properties:
+                  device:
+                    $ref: "#/components/schemas/Device"        
         '404':
           description: "No device with ID matching device-id"
           content:
@@ -253,13 +256,13 @@ paths:
               schema:
                   $ref: "#/components/schemas/Error"        
 
-  /device/{device-id}/door/{door}/delay:
+  /device/{device-id}/door/{door}:
     get:
       tags:
         - device
-      summary: "Retrieves the door delay"
-      description: "Retrieves the door delay setting in seconds"
-      operationId: getDoorDelay
+      summary: "Retrieves the door configuration"
+      description: "Retrieves the door delay setting and current control state"
+      operationId: getDoor
       parameters:
         - name: device-id
           in: path
@@ -283,7 +286,10 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: "#/components/schemas/DoorDelay"        
+                type: object
+                properties:
+                  door:
+                    $ref: "#/components/schemas/Door"        
         '404':
           description: "No device with ID matching device-id"
           content:
@@ -309,6 +315,7 @@ paths:
               schema:
                   $ref: "#/components/schemas/Error"        
 
+  /device/{device-id}/door/{door}/delay:
     put:
       tags:
         - device
@@ -372,61 +379,6 @@ paths:
                   $ref: "#/components/schemas/Error"        
 
   /device/{device-id}/door/{door}/control:
-    get:
-      tags:
-        - device
-      summary: "Retrieves the door control state"
-      description: "Retrieves the door control state (normally open, normally closed or controlled)"
-      operationId: getDoorControlState
-      parameters:
-        - name: device-id
-          in: path
-          description: "Device serial number"
-          required: true
-          schema:
-            type: integer
-            format: uint32
-            example: 405419896
-        - name: door
-          in: path
-          description: "Door number"
-          required: true
-          schema:
-            type: integer
-            format: uint8
-            example: 3
-      responses:
-        '200':
-          description: "Door control state"
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/DoorControlState"
-        '404':
-          description: "No device with ID matching device-id"
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/Error"        
-        '405':
-          description: "Invalid request"
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/Error"        
-        '500':
-          description: "Internal system error"
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/Error"        
-        default:
-          description: "Request failed"
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/Error"        
-
     put:
       tags:
         - device
@@ -610,7 +562,10 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: "#/components/schemas/Card"        
+                type: object
+                properties:
+                  card:
+                    $ref: "#/components/schemas/Card"        
         '404':
           description: "No matching device and/or card"
           content:
@@ -815,7 +770,10 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: "#/components/schemas/Event"        
+                type: object
+                properties:
+                  event:
+                    $ref: "#/components/schemas/Event"        
         '404':
           description: "No matching device and/or event"
           content:
@@ -1238,6 +1196,19 @@ components:
           format: yyyy-mm-dd HH:mm:ss
           description: "Current device date/time"
           example: "2020-03-28 15:32:29"
+
+    Door:
+      properties:
+        delay:
+          type: number
+          format: uint8
+          description: "Door delay in seconds"
+          example: 5
+        control:
+          type: string
+          format: "'normally open', 'normally closed' or 'controlled'"
+          description: "Door control state"
+          example: 'normally closed'
 
     DoorDelay:
       properties:
