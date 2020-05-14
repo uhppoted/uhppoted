@@ -3,6 +3,7 @@
 ## IN PROGRESS
 
 - [ ] Commonalise ACL
+- [ ] Create release builds on github to avoid embedded references to local directories
 
 ## TODO
 
@@ -37,10 +38,10 @@
 ### uhppoted-rest
 - [ ] Get events after XXX
 - [ ] Client certificate revocation list
-- [ ] uhppoted-rest: PUT card
-- [ ] uhppoted-rest: DELETE card
+- [x] uhppoted-rest: PUT card
+- [x] uhppoted-rest: DELETE card
 - [ ] uhppoted-rest: get-events date/id range
-- [ ] commonalise functionality with uhppoted-mqttd
+- [x] commonalise functionality with uhppoted-mqttd
 
 ### uhppoted-mqtt
 - [ ] last-will-and-testament (?)
@@ -56,13 +57,13 @@
 - [ ] Report system events for e.g. listen bound/not bound
 
 ### CLI
-- [ ] Rework grant/revoke for individual doors (labelled)
-- [ ] get-acl
+- [x] Rework grant/revoke for individual doors (labelled)
+- [x] get-acl
 - [ ] Human readable output for e.g. get-status
 - [ ] JSON formatted output for e.g. get-status
 - [ ] Interactive shell (https://drewdevault.com/2019/09/02/Interactive-SSH-programs.html)
 - [ ] use flag.FlagSet for commands
-- [ ] Default to commmon config file
+- [x] Default to commmon config file
 - [ ] Use (loadable) text/template for output formats
 - [ ] Rework GetDevices to also find 'known' devices
 - [ ] events: retrieve and show actual events
