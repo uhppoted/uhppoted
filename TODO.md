@@ -8,6 +8,7 @@
 ## TODO
 
 ### uhppote
+- [ ] Erlang OTP-like supervision trees
 - [ ] concurrent requests
 - [ ] update tests with Errorf + return to Fatalf
 - [ ] commonalise configuration
