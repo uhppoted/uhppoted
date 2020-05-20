@@ -139,6 +139,7 @@ docker:
 
 docker-simulator:
 	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --name simulator --rm simulator
+	sleep 1
 	./bin/uhppote-cli --debug set-listener 405419896 192.168.1.100:60001
 	./bin/uhppote-cli --debug set-listener 303986753 192.168.1.100:60001
 
