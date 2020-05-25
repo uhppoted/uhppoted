@@ -169,4 +169,5 @@
     -  auditor/monitor subsystem
 42. [keys.pub](https://keys.pub/#what-is-it)
 43. [Google Sheets](https://github.com/DecentLabs/officeAir)
+44. [Chromium Embedded Framework](https://en.wikipedia.org/wiki/Chromium_Embedded_Framework)
 
