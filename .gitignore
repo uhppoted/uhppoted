@@ -31,7 +31,9 @@ notes
 *.out
 
 # TeX working files
-
 protocol.aux
 protocol.log
 protocol.synctex.gz
+
+# External
+documentation/UHPPOTE-SDK.zip
