@@ -89,6 +89,7 @@
 - [ ] install documentation
 - [ ] user manuals
 - [ ] man/info page
+- [ ] cookbook for e.g. logging to AWS, VPN's etc
 
 ### Other
 
