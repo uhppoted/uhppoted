@@ -20,6 +20,7 @@
 - [ ] Invert conf Unmarshal so that it iterates struct rather than file (simplifies e.g. DeviceMap)
 - [ ] Rework plist encoder/decoder to be only for launchd (and remove 'parse' from daemonize/undaemonize)
 - [ ] Unify event buffer operations
+- [ ] Convert configuration files to [TOML](https://github.com/toml-lang/toml)
 
 ### uhppoted-api
 - [ ] websocket + GraphQL (?)
