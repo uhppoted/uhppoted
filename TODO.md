@@ -2,10 +2,11 @@
 
 ## IN PROGRESS
 
-- [ ] Commonalise ACL
-- [ ] Create release builds on github to avoid embedded references to local directories
+- [x] Commonalise ACL
 
 ## TODO
+
+- [ ] Create release builds on github to avoid embedded references to local directories
 
 ### uhppote
 - [ ] Erlang OTP-like supervision trees

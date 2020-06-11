@@ -30,6 +30,7 @@ The components are intended to simplify the integration of access control into s
 
 ## Releases
 
+- v0.6.3: Added access control list commands to `uhppoted-mqtt`
 - v0.6.2: Added access control list commands to `uhppoted-rest`
 - v0.6.1: Added access control list commands to `uhppote-cli`
 - v0.6.0: `uhppoted-acl-s3` module

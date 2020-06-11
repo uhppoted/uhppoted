@@ -1,7 +1,7 @@
 openapi: "3.0.2"
 
 info:
-  version: 0.6.2
+  version: 0.6.3
   title: "uhppoted"
   description: "REST API for the uhppoted-rest service. The API currently supports both device level functions and higher level access control list management."
   license:
