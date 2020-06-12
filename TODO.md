@@ -2,7 +2,7 @@
 
 ## IN PROGRESS
 
-- [x] Commonalise ACL
+- [ ] Add _Sheets_ implementation as sub-module
 
 ## TODO
 
