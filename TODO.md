@@ -3,6 +3,7 @@
 ## IN PROGRESS
 
 - [x] Add _Sheets_ implementation as sub-module
+- [x] Add MIT license to all repo's
 
 ## TODO
 
