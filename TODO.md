@@ -2,7 +2,7 @@
 
 ## IN PROGRESS
 
-- [ ] Add _Sheets_ implementation as sub-module
+- [x] Add _Sheets_ implementation as sub-module
 
 ## TODO
 
