@@ -175,4 +175,5 @@
 43. [Google Sheets](https://github.com/DecentLabs/officeAir)
 44. [Chromium Embedded Framework](https://en.wikipedia.org/wiki/Chromium_Embedded_Framework)
 45. [rsync.net](https://www.rsync.net)
+46. [Rasbian/qemu](https://beta7.io/posts/running-raspbian-in-qemu.html)
 
