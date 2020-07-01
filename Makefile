@@ -27,6 +27,7 @@ format:
 	cd uhppoted-mqtt;       go fmt ./...
 	cd uhppoted-app-s3;     go fmt ./...
 	cd uhppoted-app-sheets; go fmt ./...
+	cd integration-tests;   go fmt ./...
 	go fmt ./...
 
 build: format
@@ -64,12 +65,11 @@ coverage: build
 	go test -cover ./...
 
 integration-tests: build
-	go fmt integration-tests/cli/*.go
-	go fmt integration-tests/mqttd/*.go
 #	go test integration-tests/cli/*.go
-	go clean -testcache && go test -count=1 integration-tests/mqttd/*.go
+#	go clean -testcache && go test -count=1 integration-tests/mqttd/*.go
+	go clean -testcache && go test -count=1 integration-tests/simulator/*.go
 
-release: test vet
+build-all: test vet
 	mkdir -p dist/linux/$(DIST)
 	mkdir -p dist/arm7/$(DIST)
 	mkdir -p dist/darwin/$(DIST)
@@ -110,7 +110,7 @@ release: test vet
 	cp uhppoted-rest/documentation/uhppoted-api.yaml install/openapi
 	cp -r install/openapi/* dist/openapi/$(DIST)/
 
-release-tar: release
+release: build-all docker integration-tests
 	find . -name ".DS_Store" -delete
 	tar --directory=dist/linux  --exclude=".DS_Store" -cvzf dist/$(DIST)-linux.tar.gz $(DIST)
 	tar --directory=dist/arm7   --exclude=".DS_Store" -cvzf dist/$(DIST)-arm7.tar.gz $(DIST)
