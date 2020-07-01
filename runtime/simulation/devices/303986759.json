@@ -191,9 +191,20 @@
   ],
   "events": {
     "size": 256,
-    "first": 1,
-    "last": 0,
+    "first": 2,
+    "last": 1,
     "index": 0,
-    "events": null
+    "events": [
+      {
+        "record-number": 1,
+        "type": 1,
+        "granted": false,
+        "door": 3,
+        "door-opened": false,
+        "user-id": 65538,
+        "timestamp": "2020-07-01 18:35:03",
+        "result": 6
+      }
+    ]
   }
 }
