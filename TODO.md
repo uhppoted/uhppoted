@@ -4,6 +4,7 @@
 
 - [x] Add _Sheets_ implementation as sub-module
 - [x] Add MIT license to all repo's
+- [ ] Logo (https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible)
 
 ## TODO
 
@@ -177,4 +178,6 @@
 45. [rsync.net](https://www.rsync.net)
 46. [Rasbian/qemu](https://beta7.io/posts/running-raspbian-in-qemu.html)
 47. [WebRTC](https://github.com/pion/webrtc)
+48. [UDP tunnelling: ssh/nc](https://superuser.com/questions/53103/udp-traffic-through-ssh-tunnel)
+49. [UDP tunnelling: socat](http://www.morch.com/2011/07/05/forwarding-snmp-ports-over-ssh-using-socat/)
 
