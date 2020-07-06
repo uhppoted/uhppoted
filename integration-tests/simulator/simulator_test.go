@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestMain(m *testing.M) {
@@ -35,6 +36,8 @@ func setup() error {
 	if err != nil {
 		return fmt.Errorf("Failed to start Docker simulator instance (%v)", err)
 	}
+
+	time.Sleep(10 * time.Second)
 
 	return nil
 }
