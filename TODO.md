@@ -5,12 +5,15 @@
 - [x] Add _Sheets_ implementation as sub-module
 - [x] Add MIT license to all repo's
 - [ ] Logo (https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible)
+- [ ] Update all github workflows to invoke build-all
+- [ ] Use REST call to wait for container initialisation to complete
 
 ## TODO
 
 - [ ] Create release builds on github to avoid embedded references to local directories
 
 ### uhppote
+
 - [ ] Erlang OTP-like supervision trees
 - [ ] concurrent requests
 - [ ] update tests with Errorf + return to Fatalf
@@ -130,6 +133,7 @@
     - [Revery](https://www.outrunlabs.com/revery)
     - [Nuklear](https://github.com/Immediate-Mode-UI/Nuklear)
     - [tview](https://github.com/rivo/tview)
+    - [eDex-UI](https://github.com/GitSquared/edex-ui)
     
 17. PDL + go generate
     - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)
