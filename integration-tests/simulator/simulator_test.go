@@ -37,6 +37,7 @@ func setup() error {
 		return fmt.Errorf("Failed to start Docker simulator instance (%v)", err)
 	}
 
+	// INTERIM HACK - should wait for container initialisation to complete using a REST call
 	time.Sleep(10 * time.Second)
 
 	return nil
