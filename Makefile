@@ -117,6 +117,9 @@ release: build-all docker integration-tests
 	tar --directory=dist/darwin --exclude=".DS_Store" -cvzf dist/$(DIST)-darwin.tar.gz $(DIST)
 	cd dist/windows; zip --recurse-paths ../$(DIST)-windows.zip $(DIST)
 
+build-github: 
+	cd uhppote-core; go build ./...
+
 debug: build
 	./bin/uhppote-cli --debug --broadcast 192.168.1.100:54321 get-events 201020304
 
