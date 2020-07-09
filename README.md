@@ -8,6 +8,8 @@
 - CLI for scripting and system administration
 - REST service for integration with HTTP servers and mobile clients
 - MQTT endpoint for integration with IOT systems
+- AWS S3 integration for file managed access control lists
+- Google Sheets integration for spreadsheet managed access control lists
 
 Supported operating systems:
 - Linux
