@@ -1,3 +1,5 @@
+![build](https://github.com/uhppoted/uhppoted/workflows/build/badge.svg)
+
 # uhppoted
 
 `uhppoted` implements a set of cross-platform building blocks for access control systems based on the 
