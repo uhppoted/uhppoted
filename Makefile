@@ -119,6 +119,7 @@ release: build-all docker integration-tests
 
 build-github: 
 	cd uhppote-core; go build ./...
+	cd uhppoted-api; go build ./...
 
 debug: build
 	./bin/uhppote-cli --debug --broadcast 192.168.1.100:54321 get-events 201020304
