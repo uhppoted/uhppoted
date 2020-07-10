@@ -25,5 +25,8 @@ jobs:
     - name: Checkout uhppote-core
       run: git clone https://github.com/uhppoted/uhppote-core.git uhppote-core
 
+    - name: Checkout uhppoted-api
+      run: git clone https://github.com/uhppoted/uhppoted-api.git uhppoted-api
+
     - name: Build
       run: make build-github
