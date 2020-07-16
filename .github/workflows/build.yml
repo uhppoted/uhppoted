@@ -31,5 +31,8 @@ jobs:
     - name: Checkout uhppote-simulator
       run: git clone https://github.com/uhppoted/uhppote-simulator.git uhppote-simulator
 
+    - name: Checkout uhppote-cli
+      run: git clone https://github.com/uhppoted/uhppote-cli.git uhppote-cli
+
     - name: Build
       run: make build-github
