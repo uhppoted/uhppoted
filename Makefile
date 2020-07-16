@@ -121,6 +121,7 @@ build-github:
 	cd uhppote-core;      go build ./...
 	cd uhppoted-api;      go build ./...
 	cd uhppote-simulator; go build ./...
+	cd uhppote-cli;       go build ./...
 
 debug: build
 	./bin/uhppote-cli --debug --broadcast 192.168.1.100:54321 get-events 201020304
@@ -171,8 +172,8 @@ docker-integration-tests:
 	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --name qwerty --rm integration-tests/simulator
 
 hivemq-listen:
-#	mqtt subscribe --topic 'twystd/uhppoted/#'
-	open runtime/mqtt-spy-0.5.4-jar-with-dependencies.jar
+	mqtt subscribe --topic 'twystd/uhppoted/#'
+#	open runtime/mqtt-spy-0.5.4-jar-with-dependencies.jar
 
 
 
