@@ -1,0 +1,16 @@
+#/bin/bash
+
+function get_events() {
+   n=1
+   while [ $n -le 25 ]
+   do
+      if ./uhppote-cli get-event $1 ; then
+         n=$(( n+1 ))
+      else
+         break
+      fi
+   done
+}
+
+get_events 405419896 1>> 405419896.log 2> /dev/null
+get_events 303986753 1>> 303986753.log 2> /dev/null
