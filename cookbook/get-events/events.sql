@@ -1,5 +1,7 @@
-.import /var/uhppoted/events/405419896.log raw
-.import /var/uhppoted/events/303986753.log raw
+-- IMPORT EVENT FROM EVENT FILES
+
+.import /tmp/uhppoted-405419896.events raw
+.import /tmp/uhppoted-303986753.events raw
 
 INSERT OR IGNORE INTO events 
        SELECT TRIM(SUBSTR(event,1,11))  AS deviceID,
@@ -13,9 +15,11 @@ INSERT OR IGNORE INTO events
 
 DELETE FROM raw;
 
+-- GENERATE EVENT SUMMARY
+
 .headers on
 .mode tabs
-.output /tmp/events.tsv
+.once /tmp/events.tsv
 
 SELECT p.day AS Date,Total,Granted,Refused FROM
        ( SELECT DATE(timestamp) AS day,COUNT(*) AS Total
@@ -36,3 +40,14 @@ SELECT p.day AS Date,Total,Granted,Refused FROM
        ON p.day=r.day
        ORDER BY Date;
 
+-- PRUNE EVENTS OLDER THAN A YEAR
+
+SELECT * FROM events WHERE timestamp < date('NOW','start of month','-12 month');
+
+-- TRUNCATE EVENT FILES
+
+.once /tmp/uhppoted-405419896.events
+SELECT * FROM event WHERE FALSE;
+
+.once /tmp/uhppoted-303986753.events
+SELECT * FROM event WHERE FALSE;
