@@ -314,6 +314,74 @@ paths:
             application/json:
               schema:
                   $ref: "#/components/schemas/Error"        
+    post:
+      tags:
+        - device
+      summary: "Opens a door"
+      description: "Issues the 'open door' command to an access controller"
+      operationId: openDoor
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: door
+          in: path
+          description: "Door number"
+          required: true
+          schema:
+            type: integer
+            format: uint8
+            example: 3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Authorization'
+      responses:
+        '200':
+          description: "Door opened"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  door:
+                    $ref: "#/components/schemas/DoorOpened"        
+        '401':
+          description: "User does not have permssions to open door"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"     
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
 
   /device/{device-id}/door/{door}/delay:
     put:
@@ -1011,6 +1079,21 @@ paths:
 
 components:
   schemas:
+    Authorization:
+      required: 
+        - user-id
+      properties:
+        user-id:
+          type: number
+          format: uint32
+          description: "User ID (card number)"
+          example: 1928374646
+        otp:
+          type: number
+          format: uint32
+          description: "Valid OTP"
+          example: 7782
+
     DeviceList:
       required: 
         - devices
@@ -1209,6 +1292,14 @@ components:
           format: "'normally open', 'normally closed' or 'controlled'"
           description: "Door control state"
           example: 'normally closed'
+
+    DoorOpened:
+      properties:
+        opened:
+          type: boolean
+          format: true/false
+          description: "Door opened/not opened"
+          example: true
 
     DoorDelay:
       properties:
