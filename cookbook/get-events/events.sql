@@ -8,7 +8,7 @@ INSERT OR IGNORE INTO events
               TRIM(SUBSTR(event,12,7))  AS eventID,
               TRIM(SUBSTR(event,19,20)) AS timestamp,
               TRIM(SUBSTR(event,39,13)) AS card,
-              TRIM(SUBSTR(event,52,2))  AS door,
+              TRIM(SUBSTR(event,52,2))  AS doorID,
               UPPER(TRIM(SUBSTR(event,54,6))) = 'TRUE' AS granted,
               TRIM(SUBSTR(event,60,4))  AS result
               FROM raw;
