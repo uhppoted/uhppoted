@@ -4,8 +4,9 @@
 
 - [x] Add _Sheets_ implementation as sub-module
 - [x] Add MIT license to all repo's
+- [ ] Update the DEFAULT values - they all refer to twystd :-(
 - [ ] Logo (https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible)
-- [ ] Update all github workflows to invoke build-all
+- [x] Update all github workflows to invoke build-all
 - [ ] Use REST call to wait for container initialisation to complete
 
 ## TODO
@@ -104,7 +105,6 @@
 2.  Consistently include device serial number in output e.g. of get-time
 3.  Look into UDP multicast
 4.  Look into ARP for set-address
-5.  github project page
 6.  Integration tests
 7.  Verify fields in listen events/status replies against SDK:
     - battery status can be (at least) 0x00, 0x01 and 0x04
@@ -185,4 +185,5 @@
 48. [UDP tunnelling: ssh/nc](https://superuser.com/questions/53103/udp-traffic-through-ssh-tunnel)
 49. [UDP tunnelling: socat](http://www.morch.com/2011/07/05/forwarding-snmp-ports-over-ssh-using-socat/)
 50. [OpenMTC](https://www.openmtc.org)
+51. [RSocket](https://rsocket.io)
 
