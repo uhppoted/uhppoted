@@ -98,6 +98,7 @@
 - [ ] user manuals
 - [ ] man/info page
 - [ ] cookbook for e.g. logging to AWS, VPN's etc
+      - https://www.snia.org/about/corporate_info/logos/tutorial_graphics
 
 ### Other
 
