@@ -37,5 +37,8 @@ jobs:
     - name: Checkout uhppoted-rest
       run: git clone https://github.com/uhppoted/uhppoted-rest.git uhppoted-rest
 
+    - name: Checkout uhppoted-mqtt
+      run: git clone https://github.com/uhppoted/uhppoted-mqtt.git uhppoted-mqtt
+
     - name: Build
       run: make build-github

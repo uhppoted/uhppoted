@@ -18,6 +18,9 @@ tags:
   - name: "acl"
     description: "Access control list API"
 
+security:
+  - basic: []
+
 paths:
   /device:
     get:
@@ -231,6 +234,12 @@ paths:
             application/json:
               schema:
                   $ref: "#/components/schemas/DeviceTime"        
+        '403':
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         '404':
           description: "No device with ID matching device-id"
           content:
@@ -314,6 +323,8 @@ paths:
             application/json:
               schema:
                   $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/door/{door}/swipes:
     post:
       tags:
         - device
@@ -326,7 +337,7 @@ paths:
           description: "Device serial number"
           required: true
           schema:
-            type: integer
+            type: number
             format: uint32
             example: 405419896
         - name: door
@@ -334,14 +345,14 @@ paths:
           description: "Door number"
           required: true
           schema:
-            type: integer
+            type: number
             format: uint8
             example: 3
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Authorization'
+              $ref: '#/components/schemas/CardSwipe'
       responses:
         '200':
           description: "Door opened"
@@ -1078,21 +1089,21 @@ paths:
                   $ref: "#/components/schemas/Error"        
 
 components:
+  securitySchemes:
+    basic:
+      type: http
+      scheme: basic
+      
   schemas:
-    Authorization:
+    CardSwipe:
       required: 
-        - user-id
+        - card-number
       properties:
-        user-id:
+        card-number:
           type: number
           format: uint32
-          description: "User ID (card number)"
+          description: "Card number"
           example: 1928374646
-        otp:
-          type: number
-          format: uint32
-          description: "Valid OTP"
-          example: 7782
 
     DeviceList:
       required: 
