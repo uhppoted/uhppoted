@@ -40,5 +40,8 @@ jobs:
     - name: Checkout uhppoted-mqtt
       run: git clone https://github.com/uhppoted/uhppoted-mqtt.git uhppoted-mqtt
 
+    - name: Checkout uhppoted-app-s3
+      run: git clone https://github.com/uhppoted/uhppoted-app-s3.git uhppoted-app-s3
+
     - name: Build
       run: make build-github
