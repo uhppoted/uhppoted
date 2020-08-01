@@ -22,6 +22,18 @@ Supported operating systems:
 This project is a fork of the original [Go CLI](https://github.com/twystd/uhppote-go) project which had outgrown
 its initial scope and was relocated to [uhppoted](https://github.com/uhppoted) to simplify future development.
 
+### Compatible Hardware
+
+As per this issue [[Question] Compatible Hardware](https://github.com/uhppoted/uhppote-core/issues/1), **UHPPOTE** appears to be a specific 
+branding (or distributor) for the access control boards manufactured by [Shenzhen Wiegand Industrial Co., Ltd](http://www.wiegand.com.cn/english).
+
+The software in this repository has been tested and is known to work with these specific boards:
+
+| Source | Item |
+| ------ | ---- |
+| Amazon | [UHPPOTE Professional Wiegand 26-40 Bit TCP IP Network Access Control Board with Software For 4 Door 4 Reader](https://www.amazon.com/UHPPOTE-Professional-Wiegand-Network-Controller/dp/B00UX02JWE) |
+| AliExpress | [TCP/IP RFID ACCESS CONTROL SYSTEM Wiegand 26](https://de.aliexpress.com/item/4000781912427.html) |
+
 ## Raison d'être
 
 The components supplement the manufacturer supplied application which is 'Windows-only' and provides limited support 
