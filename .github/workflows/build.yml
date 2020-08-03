@@ -43,5 +43,8 @@ jobs:
     - name: Checkout uhppoted-app-s3
       run: git clone https://github.com/uhppoted/uhppoted-app-s3.git uhppoted-app-s3
 
+    - name: Checkout uhppoted-app-sheets
+      run: git clone https://github.com/uhppoted/uhppoted-app-sheets.git uhppoted-app-sheets
+
     - name: Build
       run: make build-github
