@@ -15,6 +15,12 @@
 
 1. [/dev/null](https://stackoverflow.com/questions/313111/is-there-a-dev-null-on-windows)
 
+### udp-broadcast-relay
+
+1. https://github.com/nomeata/udp-broadcast-relay
+2. https://github.com/udp-redux/udp-broadcast-relay-redux
+3. https://forum.opnsense.org/index.php?topic=11818.0
+
 ### uhppoted
 
 #### Certificate Authority
