@@ -1,3 +1,0 @@
-#!/bin/bash
-
-sqlite3 /var/uhppoted/db/uhppoted.db ".read /etc/uhppoted/events.sql"
