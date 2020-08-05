@@ -1,0 +1,16 @@
+#!/bin/bash
+
+get_events () {
+   N=1
+   while [ $N -le 25 ]
+   do
+      if ./uhppote-cli get-event $1 ; then
+         N=$(( N+1 ))
+      else
+         break
+      fi
+   done
+}
+
+get_events 405419896 2> /dev/null | tee -a /var/uhppoted/events/405419896.log /tmp/uhppoted-405419896.events
+get_events 303986753 2> /dev/null | tee -a /var/uhppoted/events/303986753.log /tmp/uhppoted-303986753.events
