@@ -2,11 +2,11 @@ openapi: "3.0.2"
 
 info:
   version: 0.3.0
-  title: "twystd-uhppote-simulator"
-  description: "REST API for the twystd UHPPOTE simulator command interface"
+  title: "uhppote-simulator"
+  description: "REST API for the UHPPOTE simulator command interface"
   license:
     name: "MIT"
-    url: "https://github.com/twystd/uhppote-go/blob/master/LICENSE"
+    url: "https://github.com/uhppoted/uhppote-simulator/blob/master/LICENSE"
     
 servers:    
   - url: "http://127.0.0.1:8000/uhppote"

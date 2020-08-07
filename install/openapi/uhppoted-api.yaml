@@ -20,6 +20,7 @@ tags:
 
 security:
   - basic: []
+  - hotp: []
 
 paths:
   /device:
@@ -1093,6 +1094,12 @@ components:
     basic:
       type: http
       scheme: basic
+      description: "RFC 2617 user:password credentials"
+    hotp:
+      type: http
+      scheme: bearer
+      bearerFormat: HOTP:user-id:OTP, base64 encoded
+      description: "Lightweight user:OTP authorization scheme for IOT devices"
       
   schemas:
     CardSwipe:
