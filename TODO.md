@@ -4,7 +4,7 @@
 
 - [x] Add _Sheets_ implementation as sub-module
 - [x] Add MIT license to all repo's
-- [ ] Update the DEFAULT values - they all refer to twystd :-(
+- [x] Update the DEFAULT values - they all refer to twystd :-(
 - [ ] Logo (https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible)
 - [x] Update all github workflows to invoke build-all
 - [ ] Use REST call to wait for container initialisation to complete
@@ -188,4 +188,5 @@
 49. [UDP tunnelling: socat](http://www.morch.com/2011/07/05/forwarding-snmp-ports-over-ssh-using-socat/)
 50. [OpenMTC](https://www.openmtc.org)
 51. [RSocket](https://rsocket.io)
+52. For demo system: https://dev.to/github/10-standout-github-profile-readmes-h2o
 

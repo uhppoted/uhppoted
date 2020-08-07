@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.github.twystd.uhppoted</string>
+    <string>com.github.uhppoted</string>
     <key>Program</key>
     <string>/usr/local/bin/uhppoted</string>
     <key>WorkingDirectory</key>
-    <string>/usr/local/var/com.github.twystd.uhppoted</string>
+    <string>/usr/local/var/com.github.uhppoted</string>
     <key>ProgramArguments</key>
     <array>
     </array>
@@ -16,8 +16,8 @@
     <key>RunAtLoad</key>
     <true/>
     <key>StandardOutPath</key>
-    <string>/usr/local/var/log/com.github.twystd.uhppoted-rest.log</string>
+    <string>/usr/local/var/log/com.github.uhppoted-rest.log</string>
     <key>StandardErrorPath</key>
-    <string>/usr/local/var/log/com.github.twystd.uhppoted-rest.err</string>
+    <string>/usr/local/var/log/com.github.uhppoted-rest.err</string>
 </dict>
 </plist>
