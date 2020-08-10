@@ -28,6 +28,7 @@
 - [ ] Rework plist encoder/decoder to be only for launchd (and remove 'parse' from daemonize/undaemonize)
 - [ ] Unify event buffer operations
 - [ ] Convert configuration files to [TOML](https://github.com/toml-lang/toml)
+- [ ] UQL (Ref. https://github.com/liljencrantz/crush)
 
 ### uhppoted-api
 - [ ] websocket + GraphQL (?)
