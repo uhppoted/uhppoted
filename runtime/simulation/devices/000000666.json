@@ -45,9 +45,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 19:44:55",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 2,
@@ -55,9 +55,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 19:48:40",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 3,
@@ -65,9 +65,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 19:48:42",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 4,
@@ -75,9 +75,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 19:49:02",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 5,
@@ -85,9 +85,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 19:50:04",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 6,
@@ -95,9 +95,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 19:50:16",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 7,
@@ -105,9 +105,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 19:50:53",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 8,
@@ -115,9 +115,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 19:51:03",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 9,
@@ -125,9 +125,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 19:52:01",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 10,
@@ -135,9 +135,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 19:55:31",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 11,
@@ -145,9 +145,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 19:55:52",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 12,
@@ -155,9 +155,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 19:56:09",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 13,
@@ -165,9 +165,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 19:56:46",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 14,
@@ -175,9 +175,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 19:59:30",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 15,
@@ -185,9 +185,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 20:01:03",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 16,
@@ -195,9 +195,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 20:01:09",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 17,
@@ -205,9 +205,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 20:01:14",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 18,
@@ -215,9 +215,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 20:01:18",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 19,
@@ -225,9 +225,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 20:09:26",
-        "result": 6
+        "reason": 6
       },
       {
         "record-number": 20,
@@ -235,9 +235,9 @@
         "granted": false,
         "door": 4,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-02-14 20:18:12",
-        "result": 6
+        "reason": 6
       }
     ]
   }

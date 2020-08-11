@@ -201,9 +201,9 @@
         "granted": false,
         "door": 3,
         "door-opened": false,
-        "user-id": 65538,
+        "card-number": 65538,
         "timestamp": "2020-07-01 18:35:03",
-        "result": 6
+        "reason": 6
       }
     ]
   }
