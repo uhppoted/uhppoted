@@ -4,7 +4,7 @@ get_events () {
    N=1
    while [ $N -le 25 ]
    do
-      if ./uhppote-cli get-event $1 ; then
+      if ./uhppote-cli get-event "$1" ; then
          N=$(( N+1 ))
       else
          break

@@ -1190,10 +1190,10 @@ components:
         - event-type
         - access-granted
         - door
-        - door-opened
-        - user-id
+        - direction
+        - card-number
         - event-timestamp
-        - event-result
+        - event-reason
         - door-state 
         - door-buttons
         - system-state
@@ -1224,24 +1224,24 @@ components:
           format: uint8 (1..4)
           description: "Door ID for event"
           example: 3
-        door-opened:
-          type: boolean
-          format: true/false
-          description: "Door opened to request"
-          example: true
-        user-id:
+        direction
+          type: number
+          format: uint8
+          description: "1: IN, 2:OUT"
+          example: 1
+        card-number:
           type: number
           format: uint32
-          description: "User ID (card number for swipe events)"
+          description: "Card number for swipe events"
           example: 1928374646
         event-timestamp:  
           type: string
           format: yyyy-mm-dd HH:mm:ss
           description: "Event timestamp"
           example: "2020-03-28 15:32:29"
-        event-result:  
-          type: integer
-          format: event result code
+        event-reason:  
+          type: number
+          format: uint8
           description: "Event result code"
           example: 6
         door-state:  
@@ -1557,10 +1557,10 @@ components:
         - event-type
         - access-granted
         - door-id
-        - door-opened
-        - user-id
+        - direction
+        - card-number
         - timestamp
-        - event-result
+        - event-reason
       properties:
         event-id:  
           type: number
@@ -1582,20 +1582,20 @@ components:
           format: uint8
           description: "Door number [1..4]"
           example: 2
-        user-id:  
+        card-number:  
           type: number
           format: uint32
-          description: "User ID, typically card number"
+          description: "Card number"
           example: 192837465
         timestamp:  
           type: string
           format: yyyy-MM-dd HH:mm:ss
           description: "Event timestamp"
           example: "2020-03-27 12:34:56"
-        event-result:  
+        event-reason:  
           type: number
           format: uint8
-          description: "Event result"
+          description: "Event reason"
           example: 6
 
     DateRange:
