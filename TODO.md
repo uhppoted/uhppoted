@@ -2,7 +2,7 @@
 
 ## IN PROGRESS
 
-- [ ] Restructure listen.go event and rename LastIndex
+- [x] Restructure listen.go event and rename LastIndex
 - [x] Add _Sheets_ implementation as sub-module
 - [x] Add MIT license to all repo's
 - [x] Update the DEFAULT values - they all refer to twystd :-(
