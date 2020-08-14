@@ -12,6 +12,7 @@
 - MQTT endpoint for integration with IOT systems
 - AWS S3 integration for file managed access control lists
 - Google Sheets integration for spreadsheet managed access control lists
+- _(in development) [Node-RED](https://nodered.org) low code environment integration_
 
 Supported operating systems:
 - Linux
@@ -47,10 +48,11 @@ The components are intended to simplify the integration of access control into s
 
 ## Releases
 
+- v0.6.4: `uhppoted-app-sheets` Google Sheets integration module
 - v0.6.3: Added access control list commands to `uhppoted-mqtt`
 - v0.6.2: Added access control list commands to `uhppoted-rest`
 - v0.6.1: Added access control list commands to `uhppote-cli`
-- v0.6.0: `uhppoted-acl-s3` module
+- v0.6.0: `uhppoted-app-s3` AWS S3 integration module
 - v0.5.1: Initial release following restructuring into standalone Go *modules* and *git submodules*
 - v0.5.0: Add MQTT endpoint for remote access to UT0311-L0x controllers
 - v0.4.2: Reworked `GetDevice` REST API to use directed broadcast and added get-device to CLI
@@ -62,23 +64,25 @@ The components are intended to simplify the integration of access control into s
 
 ## Modules
 
-| *Module*                                                               | *Description*                                                                   |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| [uhppote-core](https://github.com/uhppoted/uhppote-core)               | core library, implements the UP interface to UT0311-L0x controllers             |
-| [uhppoted-api](https://github.com/uhppoted/uhppoted-api)               | common API for external applications                                            |
-| [uhppote-simulator](https://github.com/uhppoted/uhppote-simulator)     | UT0311-L04 simulator for development use                                        |
-| [uhppote-cli](https://github.com/uhppoted/uhppote-cli)                 | command line interface                                                          |
-| [uhppoted-rest](https://github.com/uhppoted/uhppoted-rest)             | daemon/service with REST API for remote access to UT0311-L0x controllers        |
-| [uhppoted-mqtt](https://github.com/uhppoted/uhppoted-mqtt)             | daemon/service with MQTT endpoint for remote access to UT0311-L0x controllers   |
-| [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)         | cron'able utility to download/upload access control lists from/to AWS S3        |
-| [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets) | cron'able utility to download/upload access control lists from/to Google Sheets |
+| *Module*                                                                           | *Description*                                                                   |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| [uhppote-core](https://github.com/uhppoted/uhppote-core)                           | core library, implements the UP interface to UT0311-L0x controllers             |
+| [uhppoted-api](https://github.com/uhppoted/uhppoted-api)                           | common API for external applications                                            |
+| [uhppote-simulator](https://github.com/uhppoted/uhppote-simulator)                 | UT0311-L04 simulator for development use                                        |
+| [uhppote-cli](https://github.com/uhppoted/uhppote-cli)                             | command line interface                                                          |
+| [uhppoted-rest](https://github.com/uhppoted/uhppoted-rest)                         | daemon/service with REST API for remote access to UT0311-L0x controllers        |
+| [uhppoted-mqtt](https://github.com/uhppoted/uhppoted-mqtt)                         | daemon/service with MQTT endpoint for remote access to UT0311-L0x controllers   |
+| [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                     | cron'able utility to download/upload access control lists from/to AWS S3        |
+| [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)             | cron'able utility to download/upload access control lists from/to Google Sheets |
+| [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted) | NodeJS nodes for [Node-RED](https://nodered.org) low code environment           |
 
 ## Integrations
 
-| *Module*                                                               | *Description*                                                                   |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)         | cron'able utility to download/upload access control lists from/to AWS S3        |
-| [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets) | cron'able utility to download/upload access control lists from/to Google Sheets |
+| *Module*                                                                           | *Description*                                                                   |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                     | cron'able utility to download/upload access control lists from/to AWS S3        |
+| [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)             | cron'able utility to download/upload access control lists from/to Google Sheets |
+| [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted) | NodeJS nodes for [Node-RED](https://nodered.org) low code environment           |
 
 ## UI
 
@@ -117,20 +121,28 @@ git submodule update --remote
 
 #### Dependencies
 
-| *Dependency*                                                                       | *Description*                                          |
-| ---------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| [com.github/uhppoted/uhppote-core](https://github.com/uhppoted/uhppote-core)       | Device level API implementation                        |
-| [com.github/uhppoted/uhppoted-api](https://github.com/uhppoted/uhppoted-api)       | External API implementation                            |
-| [com.github/uhppoted/uhppote-cli](https://github.com/uhppoted/uhppote-cli)         | CLI user application                                   |
-| [com.github/uhppoted/uhppoted-rest](https://github.com/uhppoted/uhppoted-rest)     | REST API                                               |
-| [com.github/uhppoted/uhppoted-mqtt](https://github.com/uhppoted/uhppoted-mqtt)     | MQTT endpoint                                          |
-| [com.github/uhppoted/uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3) | cron'able access control management using AWS S3                    |
-| [com.github/uhppoted/uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-s3) | cron'able access control management using Google Sheets                    |
-| [com.github/uhppoted/uhppote-simulator](https://github.com/uhppoted/uhppote-simulator)                                            | Device simulator for development use                   |
-| golang.org/x/sys/windows                                                           | Support for Windows services                           |
-| golang.org/x/lint/golint                                                           | Additional *lint* check for release builds             |
-| github.com/eclipse/paho.mqtt.golang                                                | Eclipse Paho MQTT client                               |
-| github.com/gorilla/websocket                                                       | paho.mqtt.golang dependency                            |
+| *Dependency*                                                                           | *Description*                                           |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| [com.github/uhppoted/uhppote-core](https://github.com/uhppoted/uhppote-core)           | Device level API implementation                         |
+| [com.github/uhppoted/uhppoted-api](https://github.com/uhppoted/uhppoted-api)           | External API implementation                             |
+| [com.github/uhppoted/uhppote-cli](https://github.com/uhppoted/uhppote-cli)             | CLI user application                                    |
+| [com.github/uhppoted/uhppoted-rest](https://github.com/uhppoted/uhppoted-rest)         | REST API                                                |
+| [com.github/uhppoted/uhppoted-mqtt](https://github.com/uhppoted/uhppoted-mqtt)         | MQTT endpoint                                           |
+| [com.github/uhppoted/uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)     | cron'able access control management using AWS S3        |
+| [com.github/uhppoted/uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-s3) | cron'able access control management using Google Sheets |
+| [com.github/uhppoted/uhppote-simulator](https://github.com/uhppoted/uhppote-simulator) | Device simulator for development use                    |
+| golang.org/x/sys/windows                                                               | Support for Windows services                            |
+| golang.org/x/lint/golint                                                               | Additional *lint* check for release builds              |
+| github.com/eclipse/paho.mqtt.golang                                                    | Eclipse Paho MQTT client                                |
+| github.com/gorilla/websocket                                                           | paho.mqtt.golang dependency                             |
+| github.com/aws/aws-sdk-go                                                              | AWS SDK                                                 |
+| google.golang.org/api                                                                  | Google SDK                                              |
+| golang.org/x/net                                                                       | google.golang.org/api dependency                        |
+| golang.org/x/oauth2                                                                    | google.golang.org/api dependency                        |
+| golang.org/x/tools                                                                     | google.golang.org/api dependency                        |
+| golang.org/x/xerrors                                                                   | google.golang.org/api dependency                        |
+| github.com/golang/protobuf                                                             | google.golang.org/api dependency                        |
+| google.golang.org/appengine                                                            | google.golang.org/api dependency                        |
 
 ## References and Related Projects
 
