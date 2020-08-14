@@ -22,3 +22,6 @@
 [submodule "uhppoted-app-s3"]
 	path = uhppoted-app-s3
 	url = https://github.com/uhppoted/uhppoted-app-s3.git
+[submodule "node-red-contrib-uhppoted"]
+	path = node-red-contrib-uhppoted
+	url = https://github.com/uhppoted/node-red-contrib-uhppoted.git

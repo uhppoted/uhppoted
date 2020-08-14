@@ -1,5 +1,5 @@
 DEBUG ?= --debug
-VERSION = v0.6.4
+VERSION = v0.6.x
 DIST   ?= development
 LDFLAGS = -ldflags "-X uhppote.VERSION=$(VERSION)" 
 
@@ -9,6 +9,7 @@ LDFLAGS = -ldflags "-X uhppote.VERSION=$(VERSION)"
 .PHONY: uhppoted-mqtt
 .PHONY: uhppoted-app-s3
 .PHONY: uhppoted-app-sheets
+.PHONY: bump
 
 all: test      \
 	 benchmark \
@@ -117,6 +118,17 @@ release: build-all docker integration-tests
 	tar --directory=dist/darwin --exclude=".DS_Store" -cvzf dist/$(DIST)-darwin.tar.gz $(DIST)
 	cd dist/windows; zip --recurse-paths ../$(DIST)-windows.zip $(DIST)
 
+bump:
+	find . -name "Makefile" -exec sed -i '' -e 's/VERSION = v0.6.4/VERSION = v0.6.x/g' {} \;
+	find . -name "*.go"     -exec sed -i '' -e 's/var VERSION string = "v0.6.4"/var VERSION string = "v0.6.x"/g' {} \;
+	go get -u cloud.google.com/go
+	go get -u github.com/golang/protobuf
+	go get -u golang.org/x/net
+	go get -u golang.org/x/oauth2
+	go get -u golang.org/x/sys
+	go get -u google.golang.org/api
+	go get -u google.golang.org/genproto
+
 build-github: 
 	cd uhppote-core;        go build ./...
 	cd uhppoted-api;        go build ./...
@@ -126,6 +138,10 @@ build-github:
 	cd uhppoted-mqtt;       go build ./...
 	cd uhppoted-app-s3;     go build ./...
 	cd uhppoted-app-sheets; go build ./...
+
+bump:
+	go get -u github.com/uhppoted/uhppote-core
+	go get -u github.com/uhppoted/uhppoted-api
 
 debug: build
 	./bin/uhppote-cli --debug --broadcast 192.168.1.100:54321 get-events 201020304

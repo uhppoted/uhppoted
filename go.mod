@@ -5,6 +5,8 @@ go 1.14
 require (
 	cloud.google.com/go v0.57.0 // indirect
 	github.com/golang/protobuf v1.4.2 // indirect
+	github.com/uhppoted/uhppote-core v0.6.4 // indirect
+	github.com/uhppoted/uhppoted-api v0.6.4 // indirect
 	golang.org/x/net v0.0.0-20200528225125-3c3fba18258b
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sys v0.0.0-20200523222454-059865788121 // indirect
