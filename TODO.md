@@ -1,12 +1,6 @@
 ## v0.6.x
 
-## IN PROGRESS
-
-- [x] Restructure listen.go event and rename LastIndex
-- [x] Add _Sheets_ implementation as sub-module
-- [x] Add MIT license to all repo's
-- [x] Update the DEFAULT values - they all refer to twystd :-(
-- [x] Update all github workflows to invoke build-all
+### IN PROGRESS
 
 ## TODO
 
@@ -193,3 +187,7 @@
 51. [RSocket](https://rsocket.io)
 52. For demo system: https://dev.to/github/10-standout-github-profile-readmes-h2o
 53. [immudb](https://immudb.io)
+54. [Oracle Apex](https://apex.oracle.com/en/learn/getting-started)
+55. [Airtable](https://airtable.com)
+56. [Notion](https://www.notion.so)
+57. [Coda](https://coda.io)
