@@ -2,9 +2,11 @@
 
 ### IN PROGRESS
 
+- [x] Add _node-RED_ implementation as sub-module
+
 ## TODO
 
-- [ ] Add _node-RED_ implementation as sub-module
+- [ ][Architectural Decision Records](https://github.com/joelparkerhenderson/architecture_decision_record)
 - [ ] Create release builds on github to avoid embedded references to local directories
 - [ ] Use REST call to wait for container initialisation to complete
 - [ ] Logo (https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible)
@@ -25,6 +27,7 @@
 - [ ] Unify event buffer operations
 - [ ] Convert configuration files to [TOML](https://github.com/toml-lang/toml)
 - [ ] UQL (Ref. https://github.com/liljencrantz/crush)
+- [ ] Use /var/lock for lockfiles
 
 ### uhppoted-api
 - [ ] websocket + GraphQL (?)
@@ -89,6 +92,7 @@
 
 - [ ] TeX protocol description
 - [ ] ASN.1 protocol specification
+      - [Taste](https://taste.tools)
 - [ ] godoc
 - [ ] build documentation
 - [ ] install documentation
@@ -191,3 +195,7 @@
 55. [Airtable](https://airtable.com)
 56. [Notion](https://www.notion.so)
 57. [Coda](https://coda.io)
+58. [AnywhereDoor](https://github.com/iayanpahwa/anywheredoor)
+59. [db](https://euandre.org/2020/08/31/the-database-i-wish-i-had.html)
+60. [GNS3](https://www.gns3.com/software)
+61. [kore](https://kore.io)

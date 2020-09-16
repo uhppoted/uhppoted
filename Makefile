@@ -128,6 +128,8 @@ bump:
 	go get -u golang.org/x/sys
 	go get -u google.golang.org/api
 	go get -u google.golang.org/genproto
+	go get -u github.com/uhppoted/uhppote-core
+	go get -u github.com/uhppoted/uhppoted-api
 
 build-github: 
 	cd uhppote-core;        go build ./...
@@ -138,10 +140,6 @@ build-github:
 	cd uhppoted-mqtt;       go build ./...
 	cd uhppoted-app-s3;     go build ./...
 	cd uhppoted-app-sheets; go build ./...
-
-bump:
-	go get -u github.com/uhppoted/uhppote-core
-	go get -u github.com/uhppoted/uhppoted-api
 
 debug: build
 	./bin/uhppote-cli --debug --broadcast 192.168.1.100:54321 get-events 201020304
