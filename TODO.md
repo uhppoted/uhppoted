@@ -64,6 +64,7 @@
 - [ ] Support for multiple brokers
 - [ ] NACL/tweetnacl
 - [ ] Report system events for e.g. listen bound/not bound
+- [ ] https://www.asyncapi.com/docs/getting-started/coming-from-openapi
 
 ### CLI
 - [x] Rework grant/revoke for individual doors (labelled)
@@ -137,6 +138,7 @@
     - [tview](https://github.com/rivo/tview)
     - [eDex-UI](https://github.com/GitSquared/edex-ui)
     - [Oracle APEX](https://apex.oracle.com/en)
+    - [Proton Native](https://proton-native.js.org)
     
 17. PDL + go generate
     - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)
@@ -201,3 +203,6 @@
 61. [kore](https://kore.io)
 63. [Wireshark protocol](https://networkengineering.stackexchange.com/questions/67586/how-do-i-use-the-wireshark-i-o-graph-to-plot-the-value-of-an-arbitrary-bit-in-th)
 64. [spiped](https://www.tarsnap.com/spiped.html)
+65. [Tink](https://github.com/google/tink)
+66. [Grafana](https://grafana.com)
+67. [IOT monitoring tools](https://iot.stackexchange.com/questions/5295/monitoring-tools-for-iot-systems)
