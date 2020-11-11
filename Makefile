@@ -1,4 +1,4 @@
-VERSION = v0.6.5
+VERSION = v0.7.x
 DEBUG  ?= --debug
 DIST   ?= development
 LDFLAGS = -ldflags "-X uhppote.VERSION=$(VERSION)" 
@@ -121,13 +121,31 @@ release: build-all docker integration-tests
 bump:
 	find . -name "Makefile" -exec sed -i '' -e 's/VERSION = v0.6.5/VERSION = v0.7.x/g' {} \;
 	find . -name "*.go"     -exec sed -i '' -e 's/var VERSION string = "v0.6.5"/var VERSION string = "v0.7.x"/g' {} \;
+	cd uhppote-core;        find . -name "*.go" -exec sed -i '' -e 's/var VERSION string = "v0.6.5"/var VERSION string = "v0.7.x"/g' {} \;
+	cd uhppoted-api;        find . -name "*.go" -exec sed -i '' -e 's/var VERSION string = "v0.6.5"/var VERSION string = "v0.7.x"/g' {} \;
+	cd uhppote-simulator;   find . -name "*.go" -exec sed -i '' -e 's/var VERSION string = "v0.6.5"/var VERSION string = "v0.7.x"/g' {} \;
+	cd uhppote-cli;         find . -name "*.go" -exec sed -i '' -e 's/var VERSION string = "v0.6.5"/var VERSION string = "v0.7.x"/g' {} \;
+	cd uhppoted-rest;       find . -name "*.go" -exec sed -i '' -e 's/var VERSION string = "v0.6.5"/var VERSION string = "v0.7.x"/g' {} \;
+	cd uhppoted-mqtt;       find . -name "*.go" -exec sed -i '' -e 's/var VERSION string = "v0.6.5"/var VERSION string = "v0.7.x"/g' {} \;
+	cd uhppoted-app-s3;     find . -name "*.go" -exec sed -i '' -e 's/var VERSION string = "v0.6.5"/var VERSION string = "v0.7.x"/g' {} \;
+	cd uhppoted-app-sheets; find . -name "*.go" -exec sed -i '' -e 's/var VERSION string = "v0.6.5"/var VERSION string = "v0.7.x"/g' {} \;
+
+	cd uhppote-core;        find . -name "TODO.md" -exec sed -i '' -e 's/# v0.6.5/# v0.7.x/g' {} \;
+	cd uhppoted-api;        find . -name "TODO.md" -exec sed -i '' -e 's/# v0.6.5/# v0.7.x/g' {} \;
+	cd uhppote-simulator;   find . -name "TODO.md" -exec sed -i '' -e 's/# v0.6.5/# v0.7.x/g' {} \;
+	cd uhppote-cli;         find . -name "TODO.md" -exec sed -i '' -e 's/# v0.6.5/# v0.7.x/g' {} \;
+	cd uhppoted-rest;       find . -name "TODO.md" -exec sed -i '' -e 's/# v0.6.5/# v0.7.x/g' {} \;
+	cd uhppoted-mqtt;       find . -name "TODO.md" -exec sed -i '' -e 's/# v0.6.5/# v0.7.x/g' {} \;
+	cd uhppoted-app-s3;     find . -name "TODO.md" -exec sed -i '' -e 's/# v0.6.5/# v0.7.x/g' {} \;
+	cd uhppoted-app-sheets; find . -name "TODO.md" -exec sed -i '' -e 's/# v0.6.5/# v0.7.x/g' {} \;
+
 	go get -u cloud.google.com/go
 	go get -u github.com/golang/protobuf
 	go get -u golang.org/x/net
 	go get -u golang.org/x/oauth2
 	go get -u golang.org/x/sys
 	go get -u google.golang.org/api
-	go get -u google.golang.org/genproto
+#	go get -u google.golang.org/genproto
 	go get -u github.com/uhppoted/uhppote-core
 	go get -u github.com/uhppoted/uhppoted-api
 
