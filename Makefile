@@ -1,5 +1,5 @@
-DEBUG ?= --debug
-VERSION = v0.6.x
+VERSION = v0.6.5
+DEBUG  ?= --debug
 DIST   ?= development
 LDFLAGS = -ldflags "-X uhppote.VERSION=$(VERSION)" 
 
@@ -119,8 +119,8 @@ release: build-all docker integration-tests
 	cd dist/windows; zip --recurse-paths ../$(DIST)-windows.zip $(DIST)
 
 bump:
-	find . -name "Makefile" -exec sed -i '' -e 's/VERSION = v0.6.4/VERSION = v0.6.x/g' {} \;
-	find . -name "*.go"     -exec sed -i '' -e 's/var VERSION string = "v0.6.4"/var VERSION string = "v0.6.x"/g' {} \;
+	find . -name "Makefile" -exec sed -i '' -e 's/VERSION = v0.6.5/VERSION = v0.7.x/g' {} \;
+	find . -name "*.go"     -exec sed -i '' -e 's/var VERSION string = "v0.6.5"/var VERSION string = "v0.7.x"/g' {} \;
 	go get -u cloud.google.com/go
 	go get -u github.com/golang/protobuf
 	go get -u golang.org/x/net
