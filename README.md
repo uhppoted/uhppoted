@@ -12,7 +12,7 @@
 - MQTT endpoint for integration with IOT systems
 - AWS S3 integration for file managed access control lists
 - Google Sheets integration for spreadsheet managed access control lists
-- _(in development) [Node-RED](https://nodered.org) low code environment integration_
+- [Node-RED](https://nodered.org) low code environment integration
 
 Supported operating systems:
 - Linux
@@ -45,9 +45,11 @@ The components are intended to simplify the integration of access control into s
 - [AWS IoT](https://aws.amazon.com/iot)
 - [Google Cloud IoT](https://cloud.google.com/solutions/iot)
 - [IBM Watson IoT Platform](https://internetofthings.ibmcloud.com)
+- [Node-RED](https://nodered.org) low code environment integration
 
 ## Releases
 
+- v0.6.5: `node-red-contrib-uhppoted` module for use with NodeRED low code environment
 - v0.6.4: `uhppoted-app-sheets` Google Sheets integration module
 - v0.6.3: Added access control list commands to `uhppoted-mqtt`
 - v0.6.2: Added access control list commands to `uhppoted-rest`
@@ -131,6 +133,7 @@ git submodule update --remote
 | [com.github/uhppoted/uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)     | cron'able access control management using AWS S3        |
 | [com.github/uhppoted/uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-s3) | cron'able access control management using Google Sheets |
 | [com.github/uhppoted/uhppote-simulator](https://github.com/uhppoted/uhppote-simulator) | Device simulator for development use                    |
+| [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted)     | NodeJS nodes for [Node-RED](https://nodered.org) low code environment           |
 | golang.org/x/sys/windows                                                               | Support for Windows services                            |
 | golang.org/x/lint/golint                                                               | Additional *lint* check for release builds              |
 | github.com/eclipse/paho.mqtt.golang                                                    | Eclipse Paho MQTT client                                |
