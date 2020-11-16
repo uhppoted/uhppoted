@@ -35,6 +35,14 @@ The software in this repository has been tested and is known to work with these 
 | Amazon | [UHPPOTE Professional Wiegand 26-40 Bit TCP IP Network Access Control Board with Software For 4 Door 4 Reader](https://www.amazon.com/UHPPOTE-Professional-Wiegand-Network-Controller/dp/B00UX02JWE) |
 | AliExpress | [TCP/IP RFID ACCESS CONTROL SYSTEM Wiegand 26](https://de.aliexpress.com/item/4000781912427.html) |
 
+#### Firmware versions
+
+| Version | Notes |
+| ------- | ---- |
+| 6.56    | Minimum firmware version (cf. [carbonsphere/UHPPOTE](https://github.com/carbonsphere/UHPPOTE) |
+| 6.62    | Lowest firmware version in use |
+| 8.92    | Latest tested firmware version |
+
 ## Raison d'être
 
 The components supplement the manufacturer supplied application which is 'Windows-only' and provides limited support 
