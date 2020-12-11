@@ -162,4 +162,7 @@ git submodule update --remote
 2. [andrewvaughan/uhppote-rfid](https://github.com/andrewvaughan/uhppote-rfid) `Python`
 3. [tachoknight/uhppote-tools](https://github.com/tachoknight/uhppote-tools): `Go`
 4. [jjhuff/uhppote-go](https://github.com/jjhuff/uhppote-go): `Go`
+5. [pawl/Chinese-RFID-Access-Control-Library](https://github.com/pawl/Chinese-RFID-Access-Control-Library)
+6. [Dallas Makerspace:Reverse Engineering RFID Reader](https://dallasmakerspace.org/wiki/ReverseEngineeringRFIDReader)
+
 
