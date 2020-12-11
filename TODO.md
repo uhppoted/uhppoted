@@ -1,8 +1,9 @@
-## v0.6.5
+## v0.7.0
 
 ### IN PROGRESS
 
-- [x] Add _node-RED_ implementation as sub-module
+- [ ] Integration tests
+      - https://stackoverflow.com/questions/57549439/how-do-i-use-docker-with-github-actions
 
 ## TODO
 
@@ -206,3 +207,5 @@
 65. [Tink](https://github.com/google/tink)
 66. [Grafana](https://grafana.com)
 67. [IOT monitoring tools](https://iot.stackexchange.com/questions/5295/monitoring-tools-for-iot-systems)
+68. https://etcd.io
+69. https://rollbar.com/pricing/
