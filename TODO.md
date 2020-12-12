@@ -2,8 +2,10 @@
 
 ### IN PROGRESS
 
+- [x] Rebuild docker images with CGO_ENABLED=0 
 - [ ] Integration tests
       - https://stackoverflow.com/questions/57549439/how-do-i-use-docker-with-github-actions
+- [ ] Default bind and listen addresses to 0.0.0.0
 
 ## TODO
 
