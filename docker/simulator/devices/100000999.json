@@ -1,10 +1,11 @@
 {
-  "serial-number": 999,
+  "serial-number": 100000999,
   "address": "192.168.1.100",
   "subnet": "255.255.255.0",
   "gateway": "192.168.1.1",
   "MAC": "00:12:23:34:45:56",
   "version": "0892",
+  "released": "2016-02-23",
   "offset": "-8h0m0.06912s",
   "doors": {
     "1": {
