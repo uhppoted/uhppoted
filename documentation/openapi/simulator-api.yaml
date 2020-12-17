@@ -1,7 +1,7 @@
 openapi: "3.0.2"
 
 info:
-  version: 0.3.0
+  version: 0.6.8
   title: "uhppote-simulator"
   description: "REST API for the UHPPOTE simulator command interface"
   license:
@@ -135,6 +135,86 @@ paths:
         default:
           description: "Request failed"
 
+  /simulator/{device-id}/open:
+    post:
+      tags:
+        - simulator
+      summary: "Simulates an 'opened door' relay contact"
+      description: "Simulates a 'door opened', generating a door event if record special events is enabled"
+      operationId: openDoor
+      parameters:
+        - name: device-id
+          in: path
+          description: "Simulator device ID"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 405419896
+      requestBody:
+        description: "Door information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Door"     
+      responses:
+        '200':
+          description: "Door opened"
+          headers:
+            Location:
+              schema:
+                type: string
+              description: "URL for door event"
+        '400':
+          description: "Invalid door ID"
+        '404':
+          description: "No device with ID matching device-id"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+  /simulator/{device-id}/close:
+    post:
+      tags:
+        - simulator
+      summary: "Simulates a 'closed door' relay contact"
+      description: "Simulates a 'door closed', generating a door event if record special events is enabled"
+      operationId: closeDoor
+      parameters:
+        - name: device-id
+          in: path
+          description: "Simulator device ID"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 405419896
+      requestBody:
+        description: "Door information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Door"     
+      responses:
+        '200':
+          description: "Door closed"
+          headers:
+            Location:
+              schema:
+                type: string
+              description: "URL for door event"
+        '400':
+          description: "Invalid door ID"
+        '404':
+          description: "No device with ID matching device-id"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
 components:
   schemas:
     Device:
@@ -197,6 +277,7 @@ components:
           format: uint32
           description: "Wiegand-26 card number"
           example: 65538
+
     Swiped:
       required: 
         - access-granted
@@ -212,4 +293,19 @@ components:
         message:
           type: string
           description: "Display message"
+
+    Door:
+      required: 
+        - door
+      properties:
+        door:
+          type: number
+          format: uint8
+          description: "Door # [1..4]"
+          example: 4
+        delay:  
+          type: number
+          format: uint32
+          description: "Open duration (in seconds)"
+          example: 45
 
