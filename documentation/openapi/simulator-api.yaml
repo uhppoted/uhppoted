@@ -157,7 +157,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Door"     
+              $ref: "#/components/schemas/Open"     
       responses:
         '200':
           description: "Door opened"
@@ -197,7 +197,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Door"     
+              $ref: "#/components/schemas/Close"     
       responses:
         '200':
           description: "Door closed"
@@ -294,7 +294,7 @@ components:
           type: string
           description: "Display message"
 
-    Door:
+    Open:
       required: 
         - door
       properties:
@@ -303,9 +303,18 @@ components:
           format: uint8
           description: "Door # [1..4]"
           example: 4
-        delay:  
+        duration:  
           type: number
           format: uint32
           description: "Open duration (in seconds)"
-          example: 45
+          example: 15
 
+    Close:
+      required: 
+        - door
+      properties:
+        door:
+          type: number
+          format: uint8
+          description: "Door # [1..4]"
+          example: 4
