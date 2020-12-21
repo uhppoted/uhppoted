@@ -117,11 +117,6 @@ paths:
       responses:
         '200':
           description: "Access granted/denied"
-          headers:
-            Location:
-              schema:
-                type: string
-              description: "URL for swipe event"
           content:
             application/json:
               schema:
@@ -161,11 +156,10 @@ paths:
       responses:
         '200':
           description: "Door opened"
-          headers:
-            Location:
+          content:
+            application/json:
               schema:
-                type: string
-              description: "URL for door event"
+                $ref: "#/components/schemas/Opened"        
         '400':
           description: "Invalid door ID"
         '404':
@@ -201,11 +195,10 @@ paths:
       responses:
         '200':
           description: "Door closed"
-          headers:
-            Location:
+          content:
+            application/json:
               schema:
-                type: string
-              description: "URL for door event"
+                $ref: "#/components/schemas/Closed"        
         '400':
           description: "Invalid door ID"
         '404':
@@ -287,9 +280,6 @@ components:
         access-granted:
           type: boolean
           description: "true if access was granted"
-        door-opened:
-          type: boolean
-          description: "true if door was opened"
         message:
           type: string
           description: "Display message"
@@ -309,6 +299,18 @@ components:
           description: "Open duration (in seconds)"
           example: 15
 
+    Opened:
+      required: 
+        - door-opened
+        - message
+      properties:
+        door-opened:
+          type: boolean
+          description: "true if door was opened"
+        message:
+          type: string
+          description: "Display message"
+
     Close:
       required: 
         - door
@@ -318,3 +320,15 @@ components:
           format: uint8
           description: "Door # [1..4]"
           example: 4
+
+    Closed:
+      required: 
+        - door-closed
+        - message
+      properties:
+        door-closed:
+          type: boolean
+          description: "true if door was closed"
+        message:
+          type: string
+          description: "Display message"
