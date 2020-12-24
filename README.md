@@ -164,5 +164,8 @@ git submodule update --remote
 4. [jjhuff/uhppote-go](https://github.com/jjhuff/uhppote-go): `Go`
 5. [pawl/Chinese-RFID-Access-Control-Library](https://github.com/pawl/Chinese-RFID-Access-Control-Library)
 6. [Dallas Makerspace:Reverse Engineering RFID Reader](https://dallasmakerspace.org/wiki/ReverseEngineeringRFIDReader)
+7. [wemakerspace/wiegand-daemon](https://github.com/wemakerspace/wiegand-daemon)
+8. [wemakerspace/weigeng-js](https://github.com/wemakerspace/weigeng-js)
+9. [realashleybailey/DoorControl](https://github.com/realashleybailey/DoorControl)
 
 
