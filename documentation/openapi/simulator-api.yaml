@@ -134,9 +134,9 @@ paths:
     post:
       tags:
         - simulator
-      summary: "Simulates a door relay contact"
-      description: "Simulates a 'door opened' or 'door closed' state, generating a door event if record special events is enabled"
-      operationId: setDoor
+      summary: "Simulates a door action (open/close/button)"
+      description: "Simulates a opening and closing a door or pressing the button to unlock a door. Generates a door event if record special events is enabled"
+      operationId: door
       parameters:
         - name: device-id
           in: path
@@ -155,66 +155,32 @@ paths:
             format: uint8
             example: 4
       requestBody:
-        description: "Action (open/close) and duration of door open"
+        description: "Action (open/close/button) and duration"
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Action" 
-      responses:
-        '200':
-          description: "Door opened/closed"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ActionResult"        
-        '400':
-          description: "Invalid door ID"
-        '404':
-          description: "No device with ID matching device-id"
-        '500':
-          description: "Internal system error"
-        default:
-          description: "Request failed"
+              $ref: "#/components/schemas/DoorAction" 
+            examples:
+              open: 
+                value:
+                  action: "open"
+                  duration: 15
+              close: 
+                value:
+                  action: "close"
+              button: 
+                value:
+                  action: "button"
+                  duration: 5
 
-  /simulator/{device-id}/button/{door}:
-    post:
-      tags:
-        - simulator
-      summary: "Simulates a 'button press'"
-      description: "Simulates a 'press button' action, unlocking the associated door and generating a button event if record special events is enabled"
-      operationId: pressButton
-      parameters:
-        - name: device-id
-          in: path
-          description: "Simulator device ID"
-          required: true
-          schema:
-            type: integer
-            format: uint64
-            example: 405419896
-        - name: door
-          in: path
-          description: "Door ID [1..4]"
-          required: true
-          schema:
-            type: integer
-            format: uint8
-            example: 4
-      requestBody:
-        description: "Button press information"
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Button"     
       responses:
         '200':
-          description: "Button pressed"
+          description: "Door opened/closed/unlocked"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ButtonPressed"        
+                $ref: "#/components/schemas/DoorResult"        
         '400':
           description: "Invalid door ID"
         '404':
@@ -300,14 +266,14 @@ components:
           type: string
           description: "Display message"
 
-    Action:
+    DoorAction:
       required: 
         - action
       properties:
         action:  
           type: string
-          format: "open/close"
-          description: "Open or close door"
+          format: "open/close/button"
+          description: "Open/close door or press the door button"
           example: "open"
         duration:  
           type: number
@@ -315,38 +281,15 @@ components:
           description: "Open duration (in seconds)"
           example: 15
 
-    ActionResult:
+    DoorResult:
       required: 
         - result
         - message
       properties:
         result:
           type: boolean
-          description: "true if door was opened/closed"
+          description: "true if door was opened/closed/unlocked"
         message:
           type: string
           description: "Display message"
           example: "Door opened"
-
-    Button:
-      required: 
-        - duration
-      properties:
-        duration:  
-          type: number
-          format: uint32
-          description: "Pressed duration (in seconds)"
-          example: 5
-
-    ButtonPressed:
-      required: 
-        - door-unlocked
-        - message
-      properties:
-        door-unlocked:
-          type: boolean
-          description: "true if door was unlocked"
-        message:
-          type: string
-          description: "Display message"
-
