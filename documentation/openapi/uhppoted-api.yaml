@@ -1,7 +1,7 @@
 openapi: "3.0.2"
 
 info:
-  version: 0.6.4
+  version: 0.6.7
   title: "uhppoted"
   description: "REST API for the uhppoted-rest service. The API currently supports both device level functions and higher level access control list management."
   license:
@@ -878,6 +878,75 @@ paths:
             application/json:
               schema:
                   $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/special-events:
+    put:
+      tags:
+        - device
+      summary: "Enable or disable special events"
+      description: "Enables or disables events on door open, door closed and door button pressed"
+      operationId: putRecordSpecialEvents
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      requestBody:
+        description: "Enable/disable special events"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpecialEvents"        
+            examples:
+              enable: 
+                value:
+                  enabled: true
+              disable: 
+                value:
+                  enabled: false
+
+      responses:
+        '200':
+          description: "Device record special events"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/SpecialEvents"        
+        '403':
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         
   /acl:
     get:
@@ -1436,6 +1505,14 @@ components:
           format: yyyy-MM-dd
           description: "Last date card is enabled (until 23:59)"
           example: "2020-12-31"
+
+    SpecialEvents:
+      properties:
+        enabled:
+          type: boolean
+          format: true/false
+          description: "Enables or disables events for door open, door closed or door button pressed"
+          example: true
 
     ACL:
       required:

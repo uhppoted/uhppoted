@@ -109,6 +109,8 @@ build-all: test vet
 
 	cp uhppoted-rest/documentation/uhppoted-api.yaml documentation/openapi
 	cp uhppoted-rest/documentation/uhppoted-api.yaml install/openapi
+	cp uhppote-simulator/documentation/simulator-api.yaml documentation/openapi
+	cp uhppote-simulator/documentation/simulator-api.yaml install/openapi
 	cp -r install/openapi/* dist/openapi/$(DIST)/
 
 release: build-all docker integration-tests
