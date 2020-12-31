@@ -1,0 +1,295 @@
+openapi: "3.0.2"
+
+info:
+  version: 0.6.8
+  title: "uhppote-simulator"
+  description: "REST API for the UHPPOTE simulator command interface"
+  license:
+    name: "MIT"
+    url: "https://github.com/uhppoted/uhppote-simulator/blob/master/LICENSE"
+    
+servers:    
+  - url: "http://127.0.0.1:8000/uhppote"
+  
+tags:
+  - name: "simulator"
+    description: "UHPPOTE simulator command interface"
+
+paths:
+  /simulator:
+    get:
+      tags:
+        - simulator
+      summary: "Retrieves a list of active simulators"
+      description: "Retrieves the list of simulated UHPPOTE devices"
+      operationId: listDevices
+      responses:
+        '200':
+          description: "List of simulated devices"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DeviceList"        
+        '405':
+          description: "Invalid request"
+        default:
+          description: "Request failed"
+
+    post:
+      tags:
+        - simulator
+      summary: "Creates a new simulator device"
+      description: "Creates a new simulator device. An existing device with the same device ID is not overwritten."
+      operationId: createDevice
+      requestBody:
+        description: "Device ID and type"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewDevice"     
+      responses:
+        '200':
+          description: "Device already exists"
+        '201':
+          description: "Device created successfully"
+          headers:
+            Location:
+              schema:
+                type: string
+              description: "URL for created device"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+  /simulator/{device-id}:
+    delete:
+      tags:
+        - simulator
+      summary: "Deletes a simulator device"
+      description: "Removes all trace of a simulator device"
+      operationId: deleteDevice
+      parameters:
+        - name: device-id
+          in: path
+          description: "Simulator device ID"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 753186420
+      responses:
+        '200':
+          description: "Device deleted"
+        '404':
+          description: "No device with ID matching device-id"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+  /simulator/{device-id}/swipe:
+    post:
+      tags:
+        - simulator
+      summary: "Simulates a card swipe on an access reader"
+      description: "Simulates a card swipe on an access reader, generating an access event"
+      operationId: swipeCard
+      parameters:
+        - name: device-id
+          in: path
+          description: "Simulator device ID"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 405419896
+      requestBody:
+        description: "Wiegand-26 access card details"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Swipe"     
+      responses:
+        '200':
+          description: "Access granted/denied"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Swiped"        
+        '400':
+          description: "Invalid request format"
+        '404':
+          description: "No device with ID matching device-id"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+  /simulator/{device-id}/door/{door}:
+    post:
+      tags:
+        - simulator
+      summary: "Simulates a door action (open/close/button)"
+      description: "Simulates a opening and closing a door or pressing the button to unlock a door. Generates a door event if record special events is enabled"
+      operationId: door
+      parameters:
+        - name: device-id
+          in: path
+          description: "Simulator device ID"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 405419896
+        - name: door
+          in: path
+          description: "Door ID [1..4]"
+          required: true
+          schema:
+            type: integer
+            format: uint8
+            example: 4
+      requestBody:
+        description: "Action (open/close/button) and duration"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DoorAction" 
+            examples:
+              open: 
+                value:
+                  action: "open"
+                  duration: 15
+              close: 
+                value:
+                  action: "close"
+              button: 
+                value:
+                  action: "button"
+                  duration: 5
+
+      responses:
+        '200':
+          description: "Door opened/closed/unlocked"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DoorResult"        
+        '400':
+          description: "Invalid door ID"
+        '404':
+          description: "No device with ID matching device-id"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+components:
+  schemas:
+    Device:
+      required: 
+        - device-id
+        - device-type
+      properties:
+        device-id:
+          type: number
+          format: uint32
+          description: "Simulator device ID"
+          example: 405419896
+        device-type:  
+          type: string
+          format: string
+          description: "UHPPOTE device type"
+          example: "UT0311-L04"
+    DeviceList:
+      required: 
+        - devices
+      properties:
+        devices:
+          type: array
+          items:
+            $ref: "#/components/schemas/Device"        
+          description: "List of simulator devices"
+    NewDevice:
+      required: 
+        - device-id
+        - device-type
+        - compressed
+      properties:
+        device-id:
+          type: number
+          format: uint32
+          description: "Simulator device ID"
+          example: 753186420
+        device-type:  
+          type: string
+          format: "UTO311-L04"
+          description: "UHPPOTE device type. Only UTO311-L04 is supported at present"
+          example: "UT0311-L04"
+        compressed:  
+          type: boolean
+          format: true/false
+          description: "Persisted as gzipped file if true"
+          example: false
+    Swipe:
+      required: 
+        - door
+        - card-number
+      properties:
+        door:
+          type: number
+          format: uint8
+          description: "Door # [1..4]"
+          example: 4
+        card-number:  
+          type: number
+          format: uint32
+          description: "Wiegand-26 card number"
+          example: 65538
+
+    Swiped:
+      required: 
+        - access-granted
+        - door-opened
+        - message
+      properties:
+        access-granted:
+          type: boolean
+          description: "true if access was granted"
+        message:
+          type: string
+          description: "Display message"
+
+    DoorAction:
+      required: 
+        - action
+      properties:
+        action:  
+          type: string
+          format: "open/close/button"
+          description: "Open/close door or press the door button"
+          example: "open"
+        duration:  
+          type: number
+          format: uint32
+          description: "Open duration (in seconds)"
+          example: 15
+
+    DoorResult:
+      required: 
+        - result
+        - message
+      properties:
+        result:
+          type: boolean
+          description: "true if door was opened/closed/unlocked"
+        message:
+          type: string
+          description: "Display message"
+          example: "Door opened"
