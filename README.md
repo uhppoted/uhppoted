@@ -57,6 +57,7 @@ The components are intended to simplify the integration of access control into s
 
 ## Releases
 
+- v0.6.7: Implements `record-special-events` to enable/disable door events
 - v0.6.5: `node-red-contrib-uhppoted` module for use with NodeRED low code environment
 - v0.6.4: `uhppoted-app-sheets` Google Sheets integration module
 - v0.6.3: Added access control list commands to `uhppoted-mqtt`
