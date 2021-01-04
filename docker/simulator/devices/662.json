@@ -1,0 +1,42 @@
+
+{
+  "serial-number": 662,
+  "address": "192.168.1.100",
+  "subnet": "255.255.255.0",
+  "gateway": "192.168.1.1",
+  "MAC": "00:12:23:34:45:56",
+  "version": "0892",
+  "released": "2016-02-23",
+  "offset": "-8h0m0.06912s",
+  "doors": {
+    "1": {
+      "delay": "5s"
+    },
+    "2": {
+      "delay": "5s"
+    },
+    "3": {
+      "delay": "7s"
+    },
+    "4": {
+      "delay": "5s"
+    }
+  },
+  "listener": {
+    "IP": "192.168.1.100",
+    "Port": 60001,
+    "Zone": ""
+  },
+  "system-error": 0,
+  "sequence-id": 0,
+  "special-info": 0,
+  "input-state": 0,
+  "cards": [
+  ],
+  "events": {
+    "size": 256,
+    "index": 0,
+    "events": [
+    ]
+  }
+}
