@@ -43,6 +43,15 @@ The software in this repository has been tested and is known to work with these 
 | 6.62    | Lowest firmware version in use |
 | 8.92    | Latest tested firmware version |
 
+_Notes:_
+
+1. Firmware v6.62 sends anomalous _listen events_ with `0x19` as the start of message identifier. This appears to have
+been fixed in later firmware versions but patches to support these events are included in:
+
+- [`uhppote-core`](https://github.com/uhppoted/uhppote-core/blob/75a185a48184ecb68a07a09ebdd9ea1a8f96ba2c/encoding/UTO311-L0x/UT0311-L0x.go#L201-L204)
+- [`uhppote-simulator`](https://github.com/uhppoted/uhppote-simulator/blob/f599512fb821c892a75786bbe4f35f6ebb4563d9/commands/run.go#L125-L134)
+- [`node-red-contrib-uhppoted`](https://github.com/uhppoted/node-red-contrib-uhppoted/blob/74de32d62bee8097c03c9a1abc2bb45b0160f7b2/nodes/codec.js#L93-L100)
+
 ## Raison d'être
 
 The components supplement the manufacturer supplied application which is 'Windows-only' and provides limited support 
