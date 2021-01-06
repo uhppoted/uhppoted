@@ -196,6 +196,7 @@ docker-simulator:
 	sleep 1
 	./bin/uhppote-cli --debug set-listener 405419896 192.168.1.100:60001
 	./bin/uhppote-cli --debug set-listener 303986753 192.168.1.100:60001
+	./bin/uhppote-cli --debug set-listener 201020304 192.168.1.100:60001
 
 docker-hivemq:
 	docker run --detach --publish 8081:8080 --publish 1883:1883 --publish 8883:8883 --name hivemq --rm hivemq/uhppoted
