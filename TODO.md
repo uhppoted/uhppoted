@@ -2,13 +2,11 @@
 
 ### IN PROGRESS
 
-- [x] Rebuild docker images with CGO_ENABLED=0 
+## TODO
+
 - [ ] Integration tests
       - https://stackoverflow.com/questions/57549439/how-do-i-use-docker-with-github-actions
 - [ ] Default bind and listen addresses to 0.0.0.0
-
-## TODO
-
 - [ ][Architectural Decision Records](https://github.com/joelparkerhenderson/architecture_decision_record)
 - [ ] Create release builds on github to avoid embedded references to local directories
 - [ ] Use REST call to wait for container initialisation to complete
