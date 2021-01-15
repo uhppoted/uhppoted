@@ -2,6 +2,10 @@
 
 ### IN PROGRESS
 
+- [ ] Docker buildkit (Ref. https://pythonspeed.com/articles/docker-buildkit)
+- [ ] Docker compose (Ref. https://jvns.ca/blog/2021/01/04/docker-compose-is-nice)
+- [ ] Docker image for `uhppoted-mqtt`
+
 ## TODO
 
 - [ ] Integration tests
