@@ -8,7 +8,7 @@
 
 1. Generate server key pair:
 
-   keytool -genkey -keyalg RSA -alias hivemq -keystore localhost.jks -storepass hivemq -validity 365 -keysize 2048 -ext "SAN=DNS:localhost"
+   keytool -genkey -keyalg RSA -alias hivemq -keystore localhost.jks -storepass hivemq -validity 365 -keysize 2048 -ext "SAN=DNS:localhost,IP:192.168.1.100"
 
 >  What is your first and last name?
 >    [Unknown]:  localhost

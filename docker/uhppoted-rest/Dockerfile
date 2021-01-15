@@ -3,15 +3,15 @@ FROM alpine
 EXPOSE 8080
 
 RUN mkdir -p /etc/uhppoted
-ADD ./docker/uhppoted-rest/uhppoted.conf /etc/uhppoted/
-ADD ./docker/uhppoted-rest/ca.cert       /etc/uhppoted/rest/
-ADD ./docker/uhppoted-rest/uhppoted.cert /etc/uhppoted/rest/
-ADD ./docker/uhppoted-rest/uhppoted.key  /etc/uhppoted/rest/
-
 RUN mkdir -p /var/uhppoted
 
+ADD uhppoted.conf /etc/uhppoted/
+ADD ca.cert       /etc/uhppoted/rest/
+ADD uhppoted.cert /etc/uhppoted/rest/
+ADD uhppoted.key  /etc/uhppoted/rest/
+
 WORKDIR /opt/uhppoted 
-ADD ./docker/uhppoted-rest/uhppoted-rest     .
-ADD ./docker/uhppoted-rest/uhppote-simulator .
+ADD uhppoted-rest     .
+ADD uhppote-simulator .
 
 ENTRYPOINT /opt/uhppoted/uhppoted-rest

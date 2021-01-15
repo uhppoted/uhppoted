@@ -3,6 +3,7 @@ DEBUG  ?= --debug
 DIST   ?= development
 LDFLAGS = -ldflags "-X uhppote.VERSION=$(VERSION)" 
 
+.PHONY: debug
 .PHONY: docker
 .PHONY: simulator
 .PHONY: uhppoted-rest
@@ -162,7 +163,7 @@ build-github:
 	cd uhppoted-app-sheets; go build ./...
 
 debug: build
-	./bin/uhppote-cli --debug --broadcast 192.168.1.100:54321 get-events 201020304
+	echo ">>> DEBUG"
 
 simulator: 
 	./bin/uhppote-simulator --debug --bind 0.0.0.0:60000 --rest 0.0.0.0:8000 --devices "./runtime/simulation/devices"
@@ -181,15 +182,17 @@ swagger:
 docker:
 	cd uhppote-simulator; env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../docker/simulator     ./...
 	cd uhppoted-rest;     env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../docker/uhppoted-rest ./...
+	cd uhppoted-mqtt;     env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../docker/uhppoted-mqtt ./...
 	cd uhppote-simulator; env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../docker/uhppoted-rest ./...
 	cd uhppote-simulator; env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../docker/integration-tests/simulator ./...
 	
 	docker image     prune -f
 	docker container prune -f
-	docker build -f ./docker/simulator/Dockerfile     -t simulator       . 
-	docker build -f ./docker/uhppoted-rest/Dockerfile -t uhppoted        . 
-	docker build -f ./docker/hivemq/Dockerfile        -t hivemq/uhppoted . 
-	docker build -f ./docker/integration-tests/simulator/Dockerfile -t integration-tests/simulator . 
+	cd ./docker/simulator;     docker build -f Dockerfile -t uhppoted/simulator . 
+	cd ./docker/uhppoted-rest; docker build -f Dockerfile -t uhppoted/rest      . 
+	cd ./docker/uhppoted-mqtt; docker build -f Dockerfile -t uhppoted/mqtt      . 
+	cd ./docker/hivemq;        docker build -f Dockerfile -t hivemq/uhppoted    . 
+	cd ./docker/integration-tests/simulator; docker build -f Dockerfile -t integration-tests/simulator . 
 
 docker-simulator:
 	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --name simulator --rm simulator
@@ -202,7 +205,10 @@ docker-hivemq:
 	docker run --detach --publish 8081:8080 --publish 1883:1883 --publish 8883:8883 --name hivemq --rm hivemq/uhppoted
 
 docker-rest:
-	docker run --detach --publish 8080:8080 --rm uhppoted
+	docker run --detach --publish 8080:8080 --name restd --rm uhppoted/rest
+
+docker-mqtt:
+	docker run --detach --name mqttd --rm uhppoted/mqtt
 
 docker-stop:
 	docker stop simulator
