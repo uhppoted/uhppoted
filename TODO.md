@@ -213,3 +213,5 @@
 67. [IOT monitoring tools](https://iot.stackexchange.com/questions/5295/monitoring-tools-for-iot-systems)
 68. https://etcd.io
 69. https://rollbar.com/pricing/
+70. [IoT: balena](https://www.balena.io)
+71. [bleve](https://blevesearch.com)

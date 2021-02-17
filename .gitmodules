@@ -28,3 +28,6 @@
 [submodule "httpd"]
 	path = httpd
 	url = https://github.com/uhppoted/httpd
+[submodule "uhppoted-app-wild-apricot"]
+	path = uhppoted-app-wild-apricot
+	url = https://github.com/uhppoted/uhppoted-app-wild-apricot
