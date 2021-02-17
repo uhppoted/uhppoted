@@ -66,22 +66,23 @@ The components are intended to simplify the integration of access control into s
 
 ## Releases
 
-- v0.6.8: Adds handling for v6.62 firmware _listen events_ to `node-red-contrib-uhppoted`
-- v0.6.7: Implements `record-special-events` to enable/disable door events
-- v0.6.5: `node-red-contrib-uhppoted` module for use with NodeRED low code environment
-- v0.6.4: `uhppoted-app-sheets` Google Sheets integration module
-- v0.6.3: Added access control list commands to `uhppoted-mqtt`
-- v0.6.2: Added access control list commands to `uhppoted-rest`
-- v0.6.1: Added access control list commands to `uhppote-cli`
-- v0.6.0: `uhppoted-app-s3` AWS S3 integration module
-- v0.5.1: Initial release following restructuring into standalone Go *modules* and *git submodules*
-- v0.5.0: Add MQTT endpoint for remote access to UT0311-L0x controllers
-- v0.4.2: Reworked `GetDevice` REST API to use directed broadcast and added get-device to CLI
-- v0.4.1: Get/set door control state functionality added to simulator, CLI and REST API
-- v0.4.0: REST API service
-- v0.3.1: Functional simulator with minimal command API
-- v0.2.0: Load access control list from TSV file
-- v0.1.0: Bare-bones but functional CLI
+- v0.6.10: Initial release for `uhppoted-app-wild-apricot`
+- v0.6.8:  Adds handling for v6.62 firmware _listen events_ to `node-red-contrib-uhppoted`
+- v0.6.7:  Implements `record-special-events` to enable/disable door events
+- v0.6.5:  `node-red-contrib-uhppoted` module for use with NodeRED low code environment
+- v0.6.4:  `uhppoted-app-sheets` Google Sheets integration module
+- v0.6.3:  Added access control list commands to `uhppoted-mqtt`
+- v0.6.2:  Added access control list commands to `uhppoted-rest`
+- v0.6.1:  Added access control list commands to `uhppote-cli`
+- v0.6.0:  `uhppoted-app-s3` AWS S3 integration module
+- v0.5.1:  Initial release following restructuring into standalone Go *modules* and *git submodules*
+- v0.5.0:  Add MQTT endpoint for remote access to UT0311-L0x controllers
+- v0.4.2:  Reworked `GetDevice` REST API to use directed broadcast and added get-device to CLI
+- v0.4.1:  Get/set door control state functionality added to simulator, CLI and REST API
+- v0.4.0:  REST API service
+- v0.3.1:  Functional simulator with minimal command API
+- v0.2.0:  Load access control list from TSV file
+- v0.1.0:  Bare-bones but functional CLI
 
 ## Modules
 
@@ -95,6 +96,7 @@ The components are intended to simplify the integration of access control into s
 | [uhppoted-mqtt](https://github.com/uhppoted/uhppoted-mqtt)                         | daemon/service with MQTT endpoint for remote access to UT0311-L0x controllers   |
 | [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                     | cron'able utility to download/upload access control lists from/to AWS S3        |
 | [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)             | cron'able utility to download/upload access control lists from/to Google Sheets |
+| [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot) | cron'able utility to manage access control lists from Wild Apricot |
 | [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted) | NodeJS nodes for [Node-RED](https://nodered.org) low code environment           |
 
 ## Integrations
@@ -103,6 +105,7 @@ The components are intended to simplify the integration of access control into s
 | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
 | [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                     | cron'able utility to download/upload access control lists from/to AWS S3        |
 | [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)             | cron'able utility to download/upload access control lists from/to Google Sheets |
+| [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-sheets)       | cron'able utility to manage access control lists from/t Wild Apricot |
 | [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted) | NodeJS nodes for [Node-RED](https://nodered.org) low code environment           |
 
 ## UI
@@ -150,7 +153,8 @@ git submodule update --remote
 | [com.github/uhppoted/uhppoted-rest](https://github.com/uhppoted/uhppoted-rest)         | REST API                                                |
 | [com.github/uhppoted/uhppoted-mqtt](https://github.com/uhppoted/uhppoted-mqtt)         | MQTT endpoint                                           |
 | [com.github/uhppoted/uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)     | cron'able access control management using AWS S3        |
-| [com.github/uhppoted/uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-s3) | cron'able access control management using Google Sheets |
+| [com.github/uhppoted/uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets) | cron'able access control management using Google Sheets |
+| [com.github/uhppoted/uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot) | cron'able access control management using Wild Apricot |
 | [com.github/uhppoted/uhppote-simulator](https://github.com/uhppoted/uhppote-simulator) | Device simulator for development use                    |
 | [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted)     | NodeJS nodes for [Node-RED](https://nodered.org) low code environment           |
 | golang.org/x/sys/windows                                                               | Support for Windows services                            |
