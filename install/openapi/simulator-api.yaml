@@ -1,7 +1,7 @@
 openapi: "3.0.2"
 
 info:
-  version: 0.6.7
+  version: 0.6.10
   title: "uhppote-simulator"
   description: "REST API for the UHPPOTE simulator command interface"
   license:

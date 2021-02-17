@@ -1,0 +1,146 @@
+// GROUPS
+//   601421 Teacher
+//   601422 Staff
+//   601423 Student
+//   601424 Gryffindor
+//   601425 Hufflepuff
+//   601427 Ravenclaw
+//   601428 Slytherin
+//   601429 Mage
+//   601430 Muggle
+//   601431 Pet
+
+// DOORS
+//   Dungeon
+//   Great Hall
+//   Gryffindor
+//   Hogsmeade
+//   Hufflepuff
+//   Kitchen
+//   Ravenclaw
+//   Slytherin
+
+rule StartDate "Sets the start date to the 'registered' field" {
+     when
+         member.HasRegistered()
+     then
+         record.SetStartDate(member.Registered);
+         Retract("StartDate");
+} 
+
+rule EndDate "Sets the end date to the 'expires' field" {
+     when
+         member.HasExpires()
+     then
+         record.SetEndDate(member.Expires);
+         Retract("EndDate");
+}
+
+rule Teacher "Grants a teacher access to common areas and Hogsmeade" {
+     when
+         member.HasGroup("Teacher")
+     then
+         record.Grant("Great Hall");
+         record.Grant("Gryffindor");
+         record.Grant("Hufflepuff");
+         record.Grant("Ravenclaw");
+         record.Grant("Slytherin");
+         record.Grant("Hogsmeade");
+         Retract("Teacher");
+}
+
+// Using group ID instead of name
+rule Staff "Grants ordinary staff access to common areas, Hogsmeade and kitchen" {
+     when
+         member.HasGroup(601422)
+     then
+         record.Grant("Great Hall");
+         record.Grant("Gryffindor");
+         record.Grant("Hufflepuff");
+         record.Grant("Ravenclaw");
+         record.Grant("Slytherin");
+         record.Grant("Hogsmeade");
+         record.Grant("Kitchen");
+         Retract("Staff");
+}
+
+rule Gryffindor "Grants a Gryffindor student access to common areas and Gryffindor" {
+     when
+         member.HasGroup("Student") && member.HasGroup("Gryffindor")
+     then
+         record.Grant("Great Hall");
+         record.Grant("Gryffindor");
+         Retract("Gryffindor");
+}
+
+rule Hufflepuff "Grants a Hufflepuff student access to common areas and Hufflepuff" {
+     when
+         member.HasGroup("Student") && member.HasGroup("Hufflepuff")
+     then
+         record.Grant("Great Hall");
+         record.Grant("Hufflepuff");
+         Retract("Hufflepuff");
+}
+
+rule Ravenclaw "Grants a Ravenclaw student access to common areas and Ravenclaw" {
+     when
+         member.HasGroup("Ravenclaw") && member.HasGroup("Ravenclaw")
+     then
+         record.Grant("Great Hall");
+         record.Grant("Ravenclaw");
+         Retract("Ravenclaw");
+}
+
+rule Slytherin "Grants a Slytherin student access to common areas and Slytherin" {
+     when
+         member.HasGroup("Slytherin") && member.HasGroup("Slytherin")
+     then
+         record.Grant("Great Hall");
+         record.Grant("Slytherin");
+         Retract("Slytherin");
+}
+
+rule Pet "Grants a pet access to all the common rooms and the kitchen" {
+     when
+         member.HasGroup("Pet")
+     then
+         record.Grant("Gryffindor");
+         record.Grant("Hufflepuff");
+         record.Grant("Ravenclaw");
+         record.Grant("Slytherin");
+         record.Grant("Kitchen");
+         Retract("Pet");
+}
+
+rule Muggle "Grants a muggle access to Hogsmeade" {
+     when
+         member.HasGroup("Muggle")
+     then
+         record.Grant("Hogsmeade");
+         Retract("Muggle");
+}
+
+rule Mage "Grants a mage access to the dungeon" {
+     when
+         member.HasGroup("Mage")
+     then
+         record.Grant("Dungeon");
+         Retract("Mage");
+}
+
+rule Suspended "Revokes all access when suspended" {
+     when
+         member.IsSuspended()
+     then
+         record.Revoke("*");
+         Retract("Suspended");
+}
+
+rule Hagrid "Revokes Hagrid's access to Slytherin common room" {
+     when
+         member.HasCardNumber(4000002)
+     then
+         record.Revoke("Slytherin");
+         Retract("Hagrid");
+}
+
