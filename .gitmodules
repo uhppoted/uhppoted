@@ -25,9 +25,6 @@
 [submodule "node-red-contrib-uhppoted"]
 	path = node-red-contrib-uhppoted
 	url = https://github.com/uhppoted/node-red-contrib-uhppoted.git
-[submodule "httpd"]
-	path = httpd
-	url = https://github.com/uhppoted/httpd
 [submodule "uhppoted-app-wild-apricot"]
 	path = uhppoted-app-wild-apricot
 	url = https://github.com/uhppoted/uhppoted-app-wild-apricot
