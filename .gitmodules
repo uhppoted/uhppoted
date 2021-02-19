@@ -28,3 +28,6 @@
 [submodule "uhppoted-app-wild-apricot"]
 	path = uhppoted-app-wild-apricot
 	url = https://github.com/uhppoted/uhppoted-app-wild-apricot
+[submodule "uhppoted-httpd"]
+	path = uhppoted-httpd
+	url = https://github.com/uhppoted/uhppoted-httpd
