@@ -1,4 +1,4 @@
-## v0.6.10
+## v0.6.x
 
 ### IN PROGRESS
 
@@ -33,6 +33,7 @@
 - [ ] Convert configuration files to [TOML](https://github.com/toml-lang/toml)
 - [ ] UQL (Ref. https://github.com/liljencrantz/crush)
 - [ ] Use /var/lock for lockfiles
+- [ ] https://tailscale.com/blog/netaddr-new-ip-type-for-go/
 
 ### uhppoted-api
 - [ ] websocket + GraphQL (?)
@@ -216,3 +217,4 @@
 70. [IoT: balena](https://www.balena.io)
 71. [bleve](https://blevesearch.com)
 72. [ZUI](https://zircleui.github.io/docs/examples/home.html)
+73. [Gitea](https://gitea.io/en-us)
