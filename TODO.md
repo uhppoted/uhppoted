@@ -218,3 +218,6 @@
 71. [bleve](https://blevesearch.com)
 72. [ZUI](https://zircleui.github.io/docs/examples/home.html)
 73. [Gitea](https://gitea.io/en-us)
+74. [FHEM](https://fhem.de)
+75. [ioBroker](https://iobroker.net)
+76. [OpenHAB](https://www.openhab.org)
