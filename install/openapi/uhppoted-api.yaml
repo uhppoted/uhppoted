@@ -1,7 +1,7 @@
 openapi: "3.0.2"
 
 info:
-  version: 0.6.10
+  version: 0.6.11
   title: "uhppoted"
   description: "REST API for the uhppoted-rest service. The API currently supports both device level functions and higher level access control list management."
   license:
@@ -1273,46 +1273,6 @@ components:
         - battery-status
         - fire-alarm-status
       properties:
-        last-event-index:
-          type: number
-          format: uint32
-          description: "Index of last recorded event"
-          example: 37
-        event-type:
-          type: number
-          format: uint8
-          description: "Type of last recorded event"
-          example: 3
-        access-granted:
-          type: boolean
-          format: true/false
-          description: "Access granted/refused"
-          example: true
-        door:
-          type: number
-          format: uint8 (1..4)
-          description: "Door ID for event"
-          example: 3
-        door-opened:
-          type: boolean
-          format: true/false
-          description: "Door opened to request"
-          example: true
-        user-id:
-          type: number
-          format: uint32
-          description: "User ID (card number for swipe events)"
-          example: 1928374646
-        event-timestamp:  
-          type: string
-          format: yyyy-mm-dd HH:mm:ss
-          description: "Event timestamp"
-          example: "2020-03-28 15:32:29"
-        event-result:  
-          type: integer
-          format: event result code
-          description: "Event result code"
-          example: 6
         door-state:  
           type: object
           format: map[uint8]boolean
@@ -1358,6 +1318,64 @@ components:
           format: uint8
           description: "Fire alarm status flag set"
           example: 0
+        event:
+          type: object
+          $ref: "#/components/schemas/DeviceStatus" 
+          format: json
+          description: "Last event (if present)"
+          example: { index:37, type:3, access-granted:true, door:2, user-id:762424255,  timestamp: "2021-04-14 12:34:56", reason: 6 }
+
+    StatusEvent:
+      required: 
+        - index
+        - type
+        - access-granted
+        - door
+        - door-opened
+        - user-id
+        - event-timestamp
+        - event-result
+      properties:
+        index:
+          type: number
+          format: uint32
+          description: "Index of last recorded event"
+          example: 37
+        type:
+          type: number
+          format: uint8
+          description: "Type of last recorded event"
+          example: 3
+        access-granted:
+          type: boolean
+          format: true/false
+          description: "Access granted/refused"
+          example: true
+        door:
+          type: number
+          format: uint8 (1..4)
+          description: "Door ID for event"
+          example: 3
+        door-opened:
+          type: boolean
+          format: true/false
+          description: "Door opened to request"
+          example: true
+        user-id:
+          type: number
+          format: uint32
+          description: "User ID (card number for swipe events)"
+          example: 1928374646
+        timestamp:  
+          type: string
+          format: yyyy-mm-dd HH:mm:ss
+          description: "Event timestamp"
+          example: "2020-03-28 15:32:29"
+        reason:  
+          type: integer
+          format: event reason code
+          description: "Event reason code"
+          example: 6
 
     DeviceTime:
       properties:
