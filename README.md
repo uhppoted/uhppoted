@@ -66,6 +66,7 @@ The components are intended to simplify the integration of access control into s
 
 ## Releases
 
+- v0.6.12: Reworked concurrency and additional configuration
 - v0.6.10: Initial release for `uhppoted-app-wild-apricot`
 - v0.6.8:  Adds handling for v6.62 firmware _listen events_ to `node-red-contrib-uhppoted`
 - v0.6.7:  Implements `record-special-events` to enable/disable door events
