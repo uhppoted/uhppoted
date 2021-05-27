@@ -1,7 +1,7 @@
-openapi: "3.0.2"
+openapi: "3.0.3"
 
 info:
-  version: 0.6.12
+  version: 0.7.x
   title: "uhppoted"
   description: "REST API for the uhppoted-rest service. The API currently supports both device level functions and higher level access control list management."
   license:
@@ -772,6 +772,265 @@ paths:
               schema:
                   $ref: "#/components/schemas/Error"        
 
+  /device/{device-id}/time-profiles:
+    get:
+      tags:
+        - device
+      summary: "Retrieves all time profiles"
+      description: "Retrieves all the time profiles defined on a controller"
+      operationId: getTimeProfiles
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      responses:
+        '200':
+          description: "List of time profiles"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/TimeProfileList"        
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+    put:
+      tags:
+        - device
+      summary: "Updates a list of time profiles"
+      description: "Creates/updates a set of time profiles on a controller"
+      operationId: setTimeProfiles
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      requestBody:
+        description: "List of time profiles"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TimeProfileList"        
+      responses:
+        '200':
+          description: "List of time profiles"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/TimeProfileList"        
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+    delete:
+      tags:
+        - device
+      summary: "Deletes all time profiles"
+      description: "Deletes all time profiles from a controller"
+      operationId: clearTimeProfiles
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      responses:
+        '200':
+          description: "Time profiles cleared"
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/time-profile/{time-profile-id}:
+    get:
+      tags:
+        - device
+      summary: "Retrieves a time profile"
+      description: "Retrieves a time profile from a controller"
+      operationId: getDeviceTimeProfile
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: time-profile-id
+          in: path
+          description: "Time profile ID in the interval [2..254]"
+          required: true
+          schema:
+            type: integer
+            format: uint8 
+            example: 29
+      responses:
+        '200':
+          description: "Time profile defined for the time-profile-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/TimeProfile"        
+        '404':
+          description: "No time profile defined for device-id + time-profile-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"    
+              example: {
+                  tag: "get-time-profile",
+                  message: "Time profile 29 not found"
+              }
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+    
+    put:
+      tags:
+        - device
+      summary: "Adds or updates a time profile"
+      description: "Adds or updates a controller time profile"
+      operationId: putTimeProfile
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: time-profile-id
+          in: path
+          description: "Time profile ID in the interval [2..254]"
+          required: true
+          schema:
+            type: integer
+            format: uint8 
+            example: 29
+      requestBody:
+        description: "Time profile definition"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TimeProfileBody"        
+      responses:
+        '200':
+          description: "Time profile added/updated"
+        '404':
+          description: "No matching device"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
   /device/{device-id}/events:
     get:
       tags:
@@ -1275,14 +1534,30 @@ components:
       properties:
         door-state:  
           type: object
+          # properties:
+          #   1: bool
+          #   2: bool
+          #   3: bool
+          #   4: bool
+          additionalProperties: false 
           format: map[uint8]boolean
           description: "maps door number 1..4 to the corresponding door open/closed state"
-          example: { 1:true, 2:false, 3:false, 4:true }
+          example: { 
+            1: true, 
+            2: false, 
+            3: false, 
+            4: true 
+          }
         door-buttons:  
           type: object
           format: map[uint8]boolean
           description: "maps door number 1..4 to the corresponding door button pressed/released state"
-          example: { 1:true, 2:true, 3:false, 4:true }
+          example: { 
+            1: true, 
+            2: true, 
+            3: false, 
+            4: true 
+          }
         system-state:  
           type: integer
           format: uint8
@@ -1323,7 +1598,15 @@ components:
           $ref: "#/components/schemas/DeviceStatus" 
           format: json
           description: "Last event (if present)"
-          example: { index:37, type:3, access-granted:true, door:2, user-id:762424255,  timestamp: "2021-04-14 12:34:56", reason: 6 }
+          example:  { 
+              index: 37, 
+              type: 3, 
+              access-granted: true, 
+              door: 2, 
+              user-id: 762424255,  
+              timestamp: "2021-04-14 12:34:56", 
+              reason: 6 
+            }
 
     StatusEvent:
       required: 
@@ -1523,6 +1806,130 @@ components:
           format: yyyy-MM-dd
           description: "Last date card is enabled (until 23:59)"
           example: "2020-12-31"
+        profile:  
+          type: number
+          format: integer in the range [2..254]
+          description: "Time profile ID for access to the door"
+          example: 29
+          
+    TimeProfileList:
+      required: 
+        - profiles
+      properties:
+        profiles:
+          type: array
+          items:
+            $ref: "#/components/schemas/TimeProfile"                
+          description: "List of time profiles"
+
+    TimeProfile:
+      required: 
+        - id
+        - start-date
+        - end-date
+        - weekdays
+        - segments
+      properties:
+        id:  
+          type: number
+          format: uint8
+          description: "Time profile ID in the range [2..254]"
+          example: 29
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Date from which time profile is active"
+          example: "2021-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Date after which time profile is no longer active"
+          example: "2021-12-31"
+        weekdays:  
+          type: string
+          items:
+             type: string
+             format: "comma seperated list of weekdays"
+             description: "List of weekdays for which the time profile is active. Weekday name are case-insensitive and 3 letter abbreviations are valid."
+          example: "Monday,Wednesday,Friday"
+          description: "List of weekdays for which the time profile is active"
+        segments:  
+          type: object
+          # properties:
+          #   1: "#/components/schemas/TimeSegment"
+          #   2: "#/components/schemas/TimeSegment"
+          #   3: "#/components/schemas/TimeSegment"
+          additionalProperties: false 
+          example:  { 
+                      1: { "start":"08:30", "end":"11:15" }, 
+                      2: { "start":"12:00", "end":"16:45" } 
+                    }
+          description: "List of up to 3 time intervals during which the time profile is active"
+        linked-profile:  
+          type: number
+          format: uint8
+          description: "ID of time profile linked to this time profile."
+          example: 71
+
+    TimeProfileBody:
+      required: 
+        - start-date
+        - end-date
+        - weekdays
+        - segments
+      properties:
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Date from which time profile is active"
+          example: "2021-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Date after which time profile is no longer active"
+          example: "2021-12-31"
+        weekdays:  
+          type: string
+          items:
+             type: string
+             format: "comma seperated list of weekdays"
+             description: "List of weekdays for which the time profile is active. Weekday name are case-insensitive and 3 letter abbreviations are valid."
+          example: "Monday,Wednesday,Friday"
+          description: "List of weekdays for which the time profile is active"
+        segments:  
+          type: object
+          # properties:
+          #   1: "#/components/schemas/TimeSegment"
+          #   2: "#/components/schemas/TimeSegment"
+          #   3: "#/components/schemas/TimeSegment"
+          additionalProperties: false 
+          example:  { 
+                      1: { "start":"08:30", "end":"11:15" }, 
+                      2: { "start":"12:00", "end":"16:45" } 
+                    }
+          description: "List of up to 3 time intervals during which the time profile is active"
+        linked-profile:  
+          type: number
+          format: uint8
+          description: "ID of time profile linked to this time profile."
+          example: 71
+                    
+    TimeSegment:
+      required: 
+        - start
+        - end
+      properties:
+        start:  
+          type: string
+          format: HH:mm
+          description: "Time from which segment is active"
+          example: "08:30"
+        end:  
+          type: string
+          format: HH:mm
+          description: "Time until after which segment is no longer active"
+          example: "11:15"
+      example: { "start":"08:30", "end":"11:15" }
 
     SpecialEvents:
       properties:
@@ -1568,10 +1975,23 @@ components:
         doors:
           type: array
           items:
-            type: string
-            format: door ID
-            description: "Door ID that matches entry in configuration"
-          example: ["Entrance", "Upstairs", "Downstairs"]
+            $ref: "#/components/schemas/Permission"                
+
+    Permission:
+      required: 
+        - door
+      properties:
+        door:  
+          type: string
+          format: string
+          description: "Door name"
+          example: "Dungeon"
+        profile:
+          type: number
+          format: integer
+          description: "Optional time profile ID (in the range [2..254]) for access to a door"
+          example: 29
+      example: { "door":"Hogsmeade", "profile": 55 }
 
     PutACLResult:
       required:
@@ -1580,7 +2000,12 @@ components:
         report:
           type: array
           items: 
-            $ref: "#/components/schemas/PutACLResultRecord"        
+            $ref: "#/components/schemas/PutACLResultRecord"  
+        warnings:
+          type: array
+          items: 
+            type: string
+          description: "List of warnings for time profiles that could not be created or updated"
       description: "Summary list of changes made to controller card lists"
       example: { "report": [ { "device-id":405419896, "unchanged":1, "updated":3, "added": 2, "deleted":1, "failed":0 } ] }
         
