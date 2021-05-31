@@ -1347,12 +1347,12 @@ paths:
             format: Alphanumeric door name (space- and case-insensitive).
             example: "Entrance"
       requestBody:
-        description: "Card valid dates"
+        description: "Card valid dates and (optional) time profile"
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DateRange"        
+              $ref: "#/components/schemas/DateRangeAndProfile"        
       responses:
         '200':
           description: "Access granted"
@@ -1770,8 +1770,8 @@ components:
           items:
              type: object
              format: map[uint8]boolean
-             description: "maps door number 1..4 to the corresponding door access permission"
-          example: { "1":true, "2":false, "3":false, "4":true }
+             description: "maps door number 1..4 to the corresponding door access permission (true, false or a valid time profile ID"
+          example: { "1":true, "2":false, "3":55, "4":true }
           description: "List of doors and access"
 
     CardPermissions:
@@ -2118,7 +2118,7 @@ components:
           description: "Event result"
           example: 6
 
-    DateRange:
+    DateRangeAndProfile:
       required: 
         - start-date
         - end-date
@@ -2133,6 +2133,11 @@ components:
           format: yyyy-MM-dd
           description: "Last date card is valid"
           example: "2020-12-31"
+        profile:  
+          type: number
+          format: uint8
+          description: "Optional time profile ID (in the range [2..254])"
+          example: 29
 
     Error:
       required: 
