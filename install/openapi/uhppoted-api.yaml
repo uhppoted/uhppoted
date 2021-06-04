@@ -1854,17 +1854,14 @@ components:
           example: "Monday,Wednesday,Friday"
           description: "List of weekdays for which the time profile is active"
         segments:  
-          type: object
+          type: array
           # properties:
           #   1: "#/components/schemas/TimeSegment"
           #   2: "#/components/schemas/TimeSegment"
           #   3: "#/components/schemas/TimeSegment"
           additionalProperties: false 
-          example:  { 
-                      1: { "start":"08:30", "end":"11:15" }, 
-                      2: { "start":"12:00", "end":"16:45" } 
-                    }
-          description: "List of up to 3 time intervals during which the time profile is active"
+          example:  [ { "start":"08:30", "end":"11:15" }, { "start":"12:00", "end":"16:45" }  ]
+          description: "Array of up to 3 time intervals during which the time profile is active"
         linked-profile:  
           type: number
           format: uint8
@@ -1897,17 +1894,10 @@ components:
           example: "Monday,Wednesday,Friday"
           description: "List of weekdays for which the time profile is active"
         segments:  
-          type: object
-          # properties:
-          #   1: "#/components/schemas/TimeSegment"
-          #   2: "#/components/schemas/TimeSegment"
-          #   3: "#/components/schemas/TimeSegment"
+          type: array
           additionalProperties: false 
-          example:  { 
-                      1: { "start":"08:30", "end":"11:15" }, 
-                      2: { "start":"12:00", "end":"16:45" } 
-                    }
-          description: "List of up to 3 time intervals during which the time profile is active"
+          example:  [ { "start":"08:30", "end":"11:15" }, { "start":"12:00", "end":"16:45" } ]
+          description: "Array of up to 3 time intervals during which the time profile is active"
         linked-profile:  
           type: number
           format: uint8
