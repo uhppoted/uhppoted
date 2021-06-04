@@ -117,11 +117,14 @@ build-all: test vet
 	cd uhppote-simulator; env GOOS=darwin  GOARCH=amd64       go build -o ../dist/darwin/$(DIST)  ./...
 	cd uhppote-simulator; env GOOS=windows GOARCH=amd64       go build -o ../dist/windows/$(DIST) ./...
 
-	cp uhppoted-rest/documentation/uhppoted-api.yaml documentation/openapi
-	cp uhppoted-rest/documentation/uhppoted-api.yaml install/openapi
-	cp uhppote-simulator/documentation/simulator-api.yaml documentation/openapi
-	cp uhppote-simulator/documentation/simulator-api.yaml install/openapi
+	cp uhppoted-rest/documentation/uhppoted-api.yaml      documentation/openapi/
+	cp uhppote-simulator/documentation/simulator-api.yaml documentation/openapi/
+	cp uhppoted-rest/documentation/uhppoted-api.yaml      install/openapi/
+	cp uhppote-simulator/documentation/simulator-api.yaml install/openapi/
 	cp -r install/openapi/* dist/openapi/$(DIST)/
+
+	cp uhppoted-mqtt/documentation/TLS.md        cookbook/mqtt/
+	cp uhppoted-mqtt/documentation/signatures.md cookbook/mqtt/
 
 release: build-all docker integration-tests
 	find . -name ".DS_Store" -delete
@@ -230,7 +233,8 @@ docker-integration-tests:
 	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --name qwerty --rm integration-tests/simulator
 
 hivemq-listen:
-	mqtt subscribe --topic 'uhppoted/#'
+	mqtt subscribe --topic 'uhppoted/reply/#' | jq '.' 
+#	mqtt subscribe --topic 'uhppoted/#' | jq '.' 
 #	open runtime/mqtt-spy-0.5.4-jar-with-dependencies.jar
 
 
