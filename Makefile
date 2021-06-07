@@ -125,6 +125,7 @@ build-all: test vet
 
 	cp uhppoted-mqtt/documentation/TLS.md        cookbook/mqtt/
 	cp uhppoted-mqtt/documentation/signatures.md cookbook/mqtt/
+	cp uhppoted-app-s3/documentation/signing.md  cookbook/s3/
 
 release: build-all docker integration-tests
 	find . -name ".DS_Store" -delete
