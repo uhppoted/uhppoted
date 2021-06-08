@@ -31,3 +31,6 @@
 [submodule "uhppoted-httpd"]
 	path = uhppoted-httpd
 	url = https://github.com/uhppoted/uhppoted-httpd
+[submodule "uhppoted-nodejs"]
+	path = uhppoted-nodejs
+	url = https://github.com/uhppoted/uhppoted-nodejs.git
