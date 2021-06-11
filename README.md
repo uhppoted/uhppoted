@@ -66,6 +66,7 @@ The components are intended to simplify the integration of access control into s
 
 ## Releases
 
+- v0.7.0:  Adds support for time profiles. Includes bundled release of `uhppoted-nodejs` NodeJS module
 - v0.6.12: Reworked concurrency and additional configuration
 - v0.6.10: Initial release for `uhppoted-app-wild-apricot`
 - v0.6.8:  Adds handling for v6.62 firmware _listen events_ to `node-red-contrib-uhppoted`
@@ -99,6 +100,7 @@ The components are intended to simplify the integration of access control into s
 | [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)             | cron'able utility to download/upload access control lists from/to Google Sheets |
 | [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot) | cron'able utility to manage access control lists from Wild Apricot |
 | [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted) | NodeJS nodes for [Node-RED](https://nodered.org) low code environment           |
+| [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                     | Standalone NodeJS module  |
 
 ## Integrations
 
@@ -119,6 +121,10 @@ The components are intended to simplify the integration of access control into s
 
 Binaries for Linux, Windows, MacOS and Raspbian/ARM7 are distributed in the tarball for each release. To install
 the binaries, download and extract the tarball to a directory of your choice.
+
+The NodeRED and NodeJS packages are installable from the public repositories:
+- [node-red-contrib-uhppoted](https://www.npmjs.com/package/node-red-contrib-uhppoted)
+- [uhppoted-nodejs](https://www.npmjs.com/package/uhppoted)
 
 ### Building from source
 
