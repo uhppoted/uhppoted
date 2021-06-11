@@ -1,13 +1,12 @@
-## v0.6.12
+## v0.7.0
 
-### IN PROGRESS
+- [x] Docker image for `uhppoted-mqtt`
+
+## TODO
 
 - [ ] [TOML](https://toml.io) files
 - [ ] Docker buildkit (Ref. https://pythonspeed.com/articles/docker-buildkit)
 - [ ] Docker compose (Ref. https://jvns.ca/blog/2021/01/04/docker-compose-is-nice)
-- [x] Docker image for `uhppoted-mqtt`
-
-## TODO
 
 - [ ] Integration tests
       - https://stackoverflow.com/questions/57549439/how-do-i-use-docker-with-github-actions
