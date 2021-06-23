@@ -12,6 +12,7 @@ LDFLAGS = -ldflags "-X uhppote.VERSION=$(VERSION)"
 .PHONY: uhppoted-app-sheets
 .PHONY: uhppoted-app-wild-apricot
 .PHONY: bump
+.PHONY: integration-tests
 
 all: test      \
 	 benchmark \
@@ -70,10 +71,11 @@ benchmark: build
 coverage: build
 	go test -cover ./...
 
-integration-tests: build
+integration-tests: 
+	cd integration-tests; go fmt ./...
 #	go test integration-tests/cli/*.go
-#	go clean -testcache && go test -count=1 integration-tests/mqttd/*.go
-	go clean -testcache && go test -count=1 integration-tests/simulator/*.go
+	go test -v integration-tests/mqttd/*.go
+	# go clean -testcache && go test -count=1 integration-tests/simulator/*.go
 
 build-all: test vet
 	mkdir -p dist/linux/$(DIST)
@@ -209,6 +211,8 @@ docker:
 	cd ./docker/uhppoted-mqtt; docker build -f Dockerfile -t uhppoted/mqtt      . 
 	cd ./docker/hivemq;        docker build -f Dockerfile -t hivemq/uhppoted    . 
 	cd ./docker/integration-tests/simulator; docker build -f Dockerfile -t integration-tests/simulator . 
+	cd ./docker/integration-tests/mqttd;     docker build -f Dockerfile -t integration-tests/mqttd     . 
+	cd ./docker/integration-tests/hivemq;    docker build -f Dockerfile -t integration-tests/hivemq    . 
 
 docker-simulator:
 	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --name simulator --rm uhppoted/simulator
@@ -227,8 +231,7 @@ docker-mqtt:
 	docker run --detach --name mqttd --rm uhppoted/mqtt
 
 docker-stop:
-	docker stop simulator
-	docker stop hivemq
+	docker stop $(docker container ls -q)
 
 docker-integration-tests:
 	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --name qwerty --rm integration-tests/simulator
