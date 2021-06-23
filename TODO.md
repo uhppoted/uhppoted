@@ -222,3 +222,4 @@
 75. [ioBroker](https://iobroker.net)
 76. [OpenHAB](https://www.openhab.org)
 77. [Matrix](https://matrix.org/docs/spec)
+78. [Thrift](https://thrift.apache.org)
