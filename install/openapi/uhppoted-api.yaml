@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 
 info:
-  version: 0.7.x
+  version: 0.7.1
   title: "uhppoted"
   description: "REST API for the uhppoted-rest service. The API currently supports both device level functions and higher level access control list management."
   license:
@@ -844,11 +844,11 @@ paths:
               $ref: "#/components/schemas/TimeProfileList"        
       responses:
         '200':
-          description: "List of time profiles"
+          description: "Time profiles updated"
           content:
             application/json:
               schema:
-                  $ref: "#/components/schemas/TimeProfileList"        
+                  $ref: "#/components/schemas/TimeProfileListResult"        
         '404':
           description: "No device with ID matching device-id"
           content:
@@ -1024,6 +1024,61 @@ paths:
                   $ref: "#/components/schemas/Error"        
         '500':
           description: "Internal system error"
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/tasklist:
+    put:
+      tags:
+        - device
+      summary: "Sets the controller task list"
+      description: "Replaces any existing task list on the controller with the supplied list of scheduled tasks"
+      operationId: setTaskList
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      requestBody:
+        description: "List of tasks"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskList"        
+      responses:
+        '200':
+          description: "Task list updated"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/TaskListResult"         
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
         default:
           description: "Request failed"
           content:
@@ -1822,6 +1877,16 @@ components:
             $ref: "#/components/schemas/TimeProfile"                
           description: "List of time profiles"
 
+    TimeProfileListResult:
+      required: 
+        - warnings
+      properties:
+        warnings:
+          type: array
+          items: 
+            type: string
+          description: "List of warnings for individual time profiles"
+
     TimeProfile:
       required: 
         - id
@@ -1920,6 +1985,74 @@ components:
           description: "Time until after which segment is no longer active"
           example: "11:15"
       example: { "start":"08:30", "end":"11:15" }
+
+    TaskList:
+      required: 
+        - tasks
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"                
+          description: "List of scheduled tasks"
+
+    TaskListResult:
+      required: 
+        - warnings
+      properties:
+        warnings:
+          type: array
+          items: 
+            type: string
+          description: "List of warnings for individual tasks"
+
+    Task:
+      required: 
+        - task
+        - door
+        - start-date
+        - end-date
+        - weekdays
+        - start-time
+      properties:
+        task:  
+          type: string
+          format: enum
+          description: "Standard task description"
+          example: "enable time profile"
+        door:  
+          type: number
+          format: uint8
+          description: "Door [1..4] for which to run task"
+          example: 3
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Date from which task is active"
+          example: "2021-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Date after which task is no longer active"
+          example: "2021-12-31"
+        weekdays:  
+          type: string
+          items:
+             type: string
+             format: "comma seperated list of weekdays"
+             description: "List of weekdays for which the task is active. Weekday name are case-insensitive and 3 letter abbreviations are valid."
+          example: "Monday,Wednesday,Friday"
+          description: "List of weekdays for which the time profile is active"
+        start:  
+          type: string
+          format: HH:mm
+          description: "Time at which to run task"
+          example: "15:30"
+        cards:  
+          type: number
+          format: uint8
+          description: "Number of cards to allow for the 'more-cards' task."
+          example: 7
 
     SpecialEvents:
       properties:
