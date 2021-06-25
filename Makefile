@@ -231,7 +231,7 @@ docker-mqtt:
 	docker run --detach --name mqttd --rm uhppoted/mqtt
 
 docker-stop:
-	docker stop $(docker container ls -q)
+	docker stop $$(docker container ls -q)
 
 docker-integration-tests:
 	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --name qwerty --rm integration-tests/simulator
