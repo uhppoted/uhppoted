@@ -66,6 +66,7 @@ The components are intended to simplify the integration of access control into s
 
 ## Releases
 
+- v0.7.1:  Adds support for controller task list management.
 - v0.7.0:  Adds support for time profiles. Includes bundled release of `uhppoted-nodejs` NodeJS module
 - v0.6.12: Reworked concurrency and additional configuration
 - v0.6.10: Initial release for `uhppoted-app-wild-apricot`
