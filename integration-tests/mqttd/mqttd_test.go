@@ -137,6 +137,6 @@ func TestGetDevices(t *testing.T) {
 		t.Errorf("TIMEOUT")
 
 	case reply := <-queue:
-		t.Errorf("REPLY: %v", reply)
+		fmt.Printf("REPLY: %v", reply)
 	}
 }

@@ -1,6 +1,6 @@
-## v0.7.0
+## v0.7.1
 
-- [x] Docker image for `uhppoted-mqtt`
+- [x] Add task list support
 
 ## TODO
 
