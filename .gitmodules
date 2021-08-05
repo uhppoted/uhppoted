@@ -1,9 +1,9 @@
 [submodule "uhppote-core"]
 	path = uhppote-core
 	url = https://github.com/uhppoted/uhppote-core.git
-[submodule "uhppoted-api"]
-	path = uhppoted-api
-	url = https://github.com/uhppoted/uhppoted-api.git
+[submodule "uhppoted-lib"]
+	path = uhppoted-lib
+	url = git@github.com:uhppoted/uhppoted-lib.git
 [submodule "uhppote-simulator"]
 	path = uhppote-simulator
 	url = https://github.com/uhppoted/uhppote-simulator.git
@@ -34,6 +34,3 @@
 [submodule "uhppoted-nodejs"]
 	path = uhppoted-nodejs
 	url = https://github.com/uhppoted/uhppoted-nodejs.git
-[submodule "uhppoted-lib"]
-	path = uhppoted-lib
-	url = git@github.com:uhppoted/uhppoted-lib.git
