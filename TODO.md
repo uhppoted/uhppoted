@@ -223,3 +223,5 @@
 76. [OpenHAB](https://www.openhab.org)
 77. [Matrix](https://matrix.org/docs/spec)
 78. [Thrift](https://thrift.apache.org)
+79. [LipGloss](https://charm.sh)
+80. [Svelte/Tauri](https://css-tricks.com/how-i-built-a-cross-platform-desktop-application-with-svelte-redis-and-rust)
