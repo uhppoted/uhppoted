@@ -13,7 +13,7 @@
   "sequence-id": 0,
   "special-info": 0,
   "input-state": 0,
-  "cards": null,
+  "cards": [],
   "events": {
     "size": 256,
     "index": 0,
