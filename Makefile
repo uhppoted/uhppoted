@@ -9,8 +9,8 @@ DIST   ?= development
 .PHONY: uhppoted-app-s3
 .PHONY: uhppoted-app-sheets
 .PHONY: uhppoted-app-wild-apricot
-.PHONY: bump
 .PHONY: integration-tests
+.PHONY: fly.io
 
 all: test      \
 	 benchmark \
@@ -205,6 +205,15 @@ hivemq-listen:
 	mqtt subscribe --topic 'uhppoted/reply/#' | jq '.' 
 #	mqtt subscribe --topic 'uhppoted/#' | jq '.' 
 #	open runtime/mqtt-spy-0.5.4-jar-with-dependencies.jar
+
+fly.io:
+	cd uhppote-simulator && env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../docker/fly.io ./...
+	cd uhppoted-httpd    && env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../docker/fly.io ./...
+	cp -R uhppoted-httpd/html         docker/fly.io/httpd
+	cp -R uhppoted-httpd/translations docker/fly.io/httpd
+	cd ./docker/fly.io   && docker build -f Dockerfile -t uhppoted/fly.io . 
+	docker run --publish 8080:8080 --name fly.io --rm uhppoted/fly.io
+#	docker run --detach --publish 8080:8080 --name fly.io --rm uhppoted/fly.io
 
 
 

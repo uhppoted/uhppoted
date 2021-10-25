@@ -1,0 +1,337 @@
+* {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: #002b36;
+  height: 100%;
+}
+
+body {
+  background: #002b36;
+  height: 100%;
+  padding: 0px;
+}
+
+#content {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 120px 1fr 120px;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas: "header header header" "left  content right" "footer footer footer";
+}
+
+header {
+  grid-area: header;
+  display: flex;
+  height: auto;
+  overflow: hidden;
+}
+
+nav {
+  grid-area: left;
+  background: #05232b;
+  margin: 30px 8px 8px 8px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+nav ul {
+  margin-top: 8px;
+  margin-left: 16px;
+  list-style-type: none;
+}
+
+nav ul li {
+  color: #268bd2;
+  font-family: Sans-Serif;
+  font-size: 0.7em;
+  font-weight: lighter;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+}
+
+nav ul li a {
+  color: #268bd2;
+  text-decoration: none;
+}
+
+nav ul li.selected {
+  font-size: 0.74em;
+  font-weight: bold;
+}
+
+main {
+  display: flex;
+  grid-area: content;
+  justify-content: center;
+  overflow: hidden;
+  margin: 30px 0px 8px 0px;
+}
+
+footer {
+  grid-area: footer;
+  height: auto;
+  overflow: hidden;
+  padding: 6px 0px 6px 0px;
+  text-align: center;
+  font-size: 0.8em;
+  background: #586e75;
+  color: #002b36;
+}
+
+#logo {
+  width: 96px;
+  height: 96px;
+  padding: 12px;
+}
+
+#dashboard {
+  flex-grow: 1;
+}
+
+#windmill {
+  display: none;
+  float: right;
+  visibility: hidden;
+  margin-top: 8px;
+  margin-right: 32px;
+}
+
+#windmill:before {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  margin: auto;
+  width: 20px;
+  height: 20px;
+  margin-top: 12 px;
+  border-radius: 50%;
+  border-top: 2px solid #268bd2;
+  border-right: 2px solid transparent;
+  animation: windmill 0.6s linear infinite;
+}
+
+#windmill[data-count] {
+  display: block;
+  visibility: visible;
+}
+
+@keyframes windmill {
+  to {
+    transform: rotate(360deg);
+  }
+}
+#user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: top;
+}
+
+#avatar {
+  background: #021014;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding-right: 8px;
+  cursor: pointer;
+}
+
+#avatar p {
+  font-size: 0.9em;
+  padding: 0px 8px 0px 12px;
+  color: #93a1a1;
+}
+
+#avatar img {
+  width: 32px;
+  height: 32px;
+  padding: 1px 0px 1px 0px;
+}
+
+#avatar img svg {
+  color: red;
+}
+
+#user .menu {
+  background-color: #021014;
+  display: none;
+  z-index: 1;
+  font-size: 1em;
+  width: 100%;
+}
+
+.menu a {
+  color: #657b83;
+  font-size: 0.9em;
+  text-decoration: none;
+  display: block;
+  padding: 3px 0px 3px 0px;
+  text-align: center;
+}
+
+.menu a:hover {
+  color: #eee8d5;
+  background: #93a1a1;
+}
+
+#controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+#controls #message {
+  flex-grow: 1;
+  margin-left: 0px;
+  margin-right: 6px;
+}
+
+#controls img.button {
+  width: 16px;
+  height: 16px;
+  padding: 4px 4px 4px 4px;
+  border: solid 1px #124466;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#controls #commitall {
+  display: none;
+  margin-right: 6px;
+  filter: none;
+}
+
+#controls #rollbackall {
+  display: none;
+  filter: none;
+  margin-right: 6px;
+}
+
+#controls #refresh {
+  margin-left: 6px;
+}
+
+#cardholders {
+  display: block;
+  height: 100%;
+}
+
+#offline {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  padding-top: 96px;
+}
+
+#offline > div {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 32px 16px 32px;
+  border-radius: 4px;
+  border: solid 1px #dc322f;
+}
+
+#offline p {
+  font-family: Sans-Serif;
+  font-size: 0.75em;
+  color: #839496;
+  margin-bottom: 16px;
+}
+
+#offline a {
+  font-family: Sans-Serif;
+  font-size: 0.6em;
+  color: #268bd2;
+  text-decoration: none;
+}
+
+#offline a:hover, visited {
+  color: #268bd2;
+  text-decoration: none;
+}
+
+#offline div a {
+  font-family: Sans-Serif;
+  font-size: 0.7em;
+  color: #268bd2;
+}
+
+#offline + div > p {
+  font-family: Sans-Serif;
+  font-size: 0.75em;
+  font-weight: normal;
+  text-align: center;
+  color: #839496;
+  margin-top: 4px;
+}
+
+.message {
+  background-color: #073642;
+  display: block;
+  height: 23px;
+  padding: 0px 4px 4px 0px;
+  text-align: center;
+  font-size: 0.9em;
+  font-weight: normal;
+  border-radius: 4px;
+  visibility: hidden;
+}
+
+.message div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.message .warning {
+  flex: auto;
+}
+
+.warning {
+  color: #839496;
+}
+
+.dismiss {
+  flex: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: #227dbc;
+}
+
+#container {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "header header header" "left  content right" "footer footer footer";
+}
+
+#unauthorized {
+  grid-area: content;
+  display: flex;
+  flex-flow: column nowrap;
+  text-align: center;
+  justify-content: start;
+  align-items: center;
+  width: 100%;
+  padding: 96px 0px 4px 0px;
+  font-size: 0.9em;
+}
+
+#unauthorized div {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}

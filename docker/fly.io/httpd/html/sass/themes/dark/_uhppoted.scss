@@ -1,0 +1,49 @@
+@charset 'UTF-8';
+
+@import '../../base/_solarize';
+
+$content-background: $solarize-base03;
+$content-message-background: $solarize-base02;
+
+$warning-colour: $solarize-base0;
+$warning-dismiss-colour: darken($solarize-blue, 5%);
+
+$nav-background: darken($solarize-base02, 5%);
+
+$footer-background: $solarize-base01;
+$footer-text: $solarize-base03;
+
+$user-avatar-background: darken($solarize-base02, 10%);
+$user-avatar-text: $solarize-base1;
+$user-menu-background: darken($solarize-base02, 10%);
+$user-menu-item: $solarize-base00;
+$user-menu-item-highlight: $solarize-base2;
+$user-menu-item-highlight-background: $solarize-base1;
+
+$fieldset-text: $solarize-base0;
+$fieldset-border: 1px solid $solarize-base01;
+$fieldset-button-border: 2px solid $solarize-blue;
+$fieldset-message-background: $solarize-base01;
+$fieldset-message-background: $solarize-base01;
+$fieldset-warning-text: $solarize-base03;
+
+$content-controls-border: darken($solarize-blue, 25%);
+
+$content-table-background: darken($solarize-base02, 5%);
+$content-table-background-header: darken($solarize-base02, 5%);
+$content-table-background-odd: $solarize-base03;
+$content-table-background-even: $solarize-base02;
+$content-table-border: darken($solarize-blue, 25%);
+$content-table-scrollbar-color:  $solarize-base01 $solarize-base0;
+$content-table-text: $solarize-base0;
+$content-table-row-modified: darken($solarize-blue, 25%);
+$content-table-row-unconfigured: darken($solarize-yellow, 2.5%);
+$content-table-item-normal: $solarize-base00;
+$content-table-item-unknown: $solarize-base00;
+$content-table-item-uncertain: $solarize-base01;
+$content-table-item-error: darken($solarize-red, 10%);
+$content-table-commit:   darken($solarize-blue, 5%);
+$content-table-rollback: darken($solarize-red, 10%);
+
+$content-svg-filter-commit:   none;
+$content-svg-filter-rollback: none;

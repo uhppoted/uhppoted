@@ -4,6 +4,8 @@
 
 ## TODO
 
+- [ ] Switch to libsodium
+      - https://blog.trailofbits.com/2019/07/08/fuck-rsa/
 - [ ] [TOML](https://toml.io) files
 - [ ] Docker buildkit (Ref. https://pythonspeed.com/articles/docker-buildkit)
 - [ ] Docker compose (Ref. https://jvns.ca/blog/2021/01/04/docker-compose-is-nice)

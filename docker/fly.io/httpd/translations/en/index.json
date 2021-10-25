@@ -1,0 +1,13 @@
+{
+    "Login": {
+        "UserID": {
+            "Hint": "User ID"
+        },
+        "Password": {
+            "Hint": "Password"
+        },
+        "Ok": {
+            "Label": "Ok"
+        }
+    }
+}

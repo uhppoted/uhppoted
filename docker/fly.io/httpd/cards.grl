@@ -1,0 +1,55 @@
+rule AddCard "(allowed)" {
+     when
+	     OP == "add::card"
+	 then
+	     RESULT.Allow = true;
+         Retract("AddCard");
+}
+
+rule UpdateNewCard "New card number must be creater than 6000000" {
+     when
+	      OP == "update::card" && CARD.Number == 0 && (FIELD != "number" || (FIELD == "number" && VALUE > 6000000))
+	 then
+	     RESULT.Allow = true;
+         Retract("UpdateNewCard");
+}
+
+rule UpdateCard "Only student card numbers (greater than 6000000) can be updated" {
+     when
+	     OP == "update::card" && (CARD.Number == 0 || CARD.Number > 6000000) && (FIELD != "number" || (FIELD == "number" && (VALUE == 0 || VALUE > 6000000)))
+ 	 then
+ 	     RESULT.Allow = true;
+          Retract("UpdateCard");
+}
+
+rule DeleteCard "Card number must be greater than 6000000" {
+     when
+	     OP == "delete::card" && CARD.Number > 6000000
+	 then
+	     RESULT.Allow = true;
+         Retract("DeleteCard");
+}
+
+// rule AddGryffindor "Gryffindor should not be ticked" {
+//      when
+//          OP == "add" && CH.HasGroup("G04")
+//      then
+//         RESULT.Refuse = true;
+//         Retract("AddGryffindor");
+// }
+// 
+// rule UpdateTeacher "Teacher card numbers (between 1000000 and 2000000) cannot be updated" {
+//      when
+// 	     OP == "update" && ORIGINAL.Number > 1000000 && ORIGINAL.Number < 2000000 && UPDATED.Number == ORIGINAL.Number
+// 	 then
+// 	     RESULT.Allow = true;
+//          Retract("UpdateTeacher");
+// }
+// 
+// rule DeleteTeacher "Teacher should not be ticked" {
+//      when
+//          OP == "delete" && CH.HasGroup("G01")
+//      then
+//         RESULT.Refuse = true;
+//         Retract("DeleteTeacher");
+// }

@@ -1,0 +1,3 @@
+ls -la /opt/uhppoted
+cd /opt/uhppoted && ./uhppote-simulator --devices /etc/uhppoted/simulator &
+cd /opt/uhppoted && ./uhppoted-httpd    --console

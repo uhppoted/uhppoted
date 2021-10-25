@@ -1,0 +1,40 @@
+rule LAN "Only LISTEN address can be changed" {
+     when
+ 	     OP == "update::interface" && FIELD == "listen"
+ 	 then
+ 	     RESULT.Allow = true;
+         Retract("LAN");
+}
+
+//rule Rule405419896 "Can't touch 405419896" {
+//     when
+//         OP.HasSuffix("::controller") && CONTROLLER.DeviceID == 405419896
+// 	 then
+// 	     RESULT.Refuse = true;
+//         Retract("Rule405419896");
+//}
+
+rule AddController "Allowed" {
+     when
+	     OP == "add::controller"
+	 then
+	     RESULT.Allow = true;
+         Retract("AddController");
+}
+
+rule UpdateController "Allowed" {
+      when
+ 	     OP == "update::controller"
+ 	 then
+ 	     RESULT.Allow = true;
+         Retract("UpdateController");
+}
+
+rule DeleteController "Allowed" {
+     when
+	     OP == "delete::controller"
+	 then
+	     RESULT.Allow = true;
+         Retract("DeleteController");
+}
+

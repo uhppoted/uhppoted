@@ -1,0 +1,304 @@
+{
+  "logs": [
+    {
+      "timestamp": "2021-10-22T12:37:01.310399-07:00",
+      "UID": "admin",
+      "OID": "0.6.2",
+      "item": "group",
+      "id": "",
+      "name": "Ravenclaw",
+      "field": "door",
+      "details": "Revoked access to Slytherin"
+    },
+    {
+      "timestamp": "2021-10-25T11:04:01.093734-07:00",
+      "UID": "admin",
+      "OID": "0.6.21",
+      "item": "group",
+      "id": "",
+      "name": "Pet",
+      "field": "door",
+      "details": "Revoked access to Gryffindor"
+    },
+    {
+      "timestamp": "2021-10-25T12:10:35.275463-07:00",
+      "UID": "admin",
+      "OID": "0.6.30",
+      "item": "card",
+      "id": "8165535",
+      "name": "Harry Potter",
+      "field": "group",
+      "details": "Revoked access to Pet"
+    },
+    {
+      "timestamp": "2021-10-25T11:02:44.300353-07:00",
+      "UID": "admin",
+      "OID": "0.6.8",
+      "item": "door",
+      "id": "405419896:3",
+      "name": "Ravenclaw",
+      "field": "delay",
+      "details": "Updated delay from 5s to 5s"
+    },
+    {
+      "timestamp": "2021-10-25T11:03:09.546642-07:00",
+      "UID": "admin",
+      "OID": "0.6.10",
+      "item": "door",
+      "id": "405419896:4",
+      "name": "Slytherin",
+      "field": "delay",
+      "details": "Updated delay from 6s to 6s"
+    },
+    {
+      "timestamp": "2021-10-25T11:03:53.582586-07:00",
+      "UID": "admin",
+      "OID": "0.6.16",
+      "item": "group",
+      "id": "",
+      "name": "Pet",
+      "field": "door",
+      "details": "Granted access to Ravenclaw"
+    },
+    {
+      "timestamp": "2021-10-25T11:03:53.583103-07:00",
+      "UID": "admin",
+      "OID": "0.6.17",
+      "item": "group",
+      "id": "",
+      "name": "Pet",
+      "field": "door",
+      "details": "Granted access to Slytherin"
+    },
+    {
+      "timestamp": "2021-10-25T11:02:31.326731-07:00",
+      "UID": "admin",
+      "OID": "0.6.7",
+      "item": "card",
+      "id": "8165535",
+      "name": "Harry PotterX",
+      "field": "name",
+      "details": "Updated name from Harry PotterX to Harry Potter"
+    },
+    {
+      "timestamp": "2021-10-25T11:04:01.09513-07:00",
+      "UID": "admin",
+      "OID": "0.6.23",
+      "item": "group",
+      "id": "",
+      "name": "Pet",
+      "field": "door",
+      "details": "Revoked access to Ravenclaw"
+    },
+    {
+      "timestamp": "2021-10-22T12:37:01.31092-07:00",
+      "UID": "admin",
+      "OID": "0.6.3",
+      "item": "group",
+      "id": "",
+      "name": "Slytherin",
+      "field": "door",
+      "details": "Revoked access to Slytherin"
+    },
+    {
+      "timestamp": "2021-10-25T11:03:53.580866-07:00",
+      "UID": "admin",
+      "OID": "0.6.13",
+      "item": "group",
+      "id": "",
+      "name": "Pet",
+      "field": "door",
+      "details": "Granted access to Hogsmeade"
+    },
+    {
+      "timestamp": "2021-10-25T11:03:53.581477-07:00",
+      "UID": "admin",
+      "OID": "0.6.14",
+      "item": "group",
+      "id": "",
+      "name": "Pet",
+      "field": "door",
+      "details": "Granted access to Gryffindor"
+    },
+    {
+      "timestamp": "2021-10-25T11:42:48.061133-07:00",
+      "UID": "admin",
+      "OID": "0.6.25",
+      "item": "card",
+      "id": "8165535",
+      "name": "Harry Potter",
+      "field": "group",
+      "details": "Granted access to Pet"
+    },
+    {
+      "timestamp": "2021-10-25T11:03:14.301695-07:00",
+      "UID": "admin",
+      "OID": "0.6.11",
+      "item": "door",
+      "id": "405419896:4",
+      "name": "Slytherin",
+      "field": "delay",
+      "details": "Updated delay from 6s to 5s"
+    },
+    {
+      "timestamp": "2021-10-25T11:03:21.60414-07:00",
+      "UID": "admin",
+      "OID": "0.6.12",
+      "item": "controller",
+      "id": "303986753",
+      "name": "BetaX",
+      "field": "name",
+      "details": "Updated name from BetaX to Beta"
+    },
+    {
+      "timestamp": "2021-10-25T11:43:24.784316-07:00",
+      "UID": "admin",
+      "OID": "0.6.26",
+      "item": "card",
+      "id": "8165535",
+      "name": "Harry Potter",
+      "field": "group",
+      "details": "Revoked access to Pet"
+    },
+    {
+      "timestamp": "2021-10-22T12:37:01.309769-07:00",
+      "UID": "admin",
+      "OID": "0.6.1",
+      "item": "group",
+      "id": "",
+      "name": "Hufflepuff",
+      "field": "door",
+      "details": "Revoked access to Slytherin"
+    },
+    {
+      "timestamp": "2021-10-22T12:37:01.311862-07:00",
+      "UID": "admin",
+      "OID": "0.6.5",
+      "item": "group",
+      "id": "",
+      "name": "Muggle",
+      "field": "door",
+      "details": "Revoked access to Slytherin"
+    },
+    {
+      "timestamp": "2021-10-25T12:09:12.062537-07:00",
+      "UID": "admin",
+      "OID": "0.6.29",
+      "item": "card",
+      "id": "8165535",
+      "name": "Harry Potter",
+      "field": "group",
+      "details": "Granted access to Pet"
+    },
+    {
+      "timestamp": "2021-10-25T11:04:01.096018-07:00",
+      "UID": "admin",
+      "OID": "0.6.24",
+      "item": "group",
+      "id": "",
+      "name": "Pet",
+      "field": "door",
+      "details": "Revoked access to Slytherin"
+    },
+    {
+      "timestamp": "2021-10-25T11:04:01.094484-07:00",
+      "UID": "admin",
+      "OID": "0.6.22",
+      "item": "group",
+      "id": "",
+      "name": "Pet",
+      "field": "door",
+      "details": "Revoked access to Hufflepuff"
+    },
+    {
+      "timestamp": "2021-10-25T11:03:55.425888-07:00",
+      "UID": "admin",
+      "OID": "0.6.18",
+      "item": "group",
+      "id": "",
+      "name": "Pet",
+      "field": "door",
+      "details": "Granted access to Great Hall"
+    },
+    {
+      "timestamp": "2021-10-25T12:04:27.720026-07:00",
+      "UID": "admin",
+      "OID": "0.6.27",
+      "item": "card",
+      "id": "8165535",
+      "name": "Harry Potter",
+      "field": "group",
+      "details": "Granted access to Pet"
+    },
+    {
+      "timestamp": "2021-10-25T11:04:01.092207-07:00",
+      "UID": "admin",
+      "OID": "0.6.19",
+      "item": "group",
+      "id": "",
+      "name": "Pet",
+      "field": "door",
+      "details": "Revoked access to Great Hall"
+    },
+    {
+      "timestamp": "2021-10-22T12:37:01.311379-07:00",
+      "UID": "admin",
+      "OID": "0.6.4",
+      "item": "group",
+      "id": "",
+      "name": "Mage",
+      "field": "door",
+      "details": "Revoked access to Slytherin"
+    },
+    {
+      "timestamp": "2021-10-25T12:06:21.566481-07:00",
+      "UID": "admin",
+      "OID": "0.6.28",
+      "item": "card",
+      "id": "8165535",
+      "name": "Harry Potter",
+      "field": "group",
+      "details": "Revoked access to Pet"
+    },
+    {
+      "timestamp": "2021-10-25T11:03:53.582031-07:00",
+      "UID": "admin",
+      "OID": "0.6.15",
+      "item": "group",
+      "id": "",
+      "name": "Pet",
+      "field": "door",
+      "details": "Granted access to Hufflepuff"
+    },
+    {
+      "timestamp": "2021-10-25T11:04:01.092952-07:00",
+      "UID": "admin",
+      "OID": "0.6.20",
+      "item": "group",
+      "id": "",
+      "name": "Pet",
+      "field": "door",
+      "details": "Revoked access to Hogsmeade"
+    },
+    {
+      "timestamp": "2021-10-22T12:37:01.312734-07:00",
+      "UID": "admin",
+      "OID": "0.6.6",
+      "item": "group",
+      "id": "",
+      "name": "Pet",
+      "field": "door",
+      "details": "Revoked access to Slytherin"
+    },
+    {
+      "timestamp": "2021-10-25T11:02:59.530135-07:00",
+      "UID": "admin",
+      "OID": "0.6.9",
+      "item": "door",
+      "id": "0:0",
+      "name": "",
+      "field": "door",
+      "details": "Added \u003cnew\u003e door"
+    }
+  ]
+}

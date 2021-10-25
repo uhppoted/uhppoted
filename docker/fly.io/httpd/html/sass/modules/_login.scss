@@ -1,0 +1,94 @@
+#container {
+  display: grid; 
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-rows: auto 1fr;
+  justify-content:center;
+}
+
+#form {
+  display: flex; 
+  flex-direction: column; 
+  justify-content:center;
+}
+
+#login {
+  display: block;
+  border: $fieldset-border;
+  margin: 80px 0px 4px 0px;
+  padding: 8px;
+  border-radius: 4px;
+  color: $fieldset-text;
+}
+
+#login form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;    
+  align-items: center;
+  padding-top: 4px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+#login legend {
+  font-size: 0.9em;  
+  font-style: italic;
+}
+
+.field {
+  border-radius: 4px;
+  box-sizing: content-box;
+  width: 100%;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border: $field-border;
+}
+
+.field > input {
+  font-size: 0.8em;  
+  padding-left: 12px;
+  padding-right: 12px;
+  border: none;
+  outline: none;
+  color: $fieldset-text;
+}
+
+.field > img {
+  display: inline-block;
+  width: 16px;
+  height: 100%;
+  padding-left: 8px;
+  padding-right: 8px;
+  vertical-align: middle;
+}
+
+.field > input::placeholder {
+  font-style: italic;
+  color: $fieldset-text;
+}
+
+form button {
+  font-size: 0.75em;
+  min-width: 96px;  
+  margin-top: 8px;
+  padding: 4px 16px 4px 16px;
+  border-radius: 4px;
+  outline: none;
+  color: $fieldset-text;
+  border: $fieldset-button-border;
+}
+
+#message { 
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 4px 0px 4px 0px;
+  font-size: 0.85em;
+  background: $fieldset-message-background;
+}
+
+#message .warning { 
+  color: $fieldset-warning-text;
+}
