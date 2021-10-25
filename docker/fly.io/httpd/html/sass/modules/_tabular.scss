@@ -1,0 +1,160 @@
+.tabular  {
+  background: $content-table-background;
+  color: $content-table-text;
+  border: none;
+  border-collapse: collapse;
+}
+
+.tabular thead {
+  position: sticky; 
+  top: 0px; 
+  z-index: 3;
+}
+
+.tabular thead th.rowheader {
+  position: sticky;
+  left: 0px;
+}
+
+.tabular thead tr th {
+  background: $content-table-background-header;
+  color: $content-table-text;  
+  padding: 0.5rem;
+  font-size: 0.9em;
+  font-weight: 500;
+  font-style: normal;
+  text-align: center;
+}
+
+.tabular tbody tr {
+}
+
+.tabular tbody tr:nth-child(odd) {
+  background: $content-table-background-odd;
+}
+
+.tabular tbody tr:nth-child(even) {
+  background: $content-table-background-even;
+}
+
+.tabular tbody tr.modified {
+  background: $content-table-row-modified;
+}
+
+.tabular tbody tr.new {
+  background: $content-table-row-new;
+}
+
+.tabular tbody td {
+  position: relative; 
+  padding: 0.1rem 0.5rem 0.1rem 0.5rem;
+  text-align: left;
+  font-size: 0.9em;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.tabular tbody td.rowheader {
+  position: sticky;
+  left: 0px;
+  z-index: 2;
+}
+
+.tabular tbody tr:nth-child(odd) td.rowheader {
+  background: darken($content-table-background-odd,5%);
+}
+
+.tabular tbody tr:nth-child(even) td.rowheader {
+  background: darken($content-table-background-even,5%);
+}
+
+.tabular tbody tr.modified td.rowheader {
+  background: $content-table-row-modified;
+}
+
+.tabular tbody tr.new td.rowheader {
+  background: $content-table-row-new;
+}
+
+.tabular td img.flag {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 10px;
+  height: 10px;
+  visibility: hidden;
+ }
+
+.tabular td.modified img.flag {
+   filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
+   visibility: visible;
+}
+
+.tabular td.pending img.flag {
+   filter: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
+   visibility: visible;
+}
+
+.tabular td.conflict img.flag {
+   filter: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
+   visibility: visible;
+}
+
+.tabular tbody tr td input {
+}
+
+.tabular td.conflict input {
+  background-color: $content-table-item-conflict;
+}
+
+.tabular td span.control {
+  padding: 0px 0px 0px 0px;
+  font-size: 1.5rem;  
+  font-weight: bold;
+  visibility: hidden;
+  cursor: pointer;
+}
+
+.tabular td span.control img {
+  margin-left: 2px;
+  margin-right: 2px;
+  margin-top: 8px;
+  margin-bottom: 0px;
+  border: solid 1px #268bd2;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.tabular td span.commit {
+  color: $content-table-commit;  
+}
+
+.tabular td span.commit img {
+  width: 12px;
+  padding: 2px;
+  filter: invert(58%) sepia(89%) saturate(3723%) hue-rotate(41deg) brightness(98%) contrast(101%);
+}
+
+.tabular td span.rollback {
+  color: $content-table-rollback;  
+}
+
+.tabular td span.rollback img {
+  width: 14px;
+  height: 14px;
+  padding: 1px;
+  filter: invert(30%) sepia(41%) saturate(3835%) hue-rotate(344deg) brightness(89%) contrast(92%);
+}
+
+.tabular tbody tr.modified td span.commit {
+  visibility: visible;
+}
+
+.tabular tbody tr.modified td span.rollback {
+  visibility: visible;
+}
+
+.tabular tbody tr.new td span.rollback {
+  visibility: visible;
+}
+

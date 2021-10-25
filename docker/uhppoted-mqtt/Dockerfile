@@ -8,14 +8,14 @@ RUN mkdir -p /etc/uhppoted/mqtt/rsa/encryption
 
 RUN mkdir -p /var/uhppoted
 
-ADD uhppoted.conf                   /etc/uhppoted
-ADD hivemq.pem                      /etc/uhppoted
-ADD secure/client.key               /etc/uhppoted/mqtt
-ADD secure/client.cert              /etc/uhppoted/mqtt
-ADD secure/rsa/signing/mqttd.key    /etc/uhppoted/mqtt/rsa/signing
-ADD secure/rsa/encryption/mqttd.key /etc/uhppoted/mqtt/rsa/encryption
+COPY uhppoted.conf                   /etc/uhppoted
+COPY hivemq.pem                      /etc/uhppoted
+COPY secure/client.key               /etc/uhppoted/mqtt
+COPY secure/client.cert              /etc/uhppoted/mqtt
+COPY secure/rsa/signing/mqttd.key    /etc/uhppoted/mqtt/rsa/signing
+COPY secure/rsa/encryption/mqttd.key /etc/uhppoted/mqtt/rsa/encryption
 
 WORKDIR /opt/uhppoted 
-ADD     uhppoted-mqtt .
+COPY     uhppoted-mqtt .
 
 ENTRYPOINT /opt/uhppoted/uhppoted-mqtt --console

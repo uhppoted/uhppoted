@@ -1,0 +1,68 @@
+{
+  "doors": [
+    {
+      "OID": "0.2.1",
+      "name": "Great Hall",
+      "delay": 5,
+      "mode": "controlled",
+      "index": 1,
+      "created": "2021-08-17 12:06:05"
+    },
+    {
+      "OID": "0.2.7",
+      "name": "Ravenclaw",
+      "delay": 5,
+      "mode": "controlled",
+      "index": 7,
+      "created": "2021-08-17 12:12:05"
+    },
+    {
+      "OID": "0.2.8",
+      "name": "Slytherin",
+      "delay": 5,
+      "mode": "controlled",
+      "index": 8,
+      "created": "2021-08-17 12:13:05"
+    },
+    {
+      "OID": "0.2.4",
+      "name": "Hogsmeade",
+      "delay": 5,
+      "mode": "controlled",
+      "index": 4,
+      "created": "2021-08-17 12:09:05"
+    },
+    {
+      "OID": "0.2.3",
+      "name": "Dungeon",
+      "delay": 5,
+      "mode": "controlled",
+      "index": 3,
+      "created": "2021-08-17 12:08:05"
+    },
+    {
+      "OID": "0.2.2",
+      "name": "Kitchen",
+      "delay": 5,
+      "mode": "controlled",
+      "index": 2,
+      "created": "2021-08-17 12:07:05"
+    },
+    {
+      "OID": "0.2.6",
+      "name": "Hufflepuff",
+      "delay": 5,
+      "mode": "controlled",
+      "index": 6,
+      "created": "2021-08-17 12:11:05"
+    },
+    {
+      "OID": "0.2.5",
+      "name": "Gryffindor",
+      "delay": 5,
+      "mode": "controlled",
+      "index": 5,
+      "created": "2021-08-17 12:10:05"
+    }
+  ]
+}

@@ -3,16 +3,21 @@
 # uhppoted
 
 `uhppoted` implements a set of cross-platform building blocks for access control systems based on the 
-*UHPPOTE UT0311-L0x* TCP/IP Wiegand access control boards. Currently available:
+*UHPPOTE UT0311-L0x* TCP/IP Wiegand access control boards. Currently available components include:
 
 - device API
 - external application API
 - CLI for scripting and system administration
 - REST service for integration with HTTP servers and mobile clients
-- MQTT endpoint for integration with IOT systems
+- MQTT endpoint for integration with IOT systems e.g.
+  - [AWS IoT](https://aws.amazon.com/iot)
+  - [Google Cloud IoT](https://cloud.google.com/solutions/iot)
+  - [IBM Watson IoT Platform](https://internetofthings.ibmcloud.com)
 - AWS S3 integration for file managed access control lists
 - Google Sheets integration for spreadsheet managed access control lists
+- Integration with the [Wild Apricot] member management system
 - [Node-RED](https://nodered.org) low code environment integration
+- NodeJS
 
 Supported operating systems:
 - Linux
@@ -23,10 +28,16 @@ Supported operating systems:
 This project is a fork of the original [Go CLI](https://github.com/twystd/uhppote-go) project which had outgrown
 its initial scope and was relocated to [uhppoted](https://github.com/uhppoted) to simplify future development.
 
+### Raison d'être
+
+The components supplement the manufacturer supplied application which is 'Windows-only' and provides limited support 
+for integration with other systems. 
+
 ### Compatible Hardware
 
-As per this issue [[Question] Compatible Hardware](https://github.com/uhppoted/uhppote-core/issues/1), **UHPPOTE** appears to be a specific 
-branding (or distributor) for the access control boards manufactured by [Shenzhen Wiegand Industrial Co., Ltd](http://www.wiegand.com.cn/english).
+As per this issue [[Question] Compatible Hardware](https://github.com/uhppoted/uhppote-core/issues/1), 
+**UHPPOTE** appears to be a specific branding (or distributor) for the access control boards manufactured
+by [Shenzhen Wiegand Industrial Co., Ltd](http://www.wiegand.com.cn/english).
 
 The software in this repository has been tested and is known to work with these specific boards:
 
@@ -63,18 +74,6 @@ been fixed in later firmware versions but patches to support these events are in
 - [`uhppote-core`](https://github.com/uhppoted/uhppote-core/blob/75a185a48184ecb68a07a09ebdd9ea1a8f96ba2c/encoding/UTO311-L0x/UT0311-L0x.go#L201-L204)
 - [`uhppote-simulator`](https://github.com/uhppoted/uhppote-simulator/blob/f599512fb821c892a75786bbe4f35f6ebb4563d9/commands/run.go#L125-L134)
 - [`node-red-contrib-uhppoted`](https://github.com/uhppoted/node-red-contrib-uhppoted/blob/74de32d62bee8097c03c9a1abc2bb45b0160f7b2/nodes/codec.js#L93-L100)
-
-## Raison d'être
-
-The components supplement the manufacturer supplied application which is 'Windows-only' and provides limited support 
-for integration with other systems. 
-
-The components are intended to simplify the integration of access control into systems based on:
-- standard REST architectecture
-- [AWS IoT](https://aws.amazon.com/iot)
-- [Google Cloud IoT](https://cloud.google.com/solutions/iot)
-- [IBM Watson IoT Platform](https://internetofthings.ibmcloud.com)
-- [Node-RED](https://nodered.org) low code environment integration
 
 ## Releases
 

@@ -1,0 +1,24 @@
+rule AddDoor "Allowed" {
+     when
+	     OP == "add::door"
+	 then
+	     RESULT.Allow = true;
+         Retract("AddDoor");
+}
+
+rule UpdateDoor "Allowed" {
+      when
+ 	     OP == "update::door"
+ 	 then
+ 	     RESULT.Allow = true;
+         Retract("UpdateDoor");
+}
+
+rule DeleteDoor "Allowed" {
+     when
+	     OP == "delete::door"
+	 then
+	     RESULT.Allow = true;
+         Retract("DeleteDoor");
+}
+

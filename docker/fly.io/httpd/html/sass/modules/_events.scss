@@ -1,0 +1,102 @@
+#container {
+  display: flex; 
+  flex-direction:column; 
+  width:100%; 
+  height:100%;
+}
+
+div#events {
+  overflow: auto;
+  border: 1px solid $content-table-border;
+}  
+
+div#events table tfoot.hidden {  
+  display: none;
+}  
+
+td.ellipsis {
+  text-align: center;
+}
+
+td.ellipsis img.button {
+  height: 16px;
+  vertical-align: middle;
+  padding: 4px 32px 4px 32px;
+  border: solid 1px #268bd2;
+  border-radius: 4px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+
+th.timestamp {
+  border-bottom: 1px;
+  white-space: nowrap;
+}
+
+th.deviceID {
+  white-space: nowrap;
+}
+
+td input.timestamp {
+  width: 140px;
+  height: 18px;
+  font-size: 0.88em;
+}
+
+td input.deviceID {
+  width: 80px;
+  font-size: 0.88em;
+}
+
+td input.device {
+  width: 72px;
+  font-size: 1.1em;
+  font-variant: small-caps;
+}
+
+td input.eventType {
+  width: 56px;
+  font-size: 1.1em;
+  font-variant: small-caps;
+}
+
+td input.direction {
+  width: 16px;
+  font-size: 1.1em;
+  font-variant: small-caps;
+}
+
+td input.doorid {
+  width: 8px;
+  text-align: center;
+  font-size: 0.88em;
+}
+
+td input.door {
+  width: 96px;
+  font-size: 1.1em;
+  font-variant: small-caps;
+}
+
+td input.cardno {
+  width: 56px;
+  font-size: 0.88em;
+}
+
+td input.card {
+  width: 120px;
+  font-size: 1.1em;
+  font-variant: small-caps;
+}
+
+td input.access {
+  width: 60px;
+  font-size: 1.1em;
+  font-variant: small-caps;
+}
+
+td input.reason {
+  font-size: 1.1em;
+  font-variant: small-caps;
+}

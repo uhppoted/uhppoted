@@ -1,0 +1,32 @@
+rule AddGroup "Allowed" {
+     when
+	     OP == "add::group"
+	 then
+	     RESULT.Allow = true;
+         Retract("AddGroup");
+}
+
+rule DeleteGroup "Allowed" {
+     when
+	     OP == "delete::group"
+	 then
+	     RESULT.Allow = true;
+         Retract("DeleteGroup");
+}
+
+rule UpdateGroup "Allowed" {
+      when
+ 	     OP == "update::group"
+ 	 then
+ 	     RESULT.Allow = true;
+         Retract("UpdateGroup");
+}
+
+rule UpdateDungeon "Only allowed for Mage group" {
+      when
+ 	     OP == "update::group" && FIELD == "Dungeon" && VALUE == "true" && GROUP.Name != "Mage"
+ 	 then
+ 	     RESULT.Refuse = true;
+         Retract("UpdateDungeon");
+}
+
