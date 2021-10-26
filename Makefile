@@ -212,8 +212,8 @@ fly.io:
 	cp -R uhppoted-httpd/html         docker/fly.io/httpd
 	cp -R uhppoted-httpd/translations docker/fly.io/httpd
 	cd ./docker/fly.io   && docker build -f Dockerfile -t uhppoted/fly.io . 
-	docker run --publish 8080:8080 --name fly.io --rm uhppoted/fly.io
-#	docker run --detach --publish 8080:8080 --name fly.io --rm uhppoted/fly.io
+	# docker run --publish 8080:8080 --name fly.io --rm uhppoted/fly.io
+	docker run --detach --publish 8080:8080 --name fly.io --rm uhppoted/fly.io
 
 
 
