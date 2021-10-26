@@ -13,19 +13,19 @@ RUN mkdir -p /var/uhppoted/httpd/system
 
 COPY uhppoted.conf /etc/uhppoted
 
-COPY httpd/auth.json  /etc/uhppoted/httpd
-COPY httpd/acl.grl    /etc/uhppoted/httpd
-COPY httpd/system.grl /etc/uhppoted/httpd
-COPY httpd/doors.grl  /etc/uhppoted/httpd
-COPY httpd/cards.grl  /etc/uhppoted/httpd
-COPY httpd/groups.grl /etc/uhppoted/httpd
+COPY httpd/etc/auth.json  /etc/uhppoted/httpd
+COPY httpd/etc/acl.grl    /etc/uhppoted/httpd
+COPY httpd/etc/system.grl /etc/uhppoted/httpd
+COPY httpd/etc/doors.grl  /etc/uhppoted/httpd
+COPY httpd/etc/cards.grl  /etc/uhppoted/httpd
+COPY httpd/etc/groups.grl /etc/uhppoted/httpd
 
-COPY httpd/controllers.json /var/uhppoted/httpd/system
-COPY httpd/doors.json       /var/uhppoted/httpd/system
-COPY httpd/cards.json       /var/uhppoted/httpd/system
-COPY httpd/groups.json      /var/uhppoted/httpd/system
-COPY httpd/events.json      /var/uhppoted/httpd/system
-COPY httpd/logs.json        /var/uhppoted/httpd/system
+COPY httpd/var/controllers.json /var/uhppoted/httpd/system
+COPY httpd/var/doors.json       /var/uhppoted/httpd/system
+COPY httpd/var/cards.json       /var/uhppoted/httpd/system
+COPY httpd/var/groups.json      /var/uhppoted/httpd/system
+COPY httpd/var/events.json      /var/uhppoted/httpd/system
+COPY httpd/var/logs.json        /var/uhppoted/httpd/system
 
 COPY simulator/201020304.json /etc/uhppoted/simulator
 COPY simulator/303986753.json /etc/uhppoted/simulator
