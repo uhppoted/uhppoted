@@ -16,6 +16,7 @@
   "cards": [],
   "events": {
     "size": 256,
+    "chunk": 8,
     "index": 0,
     "events": null
   }
