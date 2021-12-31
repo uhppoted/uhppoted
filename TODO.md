@@ -1,6 +1,12 @@
 ## v0.7.1
 
-- [x] Add task list support
+- [ ] Take a look at [CloudFlare Spectrum](https://www.cloudflare.com/products/cloudflare-spectrum) - proxies UDP!
+- [ ] Figure out rollback on real controller
+```
+423187757  1  50812
+423187757  1      2019-02-10 07:12:01 6154410      3 false 6
+423187757  50812  2021-12-23 13:06:40 3922570474   4 true  44
+```
 
 ## TODO
 
@@ -55,10 +61,7 @@
 ### uhppoted-rest
 - [ ] Get events after XXX
 - [ ] Client certificate revocation list
-- [x] uhppoted-rest: PUT card
-- [x] uhppoted-rest: DELETE card
 - [ ] uhppoted-rest: get-events date/id range
-- [x] commonalise functionality with uhppoted-mqttd
 
 ### uhppoted-mqtt
 - [ ] last-will-and-testament (?)
@@ -75,13 +78,10 @@
 - [ ] https://www.asyncapi.com/docs/getting-started/coming-from-openapi
 
 ### CLI
-- [x] Rework grant/revoke for individual doors (labelled)
-- [x] get-acl
 - [ ] Human readable output for e.g. get-status
 - [ ] JSON formatted output for e.g. get-status
 - [ ] Interactive shell (https://drewdevault.com/2019/09/02/Interactive-SSH-programs.html)
 - [ ] use flag.FlagSet for commands
-- [x] Default to commmon config file
 - [ ] Use (loadable) text/template for output formats
 - [ ] Rework GetDevices to also find 'known' devices
 - [ ] events: retrieve and show actual events
@@ -102,6 +102,7 @@
 - [ ] TeX protocol description
 - [ ] ASN.1 protocol specification
       - [Taste](https://taste.tools)
+      - https://medium.com/erlang-battleground/erlang-asn-1-abstract-syntax-notation-one-deeb8300f479
 - [ ] godoc
 - [ ] build documentation
 - [ ] install documentation
@@ -135,6 +136,7 @@
     - key-value stores
     - event buffer logic
 16. GUI
+    - [Flutter](https://blog.whidev.com/native-looking-desktop-app-with-flutter)
     - [Muon](https://github.com/ImVexed/muon) 
     - [webview](https://github.com/zserge/webview)
     - [fyne](https://github.com/fyne-io/fyne)
@@ -147,6 +149,7 @@
     - [eDex-UI](https://github.com/GitSquared/edex-ui)
     - [Oracle APEX](https://apex.oracle.com/en)
     - [Proton Native](https://proton-native.js.org)
+    - [imtui](https://github.com/ggerganov/imtui)
     
 17. PDL + go generate
     - [lipPDL](http://nmedit.sourceforge.net/subprojects/libpdl.html)

@@ -64,3 +64,9 @@ cs      0x33
 fs      0x53
 gs      0x2b
 ```
+
+### MacOS firewall: Accept incoming connections
+
+See [StackExchange: How to get rid of firewall "accept incoming connections" dialog?](https://apple.stackexchange.com/questions/3271/how-to-get-rid-of-firewall-accept-incoming-connections-dialog)
+
+
