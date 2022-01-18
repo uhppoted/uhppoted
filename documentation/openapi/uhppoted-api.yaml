@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 
 info:
-  version: 0.7.1
+  version: 0.7.2
   title: "uhppoted"
   description: "REST API for the uhppoted-rest service. The API currently supports both device level functions and higher level access control list management."
   license:
@@ -1091,7 +1091,55 @@ paths:
       tags:
         - device
       summary: "Retrieves the device event list indices"
-      description: "Retrieves the indices of the first and last stored events"
+      description: "Retrieves the indices of the first, last and current events"
+      operationId: getEventIndices
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      responses:
+        '200':
+          description: "Event indices"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Events"        
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/events/{range}:
+    get:
+      tags:
+        - device
+      summary: "Retrieves up to N 'next' events"
+      description: "Retrieves the controller event list indices and up to N 'next' events"
       operationId: getEvents
       parameters:
         - name: device-id
@@ -1102,6 +1150,14 @@ paths:
             type: integer
             format: uint32
             example: 405419896
+        - name: range
+          in: path
+          description: "Number of events to retrieve"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 5
       responses:
         '200':
           description: "Event list"
@@ -1134,7 +1190,7 @@ paths:
               schema:
                   $ref: "#/components/schemas/Error"        
 
-  /device/{device-id}/event/{event-id}:
+  /device/{device-id}/event/{event-index}:
     get:
       tags:
         - device
@@ -1150,13 +1206,12 @@ paths:
             type: integer
             format: uint32
             example: 405419896
-        - name: event-id
+        - name: event-index
           in: path
-          description: "Event ID"
+          description: "Numeric event index or 'first', 'last', 'current' or 'next'"
           required: true
           schema:
-            type: integer
-            format: uint32
+            type: string
             example: 31
       responses:
         '200':
@@ -2179,21 +2234,40 @@ components:
         - events
       properties:
         events:
-          $ref: "#/components/schemas/EventRange"        
+          $ref: "#/components/schemas/EventsList"        
 
-    EventRange:
+    EventsList:
       properties:
         first:
+          description: "Index of the first stored event. Not provided if device has no events."
           type: number
           format: uint32
-          description: "Index of the first stored event. Not provided if device has no events."
           example: 3
         last:
+          description: "Index of the last stored event. Not provided if device has no events."
           type: number
           format: uint32
-          description: "Index of the last stored event. Not provided if device has no events."
           example: 78
-          
+        current:
+          description: "Current event index"
+          type: number
+          format: uint32
+          example: 17
+        events:
+          description: "List of events"
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"                
+          example: [ { "event-id": 13,
+                       "event-type": 1,
+                       "access-granted": true,
+                       "door-id": 2,
+                       "user-id": 192837465,
+                       "timestamp": '2020-03-27 12:34:56',
+                       "event-result": 6
+                      }
+                    ]
+
     Event:
       required: 
         - event-id
