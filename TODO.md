@@ -1,6 +1,7 @@
 ## v0.7.2
 
 - [x] Figure out rollback on real controller
+- [x] Regenerate development and test TLS certificates for 2022
 
 ## TODO
 
