@@ -35,6 +35,15 @@
 
    cp localhost.pem /usr/local/etc/com.github.uhppoted/hivemq.pem
 
+5. Copy the server JKS file and certificates to the `docker` folders:
+
+   cp localhost.jks ./docker/hivemq/localhost.jks
+   cp localhost.pem ./docker/hivemq/localhost.pem
+   cp localhost.pem ./docker/uhppoted-mqtt/hivemq.pem
+   cp localhost.jks ./docker/integration-tests/hivemq/localhost.jks
+   cp localhost.pem ./docker/integration-tests/hivemq/localhost.pem
+   cp localhost.pem ./docker/integration-tests/mqttd/localhost.pem
+
 ### Create client keys and certificates
 
 1. Generate client key pair without key password:
@@ -65,7 +74,24 @@
    cp client.key  /usr/local/etc/com.github.uhppoted/mqtt/client.key
    cp client.cert /usr/local/etc/com.github.uhppoted/mqtt/client.cert
 
-### Rebuild the Docker image
+6. Copy the truststore, client key and client certificate to the `docker` folders:
 
-   docker build -f ./docker/hivemq/Dockerfile  -t hivemq/uhppoted .
+   cp clients.jks ~/Development/uhppote/uhppoted/docker/hivemq/clients.jks
+   cp clients.jks ~/Development/uhppote/uhppoted/docker/integration-tests/hivemq/clients.jks
+   cp client.key  ~/Development/uhppote/uhppoted/docker/hivemq/client.key
+   cp client.key  ~/Development/uhppote/uhppoted/docker/uhppoted-mqtt/secure/client.key
+   cp client.key  ~/Development/uhppote/uhppoted/docker/integration-tests/hivemq/client.key
+   cp client.key  ~/Development/uhppote/uhppoted/docker/integration-tests/mqttd/secure/client.key
+   cp client.cert ~/Development/uhppote/uhppoted/docker/hivemq/client.cert
+   cp client.cert ~/Development/uhppote/uhppoted/docker/uhppoted-mqtt/secure/client.cert
+   cp client.cert ~/Development/uhppote/uhppoted/docker/integration-tests/hivemq/client.cert
+   cp client.cert ~/Development/uhppote/uhppoted/docker/integration-tests/mqttd/secure/client.cert
+   cp client.crt  ~/Development/uhppote/uhppoted/docker/hivemq/client.crt
+   cp client.crt  ~/Development/uhppote/uhppoted/docker/integration-tests/hivemq/client.crt
+
+
+### Rebuild the Docker images
+
+   cd ./docker/hivemq        && docker build -f Dockerfile -t hivemq/uhppoted . 
+   cd ./docker/uhppoted-mqtt && docker build -f Dockerfile -t uhppoted/mqtt   . 
 
