@@ -1,15 +1,10 @@
-## v0.7.1
+## v0.7.2
 
-- [ ] Take a look at [CloudFlare Spectrum](https://www.cloudflare.com/products/cloudflare-spectrum) - proxies UDP!
-- [ ] Figure out rollback on real controller
-```
-423187757  1  50812
-423187757  1      2019-02-10 07:12:01 6154410      3 false 6
-423187757  50812  2021-12-23 13:06:40 3922570474   4 true  44
-```
+- [x] Figure out rollback on real controller
 
 ## TODO
 
+- [ ] Take a look at [CloudFlare Spectrum](https://www.cloudflare.com/products/cloudflare-spectrum) - proxies UDP!
 - [ ] Switch to libsodium
       - https://blog.trailofbits.com/2019/07/08/fuck-rsa/
 - [ ] [TOML](https://toml.io) files

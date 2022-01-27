@@ -74,10 +74,12 @@ been fixed in later firmware versions but patches to support these events are in
 - [`uhppote-core`](https://github.com/uhppoted/uhppote-core/blob/75a185a48184ecb68a07a09ebdd9ea1a8f96ba2c/encoding/UTO311-L0x/UT0311-L0x.go#L201-L204)
 - [`uhppote-simulator`](https://github.com/uhppoted/uhppote-simulator/blob/f599512fb821c892a75786bbe4f35f6ebb4563d9/commands/run.go#L125-L134)
 - [`node-red-contrib-uhppoted`](https://github.com/uhppoted/node-red-contrib-uhppoted/blob/74de32d62bee8097c03c9a1abc2bb45b0160f7b2/nodes/codec.js#L93-L100)
+- [`uhppoted-nodejs`](https://github.com/uhppoted/uhppoted-nodejs/blob/master/src/codec.js#L114-L121)
 
 ## Releases
 
-- v0.7.1:  Adds support for controller task list management.
+- v0.7.2:  Replaces event rollover with _forever_ incrementing indices to match observed behaviour
+- v0.7.1:  Adds support for controller task list management
 - v0.7.0:  Adds support for time profiles. Includes bundled release of `uhppoted-nodejs` NodeJS module
 - v0.6.12: Reworked concurrency and additional configuration
 - v0.6.10: Initial release for `uhppoted-app-wild-apricot`
@@ -118,10 +120,11 @@ been fixed in later firmware versions but patches to support these events are in
 
 | *Module*                                                                           | *Description*                                                                   |
 | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                     | cron'able utility to download/upload access control lists from/to AWS S3        |
+| [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                     | cron'able utility to download/upload access control lists from/to AWS S3 |
 | [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)             | cron'able utility to download/upload access control lists from/to Google Sheets |
 | [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-sheets)       | cron'able utility to manage access control lists from/t Wild Apricot |
-| [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted) | NodeJS nodes for [Node-RED](https://nodered.org) low code environment           |
+| [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted) | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
+| [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                     | Core API implementation as a NodeJS library |
 
 ## UI
 
