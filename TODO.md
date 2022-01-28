@@ -1,7 +1,17 @@
-## v0.7.2
+## v0.7.x
 
-- [x] Figure out rollback on real controller
-- [x] Regenerate development and test TLS certificates for 2022
+- [ ] Add trimpath to all build commands
+      - [x] uhppote-core
+      - [x] uhppoted-lib
+      - [x] uhppote-simulator
+      - [x] uhppote-cli
+      - [x] uhppoted-restd
+      - [x] uhppoted-mqttd
+      - [x] uhppoted-app-s3
+      - [x] uhppoted-app-sheets
+      - [x] uhppoted-app-wild-apricot
+      - [x] uhppoted-httpd
+      - [x] uhppoted
 
 ## TODO
 
