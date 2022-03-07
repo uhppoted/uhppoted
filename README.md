@@ -19,6 +19,12 @@
 - [Node-RED](https://nodered.org) low code environment integration
 - NodeJS
 
+### 3rd party integrations
+
+- [ioBroker](https://www.iobroker.net) - [kBrausew/ioBroker.wiegand-tcpip](https://github.com/kBrausew/ioBroker.wiegand-tcpip)
+
+### Operating systems
+
 Supported operating systems:
 - Linux
 - MacOS

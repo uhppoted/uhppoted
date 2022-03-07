@@ -236,3 +236,5 @@
 78. [Thrift](https://thrift.apache.org)
 79. [LipGloss](https://charm.sh)
 80. [Svelte/Tauri](https://css-tricks.com/how-i-built-a-cross-platform-desktop-application-with-svelte-redis-and-rust)
+81. https://blog.marcua.net/2022/02/20/data-diffs-algorithms-for-explaining-what-changed-in-a-dataset.html
+82. [Charm](https://charm.sh)
