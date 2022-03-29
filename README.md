@@ -124,13 +124,15 @@ been fixed in later firmware versions but patches to support these events are in
 
 ## Integrations
 
-| *Module*                                                                           | *Description*                                                                   |
-| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                     | cron'able utility to download/upload access control lists from/to AWS S3 |
-| [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)             | cron'able utility to download/upload access control lists from/to Google Sheets |
-| [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-sheets)       | cron'able utility to manage access control lists from/t Wild Apricot |
-| [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted) | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
-| [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                     | Core API implementation as a NodeJS library |
+| *Module*                                                                              | *Description*                                                                   |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                        | cron'able utility to download/upload access control lists from/to AWS S3 |
+| [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)                | cron'able utility to download/upload access control lists from/to Google Sheets |
+| [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-sheets)          | cron'able utility to manage access control lists from/t Wild Apricot |
+| [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted)    | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
+| [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                        | Core API implementation as a NodeJS library |
+[ [kBrausew/ioBroker.wiegand-tcpip](https://github.com/kBrausew/ioBroker.wiegand-tcpip) | [ioBroker](https://www.iobroker.net)  |
+
 
 ## UI
 
@@ -200,15 +202,17 @@ git submodule update --remote
 
 ## References and Related Projects
 
-1. [carbonsphere/UHPPOTE](https://github.com/carbonsphere/UHPPOTE) `PHP`
-2. [carbonsphere/DoorControl](https://github.com/carbonsphere/DoorControl) `PHP`
-2. [andrewvaughan/uhppote-rfid](https://github.com/andrewvaughan/uhppote-rfid) `Python`
-3. [tachoknight/uhppote-tools](https://github.com/tachoknight/uhppote-tools): `Go`
-4. [jjhuff/uhppote-go](https://github.com/jjhuff/uhppote-go): `Go`
-5. [pawl/Chinese-RFID-Access-Control-Library](https://github.com/pawl/Chinese-RFID-Access-Control-Library)
-6. [Dallas Makerspace:Reverse Engineering RFID Reader](https://dallasmakerspace.org/wiki/ReverseEngineeringRFIDReader)
-7. [wemakerspace/wiegand-daemon](https://github.com/wemakerspace/wiegand-daemon)
-8. [wemakerspace/weigeng-js](https://github.com/wemakerspace/weigeng-js)
-9. [realashleybailey/DoorControl](https://github.com/realashleybailey/DoorControl)
+1.  [carbonsphere/UHPPOTE](https://github.com/carbonsphere/UHPPOTE) `PHP`
+2.  [carbonsphere/DoorControl](https://github.com/carbonsphere/DoorControl) `PHP`
+2.  [andrewvaughan/uhppote-rfid](https://github.com/andrewvaughan/uhppote-rfid) `Python`
+3.  [tachoknight/uhppote-tools](https://github.com/tachoknight/uhppote-tools): `Go`
+4.  [jjhuff/uhppote-go](https://github.com/jjhuff/uhppote-go): `Go`
+5.  [pawl/Chinese-RFID-Access-Control-Library](https://github.com/pawl/Chinese-RFID-Access-Control-Library)
+6.  [Dallas Makerspace:Reverse Engineering RFID Reader](https://dallasmakerspace.org/wiki/ReverseEngineeringRFIDReader)
+7.  [wemakerspace/wiegand-daemon](https://github.com/wemakerspace/wiegand-daemon)
+8.  [wemakerspace/weigeng-js](https://github.com/wemakerspace/weigeng-js)
+9.  [realashleybailey/DoorControl](https://github.com/realashleybailey/DoorControl)
+10. [kBrausew/ioBroker.wiegand-tcpip](https://github.com/kBrausew/ioBroker.wiegand-tcpip)
+
 
 
