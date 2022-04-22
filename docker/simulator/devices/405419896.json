@@ -65,6 +65,28 @@
       }
     }
   ],
+  "time-profiles": {
+    "29": {
+      "id": 29,
+      "start-date": "2021-01-01",
+      "end-date": "2021-12-31",
+      "weekdays": "Monday",
+      "segments": [
+        {
+          "start": "08:30",
+          "end": "17:00"
+        },
+        {
+          "start": "00:00",
+          "end": "00:00"
+        },
+        {
+          "start": "00:00",
+          "end": "00:00"
+        }
+      ]
+    }
+  },
   "events": {
     "size": 256,
     "chunk": 8,
