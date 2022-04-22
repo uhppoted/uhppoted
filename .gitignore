@@ -39,3 +39,6 @@ protocol.synctex.gz
 # External
 documentation/UHPPOTE-SDK.zip
 documentation/SDK
+
+# Experimental stuff
+logseq
