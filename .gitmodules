@@ -34,3 +34,6 @@
 [submodule "uhppoted-nodejs"]
 	path = uhppoted-nodejs
 	url = https://github.com/uhppoted/uhppoted-nodejs.git
+[submodule "uhppoted-dll"]
+	path = uhppoted-dll
+	url = git@github.com:uhppoted/uhppoted-dll.git
