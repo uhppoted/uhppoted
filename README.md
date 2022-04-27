@@ -55,7 +55,7 @@ The software in this repository has been tested and is known to work with these 
 #### Readers
 
 Almost any reader with a Wiegand-26 interface should probably work (there have been reports of offbrand readers that don't)
-work but the readers below are in active use:
+but the readers below are in active use:
 
 | Reader | Notes       |
 | ------ | ----------- |
@@ -213,6 +213,7 @@ git submodule update --remote
 8.  [wemakerspace/weigeng-js](https://github.com/wemakerspace/weigeng-js)
 9.  [realashleybailey/DoorControl](https://github.com/realashleybailey/DoorControl)
 10. [kBrausew/ioBroker.wiegand-tcpip](https://github.com/kBrausew/ioBroker.wiegand-tcpip)
+11. [TCP/IP Wiegand Access Controller (Zutrittskontrolle)](https://ingenier.wordpress.com/zutrittskontrolle)
 
 
 
