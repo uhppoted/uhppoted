@@ -241,3 +241,4 @@
 83. [Riffle][https://riffle.systems/essays/prelude]
 84. http://anachronauts.club/~voidstar/log/2022-03-24-openapi-for-binfmt.gmi
 85. https://siraben.dev/2022/03/22/tree-sitter-linter.html
+86. https://maori.geek.nz/golang-desktop-app-with-webview-lorca-wasm-and-bazel-3283813bf89

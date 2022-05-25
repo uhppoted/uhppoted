@@ -19,9 +19,8 @@
 - [Node-RED](https://nodered.org) low code environment integration
 - NodeJS
 
-### 3rd party integrations
-
-- [ioBroker](https://www.iobroker.net) - [kBrausew/ioBroker.wiegand-tcpip](https://github.com/kBrausew/ioBroker.wiegand-tcpip)
+The components supplement the manufacturer supplied application which is 'Windows-only' and provides limited support 
+for integration with other systems. 
 
 ### Operating systems
 
@@ -34,10 +33,20 @@ Supported operating systems:
 This project is a fork of the original [Go CLI](https://github.com/twystd/uhppote-go) project which had outgrown
 its initial scope and was relocated to [uhppoted](https://github.com/uhppoted) to simplify future development.
 
-### Raison d'être
+### shared-lib/dylib/DLL
 
-The components supplement the manufacturer supplied application which is 'Windows-only' and provides limited support 
-for integration with other systems. 
+[uhppoted-dll](https://github.com/uhppoted/uhppoted-dll/blob/master/doc/C.md) implements a shared-lib/DLL for interop with languages other than Go. The implementation includes
+bindings to:
+
+- C
+- C++
+- C#
+- Python
+- Clozure Common Lisp
+
+### 3rd party integrations
+
+- [ioBroker](https://www.iobroker.net) - [kBrausew/ioBroker.wiegand-tcpip](https://github.com/kBrausew/ioBroker.wiegand-tcpip)
 
 ### Compatible Hardware
 
@@ -51,18 +60,6 @@ The software in this repository has been tested and is known to work with these 
 | ------ | ---- |
 | Amazon | [UHPPOTE Professional Wiegand 26-40 Bit TCP IP Network Access Control Board with Software For 4 Door 4 Reader](https://www.amazon.com/UHPPOTE-Professional-Wiegand-Network-Controller/dp/B00UX02JWE) |
 | AliExpress | [TCP/IP RFID ACCESS CONTROL SYSTEM Wiegand 26](https://de.aliexpress.com/item/4000781912427.html) |
-
-#### Readers
-
-Almost any reader with a Wiegand-26 interface should probably work (there have been reports of offbrand readers that don't)
-but the readers below are in active use:
-
-| Reader | Notes       |
-| ------ | ----------- |
-| [HID ProxPoint Plus 6500](https://www.hidglobal.com/products/readers/hid-proximity/6005) | Old stock and/or refurbished readers are often available on ebay |
-| [IKeys barcode and QR code scanner](https://www.i-keys.de/de/zutrittskontrollsysteme/qr-code-zugangskontrolle-mit-rfid-reader-iso14443.html?c=91) | _Ref. [Put Card - Date with Time](https://github.com/uhppoted/uhppoted/issues/2)_ |
-| [Newland FM430L barcode and QR code scanner](https://www.ico.de/newland-fm430l-u-barracuda-2d-fixmount-usb-kabel-wechselbar--bcpf6u?referer=froogle&gclid=Cj0KCQjwkIGKBhCxARIsAINMioJ4fxcqv9W3dINBdnEwEUjRJIBHhXoQfJMO5wL4uKlf902Gm8--FBkaAi3vEALw_wcB) | _Ref. [Put Card - Date with Time](https://github.com/uhppoted/uhppoted/issues/2)_ |
-
 
 #### Firmware versions
 
@@ -81,6 +78,18 @@ been fixed in later firmware versions but patches to support these events are in
 - [`uhppote-simulator`](https://github.com/uhppoted/uhppote-simulator/blob/f599512fb821c892a75786bbe4f35f6ebb4563d9/commands/run.go#L125-L134)
 - [`node-red-contrib-uhppoted`](https://github.com/uhppoted/node-red-contrib-uhppoted/blob/74de32d62bee8097c03c9a1abc2bb45b0160f7b2/nodes/codec.js#L93-L100)
 - [`uhppoted-nodejs`](https://github.com/uhppoted/uhppoted-nodejs/blob/master/src/codec.js#L114-L121)
+
+
+#### Readers
+
+Almost any reader with a Wiegand-26 interface should probably work (there have been reports of offbrand readers that don't)
+but the readers below are in active use:
+
+| Reader | Notes       |
+| ------ | ----------- |
+| [HID ProxPoint Plus 6500](https://www.hidglobal.com/products/readers/hid-proximity/6005) | Old stock and/or refurbished readers are often available on ebay |
+| [IKeys barcode and QR code scanner](https://www.i-keys.de/de/zutrittskontrollsysteme/qr-code-zugangskontrolle-mit-rfid-reader-iso14443.html?c=91) | _Ref. [Put Card - Date with Time](https://github.com/uhppoted/uhppoted/issues/2)_ |
+| [Newland FM430L barcode and QR code scanner](https://www.ico.de/newland-fm430l-u-barracuda-2d-fixmount-usb-kabel-wechselbar--bcpf6u?referer=froogle&gclid=Cj0KCQjwkIGKBhCxARIsAINMioJ4fxcqv9W3dINBdnEwEUjRJIBHhXoQfJMO5wL4uKlf902Gm8--FBkaAi3vEALw_wcB) | _Ref. [Put Card - Date with Time](https://github.com/uhppoted/uhppoted/issues/2)_ |
 
 ## Releases
 
@@ -121,6 +130,7 @@ been fixed in later firmware versions but patches to support these events are in
 | [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot) | cron'able utility to manage access control lists from Wild Apricot |
 | [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted) | NodeJS nodes for [Node-RED](https://nodered.org) low code environment           |
 | [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                     | Standalone NodeJS module  |
+| [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll)                           | shared-lib/DLL for cross-language interop  |
 
 ## Integrations
 
@@ -214,6 +224,6 @@ git submodule update --remote
 9.  [realashleybailey/DoorControl](https://github.com/realashleybailey/DoorControl)
 10. [kBrausew/ioBroker.wiegand-tcpip](https://github.com/kBrausew/ioBroker.wiegand-tcpip)
 11. [TCP/IP Wiegand Access Controller (Zutrittskontrolle)](https://ingenier.wordpress.com/zutrittskontrolle)
-
+12. [YouTube: UHPPOTE 2 door basic set-up](https://www.youtube.com/watch?v=P8mxOY_IF4I&t=197s)
 
 
