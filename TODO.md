@@ -1,18 +1,5 @@
 ## v0.7.x
 
-- [ ] Add trimpath to all build commands
-      - [x] uhppote-core
-      - [x] uhppoted-lib
-      - [x] uhppote-simulator
-      - [x] uhppote-cli
-      - [x] uhppoted-restd
-      - [x] uhppoted-mqttd
-      - [x] uhppoted-app-s3
-      - [x] uhppoted-app-sheets
-      - [x] uhppoted-app-wild-apricot
-      - [x] uhppoted-httpd
-      - [x] uhppoted
-
 ## TODO
 
 - [ ] Take a look at [CloudFlare Spectrum](https://www.cloudflare.com/products/cloudflare-spectrum) - proxies UDP!
@@ -242,3 +229,4 @@
 84. http://anachronauts.club/~voidstar/log/2022-03-24-openapi-for-binfmt.gmi
 85. https://siraben.dev/2022/03/22/tree-sitter-linter.html
 86. https://maori.geek.nz/golang-desktop-app-with-webview-lorca-wasm-and-bazel-3283813bf89
+87. https://gokrazy.org/

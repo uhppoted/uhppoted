@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## [Unreleased]
+
+- Added [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll) DLL/shared-lib/dylib for cross-language
+  support
+- Included -trimpath option in all build paths to remove local machine information from executables
+
+
 ## [0.7.2](https://github.com/uhppoted/uhppoted/releases/tag/v0.7.2) - 2022-01-27
 
 ### Changed

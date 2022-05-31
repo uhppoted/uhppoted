@@ -93,6 +93,7 @@ but the readers below are in active use:
 
 ## Releases
 
+- v0.7.3:  Adds [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll) shared-lib to components
 - v0.7.2:  Replaces event rollover with _forever_ incrementing indices to match observed behaviour
 - v0.7.1:  Adds support for controller task list management
 - v0.7.0:  Adds support for time profiles. Includes bundled release of `uhppoted-nodejs` NodeJS module
@@ -197,6 +198,7 @@ git submodule update --remote
 | [com.github/uhppoted/uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot) | cron'able access control management using Wild Apricot |
 | [com.github/uhppoted/uhppote-simulator](https://github.com/uhppoted/uhppote-simulator) | Device simulator for development use                    |
 | [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted)     | NodeJS nodes for [Node-RED](https://nodered.org) low code environment           |
+| [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll)     | Shared library/DLL for cross-language support           |
 | golang.org/x/sys/windows                                                               | Support for Windows services                            |
 | golang.org/x/lint/golint                                                               | Additional *lint* check for release builds              |
 | github.com/eclipse/paho.mqtt.golang                                                    | Eclipse Paho MQTT client                                |
