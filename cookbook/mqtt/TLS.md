@@ -31,11 +31,7 @@
 
    openssl x509 -in localhost.pem -noout -text
 
-4. Copy the server certificate to the `uhppoted` configuration folder:
-
-   cp localhost.pem /usr/local/etc/com.github.uhppoted/hivemq.pem
-
-5. Copy the server JKS file and certificates to the `docker` folders:
+4. Copy the server JKS file and certificates to the `docker` folders:
 
    cp localhost.jks ./docker/hivemq/localhost.jks
    cp localhost.pem ./docker/hivemq/localhost.pem
@@ -43,6 +39,10 @@
    cp localhost.jks ./docker/integration-tests/hivemq/localhost.jks
    cp localhost.pem ./docker/integration-tests/hivemq/localhost.pem
    cp localhost.pem ./docker/integration-tests/mqttd/localhost.pem
+
+5. Copy the server certificate to the `uhppoted` configuration folder:
+
+   cp localhost.pem /usr/local/etc/com.github.uhppoted/hivemq.pem
 
 ### Create client keys and certificates
 
