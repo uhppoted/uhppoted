@@ -37,3 +37,6 @@
 [submodule "uhppoted-dll"]
 	path = uhppoted-dll
 	url = git@github.com:uhppoted/uhppoted-dll.git
+[submodule "uhppoted-tunnel"]
+	path = uhppoted-tunnel
+	url = git@github.com:uhppoted/uhppoted-tunnel.git

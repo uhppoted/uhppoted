@@ -193,6 +193,9 @@ docker-simulator:
 	./bin/uhppote-cli --debug set-listener 303986753 192.168.1.100:60001
 	./bin/uhppote-cli --debug set-listener 201020304 192.168.1.100:60001
 
+docker-simulator-tunnel:
+	docker run --detach --publish 8000:8000 --publish 60005:60000/udp --name simulator --rm uhppoted/simulator
+
 docker-hivemq:
 	docker run --detach --publish 8081:8080 --publish 1883:1883 --publish 8883:8883 --name hivemq --rm hivemq/uhppoted
 
