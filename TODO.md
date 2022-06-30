@@ -230,3 +230,4 @@
 85. https://siraben.dev/2022/03/22/tree-sitter-linter.html
 86. https://maori.geek.nz/golang-desktop-app-with-webview-lorca-wasm-and-bazel-3283813bf89
 87. https://gokrazy.org/
+88. https://www.fstar-lang.org/papers/EverParse3D.pdf

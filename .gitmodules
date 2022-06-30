@@ -3,7 +3,7 @@
 	url = https://github.com/uhppoted/uhppote-core.git
 [submodule "uhppoted-lib"]
 	path = uhppoted-lib
-	url = git@github.com:uhppoted/uhppoted-lib.git
+	url = https://github.com/uhppoted/uhppoted-lib.git
 [submodule "uhppote-simulator"]
 	path = uhppote-simulator
 	url = https://github.com/uhppoted/uhppote-simulator.git
@@ -36,7 +36,7 @@
 	url = https://github.com/uhppoted/uhppoted-nodejs.git
 [submodule "uhppoted-dll"]
 	path = uhppoted-dll
-	url = git@github.com:uhppoted/uhppoted-dll.git
+	url = https://github.com/uhppoted/uhppoted-dll.git
 [submodule "uhppoted-tunnel"]
 	path = uhppoted-tunnel
-	url = git@github.com:uhppoted/uhppoted-tunnel.git
+	url = https://github.com/uhppoted/uhppoted-tunnel.git
