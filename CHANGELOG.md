@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## [0.8.0](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.0) - 2022-07-01
+
+### Added
+1. [uhppoted-httpd](https://github.com/uhppoted/uhppoted-httpd) browser user interface for access control management
+2. [uhppoted-tunnel](https://github.com/uhppoted/uhppoted-tunnel) UDP tunnel to connect access control systems and controllers
+running on disparate networks
+
+
 ## [0.7.3](https://github.com/uhppoted/uhppoted/releases/tag/v0.7.3) - 2022-06-01
 
 ### Added

@@ -93,6 +93,7 @@ but the readers below are in active use:
 
 ## Releases
 
+- v0.8.0:  Adds [uhppoted-httpd](https://github.com/uhppoted/uhppoted-httpd) and [uhppoted-tunnel](https://github.com/uhppoted/uhppoted-tunnel) components
 - v0.7.3:  Adds [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll) shared-lib to components
 - v0.7.2:  Replaces event rollover with _forever_ incrementing indices to match observed behaviour
 - v0.7.1:  Adds support for controller task list management
