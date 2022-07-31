@@ -229,5 +229,6 @@ git submodule update --remote
 10. [kBrausew/ioBroker.wiegand-tcpip](https://github.com/kBrausew/ioBroker.wiegand-tcpip)
 11. [TCP/IP Wiegand Access Controller (Zutrittskontrolle)](https://ingenier.wordpress.com/zutrittskontrolle)
 12. [YouTube: UHPPOTE 2 door basic set-up](https://www.youtube.com/watch?v=P8mxOY_IF4I&t=197s)
+13. [wouterdebie/Rust library](https://github.com/wouterdebie/uhppote-rs)
 
 

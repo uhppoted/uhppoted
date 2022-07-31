@@ -593,56 +593,6 @@
         "reason": 0
       },
       {
-        "index": 51,
-        "type": 2,
-        "granted": true,
-        "door": 4,
-        "direction": 1,
-        "card": 8165539,
-        "timestamp": "2019-08-09 16:19:35",
-        "reason": 0
-      },
-      {
-        "index": 52,
-        "type": 2,
-        "granted": true,
-        "door": 4,
-        "direction": 1,
-        "card": 8165530,
-        "timestamp": "2019-08-10 09:44:05",
-        "reason": 0
-      },
-      {
-        "index": 53,
-        "type": 2,
-        "granted": true,
-        "door": 4,
-        "direction": 1,
-        "card": 8165531,
-        "timestamp": "2019-08-10 09:45:27",
-        "reason": 0
-      },
-      {
-        "index": 54,
-        "type": 1,
-        "granted": false,
-        "door": 4,
-        "door-opened": false,
-        "card": 8165532,
-        "timestamp": "2019-08-10 09:46:05",
-        "reason": 0
-      },
-      {
-        "index": 55,
-        "type": 1,
-        "granted": false,
-        "door": 4,
-        "door-opened": false,
-        "card": 8165533,
-        "timestamp": "2020-08-10 09:47:09",
-        "reason": 0
-      },
-      {
         "index": 56,
         "type": 2,
         "granted": true,

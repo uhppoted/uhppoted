@@ -231,3 +231,4 @@
 86. https://maori.geek.nz/golang-desktop-app-with-webview-lorca-wasm-and-bazel-3283813bf89
 87. https://gokrazy.org/
 88. https://www.fstar-lang.org/papers/EverParse3D.pdf
+89. [Hesiod](https://en.wikipedia.org/wiki/Hesiod_(name_service))
