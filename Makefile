@@ -16,6 +16,7 @@ WINDOWS = env GOOS=windows GOARCH=amd64
 .PHONY: uhppoted-app-wild-apricot
 .PHONY: integration-tests
 .PHONY: fly.io
+.PHONY: release-all
 
 all: test      \
 	 benchmark \
@@ -157,6 +158,9 @@ release: build-all docker integration-tests
 	tar --directory=dist/darwin --exclude=".DS_Store" -cvzf dist/$(DIST)-darwin.tar.gz $(DIST)
 	cd dist/windows && zip --recurse-paths ../$(DIST)-windows.zip $(DIST)
 
+release-all: 
+	python ./internal/release.py
+
 build-github: 
 	cd uhppote-core              && go build -trimpath ./...
 	cd uhppoted-lib              && go build -trimpath ./...
@@ -231,8 +235,8 @@ docker-integration-tests:
 	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --name qwerty --rm integration-tests/simulator
 
 hivemq-listen:
-	mqtt subscribe --topic 'uhppoted/reply/#' | jq '.' 
-#	mqtt subscribe --topic 'uhppoted/#' | jq '.' 
+	# mqtt subscribe --topic 'uhppoted/reply/#' | jq '.' 
+	mqtt subscribe --topic 'uhppoted/#' | jq '.' 
 #	open runtime/mqtt-spy-0.5.4-jar-with-dependencies.jar
 
 # fly.io:
