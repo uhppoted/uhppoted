@@ -1,7 +1,14 @@
-## v0.8.0
+# TODO
+
+## IN PROGRESS
+
+- [ ] Release script
+- [ ] Code generator
+- [ ] Remove zip files from builds
 
 ## TODO
 
+- [ ] [Koyeb](https://www.koyeb.com)
 - [ ] Take a look at [CloudFlare Spectrum](https://www.cloudflare.com/products/cloudflare-spectrum) - proxies UDP!
 - [ ] Switch to libsodium
       - https://blog.trailofbits.com/2019/07/08/fuck-rsa/

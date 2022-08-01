@@ -1739,6 +1739,11 @@ components:
           format: uint8
           description: "Type of last recorded event"
           example: 3
+        code:
+          type: number
+          format: uint8
+          description: "Type of last recorded event"
+          example: 3
         access-granted:
           type: boolean
           format: true/false

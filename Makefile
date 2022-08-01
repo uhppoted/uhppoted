@@ -1,3 +1,4 @@
+RELEASE = development
 DEBUG ?= --debug
 DIST  ?= development
 
@@ -15,8 +16,6 @@ WINDOWS = env GOOS=windows GOARCH=amd64
 .PHONY: uhppoted-app-sheets
 .PHONY: uhppoted-app-wild-apricot
 .PHONY: integration-tests
-.PHONY: fly.io
-.PHONY: release-all
 
 all: test      \
 	 benchmark \
@@ -25,6 +24,15 @@ all: test      \
 clean:
 	go clean
 	rm -rf bin
+
+update:
+	go get -u github.com/uhppoted/uhppote-core@master
+	go mod tidy
+
+update-release:
+	go get -u github.com/uhppoted/uhppote-core
+	go mod tidy
+
 
 format: 
 	cd uhppote-core              && go fmt ./...
@@ -159,7 +167,11 @@ release: build-all docker integration-tests
 	cd dist/windows && zip --recurse-paths ../$(DIST)-windows.zip $(DIST)
 
 release-all: 
-	python ./internal/release.py
+	yapf -ri ./internal
+	python ./internal/release.py --version=$(RELEASE)
+	# find . -name "CHANGELOG.md" | grep -v "node_modules" | xargs -o vim
+	# find . -name "README.md"    | grep -v "node_modules" | xargs -o vim
+	# find . -name "TODO.md"      | grep -v "node_modules" | xargs -o vim
 
 build-github: 
 	cd uhppote-core              && go build -trimpath ./...

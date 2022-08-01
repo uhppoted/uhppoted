@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## [0.8.1](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.1) - 2022-08-01
+
+### Changed
+1. Added support for human-readable event fields
+2. Updated health-check to handle INADDR_ANY listen addresses correctly.
+3. Minor bug fixes
+
+
 ## [0.8.0](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.0) - 2022-07-01
 
 ### Added
