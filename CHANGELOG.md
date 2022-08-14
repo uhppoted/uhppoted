@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## [Unreleased]
+
+### Added
+1. _uhppoted-codegen_ interface generator
+
+### Updated
+1. Bumped Go version to 1.9
+
 ## [0.8.1](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.1) - 2022-08-01
 
 ### Changed
