@@ -54,7 +54,7 @@ func teardown() error {
 	return nil
 }
 
-//	curl -X POST "http://127.0.0.1:8000/uhppote/simulator/405419896/swipe" -H "accept: application/json" -H "Content-Type: application/json" -d "{\"door\":3,\"card-number\":65538}"
+// curl -X POST "http://127.0.0.1:8000/uhppote/simulator/405419896/swipe" -H "accept: application/json" -H "Content-Type: application/json" -d "{\"door\":3,\"card-number\":65538}"
 func TestSwipe(t *testing.T) {
 	url := "http://127.0.0.1:8000/uhppote/simulator/405419896/swipe"
 	payload := strings.NewReader(`{"door":3, "card-number":8165538}`)
