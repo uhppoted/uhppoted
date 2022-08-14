@@ -53,3 +53,7 @@
 [submodule "uhppoted-tunnel"]
 	path = uhppoted-tunnel
 	url = https://github.com/uhppoted/uhppoted-tunnel.git
+
+[submodule "uhppoted-codegen"]
+	path = uhppoted-codegen
+	url = https://github.com/uhppoted/uhppoted-codegen.git
