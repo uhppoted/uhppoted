@@ -123,7 +123,7 @@ but the readers below are in active use:
 | *Module*                                                                           | *Description*                                                                   |
 | ---------------------------------------------------------------------------------- | -------------------------------------------------- |
 | [uhppote-core](https://github.com/uhppoted/uhppote-core)                           | core library, implements the UP interface to UT0311-L0x controllers |
-| [uhppoted-api](https://github.com/uhppoted/uhppoted-api)                           | common API for external applications     |
+| [uhppoted-lib](https://github.com/uhppoted/uhppoted-lib)                           | common utility function library          |
 | [uhppote-simulator](https://github.com/uhppoted/uhppote-simulator)                 | UT0311-L04 simulator for development use |
 | [uhppote-cli](https://github.com/uhppoted/uhppote-cli)                             | command line interface                   |
 | [uhppoted-rest](https://github.com/uhppoted/uhppoted-rest)                         | daemon/service with REST API for remote access to UT0311-L0x controllers |

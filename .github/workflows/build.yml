@@ -25,8 +25,8 @@ jobs:
     - name: Checkout uhppote-core
       run: git clone https://github.com/uhppoted/uhppote-core.git uhppote-core
 
-    - name: Checkout uhppoted-api
-      run: git clone https://github.com/uhppoted/uhppoted-api.git uhppoted-api
+    - name: Checkout uhppoted-lib
+      run: git clone https://github.com/uhppoted/uhppoted-lib.git uhppoted-lib
 
     - name: Checkout uhppote-simulator
       run: git clone https://github.com/uhppoted/uhppote-simulator.git uhppote-simulator
@@ -40,11 +40,23 @@ jobs:
     - name: Checkout uhppoted-mqtt
       run: git clone https://github.com/uhppoted/uhppoted-mqtt.git uhppoted-mqtt
 
+    - name: Checkout uhppoted-httpd
+      run: git clone https://github.com/uhppoted/uhppoted-httpd.git uhppoted-httpd
+
+    - name: Checkout uhppoted-tunnel
+      run: git clone https://github.com/uhppoted/uhppoted-tunnel.git uhppoted-tunnel
+
+    - name: Checkout uhppoted-codegen
+      run: git clone https://github.com/uhppoted/uhppoted-codegen.git uhppoted-codegen
+
     - name: Checkout uhppoted-app-s3
       run: git clone https://github.com/uhppoted/uhppoted-app-s3.git uhppoted-app-s3
 
     - name: Checkout uhppoted-app-sheets
       run: git clone https://github.com/uhppoted/uhppoted-app-sheets.git uhppoted-app-sheets
+
+    - name: Checkout uhppoted-app-wild-apricot
+      run: git clone https://github.com/uhppoted/uhppoted-app-wild-apricot.git uhppoted-app-wild-apricot
 
     - name: Build
       run: make build-github
