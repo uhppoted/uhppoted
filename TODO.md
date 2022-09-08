@@ -8,6 +8,8 @@
 
 ## TODO
 
+- [ ] [TAK](https://hackaday.com/2022/09/08/the-tak-ecosystem-military-coordination-goes-open-source)
+- [ ] [Home Assistant](https://developers.home-assistant.io)
 - [ ] [Koyeb](https://www.koyeb.com)
 - [ ] Take a look at [CloudFlare Spectrum](https://www.cloudflare.com/products/cloudflare-spectrum) - proxies UDP!
 - [ ] Switch to libsodium

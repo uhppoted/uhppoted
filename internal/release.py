@@ -61,10 +61,6 @@ def projects():
             'folder': './uhppote-simulator',
             'branch': 'master'
         },
-        'uhppoted-dll': {
-            'folder': './uhppoted-dll',
-            'branch': 'master'
-        },
         'uhppoted-lib': {
             'folder': './uhppoted-lib',
             'branch': 'master'
@@ -87,6 +83,14 @@ def projects():
         },
         'uhppoted-tunnel': {
             'folder': './uhppoted-tunnel',
+            'branch': 'master'
+        },
+        'uhppoted-dll': {
+            'folder': './uhppoted-dll',
+            'branch': 'master'
+        },
+        'uhppoted-codegen': {
+            'folder': './uhppoted-codegen',
             'branch': 'master'
         },
         'uhppoted-app-s3': {

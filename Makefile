@@ -39,8 +39,6 @@ format:
 	cd uhppoted-lib              && make format
 	cd uhppote-simulator         && make format
 	cd uhppote-cli               && make format
-	cd uhppoted-dll              && make format
-	cd uhppoted-codegen          && make format
 	cd uhppoted-rest             && make format
 	cd uhppoted-mqtt             && make format
 	cd uhppoted-app-s3           && make format
@@ -48,6 +46,8 @@ format:
 	cd uhppoted-app-wild-apricot && make format
 	cd uhppoted-httpd            && make format
 	cd uhppoted-tunnel           && make format
+	cd uhppoted-dll              && make format
+	cd uhppoted-codegen          && make format
 	cd integration-tests         && go fmt ./...
 	go fmt ./...
 
@@ -169,6 +169,24 @@ build-all: test vet
 
 release: build-all docker integration-tests
 	find . -name ".DS_Store" -delete
+
+	tar --directory=uhppoted-codegen --exclude=".DS_Store" -cvzf dist/linux/$(DIST)/uhppoted-codegen-bindings.tar.gz   bindings
+	tar --directory=uhppoted-codegen --exclude=".DS_Store" -cvzf dist/arm7/$(DIST)/uhppoted-codegen-bindings.tar.gz    bindings
+	tar --directory=uhppoted-codegen --exclude=".DS_Store" -cvzf dist/darwin/$(DIST)/uhppoted-codegen-bindings.tar.gz  bindings
+	tar --directory=uhppoted-codegen --exclude=".DS_Store" -cvzf dist/windows/$(DIST)/uhppoted-codegen-bindings.tar.gz bindings
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="go/bin"               -cvzf dist/linux/$(DIST)/uhppoted-codegen-go.tar.gz        go
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="rust/uhppoted/target" -cvzf dist/linux/$(DIST)/uhppoted-codegen-rust.tar.gz    rust
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="python/__pycache__"   -cvzf dist/linux/$(DIST)/uhppoted-codegen-python.tar.gz python
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="go/bin"               -cvzf dist/arm7/$(DIST)/uhppoted-codegen-go.tar.gz        go
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="rust/uhppoted/target" -cvzf dist/arm7/$(DIST)/uhppoted-codegen-rust.tar.gz    rust
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="python/__pycache__"   -cvzf dist/arm7/$(DIST)/uhppoted-codegen-python.tar.gz python
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="go/bin"               -cvzf dist/darwin/$(DIST)/uhppoted-codegen-go.tar.gz        go
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="rust/uhppoted/target" -cvzf dist/darwin/$(DIST)/uhppoted-codegen-rust.tar.gz    rust
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="python/__pycache__"   -cvzf dist/darwin/$(DIST)/uhppoted-codegen-python.tar.gz python
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="go/bin"               -cvzf dist/windows/$(DIST)/uhppoted-codegen-go.tar.gz        go
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="rust/uhppoted/target" -cvzf dist/windows/$(DIST)/uhppoted-codegen-rust.tar.gz    rust
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="python/__pycache__"   -cvzf dist/windows/$(DIST)/uhppoted-codegen-python.tar.gz python
+
 	tar --directory=dist/linux  --exclude=".DS_Store" -cvzf dist/$(DIST)-linux.tar.gz $(DIST)
 	tar --directory=dist/arm7   --exclude=".DS_Store" -cvzf dist/$(DIST)-arm7.tar.gz $(DIST)
 	tar --directory=dist/darwin --exclude=".DS_Store" -cvzf dist/$(DIST)-darwin.tar.gz $(DIST)
@@ -196,8 +214,27 @@ build-github:
 	cd uhppoted-codegen          && go build -trimpath ./...
 	# make -C ./uhppoted-dll -f Makefile build-all
 
-debug: build
-	echo ">>> DEBUG"
+debug: 
+	cd uhppoted-codegen && $(LINUX)   go build -trimpath -o ../dist/linux/$(DIST)   ./...
+	cd uhppoted-codegen && $(ARM7)    go build -trimpath -o ../dist/arm7/$(DIST)    ./...
+	cd uhppoted-codegen && $(DARWIN)  go build -trimpath -o ../dist/darwin/$(DIST)  ./...
+	cd uhppoted-codegen && $(WINDOWS) go build -trimpath -o ../dist/windows/$(DIST) ./...	
+	tar --directory=uhppoted-codegen --exclude=".DS_Store" -cvzf dist/linux/$(DIST)/uhppoted-codegen-bindings.tar.gz   bindings
+	tar --directory=uhppoted-codegen --exclude=".DS_Store" -cvzf dist/arm7/$(DIST)/uhppoted-codegen-bindings.tar.gz    bindings
+	tar --directory=uhppoted-codegen --exclude=".DS_Store" -cvzf dist/darwin/$(DIST)/uhppoted-codegen-bindings.tar.gz  bindings
+	tar --directory=uhppoted-codegen --exclude=".DS_Store" -cvzf dist/windows/$(DIST)/uhppoted-codegen-bindings.tar.gz bindings
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="go/bin"               -cvzf dist/linux/$(DIST)/uhppoted-codegen-go.tar.gz        go
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="rust/uhppoted/target" -cvzf dist/linux/$(DIST)/uhppoted-codegen-rust.tar.gz    rust
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="python/__pycache__"   -cvzf dist/linux/$(DIST)/uhppoted-codegen-python.tar.gz python
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="go/bin"               -cvzf dist/arm7/$(DIST)/uhppoted-codegen-go.tar.gz        go
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="rust/uhppoted/target" -cvzf dist/arm7/$(DIST)/uhppoted-codegen-rust.tar.gz    rust
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="python/__pycache__"   -cvzf dist/arm7/$(DIST)/uhppoted-codegen-python.tar.gz python
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="go/bin"               -cvzf dist/darwin/$(DIST)/uhppoted-codegen-go.tar.gz        go
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="rust/uhppoted/target" -cvzf dist/darwin/$(DIST)/uhppoted-codegen-rust.tar.gz    rust
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="python/__pycache__"   -cvzf dist/darwin/$(DIST)/uhppoted-codegen-python.tar.gz python
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="go/bin"               -cvzf dist/windows/$(DIST)/uhppoted-codegen-go.tar.gz        go
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="rust/uhppoted/target" -cvzf dist/windows/$(DIST)/uhppoted-codegen-rust.tar.gz    rust
+	tar --directory=uhppoted-codegen/generated --exclude=".DS_Store" --exclude="python/__pycache__"   -cvzf dist/windows/$(DIST)/uhppoted-codegen-python.tar.gz python
 
 simulator: 
 	./bin/uhppote-simulator --debug --bind 0.0.0.0:60000 --rest 0.0.0.0:8000 --devices "./runtime/simulation/devices"
