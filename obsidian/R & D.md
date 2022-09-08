@@ -1,0 +1,3 @@
+- https://github.com/monkeyboard/Wiegand-Protocol-Library-for-Arduino
+- https://github.com/duskglow/accesscontrol
+- https://developers.home-assistant.io/
