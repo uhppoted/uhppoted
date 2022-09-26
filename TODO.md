@@ -241,3 +241,5 @@
 87. https://gokrazy.org/
 88. https://www.fstar-lang.org/papers/EverParse3D.pdf
 89. [Hesiod](https://en.wikipedia.org/wiki/Hesiod_(name_service))
+90. [Grist](https://www.getgrist.com/)
+91. [HomeAssistant](https://www.home-assistant.io/)
