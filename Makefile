@@ -194,7 +194,7 @@ release: build-all docker integration-tests
 
 release-all: 
 	yapf -ri ./internal
-	python ./internal/release.py --version=$(RELEASE)
+	python ./internal/release.py --version=$(RELEASE) --no-edit
 	# find . -name "CHANGELOG.md" | grep -v "node_modules" | xargs -o vim
 	# find . -name "README.md"    | grep -v "node_modules" | xargs -o vim
 	# find . -name "TODO.md"      | grep -v "node_modules" | xargs -o vim
