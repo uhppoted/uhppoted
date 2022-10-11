@@ -8,6 +8,7 @@
 
 ## TODO
 
+- [ ] Replace DeviceID with generic type
 - [ ] [TAK](https://hackaday.com/2022/09/08/the-tak-ecosystem-military-coordination-goes-open-source)
 - [ ] [Home Assistant](https://developers.home-assistant.io)
 - [ ] [Koyeb](https://www.koyeb.com)
@@ -243,3 +244,6 @@
 89. [Hesiod](https://en.wikipedia.org/wiki/Hesiod_(name_service))
 90. [Grist](https://www.getgrist.com/)
 91. [HomeAssistant](https://www.home-assistant.io/)
+92. [FPGA](https://github.com/JulianKemmerer/PipelineC-Graphics/blob/main/doc/Sphery-vs-Shapes.pdf)
+93. [Charm::Bubbletea](https://dlvhdr.me/posts/the-renaissance-of-the-command-line)
+94. [zk-SNARK](https://www.entropy1729.com/the-hunting-of-the-zk-snark)

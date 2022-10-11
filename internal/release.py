@@ -14,7 +14,13 @@ def main():
         usage()
         return -1
 
-    parser = argparse.ArgumentParser(description='release --version=<version>')
+    parser = argparse.ArgumentParser(
+        description='release --version=<version> --no-edit')
+
+    parser.add_argument(
+        '--no-edit',
+        action='store_true',
+        help="doesn't automatically invoke the editor for e.g. CHANGELOG.md'")
 
     parser.add_argument('--version',
                         type=str,
@@ -22,10 +28,18 @@ def main():
                         help='release version e.g. v0.8.1')
 
     args = parser.parse_args()
+    no_edit = args.no_edit
     version = args.version
 
     try:
         print(f'VERSION: {version}')
+
+        list = projects()
+        for p in list:
+            print(f'... checking {p}')
+            print()
+
+            changelog(p, list[p], version, no_edit)
 
         list = projects()
         for p in list:
@@ -43,10 +57,15 @@ def main():
         say('OK')
 
     except BaseException as x:
+        msg = f'{x}'
+        msg = msg.replace('uhppoted-', '').replace('uhppote-', '')
+
         print()
         print(f'*** ERROR  {x}')
         print()
+
         say('ERROR')
+        say(msg)
 
         sys.exit(1)
 
@@ -120,6 +139,23 @@ def projects():
     }
 
 
+def changelog(project, info, version, no_edit):
+    with open(f"{info['folder']}/CHANGELOG.md", 'r', encoding="utf-8") as f:
+        CHANGELOG = f.read()
+        if not CHANGELOG.startswith(f'# CHANGELOG\n\n## [{version}]'):
+            rest = CHANGELOG
+            for i in range(3):
+                line, _, rest = rest.partition('\n')
+                print(f'>> {line}')
+
+            if not no_edit:
+                command = f"sublime2 {info['folder']}/CHANGELOG.md"
+                subprocess.run(['/bin/zsh', '-i', '-c', command])
+
+            raise Exception(
+                f'{project} CHANGELOG has not been updated for release')
+
+
 def checkout(project, info):
     command = f"cd {info['folder']} && git checkout {info['branch']}"
     result = subprocess.call(command, shell=True)
@@ -150,6 +186,7 @@ def release(project, info, version):
 
 def say(msg):
     subprocess.call(f'say {msg}', shell=True)
+
 
 def usage():
     print()
