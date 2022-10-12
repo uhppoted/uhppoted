@@ -3,8 +3,9 @@
 ## IN PROGRESS
 
 - [ ] Release script
-- [ ] Code generator
+- [x] Code generator
 - [ ] Remove zip files from builds
+- [ ] Make `uhppoted` a service user (`sudo adduser --system uhppoted`)
 
 ## TODO
 
