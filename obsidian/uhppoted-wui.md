@@ -14,6 +14,7 @@
     - https://arxiv.org/pdf/2205.03326.pdf
 10. https://socketsupply.co/
 11. https://joearms.github.io/#2016-01-28%20A%20Badass%20Way%20to%20Connect%20Programs%20Together
+12. https://github.com/mafintosh/hyperbeam
 
 For secure browser clients:
 - https://leaningtech.com/webvm-virtual-machine-with-networking-via-tailscale/
@@ -21,3 +22,5 @@ For secure browser clients:
 
 (?) UBF
 - https://kevingzhang.github.io/posts/wasm_tpm_tee_0_eng/
+- https://try.enarx.dev/
+- https://github.com/hyperswarm

@@ -93,6 +93,7 @@ but the readers below are in active use:
 
 ## Releases
 
+- v0.8.2:  Adds _uhppoted-codegen_ project to generate native UHPPOTE interface in languages other thann Go.
 - v0.8.1:  Adds human readable fields to events for MQTT and REST implementations. Minor bug fixes and usability fixes.
 - v0.8.0:  Adds [uhppoted-httpd](https://github.com/uhppoted/uhppoted-httpd) and [uhppoted-tunnel](https://github.com/uhppoted/uhppoted-tunnel) components
 - v0.7.3:  Adds [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll) shared-lib to components

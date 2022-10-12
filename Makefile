@@ -167,7 +167,7 @@ build-all: test vet
 	cp uhppoted-mqtt/documentation/signatures.md cookbook/mqtt/
 	cp uhppoted-app-s3/documentation/signing.md  cookbook/s3/
 
-release: build-all docker integration-tests
+release: build-all docker
 	find . -name ".DS_Store" -delete
 
 	tar --directory=uhppoted-codegen --exclude=".DS_Store" -cvzf dist/linux/$(DIST)/uhppoted-codegen-bindings.tar.gz   bindings
@@ -194,10 +194,14 @@ release: build-all docker integration-tests
 
 release-all: 
 	yapf -ri ./internal
-	python ./internal/release.py --version=$(RELEASE) --no-edit
+	python ./internal/release.py --version=$(RELEASE) --no-edit  --interim
 	# find . -name "CHANGELOG.md" | grep -v "node_modules" | xargs -o vim
 	# find . -name "README.md"    | grep -v "node_modules" | xargs -o vim
 	# find . -name "TODO.md"      | grep -v "node_modules" | xargs -o vim
+
+release-v0.8.2: 
+	yapf -ri ./internal
+	python ./internal/release.py --version=v0.8.2
 
 build-github: 
 	cd uhppote-core              && go build -trimpath ./...

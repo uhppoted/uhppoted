@@ -1,3 +1,3 @@
 [style]
 based_on_style = pep8
-column_limit=100
+column_limit=120

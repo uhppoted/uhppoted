@@ -22,6 +22,11 @@ def main():
         action='store_true',
         help="doesn't automatically invoke the editor for e.g. CHANGELOG.md'")
 
+    parser.add_argument(
+        '--interim',
+        action='store_false',
+        help="doesn't insist on changes being pushed to github")
+
     parser.add_argument('--version',
                         type=str,
                         default='development',
@@ -29,7 +34,9 @@ def main():
 
     args = parser.parse_args()
     no_edit = args.no_edit
-    version = args.version
+    interim = args.interim
+    version = args.version if args.version.startswith(
+        'v') else f'v{args.version[1:]}'
 
     try:
         print(f'VERSION: {version}')
@@ -37,19 +44,19 @@ def main():
         list = projects()
         for p in list:
             print(f'... checking {p}')
-            print()
-
-            changelog(p, list[p], version, no_edit)
+            changelog(p, list[p], version[1:], no_edit)
+            readme(p, list[p], version, no_edit)
+            uncommitted(p, list[p], interim)
 
         list = projects()
         for p in list:
             print(f'... releasing {p}')
-            print()
-
-            checkout(p, list[p])
             update(p, list[p])
+            checkout(p, list[p])
             build(p, list[p])
+            git(p, list[p], interim)
             release(p, list[p], version)
+            git(p, list[p], interim)
 
         print()
         print(f'*** OK!')
@@ -58,7 +65,10 @@ def main():
 
     except BaseException as x:
         msg = f'{x}'
-        msg = msg.replace('uhppoted-', '').replace('uhppote-', '')
+        msg = msg.replace('uhppoted-','')                \
+                 .replace('uhppote-','')                 \
+                 .replace('uhppoted','umbrella project') \
+                 .replace('cli','[[char LTRL]]cli[[char NORM]]')
 
         print()
         print(f'*** ERROR  {x}')
@@ -110,7 +120,7 @@ def projects():
         },
         'uhppoted-codegen': {
             'folder': './uhppoted-codegen',
-            'branch': 'master'
+            'branch': 'main'
         },
         'uhppoted-app-s3': {
             'folder': './uhppoted-app-s3',
@@ -142,6 +152,24 @@ def projects():
 def changelog(project, info, version, no_edit):
     with open(f"{info['folder']}/CHANGELOG.md", 'r', encoding="utf-8") as f:
         CHANGELOG = f.read()
+        if 'Unreleased' in CHANGELOG:
+            rest = CHANGELOG
+            for i in range(3):
+                line, _, rest = rest.partition('\n')
+                print(f'>> {line}')
+
+            if not no_edit:
+                command = f"sublime2 {info['folder']}/CHANGELOG.md"
+                subprocess.run(['/bin/zsh', '-i', '-c', command])
+
+            raise Exception(
+                f'{project} CHANGELOG has not been updated for release')
+
+    if project == 'node-red-contrib-uhppoted':
+        return
+
+    with open(f"{info['folder']}/CHANGELOG.md", 'r', encoding="utf-8") as f:
+        CHANGELOG = f.read()
         if not CHANGELOG.startswith(f'# CHANGELOG\n\n## [{version}]'):
             rest = CHANGELOG
             for i in range(3):
@@ -156,17 +184,55 @@ def changelog(project, info, version, no_edit):
                 f'{project} CHANGELOG has not been updated for release')
 
 
+def readme(project, info, version, no_edit):
+    ignore = ['uhppoted-nodejs', 'node-red-contrib-uhppoted']
+    if project in ignore:
+        return
+
+    with open(f"{info['folder']}/README.md", 'r', encoding="utf-8") as f:
+        README = f.read()
+        if not f'{version}' in README:
+            if not no_edit:
+                command = f"sublime2 {info['folder']}/README.md"
+                subprocess.run(['/bin/zsh', '-i', '-c', command])
+
+            raise Exception(
+                f'{project} README has not been updated for release')
+
+
+def uncommitted(project, info, interim):
+    ignore = []
+    if interim:
+        ignore = ['uhppoted']
+
+    try:
+        command = f"cd {info['folder']} && git remote update"
+        subprocess.run(command, shell=True, check=True)
+
+        command = f"cd {info['folder']} && git status -uno"
+        result = subprocess.check_output(command, shell=True)
+
+        if (not project
+                in ignore) and 'Changes not staged for commit' in str(result):
+            raise Exception(f"{project} has uncommitted changes")
+
+    except subprocess.CalledProcessError:
+        raise Exception(f"{project}: command 'git status' failed")
+
+
 def checkout(project, info):
-    command = f"cd {info['folder']} && git checkout {info['branch']}"
-    result = subprocess.call(command, shell=True)
-    if result != 0:
+    try:
+        command = f"cd {info['folder']} && git checkout {info['branch']}"
+        subprocess.run(command, shell=True, check=True)
+    except subprocess.CalledProcessError:
         raise Exception(f"command 'checkout {project}' failed")
 
 
 def update(project, info):
-    command = f"cd {info['folder']} && make update && make build"
-    result = subprocess.call(command, shell=True)
-    if result != 0:
+    try:
+        command = f"cd {info['folder']} && make update && make build"
+        subprocess.run(command, shell=True, check=True)
+    except subprocess.CalledProcessError:
         raise Exception(f"command 'update {project}' failed")
 
 
@@ -175,6 +241,23 @@ def build(project, info):
     result = subprocess.call(command, shell=True)
     if result != 0:
         raise Exception(f"command 'build {project}' failed")
+
+
+def git(project, info, interim):
+    try:
+        command = f"cd {info['folder']} && git remote update"
+        subprocess.run(command, shell=True, check=True)
+
+        command = f"cd {info['folder']} && git status -uno"
+        result = subprocess.check_output(command, shell=True)
+
+        if 'Changes not staged for commit' in str(result):
+            raise Exception(f"{project} has uncommitted changes")
+        elif (not interim) and 'Your branch is ahead' in str(result):
+            raise Exception(f"{project} has commits that have not been pushed")
+
+    except subprocess.CalledProcessError:
+        raise Exception(f"{project}: command 'git status' failed")
 
 
 def release(project, info, version):

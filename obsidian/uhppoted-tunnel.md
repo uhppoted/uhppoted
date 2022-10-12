@@ -1,6 +1,7 @@
 1. IPv6
 2. Tailscale
 3. Telegraph
+    - https://core.telegram.org/
 4. ws/wss
 5. CoAP
 6. MQTTv5
@@ -8,3 +9,5 @@
 
 
 - https://iot.stackexchange.com/questions/6415/software-service-solution-for-iot-device-behind-customer-network-nat-with-mobi
+- https://try.enarx.dev/
+- https://github.com/hyperswarm
