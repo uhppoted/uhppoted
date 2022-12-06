@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## [Unreleased]
+
+
 ## [0.8.2](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.2) - 2022-10-14
 
 ### Added

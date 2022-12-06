@@ -15,7 +15,6 @@ docker/uhppoted-rest/uhppoted-rest
 docker/integration-tests/simulator/uhppote-simulator
 cookbook/get-events/uhppote-cli
 *.exe
-*.exe~
 *.dll
 *.so
 *.dylib
@@ -30,9 +29,6 @@ notes
 # Test binary, build with `go test -c`
 *.test
 
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
-
 # TeX working files
 protocol.aux
 protocol.log
@@ -45,3 +41,4 @@ documentation/SDK
 # Experimental stuff
 logseq
 uhppoted-documentation
+uhppoted-wiegand
