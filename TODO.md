@@ -3,9 +3,14 @@
 ## IN PROGRESS
 
 - [ ] Release script
-- [x] Code generator
+      - [ ] https://github.com/uhppoted/uhppoted/issues/20
+      - [ ] Post release script
+            - Add _Unreleased_ section to all CHANGELOG.md
+            - Bump version in uhppote-core and Makfiles
+
 - [ ] Remove zip files from builds
 - [ ] Make `uhppoted` a service user (`sudo adduser --system uhppoted`)
+- [ ] https://github.com/uhppoted/uhppoted/issues/19
 
 ## TODO
 
@@ -177,18 +182,17 @@
      - https://modeling-languages.com/asyncapi-modeling-editor-code-generator
 24. go-fuzz
 25. [OPA](https://github.com/open-policy-agent/opa) for permissions (?)
-26. [Node-RED](https://hackaday.com/2020/01/15/automate-your-life-with-node-red-plus-a-dash-of-mqtt)
-27. [Datomic ?](https://stackoverflow.com/questions/21245555/when-should-i-use-datomic)
-28. [OCF-Over-Thread](https://www.infoq.com/news/2016/07/ocf-thread/)
-29. Implement a lightweight end-to-end encryption protocol 
+26. [Datomic ?](https://stackoverflow.com/questions/21245555/when-should-i-use-datomic)
+27. [OCF-Over-Thread](https://www.infoq.com/news/2016/07/ocf-thread/)
+28. Implement a lightweight end-to-end encryption protocol 
      - [MLS](https://mrosenberg.pub/cryptography/2019/07/10/molasses.html)
      - NACL/tweetnacl
-30.  Consider moving to event bus architecture (?)
-31. [Open Policy Agent](https://github.com/open-policy-agent) - for permissions
+29.  Consider moving to event bus architecture (?)
+30. [Open Policy Agent](https://github.com/open-policy-agent) - for permissions
+31. [zk-SNARK](https://www.entropy1729.com/the-hunting-of-the-zk-snark)
 32. CouchBase (for JSON DB)
 33. [AnyLog](https://blog.acolyer.org/2020/02/24/anylog)
 34. [gRPC](https://www.programmableweb.com/news/how-to-build-streaming-api-using-grpc/how-to/2020/02/21)
-35. [NodeRed/GreenGrass](https://iot.stackexchange.com/questions/2646/deploy-scripts-to-aws-greengrass-without-aws-lambda)
 36. [dolt](https://github.com/liquidata-inc/dolt)
 37. [Go/OpenAPI](https://stackoverflow.com/questions/48752908/openapi-spec-validation-in-golang)
 38. [Datasette](https://datasette.readthedocs.io/en/stable)
@@ -202,8 +206,6 @@
 45. [rsync.net](https://www.rsync.net)
 46. [Rasbian/qemu](https://beta7.io/posts/running-raspbian-in-qemu.html)
 47. [WebRTC](https://github.com/pion/webrtc)
-48. [UDP tunnelling: ssh/nc](https://superuser.com/questions/53103/udp-traffic-through-ssh-tunnel)
-49. [UDP tunnelling: socat](http://www.morch.com/2011/07/05/forwarding-snmp-ports-over-ssh-using-socat/)
 50. [OpenMTC](https://www.openmtc.org)
 51. [RSocket](https://rsocket.io)
 52. For demo system: https://dev.to/github/10-standout-github-profile-readmes-h2o
@@ -247,4 +249,9 @@
 91. [HomeAssistant](https://www.home-assistant.io/)
 92. [FPGA](https://github.com/JulianKemmerer/PipelineC-Graphics/blob/main/doc/Sphery-vs-Shapes.pdf)
 93. [Charm::Bubbletea](https://dlvhdr.me/posts/the-renaissance-of-the-command-line)
-94. [zk-SNARK](https://www.entropy1729.com/the-hunting-of-the-zk-snark)
+94. [Textualize](https://www.textualize.io)
+95. [OpenTelemetry](https://github.com/open-telemetry/opentelemetry-demo/tree/v1.0.0)
+96. [Reowolf](https://reowolf.net/)
+97. [OSDP](https://www.getkisi.com/guides/osdp)
+98. [wails](https://wails.io/)
+99. [Sandstorm](https://sandstorm.io/)
