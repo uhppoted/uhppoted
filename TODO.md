@@ -7,6 +7,7 @@
       - [ ] Post release script
             - Add _Unreleased_ section to all CHANGELOG.md
             - Bump version in uhppote-core and Makfiles
+      - [ ] https://trstringer.com/github-actions-create-release-upload-artifacts/
 
 - [ ] Remove zip files from builds
 - [ ] Make `uhppoted` a service user (`sudo adduser --system uhppoted`)
