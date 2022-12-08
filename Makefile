@@ -236,16 +236,7 @@ build-github:
 	# make -C ./uhppoted-dll -f Makefile build-all
 
 debug: 
-	mkdir -p dist/linux/$(DIST)
-	mkdir -p dist/arm7/$(DIST)
-	mkdir -p dist/darwin/$(DIST)
-	mkdir -p dist/windows/$(DIST)
-	mkdir -p dist/openapi/$(DIST)
-
-	cd uhppoted-tunnel && $(LINUX)   go build -trimpath -o ../dist/linux/$(DIST)   ./...
-	cd uhppoted-tunnel && $(ARM7)    go build -trimpath -o ../dist/arm7/$(DIST)    ./...
-	cd uhppoted-tunnel && $(DARWIN)  go build -trimpath -o ../dist/darwin/$(DIST)  ./...
-	cd uhppoted-tunnel && $(WINDOWS) go build -trimpath -o ../dist/windows/$(DIST) ./...	
+	cd uhppote-simulator && $(WINDOWS) go build -trimpath -o ../dist/windows/$(DIST) ./...
 
 simulator: 
 	./bin/uhppote-simulator --debug --bind 0.0.0.0:60000 --rest 0.0.0.0:8000 --devices "./runtime/simulation/devices"

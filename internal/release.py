@@ -3,6 +3,8 @@
 import argparse
 import subprocess
 import sys
+import os
+import hashlib
 
 
 def main():
@@ -35,8 +37,10 @@ def main():
     args = parser.parse_args()
     no_edit = args.no_edit
     interim = args.interim
-    version = args.version if args.version.startswith(
-        'v') else f'v{args.version[1:]}'
+    version = args.version
+
+    if version != 'development' and not args.version.startswith('v'):
+        version = f'v{args.version}'
 
     try:
         print(f'VERSION: {version}')
@@ -54,6 +58,10 @@ def main():
             update(p, list[p])
             checkout(p, list[p])
             build(p, list[p])
+
+        list = projects()
+        for p in list:
+            checksum(p, list[p], version)
             git(p, list[p], interim)
             release(p, list[p], version)
             git(p, list[p], interim)
@@ -88,59 +96,69 @@ def projects():
         },
         'uhppote-simulator': {
             'folder': './uhppote-simulator',
-            'branch': 'master'
+            'branch': 'master',
+            'binary': 'uhppote-simulator'
         },
         'uhppoted-lib': {
             'folder': './uhppoted-lib',
-            'branch': 'master'
+            'branch': 'master',
         },
         'uhppote-cli': {
             'folder': './uhppote-cli',
-            'branch': 'master'
+            'branch': 'master',
+            'binary': 'uhppote-cli'
         },
         'uhppoted-rest': {
             'folder': './uhppoted-rest',
-            'branch': 'master'
+            'branch': 'master',
+            'binary': 'uhppoted-rest'
         },
         'uhppoted-mqtt': {
-            'branch': 'master',
             'folder': './uhppoted-mqtt',
+            'branch': 'master',
+            'binary': 'uhppoted-mqtt'
         },
         'uhppoted-httpd': {
             'folder': './uhppoted-httpd',
-            'branch': 'master'
+            'branch': 'master',
+            'binary': 'uhppoted-httpd'
         },
         'uhppoted-tunnel': {
             'folder': './uhppoted-tunnel',
-            'branch': 'master'
+            'branch': 'master',
+            'binary': 'uhppoted-tunnel'
         },
         'uhppoted-dll': {
             'folder': './uhppoted-dll',
-            'branch': 'master'
+            'branch': 'master',
         },
         'uhppoted-codegen': {
             'folder': './uhppoted-codegen',
-            'branch': 'main'
+            'branch': 'main',
+            'binary': 'uhppoted-codegen'
         },
         'uhppoted-app-s3': {
             'folder': './uhppoted-app-s3',
-            'branch': 'master'
+            'branch': 'master',
+            'binary': 'uhppoted-app-s3'
         },
         'uhppoted-app-sheets': {
             'folder': './uhppoted-app-sheets',
-            'branch': 'master'
+            'branch': 'master',
+            'binary': 'uhppoted-app-sheets'
         },
         'uhppoted-app-wild-apricot': {
             'folder': './uhppoted-app-wild-apricot',
-            'branch': 'master'
+            'branch': 'master',
+            'binary': 'uhppoted-app-wild-apricot'
         },
         'uhppoted-nodejs': {
             'folder': './uhppoted-nodejs',
-            'branch': 'master'
+            'branch': 'master',
         },
         'node-red-contrib-uhppoted': {
             'folder': './node-red-contrib-uhppoted',
-            'branch': 'master'
+            'branch': 'master',
         },
         'uhppoted': {
             'folder': '.',
@@ -265,6 +283,38 @@ def release(project, info, version):
     result = subprocess.call(command, shell=True)
     if result != 0:
         raise Exception(f"command 'build {project}' failed")
+
+
+def checksum(project, info, version):
+    if 'binary' in info:
+        binary = info['binary']
+        root = f"{info['folder']}"
+        platforms = ['linux', 'darwin', 'windows', 'arm', 'arm7']
+
+        for platform in platforms:
+            if platform == 'windows':
+                exe = os.path.join(root, 'dist', version, platform,
+                                   f'{binary}.exe')
+                combined = os.path.join('dist', platform, version,
+                                        f'{binary}.exe')
+            else:
+                exe = os.path.join(root, 'dist', version, platform, binary)
+                combined = os.path.join('dist', platform, version, binary)
+
+            if hash(combined) != hash(exe):
+                print(f'{project:<25}  {exe:<82}  {hash(exe)}')
+                print(f'{"":<25}  {combined:<82}  {hash(combined)}')
+                raise Exception(f"{project} 'dist' checksums differ")
+
+
+def hash(file):
+    hash = hashlib.sha256()
+
+    with open(file, "rb") as f:
+        bytes = f.read(65536)
+        hash.update(bytes)
+
+    return hash.hexdigest()
 
 
 def say(msg):

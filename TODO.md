@@ -3,10 +3,11 @@
 ## IN PROGRESS
 
 - [ ] Release script
-      - [ ] https://github.com/uhppoted/uhppoted/issues/20
+      - [x] https://github.com/uhppoted/uhppoted/issues/20
       - [ ] Post release script
             - Add _Unreleased_ section to all CHANGELOG.md
             - Bump version in uhppote-core and Makfiles
+      - [ ] Generate release notes from CHANGELOG
       - [ ] https://trstringer.com/github-actions-create-release-upload-artifacts/
 
 - [ ] Remove zip files from builds
