@@ -4,6 +4,7 @@ import argparse
 import subprocess
 import sys
 import os
+import re
 import hashlib
 
 
@@ -45,26 +46,33 @@ def main():
     try:
         print(f'VERSION: {version}')
 
-        list = projects()
-        for p in list:
-            print(f'... checking {p}')
-            changelog(p, list[p], version[1:], no_edit)
-            readme(p, list[p], version, no_edit)
-            uncommitted(p, list[p], interim)
+        # list = projects()
+        # for p in list:
+        #     print(f'... checking {p}')
+        #     changelog(p, list[p], version[1:], no_edit)
+        #     readme(p, list[p], version, no_edit)
+        #     uncommitted(p, list[p], interim)
+
+        # list = projects()
+        # for p in list:
+        #     print(f'... releasing {p}')
+        #     update(p, list[p])
+        #     checkout(p, list[p])
+        #     build(p, list[p])
+
+        # list = projects()
+        # for p in list:
+        #     checksum(p, list[p], version)
+        #     git(p, list[p], interim)
 
         list = projects()
         for p in list:
-            print(f'... releasing {p}')
-            update(p, list[p])
-            checkout(p, list[p])
-            build(p, list[p])
+            release_notes(p, list[p], version)
 
-        list = projects()
-        for p in list:
-            checksum(p, list[p], version)
-            git(p, list[p], interim)
-            release(p, list[p], version)
-            git(p, list[p], interim)
+        # list = projects()
+        # for p in list:
+        #     release(p, list[p], version)
+        #     git(p, list[p], interim)
 
         print()
         print(f'*** OK!')
@@ -305,6 +313,33 @@ def checksum(project, info, version):
                 print(f'{project:<25}  {exe:<82}  {hash(exe)}')
                 print(f'{"":<25}  {combined:<82}  {hash(combined)}')
                 raise Exception(f"{project} 'dist' checksums differ")
+
+
+def release_notes(project, info, version):
+    with open(f"{info['folder']}/CHANGELOG.md", 'r', encoding="utf-8") as f:
+        CHANGELOG = f.read()
+        match = re.search(r'##\s+\[(.*?)\](?:.*?)\n(.*?)##\s+\[(.*?)\]',
+                          CHANGELOG, re.MULTILINE | re.DOTALL)
+
+        current = match.group(1)
+        notes = match.group(2).strip()
+        previous = match.group(3)
+
+        if notes == '':
+            notes = 'Maintenance release for version compatibility.'
+
+        print(f'Current  release {current}')
+        print(f'Previous release {previous}')
+        print(f'Release notes\n----\n{notes}\n----\n')
+
+        with open(f"{info['folder']}/release-notes.md", 'wt',
+                  encoding="utf-8") as r:
+            r.write('### Release Notes\n')
+            r.write('\n')
+            r.write(notes)
+            r.write('\n')
+
+    raise Exception(f"{project} missing release notes")
 
 
 def hash(file):

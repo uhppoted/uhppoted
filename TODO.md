@@ -3,12 +3,11 @@
 ## IN PROGRESS
 
 - [ ] Release script
-      - [x] https://github.com/uhppoted/uhppoted/issues/20
+      - [ ] Generate release notes from CHANGELOG
+      - [ ] Use Github CLI/make publish
       - [ ] Post release script
             - Add _Unreleased_ section to all CHANGELOG.md
-            - Bump version in uhppote-core and Makfiles
-      - [ ] Generate release notes from CHANGELOG
-      - [ ] https://trstringer.com/github-actions-create-release-upload-artifacts/
+            - Bump version in uhppote-core and Makefiles
 
 - [ ] Remove zip files from builds
 - [ ] Make `uhppoted` a service user (`sudo adduser --system uhppoted`)

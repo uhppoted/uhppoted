@@ -25,6 +25,7 @@ example.tsv
 rq.*
 key.*
 notes
+release-notes.md
 
 # Test binary, build with `go test -c`
 *.test
