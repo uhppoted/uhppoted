@@ -35,3 +35,4 @@
 #### Other
 - https://www.redox-os.org/
 - https://doc.redox-os.org/book/ch04-06-schemes.html
+- https://hackaday.com/2022/12/08/power-over-ethernet-explained/

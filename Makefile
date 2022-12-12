@@ -211,10 +211,7 @@ release: build-all docker
 
 release-all: 
 	yapf -ri ./internal
-	python ./internal/release.py --version=$(RELEASE) --no-edit  --interim
-	# find . -name "CHANGELOG.md" | grep -v "node_modules" | xargs -o vim
-	# find . -name "README.md"    | grep -v "node_modules" | xargs -o vim
-	# find . -name "TODO.md"      | grep -v "node_modules" | xargs -o vim
+	python ./internal/release.py --version=$(RELEASE) --prepare
 
 # release-v0.8.2: 
 # 	yapf -ri ./internal
