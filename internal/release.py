@@ -20,6 +20,15 @@ def main():
     parser = argparse.ArgumentParser(
         description='release --version=<version> --no-edit')
 
+    parser.add_argument('--version',
+                        type=str,
+                        default='development',
+                        help='release version e.g. v0.8.1')
+
+    parser.add_argument('--prepare',
+                        action='store_false',
+                        help="executes only the 'prepare release' operation")
+
     parser.add_argument(
         '--no-edit',
         action='store_true',
@@ -30,15 +39,12 @@ def main():
         action='store_false',
         help="doesn't insist on changes being pushed to github")
 
-    parser.add_argument('--version',
-                        type=str,
-                        default='development',
-                        help='release version e.g. v0.8.1')
-
     args = parser.parse_args()
     no_edit = args.no_edit
     interim = args.interim
     version = args.version
+    prepare = args.prepare
+    doall = False
 
     if version != 'development' and not args.version.startswith('v'):
         version = f'v{args.version}'
@@ -46,33 +52,37 @@ def main():
     try:
         print(f'VERSION: {version}')
 
-        # list = projects()
-        # for p in list:
-        #     print(f'... checking {p}')
-        #     changelog(p, list[p], version[1:], no_edit)
-        #     readme(p, list[p], version, no_edit)
-        #     uncommitted(p, list[p], interim)
-
-        # list = projects()
-        # for p in list:
-        #     print(f'... releasing {p}')
-        #     update(p, list[p])
-        #     checkout(p, list[p])
-        #     build(p, list[p])
-
-        # list = projects()
-        # for p in list:
-        #     checksum(p, list[p], version)
-        #     git(p, list[p], interim)
-
         list = projects()
         for p in list:
-            release_notes(p, list[p], version)
+            print(f'... checking {p}')
+            changelog(p, list[p], version[1:], no_edit)
+            readme(p, list[p], version, no_edit)
+            uncommitted(p, list[p], interim)
 
-        # list = projects()
-        # for p in list:
-        #     release(p, list[p], version)
-        #     git(p, list[p], interim)
+        if doall or prepare:
+            list = projects()
+            for p in list:
+                print(f'... releasing {p}')
+                update(p, list[p])
+                checkout(p, list[p])
+                build(p, list[p])
+
+        if doaall:
+            list = projects()
+            for p in list:
+                checksum(p, list[p], version)
+                git(p, list[p], interim)
+
+        if doall:
+            list = projects()
+            for p in list:
+                release_notes(p, list[p], version)
+
+        if doall:
+            list = projects()
+            for p in list:
+                release(p, list[p], version)
+                git(p, list[p], interim)
 
         print()
         print(f'*** OK!')
@@ -316,30 +326,33 @@ def checksum(project, info, version):
 
 
 def release_notes(project, info, version):
-    with open(f"{info['folder']}/CHANGELOG.md", 'r', encoding="utf-8") as f:
-        CHANGELOG = f.read()
-        match = re.search(r'##\s+\[(.*?)\](?:.*?)\n(.*?)##\s+\[(.*?)\]',
-                          CHANGELOG, re.MULTILINE | re.DOTALL)
+    regex = r'##\s+\[(.*?)\](?:.*?)\n(.*?)##\s+\[(.*?)\]'
+    file = f"{info['folder']}/release-notes.md"
 
-        current = match.group(1)
-        notes = match.group(2).strip()
-        previous = match.group(3)
+    try:
+        with open(file, 'xt', encoding="utf-8") as f:
+            with open(f"{info['folder']}/CHANGELOG.md", 'r',
+                      encoding="utf-8") as changelog:
+                CHANGELOG = changelog.read()
+                match = re.search(regex, CHANGELOG, re.MULTILINE | re.DOTALL)
 
-        if notes == '':
-            notes = 'Maintenance release for version compatibility.'
+                current = match.group(1)
+                notes = match.group(2).strip()
+                previous = match.group(3)
 
-        print(f'Current  release {current}')
-        print(f'Previous release {previous}')
-        print(f'Release notes\n----\n{notes}\n----\n')
+                if notes == '':
+                    notes = 'Maintenance release for version compatibility.'
 
-        with open(f"{info['folder']}/release-notes.md", 'wt',
-                  encoding="utf-8") as r:
-            r.write('### Release Notes\n')
-            r.write('\n')
-            r.write(notes)
-            r.write('\n')
+                # print(f'Current  release {current}')
+                # print(f'Previous release {previous}')
+                # print(f'Release notes\n----\n{notes}\n----\n')
 
-    raise Exception(f"{project} missing release notes")
+                f.write('### Release Notes\n')
+                f.write('\n')
+                f.write(notes)
+                f.write('\n')
+    except FileExistsError:
+        f"... keeping existing {info['folder']}/release-notes.md"
 
 
 def hash(file):
