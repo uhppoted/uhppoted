@@ -3,7 +3,7 @@
 ## IN PROGRESS
 
 - [ ] Release script
-      - [ ] Generate release notes from CHANGELOG
+      - [x] Generate release notes from CHANGELOG
       - [ ] Use Github CLI/make publish
       - [ ] Post release script
             - Add _Unreleased_ section to all CHANGELOG.md
