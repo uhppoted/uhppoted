@@ -26,8 +26,19 @@ def main():
                         help='release version e.g. v0.8.1')
 
     parser.add_argument('--prepare',
-                        action='store_false',
+                        action='store_true',
                         help="executes only the 'prepare release' operation")
+
+    parser.add_argument(
+        '--prerelease',
+        action='store_true',
+        help="executes the 'prepare and prerelease builds' operation")
+
+    parser.add_argument(
+        '--release',
+        action='store_true',
+        help=
+        "executes only the 'prepare, prerelease and build releases' operation")
 
     parser.add_argument(
         '--no-edit',
@@ -43,8 +54,6 @@ def main():
     no_edit = args.no_edit
     interim = args.interim
     version = args.version
-    prepare = args.prepare
-    doall = False
 
     if version != 'development' and not args.version.startswith('v'):
         version = f'v{args.version}'
@@ -52,14 +61,18 @@ def main():
     try:
         print(f'VERSION: {version}')
 
+        print(
+            f'>>>> initialise: checking CHANGELOGs, READMEs and uncommitted changes ({version})'
+        )
         list = projects()
         for p in list:
-            print(f'... checking {p}')
+            print(f'>>>> checking {p}')
             changelog(p, list[p], version[1:], no_edit)
             readme(p, list[p], version, no_edit)
             uncommitted(p, list[p], interim)
 
-        if doall or prepare:
+        if args.prepare or args.prerelease or args.release:
+            print(f'>>>> prepare: checking builds ({version})')
             list = projects()
             for p in list:
                 print(f'... releasing {p}')
@@ -67,22 +80,25 @@ def main():
                 checkout(p, list[p])
                 build(p, list[p])
 
-        if doaall:
+        if args.prerelease or args.release:
+            print(
+                f'>>>> prerelease: final check for consistent library and binary versions ({version})'
+            )
             list = projects()
             for p in list:
-                checksum(p, list[p], version)
+                checksum(p, list[p], 'development')
                 git(p, list[p], interim)
 
-        if doall:
+        if args.release:
+            print(f'>>>> release: building release versions ({version})')
             list = projects()
             for p in list:
                 release_notes(p, list[p], version)
-
-        if doall:
-            list = projects()
-            for p in list:
                 release(p, list[p], version)
+                checksum(p, list[p], version)
                 git(p, list[p], interim)
+
+        # TODO publish
 
         print()
         print(f'*** OK!')
@@ -157,17 +173,17 @@ def projects():
         },
         'uhppoted-app-s3': {
             'folder': './uhppoted-app-s3',
-            'branch': 'master',
+            'branch': 'main',
             'binary': 'uhppoted-app-s3'
         },
         'uhppoted-app-sheets': {
             'folder': './uhppoted-app-sheets',
-            'branch': 'master',
+            'branch': 'main',
             'binary': 'uhppoted-app-sheets'
         },
         'uhppoted-app-wild-apricot': {
             'folder': './uhppoted-app-wild-apricot',
-            'branch': 'master',
+            'branch': 'main',
             'binary': 'uhppoted-app-wild-apricot'
         },
         'uhppoted-nodejs': {
@@ -227,7 +243,7 @@ def readme(project, info, version, no_edit):
 
     with open(f"{info['folder']}/README.md", 'r', encoding="utf-8") as f:
         README = f.read()
-        if not f'{version}' in README:
+        if re.compile(f'\|\s*{version}\s*\|').search(README) == None:
             if not no_edit:
                 command = f"sublime2 {info['folder']}/README.md"
                 subprocess.run(['/bin/zsh', '-i', '-c', command])
@@ -366,7 +382,9 @@ def hash(file):
 
 
 def say(msg):
-    subprocess.call(f'say {msg}', shell=True)
+    transliterated = msg.replace('nodejs',
+                                 'node js').replace('codegen', 'code gen')
+    subprocess.call(f'say {transliterated}', shell=True)
 
 
 def usage():

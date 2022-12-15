@@ -1,4 +1,4 @@
-RELEASE = development
+RELEASE = 0.8.3
 DEBUG ?= --debug
 DIST  ?= development
 
@@ -211,11 +211,11 @@ release: build-all docker
 
 release-all: 
 	yapf -ri ./internal
-	python ./internal/release.py --version=$(RELEASE) --prepare
+	python ./internal/release.py --version=$(RELEASE) --prerelease
 
-# release-v0.8.2: 
-# 	yapf -ri ./internal
-# 	python ./internal/release.py --version=v0.8.2
+release-v0.8.3: 
+	yapf -ri ./internal
+	python ./internal/release.py --version=v0.8.3 --release
 
 build-github: 
 	cd uhppote-core              && go build -trimpath ./...
