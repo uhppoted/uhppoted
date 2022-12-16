@@ -116,14 +116,14 @@ def projects():
             'folder': './uhppote-core',
             'branch': 'master'
         },
+        'uhppoted-lib': {
+            'folder': './uhppoted-lib',
+            'branch': 'master',
+        },
         'uhppote-simulator': {
             'folder': './uhppote-simulator',
             'branch': 'master',
             'binary': 'uhppote-simulator'
-        },
-        'uhppoted-lib': {
-            'folder': './uhppoted-lib',
-            'branch': 'master',
         },
         'uhppote-cli': {
             'folder': './uhppote-cli',
