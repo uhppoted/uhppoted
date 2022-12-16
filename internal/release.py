@@ -17,38 +17,25 @@ def main():
         usage()
         return -1
 
-    parser = argparse.ArgumentParser(
-        description='release --version=<version> --no-edit')
+    parser = argparse.ArgumentParser(description='release --version=<version> --no-edit')
 
-    parser.add_argument('--version',
-                        type=str,
-                        default='development',
-                        help='release version e.g. v0.8.1')
+    parser.add_argument('--version', type=str, default='development', help='release version e.g. v0.8.1')
 
-    parser.add_argument('--prepare',
+    parser.add_argument('--prepare', action='store_true', help="executes only the 'prepare release' operation")
+
+    parser.add_argument('--prerelease',
                         action='store_true',
-                        help="executes only the 'prepare release' operation")
+                        help="executes the 'prepare and prerelease builds' operation")
 
-    parser.add_argument(
-        '--prerelease',
-        action='store_true',
-        help="executes the 'prepare and prerelease builds' operation")
+    parser.add_argument('--release',
+                        action='store_true',
+                        help="executes only the 'prepare, prerelease and build releases' operation")
 
-    parser.add_argument(
-        '--release',
-        action='store_true',
-        help=
-        "executes only the 'prepare, prerelease and build releases' operation")
+    parser.add_argument('--no-edit',
+                        action='store_true',
+                        help="doesn't automatically invoke the editor for e.g. CHANGELOG.md'")
 
-    parser.add_argument(
-        '--no-edit',
-        action='store_true',
-        help="doesn't automatically invoke the editor for e.g. CHANGELOG.md'")
-
-    parser.add_argument(
-        '--interim',
-        action='store_false',
-        help="doesn't insist on changes being pushed to github")
+    parser.add_argument('--interim', action='store_false', help="doesn't insist on changes being pushed to github")
 
     args = parser.parse_args()
     no_edit = args.no_edit
@@ -61,33 +48,29 @@ def main():
     try:
         print(f'VERSION: {version}')
 
-        print(
-            f'>>>> initialise: checking CHANGELOGs, READMEs and uncommitted changes ({version})'
-        )
-        # list = projects()
-        # for p in list:
-        #     print(f'>>>> checking {p}')
-        #     changelog(p, list[p], version[1:], no_edit)
-        #     readme(p, list[p], version, no_edit)
-        #     uncommitted(p, list[p], interim)
+        print(f'>>>> initialise: checking CHANGELOGs, READMEs and uncommitted changes ({version})')
+        list = projects()
+        for p in list:
+            print(f'>>>> checking {p}')
+            changelog(p, list[p], version[1:], no_edit)
+            readme(p, list[p], version, no_edit)
+            uncommitted(p, list[p], interim)
 
         if args.prepare or args.prerelease or args.release:
             print(f'>>>> prepare: checking builds ({version})')
-            # list = projects()
-            # for p in list:
-            #     print(f'... releasing {p}')
-            #     update(p, list[p])
-            #     checkout(p, list[p])
-            #     build(p, list[p])
+            list = projects()
+            for p in list:
+                print(f'... releasing {p}')
+                update(p, list[p])
+                checkout(p, list[p])
+                build(p, list[p])
 
         if args.prerelease or args.release:
-            print(
-                f'>>>> prerelease: final check for consistent library and binary versions ({version})'
-            )
-            # list = projects()
-            # for p in list:
-            #     checksum(p, list[p], 'development')
-            #     git(p, list[p], interim)
+            print(f'>>>> prerelease: final check for consistent library and binary versions ({version})')
+            list = projects()
+            for p in list:
+                checksum(p, list[p], 'development')
+                git(p, list[p], interim)
 
         if args.release:
             print(f'>>>> release: building release versions ({version})')
@@ -98,9 +81,7 @@ def main():
                 git(p, list[p], interim)
 
         if args.release:
-            print(
-                f'>>>> release: verify checksums of release versions ({version})'
-            )
+            print(f'>>>> release: verify checksums of release versions ({version})')
             list = projects()
             for p in list:
                 checksum(p, list[p], version)
@@ -221,8 +202,7 @@ def changelog(project, info, version, no_edit):
                 command = f"sublime2 {info['folder']}/CHANGELOG.md"
                 subprocess.run(['/bin/zsh', '-i', '-c', command])
 
-            raise Exception(
-                f'{project} CHANGELOG has not been updated for release')
+            raise Exception(f'{project} CHANGELOG has not been updated for release')
 
     if project == 'node-red-contrib-uhppoted':
         return
@@ -239,8 +219,7 @@ def changelog(project, info, version, no_edit):
                 command = f"sublime2 {info['folder']}/CHANGELOG.md"
                 subprocess.run(['/bin/zsh', '-i', '-c', command])
 
-            raise Exception(
-                f'{project} CHANGELOG has not been updated for release')
+            raise Exception(f'{project} CHANGELOG has not been updated for release')
 
 
 def readme(project, info, version, no_edit):
@@ -255,8 +234,7 @@ def readme(project, info, version, no_edit):
                 command = f"sublime2 {info['folder']}/README.md"
                 subprocess.run(['/bin/zsh', '-i', '-c', command])
 
-            raise Exception(
-                f'{project} README has not been updated for release')
+            raise Exception(f'{project} README has not been updated for release')
 
 
 def uncommitted(project, info, interim):
@@ -271,8 +249,7 @@ def uncommitted(project, info, interim):
         command = f"cd {info['folder']} && git status -uno"
         result = subprocess.check_output(command, shell=True)
 
-        if (not project
-                in ignore) and 'Changes not staged for commit' in str(result):
+        if (not project in ignore) and 'Changes not staged for commit' in str(result):
             raise Exception(f"{project} has uncommitted changes")
 
     except subprocess.CalledProcessError:
@@ -331,20 +308,18 @@ def checksum(project, info, version):
         binary = info['binary']
         root = f"{info['folder']}"
         platforms = ['linux', 'darwin', 'windows', 'arm', 'arm7']
-        folder = version
-
-        if version != 'development':
-            folder = f"{project}_{version}"
 
         for platform in platforms:
+            filename = binary
             if platform == 'windows':
-                exe = os.path.join(root, 'dist', folder, platform,
-                                   f'{binary}.exe')
-                combined = os.path.join('dist', platform, version,
-                                        f'{binary}.exe')
-            else:
-                exe = os.path.join(root, 'dist', folder, platform, binary)
-                combined = os.path.join('dist', platform, version, binary)
+                filename = f'{binary}.exe'
+
+            exe = os.path.join(root, 'dist', f"{project}_{version}", platform, filename)
+            combined = os.path.join('dist', platform, f"uhppoted_{version}", filename)
+
+            if version == 'development':
+                exe = os.path.join(root, 'dist', f"{version}", platform, filename)
+                combined = os.path.join('dist', platform, f"{version}", filename)
 
             if hash(combined) != hash(exe):
                 print(f'{project:<25}  {exe:<82}  {hash(exe)}')
@@ -358,8 +333,7 @@ def release_notes(project, info, version):
 
     try:
         with open(file, 'xt', encoding="utf-8") as f:
-            with open(f"{info['folder']}/CHANGELOG.md", 'r',
-                      encoding="utf-8") as changelog:
+            with open(f"{info['folder']}/CHANGELOG.md", 'r', encoding="utf-8") as changelog:
                 CHANGELOG = changelog.read()
                 match = re.search(regex, CHANGELOG, re.MULTILINE | re.DOTALL)
 
@@ -395,7 +369,8 @@ def hash(file):
 def say(msg):
     transliterated = msg.replace('nodejs','node js') \
                         .replace('codegen', 'code gen') \
-                        .replace('Errno','error number')
+                        .replace('Errno','error number') \
+                        .replace('exe','e x e')
     subprocess.call(f'say {transliterated}', shell=True)
 
 
