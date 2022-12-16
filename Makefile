@@ -223,8 +223,8 @@ publish: release
 	rm -f dist/development-arm7.tar.gz
 	rm -f dist/development-darwin.tar.gz
 	rm -f dist/development-linux.tar.gz
-	rm -f dist/development-windows.tar.gz
-	gh release create "$(VERSION)" ./dist/*.tar.gz --draft --prerelease --title "$(VERSION)-beta" --notes-file release-notes.md
+	rm -f dist/development-windows.zip
+	gh release create "$(VERSION)" ./dist/*.tar.gz ./dist/*.zip --draft --prerelease --title "$(VERSION)-beta" --notes-file release-notes.md
 
 build-github: 
 	cd uhppote-core              && go build -trimpath ./...
