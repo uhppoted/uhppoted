@@ -64,30 +64,30 @@ def main():
         print(
             f'>>>> initialise: checking CHANGELOGs, READMEs and uncommitted changes ({version})'
         )
-        list = projects()
-        for p in list:
-            print(f'>>>> checking {p}')
-            changelog(p, list[p], version[1:], no_edit)
-            readme(p, list[p], version, no_edit)
-            uncommitted(p, list[p], interim)
+        # list = projects()
+        # for p in list:
+        #     print(f'>>>> checking {p}')
+        #     changelog(p, list[p], version[1:], no_edit)
+        #     readme(p, list[p], version, no_edit)
+        #     uncommitted(p, list[p], interim)
 
         if args.prepare or args.prerelease or args.release:
             print(f'>>>> prepare: checking builds ({version})')
-            list = projects()
-            for p in list:
-                print(f'... releasing {p}')
-                update(p, list[p])
-                checkout(p, list[p])
-                build(p, list[p])
+            # list = projects()
+            # for p in list:
+            #     print(f'... releasing {p}')
+            #     update(p, list[p])
+            #     checkout(p, list[p])
+            #     build(p, list[p])
 
         if args.prerelease or args.release:
             print(
                 f'>>>> prerelease: final check for consistent library and binary versions ({version})'
             )
-            list = projects()
-            for p in list:
-                checksum(p, list[p], 'development')
-                git(p, list[p], interim)
+            # list = projects()
+            # for p in list:
+            #     checksum(p, list[p], 'development')
+            #     git(p, list[p], interim)
 
         if args.release:
             print(f'>>>> release: building release versions ({version})')
@@ -95,8 +95,15 @@ def main():
             for p in list:
                 release_notes(p, list[p], version)
                 release(p, list[p], version)
-                checksum(p, list[p], version)
                 git(p, list[p], interim)
+
+        if args.release:
+            print(
+                f'>>>> release: verify checksums of release versions ({version})'
+            )
+            list = projects()
+            for p in list:
+                checksum(p, list[p], version)
 
         # TODO publish
 
@@ -324,15 +331,19 @@ def checksum(project, info, version):
         binary = info['binary']
         root = f"{info['folder']}"
         platforms = ['linux', 'darwin', 'windows', 'arm', 'arm7']
+        folder = version
+
+        if version != 'development':
+            folder = f"{project}_{version}"
 
         for platform in platforms:
             if platform == 'windows':
-                exe = os.path.join(root, 'dist', version, platform,
+                exe = os.path.join(root, 'dist', folder, platform,
                                    f'{binary}.exe')
                 combined = os.path.join('dist', platform, version,
                                         f'{binary}.exe')
             else:
-                exe = os.path.join(root, 'dist', version, platform, binary)
+                exe = os.path.join(root, 'dist', folder, platform, binary)
                 combined = os.path.join('dist', platform, version, binary)
 
             if hash(combined) != hash(exe):
@@ -382,8 +393,9 @@ def hash(file):
 
 
 def say(msg):
-    transliterated = msg.replace('nodejs',
-                                 'node js').replace('codegen', 'code gen')
+    transliterated = msg.replace('nodejs','node js') \
+                        .replace('codegen', 'code gen') \
+                        .replace('Errno','error number')
     subprocess.call(f'say {transliterated}', shell=True)
 
 
