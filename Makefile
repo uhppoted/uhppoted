@@ -217,6 +217,15 @@ release-v0.8.3:
 	yapf -ri ./internal
 	python ./internal/release.py --version=v0.8.3 --release
 
+publish: release
+	echo "Releasing version $(VERSION)"
+	rm -f dist/development-arm.tar.gz
+	rm -f dist/development-arm7.tar.gz
+	rm -f dist/development-darwin.tar.gz
+	rm -f dist/development-linux.tar.gz
+	rm -f dist/development-windows.tar.gz
+	gh release create "$(VERSION)" ./dist/*.tar.gz --draft --prerelease --title "$(VERSION)-beta" --notes-file release-notes.md
+
 build-github: 
 	cd uhppote-core              && go build -trimpath ./...
 	cd uhppoted-lib              && go build -trimpath ./...
