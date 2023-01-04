@@ -4,6 +4,7 @@
 
 - [ ] Release script
       - [x] Generate release notes from CHANGELOG
+      - [ ] https://pydoit.org/
       - [ ] Use Github CLI/make publish
       - [ ] Post release script
             - Add _Unreleased_ section to all CHANGELOG.md
@@ -258,3 +259,4 @@
 99. [Sandstorm](https://sandstorm.io/)
 100. [Spline](https://spline.design)
 101. [Womp](https://www.womp.com)
+102. [Voice](https://arstechnica.com/gadgets/2022/12/with-voice-assistants-in-trouble-home-assistant-starts-a-local-alternative/)
