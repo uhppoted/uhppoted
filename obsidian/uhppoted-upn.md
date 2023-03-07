@@ -1,3 +1,5 @@
 - https://ngrok.com/product/cloud-edge
 - https://courses.grainger.illinois.edu/CS598HPN/fa2020/papers/snap.pdf
 - https://tailscale.com/kb/1230/tailnet-lock-whitepaper/
+- https://blog.openziti.io/introducing-zrok
+- https://github.com/aurae-runtime/aurae

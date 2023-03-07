@@ -260,3 +260,6 @@
 100. [Spline](https://spline.design)
 101. [Womp](https://www.womp.com)
 102. [Voice](https://arstechnica.com/gadgets/2022/12/with-voice-assistants-in-trouble-home-assistant-starts-a-local-alternative/)
+103. [OPC UA](https://stackoverflow.com/questions/52074597/when-it-is-justified-to-use-ua-opc-and-ua-opc-architectures-over-mqtt)
+104. [Homebridge](https://homebridge.io)
+105. [serverless DB](https://leerob.io/blog/backend)
