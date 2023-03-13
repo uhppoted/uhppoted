@@ -2,17 +2,17 @@
 
 ## IN PROGRESS
 
+- [x] https://github.com/uhppoted/uhppoted/issues/19
+- [ ] Reinstate zip files in builds
 - [ ] Release script
-      - [x] Generate release notes from CHANGELOG
       - [ ] https://pydoit.org/
       - [ ] Use Github CLI/make publish
       - [ ] Post release script
             - Add _Unreleased_ section to all CHANGELOG.md
             - Bump version in uhppote-core and Makefiles
 
-- [ ] Remove zip files from builds
 - [ ] Make `uhppoted` a service user (`sudo adduser --system uhppoted`)
-- [ ] https://github.com/uhppoted/uhppoted/issues/19
+- [ ] https://forum.universal-devices.com/topic/38892-wiegand-wg26-four-door-access-controller-aka-wgaccess-uhppote-wg2004/
 
 ## TODO
 
@@ -263,3 +263,4 @@
 103. [OPC UA](https://stackoverflow.com/questions/52074597/when-it-is-justified-to-use-ua-opc-and-ua-opc-architectures-over-mqtt)
 104. [Homebridge](https://homebridge.io)
 105. [serverless DB](https://leerob.io/blog/backend)
+106. [Tigris](https://www.tigrisdata.com/docs/quickstarts)

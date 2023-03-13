@@ -7,10 +7,10 @@
    openssl rsa    -in  QWERTY54.key -out QWERTY54.pub -outform PEM -pubout
 ```
 
-#### Copy the public signing key to the `mqttd` configuration directory
+#### Copy the public signing key to the `s3` configuration directory
 
 ```
-   cp QWERTY54.pub /usr/local/etc/com.github.uhppoted/mqtt/rsa/signing/QWERTY54.pub
+   cp QWERTY54.pub /usr/local/etc/com.github.uhppoted/s3/rsa/signing/QWERTY54.pub
 ```
 
 #### Sign the ACL file with the private key

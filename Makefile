@@ -1,4 +1,4 @@
-RELEASE = 0.8.3
+RELEASE = 0.8.4
 DEBUG ?= --debug
 DIST  ?= development
 
@@ -211,11 +211,11 @@ release: build-all docker
 
 release-all: 
 	yapf -ri ./internal
-	python ./internal/release.py --version=$(RELEASE) --prerelease
+	python ./internal/release.py --version=$(RELEASE) --prepare
 
-release-v0.8.3: 
+release-v0.8.4: 
 	yapf -ri ./internal
-	python ./internal/release.py --version=v0.8.3 --release
+	python ./internal/release.py --version=v0.8.4 --release
 
 publish: release
 	echo "Releasing version $(VERSION)"

@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 
 info:
-  version: 0.7.2
+  version: 0.8.4
   title: "uhppoted"
   description: "REST API for the uhppoted-rest service. The API currently supports both device level functions and higher level access control list management."
   license:
@@ -1455,7 +1455,7 @@ paths:
           schema:
             type: string
             format: Alphanumeric door name (space- and case-insensitive).
-            example: "Entrance"
+            example: "Great Hall"
       requestBody:
         description: "Card valid dates and (optional) time profile"
         required: true
@@ -1508,7 +1508,7 @@ paths:
           schema:
             type: string
             format: Alphanumeric door name (space- and case-insensitive).
-            example: "Entrance"
+            example: "Great Hall"
       responses:
         '200':
           description: "Access revoked"
@@ -1839,6 +1839,7 @@ components:
         - start-date
         - end-date
         - doors
+        - PIN
       properties:
         card-number:  
           type: number
@@ -1863,12 +1864,18 @@ components:
              description: "Door access permitted"
           example: { "1":true, "2":false, "3":false, "4":true }
           description: "List of doors and access"
+        PIN:  
+          type: number
+          format: uint32
+          description: "(optional) keypad PIN code in the range 0 to 999999"
+          example: 7531
 
     CardDetails:
       required: 
         - start-date
         - end-date
         - doors
+        - PIN
       properties:
         start-date:  
           type: string
@@ -1888,6 +1895,11 @@ components:
              description: "maps door number 1..4 to the corresponding door access permission (true, false or a valid time profile ID"
           example: { "1":true, "2":false, "3":55, "4":true }
           description: "List of doors and access"
+        PIN:  
+          type: number
+          format: uint32
+          description: "(optional) keypad PIN code in the range 0 to 999999"
+          example: 7531
 
     CardPermissions:
       required:
@@ -2329,12 +2341,12 @@ components:
           type: string
           format: yyyy-MM-dd
           description: "First date card is valid"
-          example: "2020-01-01"
+          example: "2023-01-01"
         end-date:  
           type: string
           format: yyyy-MM-dd
           description: "Last date card is valid"
-          example: "2020-12-31"
+          example: "2023-12-31"
         profile:  
           type: number
           format: uint8
@@ -2350,7 +2362,7 @@ components:
           type: string
           format: string
           description: "Operation identifier"
-          example: "get-acl"
+          example: "put-card"
         message:  
           type: string
           format: string
