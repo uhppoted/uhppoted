@@ -26,6 +26,38 @@ clean:
 	go clean
 	rm -rf bin
 
+status-all:
+	git -C uhppote-core              status
+	git -C uhppoted-lib              status
+	git -C uhppote-simulator         status
+	git -C uhppote-cli               status
+	git -C uhppoted-rest             status
+	git -C uhppoted-mqtt             status
+	git -C uhppoted-app-s3           status
+	git -C uhppoted-app-sheets       status
+	git -C uhppoted-app-wild-apricot status
+	git -C uhppoted-httpd            status
+	git -C uhppoted-tunnel           status
+	git -C uhppoted-dll              status
+	git -C uhppoted-codegen          status
+	git                              status
+
+push-all:
+	git -C uhppote-core              push
+	git -C uhppoted-lib              push
+	git -C uhppote-simulator         push
+	git -C uhppote-cli               push
+	git -C uhppoted-rest             push
+	git -C uhppoted-mqtt             push
+	git -C uhppoted-app-s3           push
+	git -C uhppoted-app-sheets       push
+	git -C uhppoted-app-wild-apricot push
+	git -C uhppoted-httpd            push
+	git -C uhppoted-tunnel           push
+	git -C uhppoted-dll              push
+	git -C uhppoted-codegen          push
+	git                              push
+
 update:
 	go get -u github.com/uhppoted/uhppote-core@master
 	go mod tidy
