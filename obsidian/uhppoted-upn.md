@@ -3,3 +3,7 @@
 - https://tailscale.com/kb/1230/tailnet-lock-whitepaper/
 - https://blog.openziti.io/introducing-zrok
 - https://github.com/aurae-runtime/aurae
+- **https://tailscale.dev/blog/embedded-funnel**
+- https://shadowsocks.org/
+- https://blog.rom1v.com/2017/03/introducing-gnirehtet/
+- https://github.com/nostr-protocol/nostr

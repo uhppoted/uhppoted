@@ -12,6 +12,7 @@
 - https://try.enarx.dev/
 - https://github.com/hyperswarm
 - https://reowolf.net/
+- https://shadowsocks.org/
 
 
 ###  https://github.com/uhppoted/uhppoted-tunnel/issues/7

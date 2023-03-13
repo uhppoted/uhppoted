@@ -95,6 +95,7 @@ but the readers below are in active use:
 
 | *Version* | *Description*                                                                                               |
 | --------- | ----------------------------------------------------------------------------------------------------------- |
+| v0.8.4    | Add `set-pc-control` command and support for card keypad PINS                                               |
 | v0.8.3    | Adds AMR64 to release builds                                                                                |
 | v0.8.2    | Adds _uhppoted-codegen_ project to generate native UHPPOTE interface in languages other thann Go            |
 | v0.8.1    | Adds human readable fields to events for MQTT and REST implementations. Minor bug fixes and usability fixes |
