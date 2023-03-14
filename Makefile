@@ -40,23 +40,26 @@ status-all:
 	git -C uhppoted-tunnel           status
 	git -C uhppoted-dll              status
 	git -C uhppoted-codegen          status
+	git -C uhppoted-wiegand          status
 	git                              status
 
 push-all:
-	git -C uhppote-core              push
-	git -C uhppoted-lib              push
-	git -C uhppote-simulator         push
-	git -C uhppote-cli               push
-	git -C uhppoted-rest             push
-	git -C uhppoted-mqtt             push
-	git -C uhppoted-app-s3           push
-	git -C uhppoted-app-sheets       push
-	git -C uhppoted-app-wild-apricot push
-	git -C uhppoted-httpd            push
-	git -C uhppoted-tunnel           push
-	git -C uhppoted-dll              push
-	git -C uhppoted-codegen          push
-	git                              push
+	git push --recurse-submodules=on-demand 
+#	git -C uhppote-core              push
+#	git -C uhppoted-lib              push
+#	git -C uhppote-simulator         push
+#	git -C uhppote-cli               push
+#	git -C uhppoted-rest             push
+#	git -C uhppoted-mqtt             push
+#	git -C uhppoted-app-s3           push
+#	git -C uhppoted-app-sheets       push
+#	git -C uhppoted-app-wild-apricot push
+#	git -C uhppoted-httpd            push
+#	git -C uhppoted-tunnel           push
+#	git -C uhppoted-dll              push
+#	git -C uhppoted-codegen          push
+#	git -C uhppoted-wiegand          push
+#	git                              push
 
 update:
 	go get -u github.com/uhppoted/uhppote-core@master
