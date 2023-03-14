@@ -4,6 +4,7 @@ import argparse
 import subprocess
 import sys
 import os
+import json
 import re
 import hashlib
 import signal
@@ -32,6 +33,8 @@ def main():
 
     parser.add_argument('--version', type=str, default='development', help='release version e.g. v0.8.4')
 
+    parser.add_argument('--node-red', type=str, default='development', help='NodeRED release version e.g. v1.1.2')
+
     parser.add_argument('--prepare', action='store_true', help="executes only the 'prepare release' operation")
 
     parser.add_argument('--prerelease',
@@ -52,6 +55,7 @@ def main():
     no_edit = args.no_edit
     interim = args.interim
     version = args.version
+    nodered = args.node_red
 
     if version != 'development' and not args.version.startswith('v'):
         version = f'v{args.version}'
@@ -67,9 +71,15 @@ def main():
             for p in list:
                 print(f'>>>> checking {p}')
                 project = list[p]
-                changelog(p, list[p], version[1:], no_edit)
-                readme(p, list[p], version, no_edit)
-                uncommitted(p, list[p], interim)
+
+                if p == 'node-red-contrib-uhppoted':
+                    package_version(p, project, nodered, no_edit)
+                else:
+                    package_version(p, project, version[1:], no_edit)
+
+                changelog(p, project, version[1:], no_edit)
+                readme(p, project, version, no_edit)
+                uncommitted(p, project, interim)
 
             if args.prepare or args.prerelease or args.release:
                 print(f'>>>> prepare: checking builds ({version})')
@@ -240,6 +250,19 @@ def projects():
             'branch': 'master'
         }
     }
+
+
+def package_version(project, info, version, no_edit):
+    if os.path.isfile(f"{info['folder']}/package.json"):
+        with open(f"{info['folder']}/package.json", 'r', encoding="utf-8") as f:
+            package = json.load(f)
+            if package['version'] != version:
+                print(f">> package version:{package['version']} - expected {version}")
+                if not no_edit:
+                    command = f"sublime2 {info['folder']}/package.json"
+                    subprocess.run(['/bin/zsh', '-i', '-c', command])
+
+                raise Exception(f'{project} package.json has not been updated for release')
 
 
 def changelog(project, info, version, no_edit):

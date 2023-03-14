@@ -246,11 +246,12 @@ release: build-all docker
 
 release-all: 
 	yapf -ri ./internal
-	python ./internal/release.py --version=$(RELEASE) --prepare
+	# python ./internal/release.py --version=$(RELEASE) --prepare
+	python ./internal/release.py --version=$(RELEASE) --node-red=1.1.3 --prerelease
 
 release-v0.8.4: 
 	yapf -ri ./internal
-	python ./internal/release.py --version=v0.8.4 --release
+	python ./internal/release.py --version=v0.8.4 --node-red=1.1.3 --release
 
 publish: release
 	echo "Releasing version $(VERSION)"
