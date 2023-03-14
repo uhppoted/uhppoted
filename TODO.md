@@ -5,8 +5,8 @@
 - [x] https://github.com/uhppoted/uhppoted/issues/19
 - [ ] Reinstate zip files in builds
 - [ ] Release script
-      - [ ] Check node-red package version
-      - [ ] Check uhppoted-nodejs package version
+      - [x] Check node-red package version
+      - [x] Check uhppoted-nodejs package version
       - [ ] https://pydoit.org/
       - [ ] Use Github CLI/make publish
       - [ ] Post release script
