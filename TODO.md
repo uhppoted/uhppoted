@@ -7,6 +7,7 @@
 - [ ] Release script
       - [x] Check node-red package version
       - [x] Check uhppoted-nodejs package version
+      - [x] Check github release tags
       - [ ] https://pydoit.org/
       - [ ] Use Github CLI/make publish
       - [ ] Post release script

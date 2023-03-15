@@ -246,7 +246,7 @@ release: build-all docker
 
 release-all: 
 	yapf -ri ./internal
-	# python ./internal/release.py --version=$(RELEASE) --prepare
+	# python ./internal/release.py --version=$(RELEASE) --node-red=1.1.3 --prepare
 	python ./internal/release.py --version=$(RELEASE) --node-red=1.1.3 --prerelease
 
 release-v0.8.4: 
