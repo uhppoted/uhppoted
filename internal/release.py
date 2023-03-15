@@ -72,6 +72,9 @@ def main():
                 print(f'>>>> checking {p}')
                 project = list[p]
 
+                if already_released(p, project, version):
+                    continue
+
                 if p == 'node-red-contrib-uhppoted':
                     package_version(p, project, nodered, no_edit)
                 else:
@@ -136,13 +139,15 @@ def main():
             say(msg)
 
             if args.prepare and not exit.is_set():
+                sys.stdout.write('  waiting ')
+                sys.stdout.flush()
                 timestamps = {
                     'changelog': os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime,
                     'readme': os.stat(f"{project['folder']}/README.md").st_mtime,
                     'git': has_uncommitted_changes(project['folder']),
                 }
 
-                for i in range(24):
+                for i in range(60):
                     if exit.is_set():
                         break
                     elif os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime != timestamps['changelog']:
@@ -152,8 +157,9 @@ def main():
                     elif has_uncommitted_changes(project['folder']) != timestamps['git']:
                         break
                     else:
-                        print('...')
-                        time.sleep(2.5)
+                        sys.stdout.write('.')
+                        sys.stdout.flush()
+                        time.sleep(1)
 
                 if os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime != timestamps['changelog']:
                     print('CHANGELOG updated')
@@ -168,6 +174,7 @@ def main():
                     say('git updated')
                     continue
                 else:
+                    print()
                     break
 
         sys.exit(1)
@@ -253,7 +260,7 @@ def projects():
 
 
 def package_version(project, info, version, no_edit):
-    if os.path.isfile(f"{info['folder']}/package.json"):
+    if version != 'development' and os.path.isfile(f"{info['folder']}/package.json"):
         with open(f"{info['folder']}/package.json", 'r', encoding="utf-8") as f:
             package = json.load(f)
             if package['version'] != version:
@@ -411,6 +418,23 @@ def checksum(project, info, version):
                 print(f'{project:<25}  {exe:<82}  {hash(exe)}')
                 print(f'{"":<25}  {combined:<82}  {hash(combined)}')
                 raise Exception(f"{project} 'dist' checksums differ")
+
+
+def already_released(project, info, version):
+    command = f"cd {info['folder']} && git fetch --tags"
+    result = subprocess.call(command, shell=True)
+    if result != 0:
+        raise Exception(f"command 'git fetch --tags' failed")
+    else:
+        command = f"cd {info['folder']} && git tag {version} --list"
+        result = subprocess.check_output(command, shell=True)
+
+        if f'{version}' in str(result):
+            print(f'     ... {project} has been released')
+            return True
+        else:
+            print(f'     ... {project} has not been released')
+            return False
 
 
 def release_notes(project, info, version):
