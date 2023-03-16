@@ -2,8 +2,12 @@
 
 ## [0.8.4](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.4) - 2023-03-17
 
+### Added
+1. Included _uhppoted-wiegand_ project in submodules.
+
 ### Updated
 1. Updated documentation and docker for card keypan PINs.
+
 
 ## [0.8.3](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.3) - 2022-12-16
 

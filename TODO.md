@@ -3,17 +3,18 @@
 ## IN PROGRESS
 
 - [x] https://github.com/uhppoted/uhppoted/issues/19
-- [ ] Reinstate zip files in builds
+- [x] Reinstate zip files in builds
 - [ ] Release script
       - [x] Check node-red package version
       - [x] Check uhppoted-nodejs package version
       - [x] Check github release tags
-      - [ ] Check Go version is latest and greatest
-      - [ ] https://pydoit.org/
-      - [ ] Use Github CLI/make publish
       - [ ] Post release script
-            - Add _Unreleased_ section to all CHANGELOG.md
-            - Bump version in uhppote-core and Makefiles
+            - [ ] Add _Unreleased_ section to all CHANGELOG.md
+            - [ ] Bump version in uhppote-core and Makefiles
+            - [ ] Delete release_notes.md files
+      - [ ] Check Go version is latest and greatest
+      - [ ] --publish option
+      - [ ] https://pydoit.org/
 
 - [ ] Make `uhppoted` a service user (`sudo adduser --system uhppoted`)
 - [ ] https://forum.universal-devices.com/topic/38892-wiegand-wg26-four-door-access-controller-aka-wgaccess-uhppote-wg2004/
