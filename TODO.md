@@ -8,6 +8,7 @@
       - [x] Check node-red package version
       - [x] Check uhppoted-nodejs package version
       - [x] Check github release tags
+      - [ ] Check Go version is latest and greatest
       - [ ] https://pydoit.org/
       - [ ] Use Github CLI/make publish
       - [ ] Post release script

@@ -9,6 +9,7 @@ import re
 import hashlib
 import signal
 import time
+import itertools
 
 from threading import Event
 
@@ -60,20 +61,21 @@ def main():
     if version != 'development' and not args.version.startswith('v'):
         version = f'v{args.version}'
 
+    print(f'VERSION: {version}')
+
+    l = projects()
+    it = itertools.filterfalse(lambda p: already_released(p, l[p], version), l)
+    unreleased = {p: l[p] for p in it}
+
     while not exit.is_set():
         project = ''
 
         try:
-            print(f'VERSION: {version}')
 
             print(f'>>>> initialise: checking CHANGELOGs, READMEs and uncommitted changes ({version})')
-            list = projects()
-            for p in list:
+            for p in unreleased:
                 print(f'>>>> checking {p}')
-                project = list[p]
-
-                if already_released(p, project, version):
-                    continue
+                project = unreleased[p]
 
                 if p == 'node-red-contrib-uhppoted':
                     package_version(p, project, nodered, no_edit)
@@ -86,33 +88,29 @@ def main():
 
             if args.prepare or args.prerelease or args.release:
                 print(f'>>>> prepare: checking builds ({version})')
-                list = projects()
-                for p in list:
+                for p in unreleased:
                     print(f'... releasing {p}')
-                    update(p, list[p])
-                    checkout(p, list[p])
-                    build(p, list[p])
+                    update(p, unreleased[p])
+                    checkout(p, unreleased[p])
+                    build(p, unreleased[p])
 
             if args.prerelease or args.release:
                 print(f'>>>> prerelease: final check for consistent library and binary versions ({version})')
-                list = projects()
-                for p in list:
-                    checksum(p, list[p], 'development')
-                    git(p, list[p], interim)
+                for p in unreleased:
+                    checksum(p, unreleased[p], 'development')
+                    git(p, unreleased[p], interim)
 
             if args.release:
                 print(f'>>>> release: building release versions ({version})')
-                list = projects()
-                for p in list:
-                    release_notes(p, list[p], version)
-                    release(p, list[p], version)
-                    git(p, list[p], interim)
+                for p in unreleased:
+                    release_notes(p, unreleased[p], version)
+                    release(p, unreleased[p], version)
+                    git(p, unreleased[p], interim)
 
             if args.release:
                 print(f'>>>> release: verify checksums of release versions ({version})')
-                list = projects()
-                for p in list:
-                    checksum(p, list[p], version)
+                for p in unreleased:
+                    checksum(p, unreleased[p], version)
 
             # TODO publish
 
