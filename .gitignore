@@ -43,3 +43,6 @@ documentation/SDK
 logseq
 uhppoted-documentation
 uhppoted-wiegand
+
+# Docker
+docker/uhppoted-mqtt/uhppoted-mqtt
