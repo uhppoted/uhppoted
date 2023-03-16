@@ -58,3 +58,6 @@
 	path = uhppoted-codegen
 	url = https://github.com/uhppoted/uhppoted-codegen.git
 
+[submodule "uhppoted-wiegand"]
+	path = uhppoted-wiegand
+	url = git@github.com:uhppoted/uhppoted-wiegand.git

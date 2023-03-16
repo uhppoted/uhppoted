@@ -9,10 +9,6 @@ bin
 pkg
 dist
 runtime
-docker/simulator/uhppote-simulator
-docker/uhppoted-rest/uhppote-simulator
-docker/uhppoted-rest/uhppoted-rest
-docker/integration-tests/simulator/uhppote-simulator
 cookbook/get-events/uhppote-cli
 *.exe
 *.dll
@@ -42,7 +38,10 @@ documentation/SDK
 # Experimental stuff
 logseq
 uhppoted-documentation
-uhppoted-wiegand
 
 # Docker
+docker/simulator/uhppote-simulator
+docker/uhppoted-rest/uhppote-simulator
+docker/uhppoted-rest/uhppoted-rest
 docker/uhppoted-mqtt/uhppoted-mqtt
+docker/integration-tests/simulator/uhppote-simulator
