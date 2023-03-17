@@ -11,6 +11,7 @@ import signal
 import time
 import itertools
 import traceback
+import tempfile
 
 from threading import Event
 
@@ -47,6 +48,8 @@ def main():
                         action='store_true',
                         help="executes only the 'prepare, prerelease and build releases' operation")
 
+    parser.add_argument('--bump', action='store_true', help="executes only the 'post-release' operation")
+
     parser.add_argument('--no-edit',
                         action='store_true',
                         help="doesn't automatically invoke the editor for e.g. CHANGELOG.md'")
@@ -64,15 +67,25 @@ def main():
 
     print(f'VERSION: {version}')
 
-    l = projects()
+    plist = projects()
     it = itertools.filterfalse(
-        lambda p: already_released(p, l[p], version if p != 'node-red-contrib-uhppoted' else f'v{nodered}'), l)
-    unreleased = {p: l[p] for p in it}
+        lambda p: already_released(p, plist[p], version if p != 'node-red-contrib-uhppoted' else f'v{nodered}'), plist)
+    unreleased = {p: plist[p] for p in it}
 
     while not exit.is_set():
         project = ''
 
         try:
+            if args.bump:
+                if len(unreleased) != 0:
+                    raise Exception(f'Projects {unreleased} have not been released')
+
+                for p in plist:
+                    print(f'>>>> bumping {p}')
+                    project = plist[p]
+                    clean_release_notes(p, project)
+                    bump_changelog(p, project)
+                break
 
             print(f'>>>> initialise: checking CHANGELOGs, READMEs and uncommitted changes ({version})')
             for p in unreleased:
@@ -470,6 +483,46 @@ def release_notes(project, info, version):
                 f.write('\n')
     except FileExistsError:
         f"... keeping existing {info['folder']}/release-notes.md"
+
+
+def clean_release_notes(project, info):
+    file = f"{info['folder']}/release-notes.md"
+    if os.path.isfile(file):
+        os.remove(file)
+        print(f'     ... {project} removed release-notes.md')
+
+
+def bump_changelog(project, info):
+    with open(f"{info['folder']}/CHANGELOG.md", 'r', encoding="utf-8") as f:
+        CHANGELOG = f.read()
+        if 'Unreleased' in CHANGELOG:
+            return
+
+    tmpfile = tempfile.NamedTemporaryFile(mode="w+t", delete=False)
+
+    try:
+        with open(f"{info['folder']}/CHANGELOG.md", 'r', encoding="utf-8") as f:
+            CHANGELOG = f.read()
+            rest = CHANGELOG
+            heading, _, rest = rest.partition('\n')
+            spacer, _, rest = rest.partition('\n')
+
+            tmpfile.write(f'{heading}\n')
+            tmpfile.write(f'\n')
+            tmpfile.write(f'## Unreleased\n')
+            tmpfile.write(f'\n')
+            tmpfile.write(f'\n')
+            tmpfile.write(rest)
+            tmpfile.close()
+
+            os.rename(f"{info['folder']}/CHANGELOG.md", f"{info['folder']}/CHANGELOG.bak")
+            os.rename(tmpfile.name, f"{info['folder']}/CHANGELOG.md")
+            if os.path.isfile(f"{info['folder']}/CHANGELOG.bak"):
+               os.remove(f"{info['folder']}/CHANGELOG.bak")
+    finally:
+        tmpfile.close()
+        if os.path.isfile(tmpfile.name):
+            os.remove(tmpfile.name)
 
 
 def hash(file):

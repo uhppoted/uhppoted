@@ -253,6 +253,10 @@ release-v0.8.4:
 	yapf -ri ./internal
 	python ./internal/release.py --version=v0.8.4 --node-red=1.1.3 --release
 
+bump: 
+	yapf -ri ./internal
+	python ./internal/release.py --version=v0.8.4 --node-red=1.1.3 --bump
+
 publish: release
 	echo "Releasing version $(VERSION)"
 	rm -f dist/development-arm.tar.gz

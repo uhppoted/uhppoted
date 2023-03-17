@@ -9,10 +9,9 @@
       - [x] Check uhppoted-nodejs package version
       - [x] Check github release tags
       - [ ] Post release script
-            - [ ] Add _Unreleased_ section to all CHANGELOG.md
+            - [x] Delete release_notes.md files
+            - [x] Add _Unreleased_ section to all CHANGELOG.md
             - [ ] Bump version in uhppote-core and Makefiles
-            - [ ] Delete release_notes.md files
-      - [ ] Check Go version is latest and greatest
       - [ ] --publish option
       - [ ] https://pydoit.org/
 
