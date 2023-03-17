@@ -10,6 +10,7 @@ import hashlib
 import signal
 import time
 import itertools
+import traceback
 
 from threading import Event
 
@@ -64,7 +65,8 @@ def main():
     print(f'VERSION: {version}')
 
     l = projects()
-    it = itertools.filterfalse(lambda p: already_released(p, l[p], version), l)
+    it = itertools.filterfalse(
+        lambda p: already_released(p, l[p], version if p != 'node-red-contrib-uhppoted' else f'v{nodered}'), l)
     unreleased = {p: l[p] for p in it}
 
     while not exit.is_set():
@@ -121,6 +123,8 @@ def main():
             break
 
         except BaseException as x:
+            print(traceback.format_exc())
+
             msg = f'{x}'
             msg = msg.replace('uhppoted-','')                        \
                      .replace('uhppote-','')                         \
@@ -248,6 +252,10 @@ def projects():
         },
         'node-red-contrib-uhppoted': {
             'folder': './node-red-contrib-uhppoted',
+            'branch': 'main',
+        },
+        'uhppoted-wiegand': {
+            'folder': './uhppoted-wiegand',
             'branch': 'main',
         },
         'uhppoted': {
