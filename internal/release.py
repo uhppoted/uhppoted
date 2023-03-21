@@ -259,6 +259,11 @@ def projects():
             'branch': 'main',
             'binary': 'uhppoted-app-wild-apricot'
         },
+        'uhppoted-app-db': {
+            'folder': './uhppoted-app-db',
+            'branch': 'main',
+            'binary': 'uhppoted-app-db'
+        },
         'uhppoted-nodejs': {
             'folder': './uhppoted-nodejs',
             'branch': 'main',

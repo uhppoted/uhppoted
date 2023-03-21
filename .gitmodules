@@ -60,4 +60,7 @@
 
 [submodule "uhppoted-wiegand"]
 	path = uhppoted-wiegand
-	url = git@github.com:uhppoted/uhppoted-wiegand.git
+	url = https://github.com/uhppoted-wiegand.git
+[submodule "uhppoted-app-db"]
+	path = uhppoted-app-db
+	url = https://github.com/uhppoted/uhppoted-app-db.git
