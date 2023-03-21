@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Added
+1. Added `uhppoted-app-db` project.
+
 
 ## [0.8.4](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.4) - 2023-03-17
 
