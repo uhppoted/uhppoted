@@ -38,6 +38,7 @@ documentation/SDK
 # Experimental stuff
 logseq
 uhppoted-documentation
+uhppoted-breakout
 
 # Docker
 docker/simulator/uhppote-simulator
@@ -45,3 +46,5 @@ docker/uhppoted-rest/uhppote-simulator
 docker/uhppoted-rest/uhppoted-rest
 docker/uhppoted-mqtt/uhppoted-mqtt
 docker/integration-tests/simulator/uhppote-simulator
+
+
