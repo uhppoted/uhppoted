@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 
 info:
-  version: 0.8.4
+  version: 0.8.5
   title: "uhppoted"
   description: "REST API for the uhppoted-rest service. The API currently supports both device level functions and higher level access control list management."
   license:
@@ -635,7 +635,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 192837465
+            example: 10058400
       responses:
         '200':
           description: "Card access information"
@@ -1354,7 +1354,7 @@ paths:
       tags:
         - acl
       summary: "Loads an access control list to a set of controllers"
-      description: "Updates the cards on a set of controllers from an access control list that specifies the access permissions for all users."
+      description: "Updates the cards on a set of controllers from an access control list that specifies the access permissions for all users. Cards with invalid start or end dates are discarded."
       operationId: aclPut
       requestBody:
         description: "Access control list"
@@ -1404,7 +1404,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 192837465
+            example: 10058400
       responses:
         '200':
           description: "List of current card access permissions"
@@ -1445,8 +1445,8 @@ paths:
           required: true
           schema:
             type: integer
-            format: uint32åç
-            example: 192837465
+            format: uint32
+            example: 10058400
         - name: door
           in: path
           description: "Door ID ('ALL' will grant access to all doors)"
@@ -1499,7 +1499,7 @@ paths:
           schema:
             type: integer
             format: uint32
-            example: 192837465
+            example: 10058400
         - name: door
           in: path
           description: "Door ID ('ALL' will revoke access to all doors)"
@@ -1548,7 +1548,7 @@ components:
           type: number
           format: uint32
           description: "Card number"
-          example: 1928374646
+          example: 10058400
 
     DeviceList:
       required: 
@@ -1620,7 +1620,7 @@ components:
           type: string
           format: yyyy-mm-dd
           description: "Device current date"
-          example: "2020-03-28"
+          example: "2023-03-28"
 
     DeviceStatus:
       required: 
@@ -1677,7 +1677,7 @@ components:
           type: string
           format: yyyy-mm-dd HH:mm:ss
           description: "Current system date and time"
-          example: "2020-03-28 15:32:29"
+          example: "2023-03-28 15:32:29"
         packet-number:  
           type: integer
           format: uint8
@@ -1713,8 +1713,8 @@ components:
               type: 3, 
               access-granted: true, 
               door: 2, 
-              user-id: 762424255,  
-              timestamp: "2021-04-14 12:34:56", 
+              user-id: 10058400,  
+              timestamp: "2023-01-14 12:34:56", 
               reason: 6 
             }
 
@@ -1763,12 +1763,12 @@ components:
           type: number
           format: uint32
           description: "User ID (card number for swipe events)"
-          example: 1928374646
+          example: 10059400
         timestamp:  
           type: string
           format: yyyy-mm-dd HH:mm:ss
           description: "Event timestamp"
-          example: "2020-03-28 15:32:29"
+          example: "2023-01-28 15:32:29"
         reason:  
           type: integer
           format: event reason code
@@ -1781,7 +1781,7 @@ components:
           type: string
           format: yyyy-mm-dd HH:mm:ss
           description: "Current device date/time"
-          example: "2020-03-28 15:32:29"
+          example: "2023-03-28 15:32:29"
 
     Door:
       properties:
@@ -1830,7 +1830,7 @@ components:
              type: number
              format: uint32
              description: "Card number"
-          example: [ 192837465, 564738291 ]
+          example: [ 10058400, 10058401 ]
           description: "List of card numbers"
 
     Card:
@@ -1845,17 +1845,17 @@ components:
           type: number
           format: uint32
           description: "Card number"
-          example: 192837465
+          example: 10058400
         start-date:  
           type: string
           format: yyyy-MM-dd
           description: "First date card is valid"
-          example: "2020-01-01"
+          example: "2023-01-01"
         end-date:  
           type: string
           format: yyyy-MM-dd
           description: "Last date card is valid"
-          example: "2020-12-31"
+          example: "2023-12-31"
         doors:  
           type: object
           items:
@@ -1881,12 +1881,12 @@ components:
           type: string
           format: yyyy-MM-dd
           description: "First date card is valid"
-          example: "2020-01-01"
+          example: "2023-01-01"
         end-date:  
           type: string
           format: yyyy-MM-dd
           description: "Last date card is valid"
-          example: "2020-12-31"
+          example: "2023-12-31"
         doors:  
           type: object
           items:
@@ -1927,12 +1927,12 @@ components:
           type: string
           format: yyyy-MM-dd
           description: "First date card access is enabled (as from 00:00)"
-          example: "2020-01-01"
+          example: "2023-01-01"
         end-date:  
           type: string
           format: yyyy-MM-dd
           description: "Last date card is enabled (until 23:59)"
-          example: "2020-12-31"
+          example: "2023-12-31"
         profile:  
           type: number
           format: integer in the range [2..254]
@@ -1976,12 +1976,12 @@ components:
           type: string
           format: yyyy-MM-dd
           description: "Date from which time profile is active"
-          example: "2021-01-01"
+          example: "2023-01-01"
         end-date:  
           type: string
           format: yyyy-MM-dd
           description: "Date after which time profile is no longer active"
-          example: "2021-12-31"
+          example: "2023-12-31"
         weekdays:  
           type: string
           items:
@@ -2016,12 +2016,12 @@ components:
           type: string
           format: yyyy-MM-dd
           description: "Date from which time profile is active"
-          example: "2021-01-01"
+          example: "2023-01-01"
         end-date:  
           type: string
           format: yyyy-MM-dd
           description: "Date after which time profile is no longer active"
-          example: "2021-12-31"
+          example: "2023-12-31"
         weekdays:  
           type: string
           items:
@@ -2101,12 +2101,12 @@ components:
           type: string
           format: yyyy-MM-dd
           description: "Date from which task is active"
-          example: "2021-01-01"
+          example: "2023-01-01"
         end-date:  
           type: string
           format: yyyy-MM-dd
           description: "Date after which task is no longer active"
-          example: "2021-12-31"
+          example: "2023-12-31"
         weekdays:  
           type: string
           items:
@@ -2156,17 +2156,17 @@ components:
           type: number
           format: uint32
           description: "Card number"
-          example: 192837465
+          example: 10058400
         start-date:  
           type: string
           format: yyyy-MM-dd
           description: "First date card access is enabled (as from 00:00)"
-          example: "2020-01-01"
+          example: "2023-01-01"
         end-date:  
           type: string
           format: yyyy-MM-dd
           description: "Last date card is enabled (until 23:59)"
-          example: "2020-12-31"
+          example: "2023-12-31"
         doors:
           type: array
           items:
