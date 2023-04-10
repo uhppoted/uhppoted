@@ -56,6 +56,7 @@ push-all:
 #	git -C uhppoted-app-s3           push
 #	git -C uhppoted-app-sheets       push
 #	git -C uhppoted-app-wild-apricot push
+#	git -C uhppoted-app-db           push
 #	git -C uhppoted-httpd            push
 #	git -C uhppoted-tunnel           push
 #	git -C uhppoted-dll              push
