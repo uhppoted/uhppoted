@@ -521,6 +521,61 @@ paths:
               schema:
                   $ref: "#/components/schemas/Error"        
 
+  /device/{device-id}/door/interlock:
+    put:
+      tags:
+        - device
+      summary: "Sets the controller door interlock mode"
+      description: "Sets the door interlock mode (none, 1&2, 3&4, 1&2+3&4, 1&2&3 or 1&2&3&4)"
+      operationId: putDoorInterlock
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      requestBody:
+        description: "Door interlock mode"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DoorInterlock"
+      responses:
+        '200':
+          description: "Door interlock mode"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DoorInterlock"
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
   /device/{device-id}/cards:
     get:
       tags:
@@ -1819,6 +1874,14 @@ components:
           format: "'normally open', 'normally closed' or 'controlled'"
           description: "Door control state"
           example: 'normally closed'
+
+    DoorInterlock:
+      properties:
+        interlock:
+          type: number
+          format: uint8
+          description: "Door interlock mode - 0:none, 1:1&2, 2:3&4, 3:1&2,3&4, 4:1&2&3, 8: 1&2&3&4"
+          example: 4
 
     CardList:
       required: 
