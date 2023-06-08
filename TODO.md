@@ -1,16 +1,11 @@
 # TODO
 
+- [ ] `set-interlock` (cf. https://github.com/uhppoted/uhppote-core/issues/14)
+
 ## IN PROGRESS
 
-- [x] https://github.com/uhppoted/uhppoted/issues/19
-- [x] Reinstate zip files in builds
 - [ ] Release script
-      - [x] Check node-red package version
-      - [x] Check uhppoted-nodejs package version
-      - [x] Check github release tags
       - [ ] Post release script
-            - [x] Delete release_notes.md files
-            - [x] Add _Unreleased_ section to all CHANGELOG.md
             - [ ] Bump version in uhppote-core and Makefiles
       - [ ] --publish option
       - [ ] https://pydoit.org/
@@ -268,3 +263,4 @@
 104. [Homebridge](https://homebridge.io)
 105. [serverless DB](https://leerob.io/blog/backend)
 106. [Tigris](https://www.tigrisdata.com/docs/quickstarts)
+107. [Gitbook](https://developer.gitbook.com/gitbook-api/reference)
