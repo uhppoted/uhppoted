@@ -3,7 +3,11 @@
 ## Unreleased
 
 ### Added
-1. Added `uhppoted-app-db` project.
+1. Added _uhppoted-app-db_ project with initial sqlite3 support only.
+2. Added support for PicoW to _uhppoted-wiegand_ project.
+3. Implemented `set-interlock` function across all subprojects.
+4. Added PHP bindings to _uhppoted-codegen_.
+5. Added _tailscale_ integration to _uhppoted-tunnel_.
 
 
 ## [0.8.4](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.4) - 2023-03-17
