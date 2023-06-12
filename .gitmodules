@@ -22,21 +22,9 @@
 	path = uhppoted-mqtt
 	url = https://github.com/uhppoted/uhppoted-mqtt.git
 
-[submodule "uhppoted-app-sheets"]
-	path = uhppoted-app-sheets
-	url = https://github.com/uhppoted/uhppoted-app-sheets.git
-
-[submodule "uhppoted-app-s3"]
-	path = uhppoted-app-s3
-	url = https://github.com/uhppoted/uhppoted-app-s3.git
-
 [submodule "node-red-contrib-uhppoted"]
 	path = node-red-contrib-uhppoted
 	url = https://github.com/uhppoted/node-red-contrib-uhppoted.git
-
-[submodule "uhppoted-app-wild-apricot"]
-	path = uhppoted-app-wild-apricot
-	url = https://github.com/uhppoted/uhppoted-app-wild-apricot
 
 [submodule "uhppoted-httpd"]
 	path = uhppoted-httpd
@@ -58,9 +46,22 @@
 	path = uhppoted-codegen
 	url = https://github.com/uhppoted/uhppoted-codegen.git
 
-[submodule "uhppoted-wiegand"]
-	path = uhppoted-wiegand
-	url = https://github.com/uhppoted-wiegand.git
+[submodule "uhppoted-app-sheets"]
+	path = uhppoted-app-sheets
+	url = https://github.com/uhppoted/uhppoted-app-sheets.git
+
+[submodule "uhppoted-app-s3"]
+	path = uhppoted-app-s3
+	url = https://github.com/uhppoted/uhppoted-app-s3.git
+
 [submodule "uhppoted-app-db"]
 	path = uhppoted-app-db
 	url = https://github.com/uhppoted/uhppoted-app-db.git
+
+[submodule "uhppoted-app-wild-apricot"]
+	path = uhppoted-app-wild-apricot
+	url = https://github.com/uhppoted/uhppoted-app-wild-apricot
+
+[submodule "uhppoted-wiegand"]
+	path = uhppoted-wiegand
+	url = https://github.com/uhppoted-wiegand.git

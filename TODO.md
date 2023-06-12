@@ -1,6 +1,6 @@
 # TODO
 
-- [ ] `set-interlock` (cf. https://github.com/uhppoted/uhppote-core/issues/14)
+- [x] `set-interlock` (cf. https://github.com/uhppoted/uhppote-core/issues/14)
 
 ## IN PROGRESS
 
