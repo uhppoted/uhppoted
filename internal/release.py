@@ -232,7 +232,7 @@ def projects():
         },
         'uhppoted-tunnel': {
             'folder': './uhppoted-tunnel',
-            'branch': 'master',
+            'branch': 'main',
             'binary': 'uhppoted-tunnel'
         },
         'uhppoted-dll': {
@@ -523,7 +523,7 @@ def bump_changelog(project, info):
             os.rename(f"{info['folder']}/CHANGELOG.md", f"{info['folder']}/CHANGELOG.bak")
             os.rename(tmpfile.name, f"{info['folder']}/CHANGELOG.md")
             if os.path.isfile(f"{info['folder']}/CHANGELOG.bak"):
-               os.remove(f"{info['folder']}/CHANGELOG.bak")
+                os.remove(f"{info['folder']}/CHANGELOG.bak")
     finally:
         tmpfile.close()
         if os.path.isfile(tmpfile.name):
