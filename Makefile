@@ -342,6 +342,20 @@ docker-rest:
 docker-mqtt:
 	docker run --detach --name mqttd --rm uhppoted/mqtt
 
+docker-sql-server:
+#	docker run -d --name sqld -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=UBxNxrQiKWsjncow7mMx' -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+	docker start sqld
+
+docker-sql-server-cli:
+	mssql-cli -U sa -P UBxNxrQiKWsjncow7mMx 
+
+docker-mysql:
+#	docker run --name mysqld -e MYSQL_ROOT_PASSWORD=password --publish 3306:3306 -d mysql:latest
+	docker container start mysqld
+
+docker-mysql-cli:
+	docker exec -it mysqld bash
+
 docker-stop:
 	docker stop $$(docker container ls -q)
 
