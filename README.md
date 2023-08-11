@@ -16,8 +16,10 @@
 - AWS S3 integration for file managed access control lists
 - Google Sheets integration for spreadsheet managed access control lists
 - Integration with the [Wild Apricot] member management system
+- [uhppoted-db](https://github.com/uhppoted/uhppoted-app-db) SQL DB integration for access control lists managed in a database
 - [Node-RED](https://nodered.org) low code environment integration
-- NodeJS
+- [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs) NodeJS package
+- [uhppoted-python](https://github.com/uhppoted/uhppoted-python) Python package
 
 The components supplement the manufacturer supplied application which is 'Windows-only' and provides limited support 
 for integration with other systems. 
