@@ -11,6 +11,7 @@
 3. Implemented `set-interlock` function across all subprojects.
 4. Added PHP bindings to _uhppoted-codegen_.
 5. Added _tailscale_ integration to _uhppoted-tunnel_.
+6. Repacked _uhppoted-codegen_ Python bindings as _uhppoted-python_ and uploaded to PyPI.
 
 
 ## [0.8.4](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.4) - 2023-03-17
