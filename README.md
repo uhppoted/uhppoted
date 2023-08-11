@@ -33,6 +33,17 @@ Supported operating systems:
 This project is a fork of the original [Go CLI](https://github.com/twystd/uhppote-go) project which had outgrown
 its initial scope and was relocated to [uhppoted](https://github.com/uhppoted) to simplify future development.
 
+### Language Bindings
+
+The primary development language for this repository is Go, but code generated native bindings for the following languages
+also exist:
+- [NodeJS](https://github.com/uhppoted/uhppoted-nodejs)
+- [Python](https://github.com/uhppoted/uhppoted-python)
+- [Rust](https://github.com/uhppoted/uhppoted-codegen/tree/main/bindings/rust)
+- [Zig](https://github.com/uhppoted/uhppoted-codegen/tree/main/bindings/zig)
+- [Erlang](https://github.com/uhppoted/uhppoted-codegen/tree/main/bindings/erlang)
+- [PHP](https://github.com/uhppoted/uhppoted-codegen/tree/main/bindings/php)
+
 ### shared-lib/dylib/DLL
 
 [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll/blob/master/doc/C.md) implements a shared-lib/DLL for interop with languages other than Go. The implementation includes
@@ -78,6 +89,7 @@ been fixed in later firmware versions but patches to support these events are in
 - [`node-red-contrib-uhppoted`](https://github.com/uhppoted/node-red-contrib-uhppoted/blob/main/nodes/codec.js#L107-L109)
 - [`uhppoted-nodejs`](https://github.com/uhppoted/uhppoted-nodejs/blob/master/src/codec.js#L114-L121)
 - [`uhppoted-codegen`](https://github.com/uhppoted/uhppoted-codegen/blob/main/bindings/go/uhppote/decode.go#L36-L40)
+- [`uhppoted-python`](https://github.com/uhppoted/uhppoted-python/blob/main/src/uhppoted/decode.py#L63-L65)
 
 #### Readers
 
@@ -135,11 +147,13 @@ but the readers below are in active use:
 | [uhppoted-mqtt](https://github.com/uhppoted/uhppoted-mqtt)                         | daemon/service with MQTT endpoint for remote access to UT0311-L0x controllers |
 | [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                     | cron'able utility to download/upload access control lists from/to AWS S3 |
 | [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)             | cron'able utility to download/upload access control lists from/to Google Sheets |
-| [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot) | cron'able utility to manage access control lists from Wild Apricot |
+| [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot) | cron'able utility to manage access control lists from Wild Apricot    |
 | [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted) | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
-| [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                     | Standalone NodeJS module                   |
-| [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll)                           | shared-lib/DLL for cross-language interop  |
-| [uhppoted-tunnel](https://github.com/uhppoted/uhppoted-tunnel)                     | UDP tunnel for remote access               |
+| [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                     | Standalone NodeJS module                                              |
+| [uhppoted-python](https://github.com/uhppoted/uhppoted-python)                     | Standalone Python package for PyPI                                    |
+| [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll)                           | shared-lib/DLL for cross-language interop                             |
+| [uhppoted-codegen](https://github.com/uhppoted/uhppoted-codegen)                   | Model based code generator for native language bindings               |
+| [uhppoted-tunnel](https://github.com/uhppoted/uhppoted-tunnel)                     | UDP tunnel for remote access                                          |
 
 ## Integrations
 
@@ -149,7 +163,6 @@ but the readers below are in active use:
 | [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)                | cron'able utility to download/upload access control lists from/to Google Sheets |
 | [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-sheets)          | cron'able utility to manage access control lists from/t Wild Apricot |
 | [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted)    | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
-| [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                        | Core API implementation as a NodeJS library |
 | [kBrausew/ioBroker.wiegand-tcpip](https://github.com/kBrausew/ioBroker.wiegand-tcpip) | [ioBroker](https://www.iobroker.net)  |
 
 
@@ -164,9 +177,10 @@ but the readers below are in active use:
 Binaries for Linux, Windows, MacOS and Raspbian/ARM7 are distributed in the tarball for each release. To install
 the binaries, download and extract the tarball to a directory of your choice.
 
-The NodeRED and NodeJS packages are installable from the public repositories:
+The NodeRED, NodeJS and Python packages are installable from the public repositories:
 - [node-red-contrib-uhppoted](https://www.npmjs.com/package/node-red-contrib-uhppoted)
 - [uhppoted-nodejs](https://www.npmjs.com/package/uhppoted)
+- [uhppoted](https://pypi.org/project/uhppoted)
 
 ### Building from source
 
@@ -191,34 +205,6 @@ To pull upstream changes for all submodules:
 ```
 git submodule update --remote
 ```
-
-#### Dependencies
-
-| *Dependency*                                                                           | *Description*                                           |
-| -------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| [com.github/uhppoted/uhppote-core](https://github.com/uhppoted/uhppote-core)           | Device level API implementation                         |
-| [com.github/uhppoted/uhppoted-api](https://github.com/uhppoted/uhppoted-api)           | External API implementation                             |
-| [com.github/uhppoted/uhppote-cli](https://github.com/uhppoted/uhppote-cli)             | CLI user application                                    |
-| [com.github/uhppoted/uhppoted-rest](https://github.com/uhppoted/uhppoted-rest)         | REST API                                                |
-| [com.github/uhppoted/uhppoted-mqtt](https://github.com/uhppoted/uhppoted-mqtt)         | MQTT endpoint                                           |
-| [com.github/uhppoted/uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)     | cron'able access control management using AWS S3        |
-| [com.github/uhppoted/uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets) | cron'able access control management using Google Sheets |
-| [com.github/uhppoted/uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot) | cron'able access control management using Wild Apricot |
-| [com.github/uhppoted/uhppote-simulator](https://github.com/uhppoted/uhppote-simulator) | Device simulator for development use                    |
-| [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted)     | NodeJS nodes for [Node-RED](https://nodered.org) low code environment           |
-| [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll)     | Shared library/DLL for cross-language support           |
-| golang.org/x/sys/windows                                                               | Support for Windows services                            |
-| golang.org/x/lint/golint                                                               | Additional *lint* check for release builds              |
-| github.com/eclipse/paho.mqtt.golang                                                    | Eclipse Paho MQTT client                                |
-| github.com/gorilla/websocket                                                           | paho.mqtt.golang dependency                             |
-| github.com/aws/aws-sdk-go                                                              | AWS SDK                                                 |
-| google.golang.org/api                                                                  | Google SDK                                              |
-| golang.org/x/net                                                                       | google.golang.org/api dependency                        |
-| golang.org/x/oauth2                                                                    | google.golang.org/api dependency                        |
-| golang.org/x/tools                                                                     | google.golang.org/api dependency                        |
-| golang.org/x/xerrors                                                                   | google.golang.org/api dependency                        |
-| github.com/golang/protobuf                                                             | google.golang.org/api dependency                        |
-| google.golang.org/appengine                                                            | google.golang.org/api dependency                        |
 
 ## References and Related Projects
 
