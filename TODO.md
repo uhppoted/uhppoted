@@ -1,6 +1,22 @@
 # TODO
 
-- [x] `set-interlock` (cf. https://github.com/uhppoted/uhppote-core/issues/14)
+- [x] `activate-keypads`: tasks (cf. https://github.com/uhppoted/uhppoted/issues/35)
+      - [x] uhppote-core
+      - [x] uhppote-simulator
+      - [x] uhppoted-lib
+      - [x] uhppote-cli
+      - [x] uhppoted-rest
+      - [x] uhppoted-mqtt
+      - [x] ~~uhppoted-httpd~~
+      - [x] uhppoted-codegen
+      - [x] uhppoted-dll
+      - [x] ~~uhppoted-app-s3~~
+      - [x] ~~uhppoted-app-sheets~~
+      - [x] ~~uhppoted-app-wild-apricot~~
+      - [x] ~~uhppoted-app-db~~
+      - [x] uhppoted-nodejs
+      - [x] uhppoted-tunnel
+      - [x] node-red-contrib-uhppoted
 
 ## IN PROGRESS
 
@@ -264,3 +280,4 @@
 105. [serverless DB](https://leerob.io/blog/backend)
 106. [Tigris](https://www.tigrisdata.com/docs/quickstarts)
 107. [Gitbook](https://developer.gitbook.com/gitbook-api/reference)
+108. [Matter](https://interrupt.memfault.com/blog/memfault-matter)

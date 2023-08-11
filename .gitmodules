@@ -65,3 +65,7 @@
 [submodule "uhppoted-wiegand"]
 	path = uhppoted-wiegand
 	url = https://github.com/uhppoted-wiegand.git
+
+[submodule "uhppoted-python"]
+	path = uhppoted-python
+	url = https://github.com/uhppoted/uhppoted-python
