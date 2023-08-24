@@ -78,3 +78,51 @@ The `REST` section defines the configuration for the _uhppoted-rest_ REST gatewa
 | rest.auth.hotp.counters      | \<etc\>/rest/counters      | HOTP authentication: user counters                      |
 
 
+## `MQTT`
+
+The `MQTT` section defines the configuration for the _uhppoted-mqtt_ MQTT gateway server.
+
+| Parameter                          | Default                         | Description                                             |
+|------------------------------------|---------------------------------|---------------------------------------------------------|
+| mqtt.server.ID                     | uhppoted                        | (future use)                                            |
+| mqtt.connection.broker             | tcp://127.0.0.1:1883            | MQTT broker IP address and port                         |
+| mqtt.connection.client.ID          | uhppoted-mqttd                  | Client ID for connection to MQTT broker                 |
+| mqtt.connection.username           |                                 | User name for connection to MQTT broker                 |
+| mqtt.connection.password           |                                 | Password for connection  to MQTT broker                 |
+| mqtt.connection.broker.certificate | \<etc\>/mqtt/broker.cert        | CA certificate for MQTT broker                          |
+| mqtt.connection.client.certificate | \<etc\>/mqtt/client.cert        | Client RSA certificate for TLS mutual authentication    |
+| mqtt.connection.client.key         | \<etc\>/mqtt/client.key         | Client RSA key for TLS mutual authentication            |
+| mqtt.connection.verify             |                                 | _allow-insecure_ disables TLS verification              |
+| mqtt.topic.root                    | uhppoted/gateway                | Root MQTT topic for _uhppoted-mqtt_ messages            |
+| mqtt.topic.requests                | ./requests                      | _request_ messages subtopic                             |
+| mqtt.topic.replies                 | ./replies                       | _reply_ messages subtopic                               |
+| mqtt.topic.events                  | ./events                        | _event_ messages subtopic                               |
+| mqtt.topic.system                  | ./system                        | _system_ messages subtopic                              |
+| mqtt.translation.locale            |                                 | Locale for internationalisation of messages             |
+| mqtt.protocol.version              |                                 | MQTT (for future use)                                   |
+| mqtt.alerts.qos                    | 1                               | MQTT _quality of service_                               |
+| mqtt.alerts.retained               | true                            | Enable _retained messages_                              |
+| mqtt.events.key                    | events                          | Key ID for encrypted event messages                     |
+| mqtt.system.key                    | system                          | Key ID for encrypted system messages                    |
+| mqtt.events.index.filepath         | \<var\>/mqtt.events.retrieved   | File for retrieved events                               |
+| mqtt.permissions.enabled           | false                           | Enables/disables user permissions                       |
+| mqtt.permissions.users             | \<etc\>/mqtt.permissions.users  | File containing authorised users                        |
+| mqtt.permissions.groups            | \<etc\>/mqtt.permissions.groups | Permissions groups for authorised users                 |
+| mqtt.cards                         | \<etc\>/mqtt/cards              | Authorised cards for remote door open                   |
+| mqtt.security.HMAC.required        | false                           | Requires valid HMAC on received messages                |
+| mqtt.security.HMAC.key             |                                 | HMAC key for message validation                         |
+| mqtt.security.authentication       | NONE                            | Sets user authentication (none/HOTP/RSA/any)            |
+| mqtt.security.hotp.range           | 8                               | Maximum discrepancy between HOTP counters               |
+| mqtt.security.hotp.secrets         | \<etc\>/mqtt.hotp.secrets       | _secrets_ file for HOTP authentication                  |
+| mqtt.security.hotp.counters        | \<var\>/mqtt.hotp.counters      | _counters_ file for HOTP authentication                 |
+| mqtt.security.rsa.keys             | \<etc\>/mqtt/rsa                | _RSA keys_ file for RSA authentication                  |
+| mqtt.security.nonce.required       | false                           | Validates message nonce field                           |
+| mqtt.security.nonce.server         | \<var\>/mqtt.nonce              | _nonce_ file for server messages                        |
+| mqtt.security.nonce.clients        | \<var\>/mqtt.nonce.counters     | _nonce_ file for client messages                        |
+| mqtt.security.outgoing.sign        | false                           | Enables/disables outgoing message signatures            |
+| mqtt.security.outgoing.encrypt     | false                           | Enables/disables outgoing message encryption            |
+| mqtt.lockfile.remove               | false                           | Explicitly remove lockfile on termination               |
+| mqtt.disconnects.enabled           | true                            | Reconnect if disconnected                               |
+| mqtt.disconnects.interval          | 5m0s                            | Interval between reconnects if disconnected             |
+| mqtt.disconnects.max               | 10                              | Maximum number of reconnects before terminating         |
+| mqtt.acl.verify                    | RSA                             | ACL verification (none/any/RSA)                         |
