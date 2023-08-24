@@ -5,9 +5,11 @@ can be found [here](uhppoted.conf).
 
 It comprises the following sections:
 
-1. `system`
-2. `controllers`
-3. `REST`
+1. [`system`](#system)
+2. [`controllers`](#controllers)
+3. [`REST`](#rest)
+4. [`MQTT`](#mqtt)
+5. [`AWS`](#aws)
 
 ## `system`
 
@@ -126,3 +128,16 @@ The `MQTT` section defines the configuration for the _uhppoted-mqtt_ MQTT gatewa
 | mqtt.disconnects.interval          | 5m0s                            | Interval between reconnects if disconnected             |
 | mqtt.disconnects.max               | 10                              | Maximum number of reconnects before terminating         |
 | mqtt.acl.verify                    | RSA                             | ACL verification (none/any/RSA)                         |
+
+
+## `AWS`
+
+The `AWS` section defines the credentials for accessing AWS S3 for _uhppoted-app-s3_ and AWS Greengrass (_uhppoted-mqtt_).
+
+| Parameter       | Default     | Description                                             |
+|-----------------|-------------|---------------------------------------------------------|
+| aws.credentials |             | AWS credentials file                                    |
+| aws.profile     | default     | Profile in AWS credentials file                         |
+| aws.region      | us-east-1   | AWS region                                              |
+
+
