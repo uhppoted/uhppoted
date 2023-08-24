@@ -11,6 +11,7 @@ It comprises the following sections:
 4. [`MQTT`](#mqtt)
 5. [`AWS`](#aws)
 6. [`HTTPD`](#httpd)
+7. [`Wild Apricot`](#wild-apricot)
 
 ## `system`
 
@@ -192,3 +193,19 @@ The `HTTPD` section defines the configuration for the _uhppoted-httpd_ HTTP serv
 | httpd.retention                        | 6h0m0s                                | Retention time for deleted items              |
 | httpd.timezones                        |                                       | Optional timezones definition file            |
 | httpd.with-pin                         | false                                 | Includes card reader PIN in ACL               |
+
+
+## `Wild Apricot`
+
+The `Wild Apricot` section defines the configuration for _uhppoted-app-wild-apricot_.
+
+| Parameter                              | Default         | Description                                               |
+|----------------------------------------|-----------------|-----------------------------------------------------------|
+| wild-apricot.http.client-timeout       | 10s             | Wild Apricot API request timeout                          |
+| wild-apricot.http.retries              | 3               | Wild Apricot API request retry count                      |
+| wild-apricot.http.retry-delay          | 5s              | Interval between API request retries                      |
+| wild-apricot.fields.card-number        | Card Number     | Field name for card number                                |
+| wild-apricot.display-order.groups      |                 | Optionally sets groups order for reports                  |
+| wild-apricot.display-order.doors       |                 | Optionally sets doors order for reports                   |
+| wild-apricot.facility-code             |                 | Default facility code to use for abbreviated card numbers |
+
