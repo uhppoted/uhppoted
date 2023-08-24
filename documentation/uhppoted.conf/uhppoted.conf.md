@@ -10,6 +10,7 @@ It comprises the following sections:
 3. [`REST`](#rest)
 4. [`MQTT`](#mqtt)
 5. [`AWS`](#aws)
+6. [`HTTPD`](#httpd)
 
 ## `system`
 
@@ -141,3 +142,53 @@ The `AWS` section defines the credentials for accessing AWS S3 for _uhppoted-app
 | aws.region      | us-east-1   | AWS region                                              |
 
 
+## `HTTPD`
+
+The `HTTPD` section defines the configuration for the _uhppoted-httpd_ HTTP server.
+
+| Parameter                              | Default                               | Description                                   |
+|----------------------------------------|---------------------------------------|-----------------------------------------------|
+| httpd.html                             |                                       | External folder for HTML files                |
+| httpd.http.enabled                     | false                                 | Enables unsecured HTTP                        |
+| httpd.http.port                        | 8080                                  | Port for unsecured HTTP                       |
+| httpd.https.enabled                    | true                                  | Enables HTTPS                                 |
+| httpd.https.port                       | 8443                                  | Port for HTTPS                                |
+| httpd.tls.ca                           | \<etc\>/httpd/ca.cert                 | CA certificate (for client authentication)    |
+| httpd.tls.certificate                  | \<etc\>/httpd/uhppoted.cert           | HTTPS server certficate                       |
+| httpd.tls.key                          | \<etc\>/httpd/uhppoted.key            | HTTPS server key                              |
+| httpd.tls.client.certificates.required | false                                 | Requires TLS client authentication            |
+| httpd.security.auth                    | basic                                 | Enables client authorisation (_none_,_basic_) |
+| httpd.security.local.db                | \<etc\>/httpd/auth.json               | JSON file contained authorised clients        |
+| httpd.security.cookie.max-age          | 24                                    | Cookie Max-Age                                |
+| httpd.security.login.expiry            | 1m                                    | Login cookie validity time                    |
+| httpd.security.session.expiry          | 60m                                   | Session cookie validity time                  |
+| httpd.security.otp.issuer              | uhppoted-httpd                        | Issuer ID for OTP application                 |
+| httpd.security.otp.login               | allow                                 | Allow login with OTP                          |
+| httpd.request.timeout                  | 5s                                    | Request processing time limit                 |
+| httpd.system.interfaces                | \<var\>/httpd/system/interfaces.json  | JSON file for interfaces table                |
+| httpd.system.controllers               | \<var\>/httpd/system/controllers.json | JSON file for controllers table               |
+| httpd.system.doors                     | \<var\>/httpd/system/doors.json       | JSON file for doors table                     |
+| httpd.system.groups                    | \<var\>/httpd/system/groups.json      | JSON file for groups table                    |
+| httpd.system.cards                     | \<var\>/httpd/system/cards.json       | JSON file for cards table                     |
+| httpd.system.events                    | \<var\>/httpd/system/events.json      | JSON file for events table                    |
+| httpd.system.logs                      | \<var\>/httpd/system/logs.json        | JSON file for logs table                      |
+| httpd.system.users                     | \<var\>/httpd/system/users.json       | JSON file for users table                     |
+| httpd.system.history                   | \<var\>/httpd/system/history.json     | JSON file for history table                   |
+| httpd.system.refresh                   | 30s                                   | System monitor refresh interval               |
+| httpd.system.windows.ok                | 1m0s                                  | System monitor _healthy time window           |
+| httpd.system.windows.uncertain         | 5m0s                                  | System monitor _uncertain_ window             |
+| httpd.system.windows.systime           | 5m0s                                  | System monitor allowed _system time_ window   |
+| httpd.system.windows.expires           | 2m0s                                  | System monitor _controller_ time window       |
+| httpd.db.rules.acl                     | \<etc\>/httpd/acl.grl                 | Optional _grules_ file for ACL                |
+| httpd.db.rules.interfaces              |                                       | Optional _grules_ file for interfaces table   |
+| httpd.db.rules.controllers             |                                       | Optional _grules_ file for controllers table  |
+| httpd.db.rules.cards                   |                                       | Optional _gruels_ file for cards table        |
+| httpd.db.rules.doors                   |                                       | Optional _grules_ file for doors table        |
+| httpd.db.rules.groups                  |                                       | Optional _grules_ file for groups table       |
+| httpd.db.rules.events                  |                                       | Optional _grules_ file for events table       |
+| httpd.db.rules.logs                    |                                       | Optional _grules_ file for logs table         |
+| httpd.db.rules.users                   |                                       | Optional _grules_ file for users table        |
+| httpd.audit.file                       | \<var\>/httpd/audit/audit.log         | Audit log file                                |
+| httpd.retention                        | 6h0m0s                                | Retention time for deleted items              |
+| httpd.timezones                        |                                       | Optional timezones definition file            |
+| httpd.with-pin                         | false                                 | Includes card reader PIN in ACL               |
