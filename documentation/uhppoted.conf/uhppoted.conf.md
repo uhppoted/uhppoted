@@ -12,7 +12,7 @@ It comprises the following sections:
 5. [`AWS`](#aws)
 6. [`HTTPD`](#httpd)
 7. [`Wild Apricot`](#wild-apricot)
-7. [`OpenAPI`](#open-api)
+7. [`OpenAPI`](#openapi)
 
 ## `system`
 
@@ -213,7 +213,7 @@ The `Wild Apricot` section defines the configuration for _uhppoted-app-wild-apri
 
 ## `OpenAPI`
 
-The `OpenAPI` section defines the configuration for the optional REST _OpenAPI_ (_Swagger_) server.
+The `OpenAPI` section defines the configuration for the optional REST _OpenAPI_ (_swagger_) server.
 
 | Parameter         | Default    | Description                                               |
 |-------------------|------------|-----------------------------------------------------------|
