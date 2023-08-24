@@ -12,6 +12,7 @@ It comprises the following sections:
 5. [`AWS`](#aws)
 6. [`HTTPD`](#httpd)
 7. [`Wild Apricot`](#wild-apricot)
+7. [`OpenAPI`](#open-api)
 
 ## `system`
 
@@ -208,4 +209,15 @@ The `Wild Apricot` section defines the configuration for _uhppoted-app-wild-apri
 | wild-apricot.display-order.groups      |                 | Optionally sets groups order for reports                  |
 | wild-apricot.display-order.doors       |                 | Optionally sets doors order for reports                   |
 | wild-apricot.facility-code             |                 | Default facility code to use for abbreviated card numbers |
+
+
+## `OpenAPI`
+
+The `OpenAPI` section defines the configuration for the optional REST _OpenAPI_ (_Swagger_) server.
+
+| Parameter         | Default    | Description                                               |
+|-------------------|------------|-----------------------------------------------------------|
+| openapi.enabled   | false      | Enables OpenAPI server                                    |
+| openapi.directory | ./openapi  | Folder for OpenAPI YAML files                             |
+
 
