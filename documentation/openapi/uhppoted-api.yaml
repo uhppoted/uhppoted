@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 
 info:
-  version: 0.8.5
+  version: 0.8.6
   title: "uhppoted"
   description: "REST API for the uhppoted-rest service. The API currently supports both device level functions and higher level access control list management."
   license:
@@ -575,6 +575,62 @@ paths:
             application/json:
               schema:
                   $ref: "#/components/schemas/Error"        
+
+
+  /device/{device-id}/door/keypads:
+    put:
+      tags:
+        - device
+      summary: "Activates or deactivates the reader keypads"
+      description: "Activates or deactivates reader access keypads for cards with an associated PIN"
+      operationId: putActivateKeypads
+      parameters:
+        - name: device-id
+          in: path
+          description: "Controller serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      requestBody:
+        description: "Reader keypad state"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccessKeypads"
+      responses:
+        '200':
+          description: "Activated keypads"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/AccessKeypads"
+        '404':
+          description: "No controller with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"
 
   /device/{device-id}/cards:
     get:
@@ -1882,6 +1938,20 @@ components:
           format: uint8
           description: "Door interlock mode - 0:none, 1:1&2, 2:3&4, 3:1&2,3&4, 4:1&2&3, 8: 1&2&3&4"
           example: 4
+
+    AccessKeypads:
+      properties:
+        keypads:
+          type: object
+          additionalProperties: false
+          format: map[uint8]boolean
+          description: "Maps keypads 1..4 to the corresponding activated/deactivated state"
+          example: {
+            1: true,
+            2: true,
+            3: false,
+            4: true
+          }
 
     CardList:
       required: 
