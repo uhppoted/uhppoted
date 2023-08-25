@@ -15,6 +15,10 @@ import tempfile
 
 from threading import Event
 
+from projects import projects
+from github import already_released
+from changelog import changelogs
+
 exit = Event()
 
 
@@ -25,38 +29,34 @@ def quit(signo, _frame):
 
 def main():
     print()
-    print("*** uhppoted release-all")
+    print("*** uhppoted release script ***")
     print()
 
     if len(sys.argv) < 2:
         usage()
         return -1
 
-    parser = argparse.ArgumentParser(description='release --version=<version> --no-edit')
+    parser = argparse.ArgumentParser(description='release --version=<version> --no-edit <command>')
 
+    parser.add_argument('command', type=str, help='command')
     parser.add_argument('--version', type=str, default='development', help='release version e.g. v0.8.4')
-
     parser.add_argument('--node-red', type=str, default='development', help='NodeRED release version e.g. v1.1.2')
-
     parser.add_argument('--prepare', action='store_true', help="executes only the 'prepare release' operation")
-
     parser.add_argument('--prerelease',
                         action='store_true',
                         help="executes the 'prepare and prerelease builds' operation")
-
     parser.add_argument('--release',
                         action='store_true',
                         help="executes only the 'prepare, prerelease and build releases' operation")
-
     parser.add_argument('--bump', action='store_true', help="executes only the 'post-release' operation")
-
     parser.add_argument('--no-edit',
                         action='store_true',
                         help="doesn't automatically invoke the editor for e.g. CHANGELOG.md'")
-
     parser.add_argument('--interim', action='store_false', help="doesn't insist on changes being pushed to github")
 
     args = parser.parse_args()
+
+    ops = args.command
     no_edit = args.no_edit
     interim = args.interim
     version = args.version
@@ -66,221 +66,139 @@ def main():
         version = f'v{args.version}'
 
     print(f'VERSION: {version}')
+    print()
 
     plist = projects()
-    it = itertools.filterfalse(
-        lambda p: already_released(p, plist[p], version if p != 'node-red-contrib-uhppoted' else f'v{nodered}'), plist)
-    unreleased = {p: plist[p] for p in it}
+    # it = itertools.filterfalse(
+    #     lambda p: already_released(p, plist[p], version if p != 'node-red-contrib-uhppoted' else f'v{nodered}'), plist)
+    # unreleased = {p: plist[p] for p in it}
 
-    while not exit.is_set():
-        project = ''
-
-        try:
-            if args.bump:
-                if len(unreleased) != 0:
-                    raise Exception(f'Projects {unreleased} have not been released')
-
-                for p in plist:
-                    print(f'>>>> bumping {p}')
-                    project = plist[p]
-                    clean_release_notes(p, project)
-                    bump_changelog(p, project)
-                break
-
-            print(f'>>>> initialise: checking CHANGELOGs, READMEs and uncommitted changes ({version})')
-            for p in unreleased:
-                print(f'>>>> checking {p}')
-                project = unreleased[p]
-
-                if p == 'node-red-contrib-uhppoted':
-                    package_version(p, project, nodered, no_edit)
-                else:
-                    package_version(p, project, version[1:], no_edit)
-
-                changelog(p, project, version[1:], no_edit)
-                readme(p, project, version, no_edit)
-                uncommitted(p, project, interim)
-
-            if args.prepare or args.prerelease or args.release:
-                print(f'>>>> prepare: checking builds ({version})')
-                for p in unreleased:
-                    print(f'... releasing {p}')
-                    update(p, unreleased[p])
-                    checkout(p, unreleased[p])
-                    build(p, unreleased[p])
-
-            if args.prerelease or args.release:
-                print(f'>>>> prerelease: final check for consistent library and binary versions ({version})')
-                for p in unreleased:
-                    checksum(p, unreleased[p], 'development')
-                    git(p, unreleased[p], interim)
-
-            if args.release:
-                print(f'>>>> release: building release versions ({version})')
-                for p in unreleased:
-                    release_notes(p, unreleased[p], version)
-                    release(p, unreleased[p], version)
-                    git(p, unreleased[p], interim)
-
-            if args.release:
-                print(f'>>>> release: verify checksums of release versions ({version})')
-                for p in unreleased:
-                    checksum(p, unreleased[p], version)
-
-            # TODO publish
-
-            print()
-            print(f'*** OK!')
-            print()
-            say('OK')
-            break
-
-        except BaseException as x:
-            print(traceback.format_exc())
-
-            msg = f'{x}'
-            msg = msg.replace('uhppoted-','')                        \
-                     .replace('uhppote-','')                         \
-                     .replace('uhppoted','umbrella project')         \
-                     .replace('cli','[[char LTRL]]cli[[char NORM]]') \
-                     .replace('git','[[inpt PHON]]git[[input TEXT]]') \
-                     .replace('codegen','code gen')
-
-            print()
-            print(f'*** ERROR  {x}')
-            print()
-
-            say('ERROR')
-            say(msg)
-
-            if args.prepare and not exit.is_set():
-                sys.stdout.write('  waiting ')
-                sys.stdout.flush()
-                timestamps = {
-                    'changelog': os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime,
-                    'readme': os.stat(f"{project['folder']}/README.md").st_mtime,
-                    'git': has_uncommitted_changes(project['folder']),
-                }
-
-                for i in range(60):
-                    if exit.is_set():
-                        break
-                    elif os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime != timestamps['changelog']:
-                        break
-                    elif os.stat(f"{project['folder']}/README.md").st_mtime != timestamps['readme']:
-                        break
-                    elif has_uncommitted_changes(project['folder']) != timestamps['git']:
-                        break
-                    else:
-                        sys.stdout.write('.')
-                        sys.stdout.flush()
-                        time.sleep(1)
-
-                if os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime != timestamps['changelog']:
-                    print('CHANGELOG updated')
-                    say('CHANGELOG updated')
-                    continue
-                elif os.stat(f"{project['folder']}/README.md").st_mtime != timestamps['readme']:
-                    print('README updated')
-                    say('README updated')
-                    continue
-                elif has_uncommitted_changes(project['folder']) != timestamps['git']:
-                    print('git updated')
-                    say('git updated')
-                    continue
-                else:
-                    print()
-                    break
-
-        sys.exit(1)
+    if 'changelogs' in ops:
+        changelogs(plist, version, nodered, exit)
 
 
-def projects():
-    return {
-        'uhppote-core': {
-            'folder': './uhppote-core',
-            'branch': 'master'
-        },
-        'uhppoted-lib': {
-            'folder': './uhppoted-lib',
-            'branch': 'master',
-        },
-        'uhppote-simulator': {
-            'folder': './uhppote-simulator',
-            'branch': 'main',
-            'binary': 'uhppote-simulator'
-        },
-        'uhppote-cli': {
-            'folder': './uhppote-cli',
-            'branch': 'master',
-            'binary': 'uhppote-cli'
-        },
-        'uhppoted-rest': {
-            'folder': './uhppoted-rest',
-            'branch': 'main',
-            'binary': 'uhppoted-rest'
-        },
-        'uhppoted-mqtt': {
-            'folder': './uhppoted-mqtt',
-            'branch': 'master',
-            'binary': 'uhppoted-mqtt'
-        },
-        'uhppoted-httpd': {
-            'folder': './uhppoted-httpd',
-            'branch': 'master',
-            'binary': 'uhppoted-httpd'
-        },
-        'uhppoted-tunnel': {
-            'folder': './uhppoted-tunnel',
-            'branch': 'main',
-            'binary': 'uhppoted-tunnel'
-        },
-        'uhppoted-dll': {
-            'folder': './uhppoted-dll',
-            'branch': 'main',
-        },
-        'uhppoted-codegen': {
-            'folder': './uhppoted-codegen',
-            'branch': 'main',
-            'binary': 'uhppoted-codegen'
-        },
-        'uhppoted-app-s3': {
-            'folder': './uhppoted-app-s3',
-            'branch': 'main',
-            'binary': 'uhppoted-app-s3'
-        },
-        'uhppoted-app-sheets': {
-            'folder': './uhppoted-app-sheets',
-            'branch': 'main',
-            'binary': 'uhppoted-app-sheets'
-        },
-        'uhppoted-app-wild-apricot': {
-            'folder': './uhppoted-app-wild-apricot',
-            'branch': 'main',
-            'binary': 'uhppoted-app-wild-apricot'
-        },
-        'uhppoted-app-db': {
-            'folder': './uhppoted-app-db',
-            'branch': 'main',
-            'binary': 'uhppoted-app-db'
-        },
-        'uhppoted-nodejs': {
-            'folder': './uhppoted-nodejs',
-            'branch': 'main',
-        },
-        'node-red-contrib-uhppoted': {
-            'folder': './node-red-contrib-uhppoted',
-            'branch': 'main',
-        },
-        'uhppoted-wiegand': {
-            'folder': './uhppoted-wiegand',
-            'branch': 'main',
-        },
-        'uhppoted': {
-            'folder': '.',
-            'branch': 'master'
-        }
-    }
+#
+# while not exit.is_set():
+#     project = ''
+#
+#     try:
+#         if args.bump:
+#             if len(unreleased) != 0:
+#                 raise Exception(f'Projects {unreleased} have not been released')
+#
+#             for p in plist:
+#                 print(f'>>>> bumping {p}')
+#                 project = plist[p]
+#                 clean_release_notes(p, project)
+#                 bump_changelog(p, project)
+#             break
+#
+#         print(f'>>>> initialise: checking CHANGELOGs, READMEs and uncommitted changes ({version})')
+#         for p in unreleased:
+#             print(f'>>>> checking {p}')
+#             project = unreleased[p]
+#
+#             if p == 'node-red-contrib-uhppoted':
+#                 package_version(p, project, nodered, no_edit)
+#             else:
+#                 package_version(p, project, version[1:], no_edit)
+#
+#             changelog(p, project, version[1:], no_edit)
+#             readme(p, project, version, no_edit)
+#             uncommitted(p, project, interim)
+#
+#         if args.prepare or args.prerelease or args.release:
+#             print(f'>>>> prepare: checking builds ({version})')
+#             for p in unreleased:
+#                 print(f'... releasing {p}')
+#                 update(p, unreleased[p])
+#                 checkout(p, unreleased[p])
+#                 build(p, unreleased[p])
+#
+#         if args.prerelease or args.release:
+#             print(f'>>>> prerelease: final check for consistent library and binary versions ({version})')
+#             for p in unreleased:
+#                 checksum(p, unreleased[p], 'development')
+#                 git(p, unreleased[p], interim)
+#
+#         if args.release:
+#             print(f'>>>> release: building release versions ({version})')
+#             for p in unreleased:
+#                 release_notes(p, unreleased[p], version)
+#                 release(p, unreleased[p], version)
+#                 git(p, unreleased[p], interim)
+#
+#         if args.release:
+#             print(f'>>>> release: verify checksums of release versions ({version})')
+#             for p in unreleased:
+#                 checksum(p, unreleased[p], version)
+#
+#         # TODO publish
+#
+#         print()
+#         print(f'*** OK!')
+#         print()
+#         say('OK')
+#         break
+#
+#     except BaseException as x:
+#         print(traceback.format_exc())
+#
+#         msg = f'{x}'
+#         msg = msg.replace('uhppoted-','')                        \
+#                  .replace('uhppote-','')                         \
+#                  .replace('uhppoted','umbrella project')         \
+#                  .replace('cli','[[char LTRL]]cli[[char NORM]]') \
+#                  .replace('git','[[inpt PHON]]git[[input TEXT]]') \
+#                  .replace('codegen','code gen')
+#
+#         print()
+#         print(f'*** ERROR  {x}')
+#         print()
+#
+#         say('ERROR')
+#         say(msg)
+#
+#         if args.prepare and not exit.is_set():
+#             sys.stdout.write('  waiting ')
+#             sys.stdout.flush()
+#             timestamps = {
+#                 'changelog': os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime,
+#                 'readme': os.stat(f"{project['folder']}/README.md").st_mtime,
+#                 'git': has_uncommitted_changes(project['folder']),
+#             }
+#
+#             for i in range(60):
+#                 if exit.is_set():
+#                     break
+#                 elif os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime != timestamps['changelog']:
+#                     break
+#                 elif os.stat(f"{project['folder']}/README.md").st_mtime != timestamps['readme']:
+#                     break
+#                 elif has_uncommitted_changes(project['folder']) != timestamps['git']:
+#                     break
+#                 else:
+#                     sys.stdout.write('.')
+#                     sys.stdout.flush()
+#                     time.sleep(1)
+#
+#             if os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime != timestamps['changelog']:
+#                 print('CHANGELOG updated')
+#                 say('CHANGELOG updated')
+#                 continue
+#             elif os.stat(f"{project['folder']}/README.md").st_mtime != timestamps['readme']:
+#                 print('README updated')
+#                 say('README updated')
+#                 continue
+#             elif has_uncommitted_changes(project['folder']) != timestamps['git']:
+#                 print('git updated')
+#                 say('git updated')
+#                 continue
+#             else:
+#                 print()
+#                 break
+#
+#     sys.exit(1)
 
 
 def package_version(project, info, version, no_edit):
@@ -444,21 +362,21 @@ def checksum(project, info, version):
                 raise Exception(f"{project} 'dist' checksums differ")
 
 
-def already_released(project, info, version):
-    command = f"cd {info['folder']} && git fetch --tags"
-    result = subprocess.call(command, shell=True)
-    if result != 0:
-        raise Exception(f"command 'git fetch --tags' failed")
-    else:
-        command = f"cd {info['folder']} && git tag {version} --list"
-        result = subprocess.check_output(command, shell=True)
-
-        if f'{version}' in str(result):
-            print(f'     ... {project} has been released')
-            return True
-        else:
-            print(f'     ... {project} has not been released')
-            return False
+# def already_released(project, info, version):
+#     command = f"cd {info['folder']} && git fetch --tags"
+#     result = subprocess.call(command, shell=True)
+#     if result != 0:
+#         raise Exception(f"command 'git fetch --tags' failed")
+#     else:
+#         command = f"cd {info['folder']} && git tag {version} --list"
+#         result = subprocess.check_output(command, shell=True)
+#
+#         if f'{version}' in str(result):
+#             print(f'     ... {project} has been released')
+#             return True
+#         else:
+#             print(f'     ... {project} has not been released')
+#             return False
 
 
 def release_notes(project, info, version):
@@ -550,7 +468,7 @@ def say(msg):
 
 def usage():
     print()
-    print('  Usage: python release.py <options>')
+    print('  Usage: python release.py <options> <command>')
     print()
     print('  Options:')
     print('    --version <version>  Release version e.g. v0.8.1')
@@ -558,7 +476,7 @@ def usage():
 
 
 if __name__ == '__main__':
-    for sig in ('TERM', 'HUP', 'INT'):
-        signal.signal(getattr(signal, 'SIG' + sig), quit)
+    for sig in ['SIGTERM', 'SIGHUP', 'SIGINT']:
+        signal.signal(getattr(signal, sig), quit)
 
     main()
