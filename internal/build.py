@@ -31,7 +31,7 @@ def prerelease(projects, version, exit):
                 return False
 
         # ... uncommitted changes?
-        print('     ... checking for uncommitted changesbuilding all projects')
+        print('     ... checking for uncommitted changes')
         for p in plist:
             print(f'     ... {p}')
             uncommitted(p, plist[p])
@@ -72,16 +72,6 @@ def update(project, info):
         raise Exception(f"command 'update {project}' failed")
 
 
-def build(project, info):
-    try:
-        folder = info['folder']
-        command = f'cd {folder} && make build'
-        subprocess.run(command, shell=True, check=True)
-        return True
-    except subprocess.CalledProcessError:
-        raise Exception(f"command 'update {project}' failed")
-
-
 def uncommitted(project, info):
     try:
         command = f"cd {info['folder']} && git remote update"
@@ -103,3 +93,14 @@ def checkout(project, info):
         subprocess.run(command, shell=True, check=True)
     except subprocess.CalledProcessError:
         raise Exception(f"command 'checkout {project}' failed")
+
+def build(project, info):
+    try:
+        folder = info['folder']
+        command = f'cd {folder} && make build'
+        subprocess.run(command, shell=True, check=True)
+        return True
+    except subprocess.CalledProcessError:
+        raise Exception(f"command 'update {project}' failed")
+
+
