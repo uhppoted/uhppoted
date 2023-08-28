@@ -94,6 +94,7 @@ def checkout(project, info):
     except subprocess.CalledProcessError:
         raise Exception(f"command 'checkout {project}' failed")
 
+
 def build(project, info):
     try:
         folder = info['folder']
@@ -102,5 +103,3 @@ def build(project, info):
         return True
     except subprocess.CalledProcessError:
         raise Exception(f"command 'update {project}' failed")
-
-
