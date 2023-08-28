@@ -1,3 +1,4 @@
+import itertools
 import subprocess
 
 ignore = []
@@ -6,44 +7,54 @@ ignore = []
 def prerelease(projects, version, exit):
     print(f'>>>> prerelease builds (v{version})')
 
+    it = itertools.filterfalse(lambda p: p in ignore, projects)
+    plist = {p: projects[p] for p in it}
+
     while True:
         ok = True
-        # ... build
-        print(f'     ... building all projects')
-        for p in projects:
-            if not p in ignore:
-                project = projects[p]
+        # ... update and build
+        print(f'     ... rebuilding all projects')
+        for p in plist:
+            print(f'     ... {p}')
+            if not update(p, plist[p]):
+                ok = False
 
-                print(f'     ... {p}')
-                if not update(p, project):
-                    ok = False
+            if exit.is_set():
+                return False
 
-                if exit.is_set():
-                    return False
+        for p in plist:
+            print(f'     ... {p}')
+            if not build(p, plist[p]):
+                ok = False
+
+            if exit.is_set():
+                return False
 
         # ... uncommitted changes?
         print(f'     ... checking for uncommitted changesbuilding all projects')
-        for p in projects:
-            if not p in ignore:
-                project = projects[p]
+        for p in plist:
+            print(f'     ... {p}')
+            uncommitted(p, plist[p])
 
-                print(f'     ... {p}')
-                uncommitted(p, project)
-
-                if exit.is_set():
-                    return False
+            if exit.is_set():
+                return False
 
         # ... checkout and rebuild
         print(f'     ... checking out latest github version')
-        for p in projects:
-            if not p in ignore:
-                project = projects[p]
+        for p in plist:
+            print(f'     ... {p}')
+            checkout(p, plist[p])
 
-                print(f'     ... {p}')
-                checkout(p, project)
+            if exit.is_set():
+                return False
 
-                if exit.is_set():
-                    return False
+        for p in plist:
+            print(f'     ... {p}')
+            if not build(p, plist[p]):
+                ok = False
+
+            if exit.is_set():
+                return False
 
         if ok:
             break
@@ -54,7 +65,17 @@ def prerelease(projects, version, exit):
 def update(project, info):
     try:
         folder = info['folder']
-        command = f'cd {folder} && make update && make build'
+        command = f'cd {folder} && make update'
+        subprocess.run(command, shell=True, check=True)
+        return True
+    except subprocess.CalledProcessError:
+        raise Exception(f"command 'update {project}' failed")
+
+
+def build(project, info):
+    try:
+        folder = info['folder']
+        command = f'cd {folder} && make build'
         subprocess.run(command, shell=True, check=True)
         return True
     except subprocess.CalledProcessError:
