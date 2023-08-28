@@ -16,8 +16,11 @@ import tempfile
 from threading import Event
 
 from projects import projects
+from version import Version
 from github import already_released
-from changelog import changelogs
+from changelog import CHANGELOGs
+from readme import READMEs
+from build import prerelease
 
 exit = Event()
 
@@ -59,22 +62,28 @@ def main():
     ops = args.command
     no_edit = args.no_edit
     interim = args.interim
-    version = args.version
-    nodered = args.node_red
+    version = Version(args.version, args.node_red)
 
-    if version != 'development' and not args.version.startswith('v'):
-        version = f'v{args.version}'
-
-    print(f'VERSION: {version}')
+    print(f"VERSION: {version}")
     print()
 
     plist = projects()
+
     # it = itertools.filterfalse(
     #     lambda p: already_released(p, plist[p], version if p != 'node-red-contrib-uhppoted' else f'v{nodered}'), plist)
     # unreleased = {p: plist[p] for p in it}
 
     if 'changelogs' in ops:
-        changelogs(plist, version, nodered, exit)
+        CHANGELOGs(plist, version, exit)
+        print()
+
+    if 'readmes' in ops:
+        READMEs(plist, version, exit)
+        print()
+
+    if 'prerelease' in ops:
+        prerelease(plist, version, exit)
+        print()
 
 
 #
@@ -212,54 +221,6 @@ def package_version(project, info, version, no_edit):
                     subprocess.run(['/bin/zsh', '-i', '-c', command])
 
                 raise Exception(f'{project} package.json has not been updated for release')
-
-
-def changelog(project, info, version, no_edit):
-    with open(f"{info['folder']}/CHANGELOG.md", 'r', encoding="utf-8") as f:
-        CHANGELOG = f.read()
-        if 'Unreleased' in CHANGELOG:
-            rest = CHANGELOG
-            for i in range(3):
-                line, _, rest = rest.partition('\n')
-                print(f'>> {line}')
-
-            if not no_edit:
-                command = f"sublime2 {info['folder']}/CHANGELOG.md"
-                subprocess.run(['/bin/zsh', '-i', '-c', command])
-
-            raise Exception(f'{project} CHANGELOG has not been updated for release')
-
-    if project == 'node-red-contrib-uhppoted':
-        return
-
-    with open(f"{info['folder']}/CHANGELOG.md", 'r', encoding="utf-8") as f:
-        CHANGELOG = f.read()
-        if not CHANGELOG.startswith(f'# CHANGELOG\n\n## [{version}]'):
-            rest = CHANGELOG
-            for i in range(3):
-                line, _, rest = rest.partition('\n')
-                print(f'>> {line}')
-
-            if not no_edit:
-                command = f"sublime2 {info['folder']}/CHANGELOG.md"
-                subprocess.run(['/bin/zsh', '-i', '-c', command])
-
-            raise Exception(f'{project} CHANGELOG has not been updated for release')
-
-
-def readme(project, info, version, no_edit):
-    ignore = ['uhppoted-nodejs', 'node-red-contrib-uhppoted']
-    if project in ignore:
-        return
-
-    with open(f"{info['folder']}/README.md", 'r', encoding="utf-8") as f:
-        README = f.read()
-        if re.compile(f'\|\s*{version}\s*\|').search(README) == None:
-            if not no_edit:
-                command = f"sublime2 {info['folder']}/README.md"
-                subprocess.run(['/bin/zsh', '-i', '-c', command])
-
-            raise Exception(f'{project} README has not been updated for release')
 
 
 def uncommitted(project, info, interim):

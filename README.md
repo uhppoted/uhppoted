@@ -108,6 +108,7 @@ but the readers below are in active use:
 
 | *Version* | *Description*                                                                                               |
 | --------- | ----------------------------------------------------------------------------------------------------------- |
+| v0.8.6    | Adds `activate-keypads` API, Python package, MySQL and SQL server support and Erlang bindings               |
 | v0.8.5    | Adds `set-interlock` API, Tailscale and PicoW support and PHP bindings                                      |
 | v0.8.4    | Adds `set-pc-control` command and support for card keypad PINs                                              |
 | v0.8.3    | Adds AMR64 to release builds                                                                                |

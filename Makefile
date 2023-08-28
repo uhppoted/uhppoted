@@ -262,7 +262,7 @@ release: build-all docker
 
 release-debug:
 	yapf -ri ./internal
-	python ./internal/release.py --version=v0.8.6 --node-red=1.1.5 changelogs
+	python ./internal/release.py --version=v0.8.6 --node-red=1.1.5 changelogs,readmes,prerelease
 
 release-v0.8.6: 
 	yapf -ri ./internal
