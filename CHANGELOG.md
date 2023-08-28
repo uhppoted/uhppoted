@@ -1,6 +1,14 @@
 # CHANGELOG
 
-## Unreleased
+## [0.8.6](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.6) - 2023-08-30
+
+### Added
+1. Repackaged uhppoted-codegen Python bindings as _uhppoted-python_ for PyPI
+2. Implemented `activate-keypads` function across all subprojects.
+3. Added bindings to MySQL and Microsoft SQL server to _uhppoted-app-db_.
+4. Added support for _tmpfs_ filesystems.
+5. Added _Erlang_ bindings to _uhppoted-codegen_.
+6. Preliminary documentation for _uhppoted.conf_ file.
 
 
 ## [0.8.5](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.5) - 2023-06-14

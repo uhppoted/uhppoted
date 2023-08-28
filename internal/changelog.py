@@ -5,29 +5,32 @@ import subprocess
 import time
 
 sublime2 = '"/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl"'
+ignore = []
 
 
-def changelogs(projects, version, nodered, exit):
-    print(f'>>>> checking CHANGELOGs ({version})')
+def CHANGELOGs(projects, version, exit):
+    print(f'>>>> checking CHANGELOGs (v{version})')
 
-    ok = True
+    while True:
+        ok = True
+        for p in projects:
+            if not p in ignore:
+                project = projects[p]
+                v = version.version(p)
 
-    for p in projects:
-        project = projects[p]
-        v = nodered if p == 'node-red-contrib-uhppoted' else version
+                if not changelog(p, project, v[1:], exit):
+                    ok = False
 
-        if not changelog(p, project, v, exit):
-            print(f'{p} CHANGELOG has not been updated for release')
-            ok = False
+                if exit.is_set():
+                    return False
+        if ok:
+            break
 
-        if exit.is_set():
-            return False
-
-    return ok
+    return True
 
 
 def changelog(project, info, version, exit):
-    print(f'>>>> checking {project}')
+    print(f'     ... {project}')
 
     path = f"{info['folder']}/CHANGELOG.md"
     CHANGELOG = ''
@@ -42,10 +45,10 @@ def changelog(project, info, version, exit):
             print(f'>> {line}')
 
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
-        command = f"{sublime2} {info['folder']}/CHANGELOG.md"
+        command = f'{sublime2} {path}'
         subprocess.run([command], shell=True)
 
-        print(f'   ... please update {project} CHANGELOG for release')
+        print(f'     ... {project} CHANGELOG has not been updated for release')
 
         while not exit.is_set():
             exit.wait(1)
@@ -53,11 +56,7 @@ def changelog(project, info, version, exit):
             if t != modified:
                 break
 
-        with open(path, 'r', encoding="utf-8") as f:
-            CHANGELOG = f.read()
-
-        if 'Unreleased' in CHANGELOG:
-            return False
+        return False
 
     with open(path, 'r', encoding="utf-8") as f:
         CHANGELOG = f.read()
@@ -68,10 +67,11 @@ def changelog(project, info, version, exit):
             line, _, rest = rest.partition('\n')
             print(f'>> {line}')
 
-        command = f"{sublime2} {info['folder']}/CHANGELOG.md"
+        modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+        command = f'{sublime2} {path}'
         subprocess.run([command], shell=True)
 
-        print(f'   ... please fix {project} CHANGELOG version for release {version}')
+        print(f'     ... {project} CHANGELOG has not been updated for release')
 
         while not exit.is_set():
             exit.wait(1)
@@ -79,10 +79,6 @@ def changelog(project, info, version, exit):
             if t != modified:
                 break
 
-        with open(path, 'r', encoding="utf-8") as f:
-            CHANGELOG = f.read()
-
-        if not CHANGELOG.startswith(f'# CHANGELOG\n\n## [{version}]'):
-            raise Exception(f'{project} CHANGELOG has not been updated for release')
+        return False
 
     return True
