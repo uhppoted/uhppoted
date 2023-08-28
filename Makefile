@@ -42,7 +42,7 @@ status-all:
 	git -C uhppoted-app-s3           status
 	git -C uhppoted-app-sheets       status
 	git -C uhppoted-app-wild-apricot status
-	git -C uhppoted-app-wild-db      status
+	git -C uhppoted-app-db           status
 	git -C uhppoted-wiegand          status
 	git                              status
 
@@ -266,7 +266,7 @@ release-debug:
 
 release-v0.8.6: 
 	yapf -ri ./internal
-	python ./internal/release.py --version=v0.8.6 --node-red=1.1.5 --release
+	python ./internal/release.py --version=v0.8.6 --node-red=1.1.5 changelogs,readmes,prerelease
 
 bump: 
 	yapf -ri ./internal
