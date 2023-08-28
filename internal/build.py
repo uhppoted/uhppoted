@@ -5,7 +5,7 @@ ignore = []
 
 
 def prerelease(projects, version, exit):
-    print(f'>>>> prerelease builds (v{version})')
+    print('>>>> prerelease builds (v{version})')
 
     it = itertools.filterfalse(lambda p: p in ignore, projects)
     plist = {p: projects[p] for p in it}
@@ -31,7 +31,7 @@ def prerelease(projects, version, exit):
                 return False
 
         # ... uncommitted changes?
-        print(f'     ... checking for uncommitted changesbuilding all projects')
+        print('     ... checking for uncommitted changesbuilding all projects')
         for p in plist:
             print(f'     ... {p}')
             uncommitted(p, plist[p])
@@ -40,7 +40,7 @@ def prerelease(projects, version, exit):
                 return False
 
         # ... checkout and rebuild
-        print(f'     ... checking out latest github version')
+        print('     ... checking out latest github version')
         for p in plist:
             print(f'     ... {p}')
             checkout(p, plist[p])
