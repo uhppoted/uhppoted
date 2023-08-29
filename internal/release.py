@@ -17,10 +17,13 @@ from threading import Event
 
 from projects import projects
 from version import Version
-from github import already_released
+import github
 from changelog import CHANGELOGs
 from readme import READMEs
-from build import prerelease
+from javascript import package_versions
+from git import uncommitted
+from misc import say
+import build
 
 exit = Event()
 
@@ -68,178 +71,111 @@ def main():
     print()
 
     plist = projects()
+    it = itertools.filterfalse(lambda p: github.already_released(p, plist[p], version.version(p)), plist)
+    unreleased = {p: plist[p] for p in it}
+    print()
 
-    # it = itertools.filterfalse(
-    #     lambda p: already_released(p, plist[p], version if p != 'node-red-contrib-uhppoted' else f'v{nodered}'), plist)
-    # unreleased = {p: plist[p] for p in it}
-
-    if 'changelogs' in ops:
-        CHANGELOGs(plist, version, exit)
+    if 'prepare' in ops:
+        CHANGELOGs(unreleased, version, exit)
         print()
-
-    if 'readmes' in ops:
-        READMEs(plist, version, exit)
+        READMEs(unreleased, version, exit)
+        print()
+        package_versions(unreleased, version, exit)
+        print()
+        uncommitted(unreleased, version, exit)
+        print()
+        build.prepare(unreleased, version, exit)
         print()
 
     if 'prerelease' in ops:
-        prerelease(plist, version, exit)
+        build.prerelease(unreleased, version, exit)
         print()
 
+    if 'release' in ops:
+        github.release_notes(unreleased, version, exit)
+        build.release(unreleased, version, exit)
+        github.publish(unreleased, version, exit)
+        print()
 
-#
-# while not exit.is_set():
-#     project = ''
-#
-#     try:
-#         if args.bump:
-#             if len(unreleased) != 0:
-#                 raise Exception(f'Projects {unreleased} have not been released')
-#
-#             for p in plist:
-#                 print(f'>>>> bumping {p}')
-#                 project = plist[p]
-#                 clean_release_notes(p, project)
-#                 bump_changelog(p, project)
-#             break
-#
-#         print(f'>>>> initialise: checking CHANGELOGs, READMEs and uncommitted changes ({version})')
-#         for p in unreleased:
-#             print(f'>>>> checking {p}')
-#             project = unreleased[p]
-#
-#             if p == 'node-red-contrib-uhppoted':
-#                 package_version(p, project, nodered, no_edit)
-#             else:
-#                 package_version(p, project, version[1:], no_edit)
-#
-#             changelog(p, project, version[1:], no_edit)
-#             readme(p, project, version, no_edit)
-#             uncommitted(p, project, interim)
-#
-#         if args.prepare or args.prerelease or args.release:
-#             print(f'>>>> prepare: checking builds ({version})')
-#             for p in unreleased:
-#                 print(f'... releasing {p}')
-#                 update(p, unreleased[p])
-#                 checkout(p, unreleased[p])
-#                 build(p, unreleased[p])
-#
-#         if args.prerelease or args.release:
-#             print(f'>>>> prerelease: final check for consistent library and binary versions ({version})')
-#             for p in unreleased:
-#                 checksum(p, unreleased[p], 'development')
-#                 git(p, unreleased[p], interim)
-#
-#         if args.release:
-#             print(f'>>>> release: building release versions ({version})')
-#             for p in unreleased:
-#                 release_notes(p, unreleased[p], version)
-#                 release(p, unreleased[p], version)
-#                 git(p, unreleased[p], interim)
-#
-#         if args.release:
-#             print(f'>>>> release: verify checksums of release versions ({version})')
-#             for p in unreleased:
-#                 checksum(p, unreleased[p], version)
-#
-#         # TODO publish
-#
-#         print()
-#         print(f'*** OK!')
-#         print()
-#         say('OK')
-#         break
-#
-#     except BaseException as x:
-#         print(traceback.format_exc())
-#
-#         msg = f'{x}'
-#         msg = msg.replace('uhppoted-','')                        \
-#                  .replace('uhppote-','')                         \
-#                  .replace('uhppoted','umbrella project')         \
-#                  .replace('cli','[[char LTRL]]cli[[char NORM]]') \
-#                  .replace('git','[[inpt PHON]]git[[input TEXT]]') \
-#                  .replace('codegen','code gen')
-#
-#         print()
-#         print(f'*** ERROR  {x}')
-#         print()
-#
-#         say('ERROR')
-#         say(msg)
-#
-#         if args.prepare and not exit.is_set():
-#             sys.stdout.write('  waiting ')
-#             sys.stdout.flush()
-#             timestamps = {
-#                 'changelog': os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime,
-#                 'readme': os.stat(f"{project['folder']}/README.md").st_mtime,
-#                 'git': has_uncommitted_changes(project['folder']),
-#             }
-#
-#             for i in range(60):
-#                 if exit.is_set():
-#                     break
-#                 elif os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime != timestamps['changelog']:
-#                     break
-#                 elif os.stat(f"{project['folder']}/README.md").st_mtime != timestamps['readme']:
-#                     break
-#                 elif has_uncommitted_changes(project['folder']) != timestamps['git']:
-#                     break
-#                 else:
-#                     sys.stdout.write('.')
-#                     sys.stdout.flush()
-#                     time.sleep(1)
-#
-#             if os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime != timestamps['changelog']:
-#                 print('CHANGELOG updated')
-#                 say('CHANGELOG updated')
-#                 continue
-#             elif os.stat(f"{project['folder']}/README.md").st_mtime != timestamps['readme']:
-#                 print('README updated')
-#                 say('README updated')
-#                 continue
-#             elif has_uncommitted_changes(project['folder']) != timestamps['git']:
-#                 print('git updated')
-#                 say('git updated')
-#                 continue
-#             else:
-#                 print()
-#                 break
-#
-#     sys.exit(1)
+    while not exit.is_set():
+        project = ''
 
+        try:
+            if 'bump' in ops:
+                if len(unreleased) != 0:
+                    raise Exception(f'Projects {unreleased} have not been released')
 
-def package_version(project, info, version, no_edit):
-    if version != 'development' and os.path.isfile(f"{info['folder']}/package.json"):
-        with open(f"{info['folder']}/package.json", 'r', encoding="utf-8") as f:
-            package = json.load(f)
-            if package['version'] != version:
-                print(f">> package version:{package['version']} - expected {version}")
-                if not no_edit:
-                    command = f"sublime2 {info['folder']}/package.json"
-                    subprocess.run(['/bin/zsh', '-i', '-c', command])
+                for p in plist:
+                    print(f'>>>> bumping {p}')
+                    project = plist[p]
+                    clean_release_notes(p, project)
+                    bump_changelog(p, project)
+                break
 
-                raise Exception(f'{project} package.json has not been updated for release')
+            print()
+            print(f'*** OK!')
+            print()
+            say('OK')
+            break
 
+        except BaseException as x:
+            print(traceback.format_exc())
 
-def uncommitted(project, info, interim):
-    ignore = []
-    if interim:
-        ignore = ['uhppoted']
+            msg = f'{x}'
+            msg = msg.replace('uhppoted-','')                        \
+                     .replace('uhppote-','')                         \
+                     .replace('uhppoted','umbrella project')         \
+                     .replace('cli','[[char LTRL]]cli[[char NORM]]') \
+                     .replace('git','[[inpt PHON]]git[[input TEXT]]') \
+                     .replace('codegen','code gen')
 
-    try:
-        command = f"cd {info['folder']} && git remote update"
-        subprocess.run(command, shell=True, check=True)
+            print()
+            print(f'*** ERROR  {x}')
+            print()
 
-        command = f"cd {info['folder']} && git status -uno"
-        result = subprocess.check_output(command, shell=True)
+            say('ERROR')
+            say(msg)
 
-        if (not project in ignore) and 'Changes not staged for commit' in str(result):
-            raise Exception(f"{project} has uncommitted changes")
+            if args.prepare and not exit.is_set():
+                sys.stdout.write('  waiting ')
+                sys.stdout.flush()
+                timestamps = {
+                    'changelog': os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime,
+                    'readme': os.stat(f"{project['folder']}/README.md").st_mtime,
+                    'git': has_uncommitted_changes(project['folder']),
+                }
 
-    except subprocess.CalledProcessError:
-        raise Exception(f"{project}: command 'git status' failed")
+                for i in range(60):
+                    if exit.is_set():
+                        break
+                    elif os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime != timestamps['changelog']:
+                        break
+                    elif os.stat(f"{project['folder']}/README.md").st_mtime != timestamps['readme']:
+                        break
+                    elif has_uncommitted_changes(project['folder']) != timestamps['git']:
+                        break
+                    else:
+                        sys.stdout.write('.')
+                        sys.stdout.flush()
+                        time.sleep(1)
+
+                if os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime != timestamps['changelog']:
+                    print('CHANGELOG updated')
+                    say('CHANGELOG updated')
+                    continue
+                elif os.stat(f"{project['folder']}/README.md").st_mtime != timestamps['readme']:
+                    print('README updated')
+                    say('README updated')
+                    continue
+                elif has_uncommitted_changes(project['folder']) != timestamps['git']:
+                    print('git updated')
+                    say('git updated')
+                    continue
+                else:
+                    print()
+                    break
+
+        sys.exit(1)
 
 
 def has_uncommitted_changes(folder):
@@ -266,13 +202,6 @@ def update(project, info):
         subprocess.run(command, shell=True, check=True)
     except subprocess.CalledProcessError:
         raise Exception(f"command 'update {project}' failed")
-
-
-def build(project, info):
-    command = f"cd {info['folder']} && make update-release && make build-all"
-    result = subprocess.call(command, shell=True)
-    if result != 0:
-        raise Exception(f"command 'build {project}' failed")
 
 
 def git(project, info, interim):
@@ -321,52 +250,6 @@ def checksum(project, info, version):
                 print(f'{project:<25}  {exe:<82}  {hash(exe)}')
                 print(f'{"":<25}  {combined:<82}  {hash(combined)}')
                 raise Exception(f"{project} 'dist' checksums differ")
-
-
-# def already_released(project, info, version):
-#     command = f"cd {info['folder']} && git fetch --tags"
-#     result = subprocess.call(command, shell=True)
-#     if result != 0:
-#         raise Exception(f"command 'git fetch --tags' failed")
-#     else:
-#         command = f"cd {info['folder']} && git tag {version} --list"
-#         result = subprocess.check_output(command, shell=True)
-#
-#         if f'{version}' in str(result):
-#             print(f'     ... {project} has been released')
-#             return True
-#         else:
-#             print(f'     ... {project} has not been released')
-#             return False
-
-
-def release_notes(project, info, version):
-    regex = r'##\s+\[(.*?)\](?:.*?)\n(.*?)##\s+\[(.*?)\]'
-    file = f"{info['folder']}/release-notes.md"
-
-    try:
-        with open(file, 'xt', encoding="utf-8") as f:
-            with open(f"{info['folder']}/CHANGELOG.md", 'r', encoding="utf-8") as changelog:
-                CHANGELOG = changelog.read()
-                match = re.search(regex, CHANGELOG, re.MULTILINE | re.DOTALL)
-
-                current = match.group(1)
-                notes = match.group(2).strip()
-                previous = match.group(3)
-
-                if notes == '':
-                    notes = 'Maintenance release for version compatibility.'
-
-                # print(f'Current  release {current}')
-                # print(f'Previous release {previous}')
-                # print(f'Release notes\n----\n{notes}\n----\n')
-
-                f.write('### Release Notes\n')
-                f.write('\n')
-                f.write(notes)
-                f.write('\n')
-    except FileExistsError:
-        f"... keeping existing {info['folder']}/release-notes.md"
 
 
 def clean_release_notes(project, info):
@@ -419,12 +302,12 @@ def hash(file):
     return hash.hexdigest()
 
 
-def say(msg):
-    transliterated = msg.replace('nodejs','node js') \
-                        .replace('codegen', 'code gen') \
-                        .replace('Errno','error number') \
-                        .replace('exe','e x e')
-    subprocess.call(f'say {transliterated}', shell=True)
+# def say(msg):
+#     transliterated = msg.replace('nodejs','node js') \
+#                         .replace('codegen', 'code gen') \
+#                         .replace('Errno','error number') \
+#                         .replace('exe','e x e')
+#     subprocess.call(f'say {transliterated}', shell=True)
 
 
 def usage():

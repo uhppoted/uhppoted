@@ -9,7 +9,7 @@ ignore = ['uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-python']
 
 
 def READMEs(projects, version, exit):
-    print(f'>>>> checking READMEs (v{version})')
+    print(f'>>>> checking READMEs ({version})')
 
     while True:
         ok = True
@@ -38,19 +38,19 @@ def readme(project, info, version, exit):
     with open(path, 'r', encoding="utf-8") as f:
         README = f.read()
 
-        if re.compile(f'\|\s*{version}\s*\|').search(README) == None:
-            modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
-            command = f'{sublime2} {path}'
-            subprocess.run([command], shell=True)
+    if re.compile(f'\|\s*{version}\s*\|').search(README) == None:
+        modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+        command = f'{sublime2} {path}'
+        subprocess.run([command], shell=True)
 
-            print(f'     ... {project} README has not been updated for release')
+        print(f'     ... {project} README has not been updated for release')
 
-            while not exit.is_set():
-                exit.wait(1)
-                t = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
-                if t != modified:
-                    break
+        while not exit.is_set():
+            exit.wait(1)
+            t = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+            if t != modified:
+                break
 
-            return False
+        return False
 
     return True
