@@ -59,7 +59,7 @@ def main():
 
     args = parser.parse_args()
 
-    ops = args.command
+    ops = args.command.split(',')
     no_edit = args.no_edit
     interim = args.interim
     version = Version(args.version, args.node_red)
