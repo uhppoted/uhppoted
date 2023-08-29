@@ -68,6 +68,26 @@ push-all:
 	git -C uhppoted-wiegand          push
 	git                              push
 
+update-all:
+	cd uhppote-core              && make update && cd ..
+	cd uhppoted-lib              && make update && cd ..
+	cd uhppote-simulator         && make update && cd ..
+	cd uhppote-cli               && make update && cd ..
+	cd uhppoted-rest             && make update && cd ..
+	cd uhppoted-mqtt             && make update && cd ..
+	cd uhppoted-app-s3           && make update && cd ..
+	cd uhppoted-app-sheets       && make update && cd ..
+	cd uhppoted-app-wild-apricot && make update && cd ..
+	cd uhppoted-app-db           && make update && cd ..
+	cd uhppoted-httpd            && make update && cd ..
+	cd uhppoted-tunnel           && make update && cd ..
+	cd uhppoted-dll              && make update && cd ..
+	cd uhppoted-codegen          && make update && cd ..
+	cd uhppoted-nodejs           && make update && cd ..
+	cd uhppoted-python           && make update && cd ..
+	cd uhppoted-wiegand          && make update && cd ..
+	make update	
+
 update:
 	go get -u github.com/uhppoted/uhppote-core@master
 	go mod tidy
@@ -75,7 +95,6 @@ update:
 update-release:
 	go get -u github.com/uhppoted/uhppote-core
 	go mod tidy
-
 
 format: 
 	cd uhppote-core              && make format
