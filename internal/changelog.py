@@ -9,7 +9,7 @@ ignore = []
 
 
 def CHANGELOGs(projects, version, exit):
-    print(f'>>>> checking CHANGELOGs (v{version})')
+    print(f'>>>> checking CHANGELOGs ({version})')
 
     while True:
         ok = True
