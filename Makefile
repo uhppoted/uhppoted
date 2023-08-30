@@ -283,21 +283,12 @@ release: build-all docker
 	tar --directory=dist/arm7   --exclude=".DS_Store" -cvzf dist/$(DIST)-arm7.tar.gz $(DIST)
 	cd dist/windows && zip --recurse-paths ../$(DIST)-windows.zip $(DIST)
 
-release-debug:
-	yapf -ri ./internal
-	# python ./internal/release.py --version=$(RELEASE) --node-red=1.1.5 prepare
-	# python ./internal/release.py --version=$(RELEASE) --node-red=1.1.5 prerelease
-	python ./internal/release.py --version=$(RELEASE) --node-red=$(NODERED) release
-
 release-v0.8.6: 
 	yapf -ri ./internal
 	# python ./internal/release.py --version=$(RELEASE) --node-red=1.1.5 prepare
 	# python ./internal/release.py --version=$(RELEASE) --node-red=1.1.5 prerelease
-	python ./internal/release.py --version=$(RELEASE) --node-red=$(NODERED) release
-
-bump: 
-	yapf -ri ./internal
-	python ./internal/release.py --version=v0.8.6 --node-red=1.1.5 --bump
+	# python ./internal/release.py --version=$(RELEASE) --node-red=$(NODERED) release
+	python ./internal/release.py --version=$(RELEASE) --node-red=$(NODERED) bump
 
 publish: release
 	echo "Releasing version $(VERSION)"

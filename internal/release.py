@@ -70,112 +70,67 @@ def main():
     print(f"VERSION: {version}")
     print()
 
-    plist = projects()
-    it = itertools.filterfalse(lambda p: github.already_released(p, plist[p], version.version(p)), plist)
-    unreleased = {p: plist[p] for p in it}
-    print()
-
-    if 'prepare' in ops:
-        CHANGELOGs(unreleased, version, exit)
-        print()
-        READMEs(unreleased, version, exit)
-        print()
-        package_versions(unreleased, version, exit)
-        print()
-        uncommitted(unreleased, version, exit)
-        print()
-        build.prepare(unreleased, version, exit)
+    try:
+        plist = projects()
+        it = itertools.filterfalse(lambda p: github.already_released(p, plist[p], version.version(p)), plist)
+        unreleased = {p: plist[p] for p in it}
         print()
 
-    if 'prerelease' in ops:
-        build.prerelease(unreleased, version, exit)
-        print()
-
-    if 'release' in ops:
-        github.release_notes(unreleased, version, exit)
-        build.release(unreleased, version, exit)
-        github.publish(unreleased, version, exit)
-        print()
-
-    while not exit.is_set():
-        project = ''
-
-        try:
-            if 'bump' in ops:
-                if len(unreleased) != 0:
-                    raise Exception(f'Projects {unreleased} have not been released')
-
-                for p in plist:
-                    print(f'>>>> bumping {p}')
-                    project = plist[p]
-                    clean_release_notes(p, project)
-                    bump_changelog(p, project)
-                break
-
+        if 'prepare' in ops:
+            CHANGELOGs(unreleased, version, exit)
             print()
-            print(f'*** OK!')
+            READMEs(unreleased, version, exit)
             print()
-            say('OK')
-            break
-
-        except BaseException as x:
-            print(traceback.format_exc())
-
-            msg = f'{x}'
-            msg = msg.replace('uhppoted-','')                        \
-                     .replace('uhppote-','')                         \
-                     .replace('uhppoted','umbrella project')         \
-                     .replace('cli','[[char LTRL]]cli[[char NORM]]') \
-                     .replace('git','[[inpt PHON]]git[[input TEXT]]') \
-                     .replace('codegen','code gen')
-
+            package_versions(unreleased, version, exit)
             print()
-            print(f'*** ERROR  {x}')
+            uncommitted(unreleased, version, exit)
+            print()
+            build.prepare(unreleased, version, exit)
             print()
 
-            say('ERROR')
-            say(msg)
+        if 'prerelease' in ops:
+            build.prerelease(unreleased, version, exit)
+            print()
 
-            if args.prepare and not exit.is_set():
-                sys.stdout.write('  waiting ')
-                sys.stdout.flush()
-                timestamps = {
-                    'changelog': os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime,
-                    'readme': os.stat(f"{project['folder']}/README.md").st_mtime,
-                    'git': has_uncommitted_changes(project['folder']),
-                }
+        if 'release' in ops:
+            github.release_notes(unreleased, version, exit)
+            build.release(unreleased, version, exit)
+            github.publish(unreleased, version, exit)
+            print()
 
-                for i in range(60):
-                    if exit.is_set():
-                        break
-                    elif os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime != timestamps['changelog']:
-                        break
-                    elif os.stat(f"{project['folder']}/README.md").st_mtime != timestamps['readme']:
-                        break
-                    elif has_uncommitted_changes(project['folder']) != timestamps['git']:
-                        break
-                    else:
-                        sys.stdout.write('.')
-                        sys.stdout.flush()
-                        time.sleep(1)
+        if 'bump' in ops:
+            if len(unreleased) != 0:
+                raise Exception(f'Projects {unreleased} have not been released')
 
-                if os.stat(f"{project['folder']}/CHANGELOG.md").st_mtime != timestamps['changelog']:
-                    print('CHANGELOG updated')
-                    say('CHANGELOG updated')
-                    continue
-                elif os.stat(f"{project['folder']}/README.md").st_mtime != timestamps['readme']:
-                    print('README updated')
-                    say('README updated')
-                    continue
-                elif has_uncommitted_changes(project['folder']) != timestamps['git']:
-                    print('git updated')
-                    say('git updated')
-                    continue
-                else:
-                    print()
-                    break
+            for p in plist:
+                print(f'>>>> bumping {p}')
+                project = plist[p]
+                clean_release_notes(p, project)
+                bump_changelog(p, project)
+            print()
 
-        sys.exit(1)
+        print()
+        print(f'*** OK!')
+        print()
+        say('OK')
+
+    except BaseException as x:
+        print(traceback.format_exc())
+
+        msg = f'{x}'
+        msg = msg.replace('uhppoted-','')                        \
+                 .replace('uhppote-','')                         \
+                 .replace('uhppoted','umbrella project')         \
+                 .replace('cli','[[char LTRL]]cli[[char NORM]]') \
+                 .replace('git','[[inpt PHON]]git[[input TEXT]]') \
+                 .replace('codegen','code gen')
+
+        print()
+        print(f'*** ERROR  {x}')
+        print()
+
+        say('ERROR')
+        say(msg)
 
 
 def has_uncommitted_changes(folder):
