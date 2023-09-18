@@ -1,29 +1,9 @@
 # TODO
 
-- [x] `activate-keypads`: tasks (cf. https://github.com/uhppoted/uhppoted/issues/35)
-      - [x] uhppote-core
-      - [x] uhppote-simulator
-      - [x] uhppoted-lib
-      - [x] uhppote-cli
-      - [x] uhppoted-rest
-      - [x] uhppoted-mqtt
-      - [x] ~~uhppoted-httpd~~
-      - [x] uhppoted-codegen
-      - [x] uhppoted-dll
-      - [x] ~~uhppoted-app-s3~~
-      - [x] ~~uhppoted-app-sheets~~
-      - [x] ~~uhppoted-app-wild-apricot~~
-      - [x] ~~uhppoted-app-db~~
-      - [x] uhppoted-nodejs
-      - [x] uhppoted-tunnel
-      - [x] node-red-contrib-uhppoted
-
-## IN PROGRESS
-
 - [ ] Release script
-      - [ ] Post release script
-            - [ ] Bump version in uhppote-core and Makefiles
-      - [ ] --publish option
+      - [ ] Pre-release builds
+      - [ ] Build checksums
+      - [ ] Bump version in uhppote-core and Makefiles
       - [ ] https://pydoit.org/
 
 - [ ] Make `uhppoted` a service user (`sudo adduser --system uhppoted`)
