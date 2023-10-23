@@ -15,7 +15,7 @@ def projects():
         },
         'uhppote-cli': {
             'folder': './uhppote-cli',
-            'branch': 'master',
+            'branch': 'main',
             'binary': 'uhppote-cli'
         },
         'uhppoted-rest': {
@@ -25,12 +25,12 @@ def projects():
         },
         'uhppoted-mqtt': {
             'folder': './uhppoted-mqtt',
-            'branch': 'master',
+            'branch': 'main',
             'binary': 'uhppoted-mqtt'
         },
         'uhppoted-httpd': {
             'folder': './uhppoted-httpd',
-            'branch': 'master',
+            'branch': 'main',
             'binary': 'uhppoted-httpd'
         },
         'uhppoted-tunnel': {
