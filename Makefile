@@ -1,5 +1,5 @@
-RELEASE ?= 0.8.6
-NODERED ?= 1.1.5
+RELEASE ?= 0.8.7
+NODERED ?= 1.1.6
 DEBUG   ?= --debug
 DIST    ?= development
 
@@ -283,12 +283,13 @@ release: build-all docker
 	tar --directory=dist/arm7   --exclude=".DS_Store" -cvzf dist/$(DIST)-arm7.tar.gz $(DIST)
 	cd dist/windows && zip --recurse-paths ../$(DIST)-windows.zip $(DIST)
 
-release-v0.8.6: 
+release-v0.8.7: 
 	yapf -ri ./internal
 	# python ./internal/release.py --version=$(RELEASE) --node-red=1.1.5 prepare
 	# python ./internal/release.py --version=$(RELEASE) --node-red=1.1.5 prerelease
 	# python ./internal/release.py --version=$(RELEASE) --node-red=$(NODERED) release
-	python ./internal/release.py --version=$(RELEASE) --node-red=$(NODERED) bump
+	# python ./internal/release.py --version=$(RELEASE) --node-red=$(NODERED) bump
+	python ./internal/release2.py --version=$(RELEASE) --node-red=$(NODERED)
 
 publish: release
 	echo "Releasing version $(VERSION)"
