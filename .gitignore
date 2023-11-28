@@ -40,6 +40,7 @@ documentation/SDK
 logseq
 uhppoted-documentation
 uhppoted-breakout
+uhppoted-app-home-assistant
 
 # Docker
 docker/simulator/uhppote-simulator

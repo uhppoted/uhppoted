@@ -394,3 +394,14 @@ hivemq-listen:
 	mqtt subscribe --topic 'uhppoted/#' | jq '.' 
 #	open runtime/mqtt-spy-0.5.4-jar-with-dependencies.jar
 
+hivemq-listen-events:
+	mqtt subscribe --topic 'uhppoted/gateway/events' | jq '.' 
+
+hivemq-listen-live-events:
+	mqtt subscribe --topic 'uhppoted/gateway/events/live' | jq '.' 
+
+hivemq-listen-all-events:
+	mqtt subscribe --topic 'uhppoted/gateway/events/#' | jq '.' 
+
+
+

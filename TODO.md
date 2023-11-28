@@ -121,7 +121,7 @@
 
 1.  Rework uhppote to use bidirectional channel to serialize requests
 2.  Consistently include device serial number in output e.g. of get-time
-3.  Look into UDP multicast
+3.  ~~Look into UDP multicast~~
 4.  Look into ARP for set-address
 6.  Integration tests
 7.  Verify fields in listen events/status replies against SDK:
@@ -243,7 +243,7 @@
 88. https://www.fstar-lang.org/papers/EverParse3D.pdf
 89. [Hesiod](https://en.wikipedia.org/wiki/Hesiod_(name_service))
 90. [Grist](https://www.getgrist.com/)
-91. [HomeAssistant](https://www.home-assistant.io/)
+91. ~~[HomeAssistant](https://www.home-assistant.io)~~
 92. [FPGA](https://github.com/JulianKemmerer/PipelineC-Graphics/blob/main/doc/Sphery-vs-Shapes.pdf)
 93. [Charm::Bubbletea](https://dlvhdr.me/posts/the-renaissance-of-the-command-line)
 94. [Textualize](https://www.textualize.io)
@@ -261,3 +261,4 @@
 106. [Tigris](https://www.tigrisdata.com/docs/quickstarts)
 107. [Gitbook](https://developer.gitbook.com/gitbook-api/reference)
 108. [Matter](https://interrupt.memfault.com/blog/memfault-matter)
+109. [marimo](https://docs.marimo.io)
