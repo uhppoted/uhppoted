@@ -99,11 +99,12 @@ def main():
                 save_release_info(version, state)
 
         # ... 'prepare' build
-        if not 'prepare' in state or state['prepare'] != 'ok':
+        if not 'prepared' in state or state['prepared'] != 'ok':
             build.prepare(unreleased, version, exit)
+            uncommitted(unreleased, version, exit)
             print()
             if not exit.is_set():
-                state['prepare'] = 'ok'
+                state['prepared'] = 'ok'
                 save_release_info(version, state)
 
         #     if 'prerelease' in ops:
