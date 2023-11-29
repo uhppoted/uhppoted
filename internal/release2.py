@@ -92,15 +92,31 @@ def main():
                 state['changelogs'] = 'ok'
                 save_release_info(version, state)
 
+        # ... REAMDME.md
+        if not 'readmes' in state or state['readmes'] != 'ok':
+            READMEs(unreleased, version, exit)
+            print()
+            if not exit.is_set():
+                state['readmes'] = 'ok'
+                save_release_info(version, state)
+
+        # ... package versions
+        if not 'package-versions' in state or state['package-versions'] != 'ok':
+            package_versions(unreleased, version, exit)
+            print()
+            if not exit.is_set():
+                state['package-versions'] = 'ok'
+                save_release_info(version, state)
+
+        # ... uncommitted changes
+        if not 'uncommitted-changes' in state or state['uncommitted-changes'] != 'ok':
+            uncommitted(unreleased, version, exit)
+            print()
+            if not exit.is_set():
+                state['uncommitted-changes'] = 'ok'
+                save_release_info(version, state)
+
         #     if 'prepare' in ops:
-        #         CHANGELOGs(unreleased, version, exit)
-        #         print()
-        #         READMEs(unreleased, version, exit)
-        #         print()
-        #         package_versions(unreleased, version, exit)
-        #         print()
-        #         uncommitted(unreleased, version, exit)
-        #         print()
         #         build.prepare(unreleased, version, exit)
         #         print()
 

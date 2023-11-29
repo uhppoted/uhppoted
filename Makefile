@@ -285,10 +285,6 @@ release: build-all docker
 
 release-v0.8.7: 
 	yapf -ri ./internal
-	# python ./internal/release.py --version=$(RELEASE) --node-red=1.1.5 prepare
-	# python ./internal/release.py --version=$(RELEASE) --node-red=1.1.5 prerelease
-	# python ./internal/release.py --version=$(RELEASE) --node-red=$(NODERED) release
-	# python ./internal/release.py --version=$(RELEASE) --node-red=$(NODERED) bump
 	python ./internal/release2.py --version=$(RELEASE) --node-red=$(NODERED)
 
 publish: release

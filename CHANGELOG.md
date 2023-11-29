@@ -1,6 +1,17 @@
 # CHANGELOG
 
-## Unreleased
+## [0.8.7](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.7) - 2023-12-01
+
+### Added
+1. `set-door-passcodes` function across all subprojects.
+2. Added PostgreSQL bindings to _uhppoted-app-db_.
+3. Added _Lua_ bindings to _uhppoted-codegen_.
+4. Added Visual Studio C# examples to _uhppoted-dll_.
+5. Added _live_ events to _uhppoted-mqtt_.
+6. Added keypad emulation _uhppoted-wiegand_.
+
+### Updated
+1. Bumped Go version to 1.21.
 
 
 ## [0.8.6](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.6) - 2023-08-30
