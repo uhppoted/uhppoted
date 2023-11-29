@@ -10,7 +10,7 @@ ignore = []
 
 
 def prepare(projects, version, exit):
-    print('>>>> rebuilding all projects ({version})')
+    print(f'>>>> rebuilding all projects ({version})')
 
     it = itertools.filterfalse(lambda p: p in ignore, projects)
     plist = {p: projects[p] for p in it}

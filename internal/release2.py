@@ -43,28 +43,10 @@ def main():
         return -1
 
     parser = argparse.ArgumentParser(description='release --version=<version>')
-
-    # parser.add_argument('command', type=str, help='command')
     parser.add_argument('--version', type=str, default='development', help='release version e.g. v0.8.7')
     parser.add_argument('--node-red', type=str, default='development', help='NodeRED release version e.g. v1.1.2')
-    # parser.add_argument('--prepare', action='store_true', help="executes only the 'prepare release' operation")
-    # parser.add_argument('--prerelease',
-    #                     action='store_true',
-    #                     help="executes the 'prepare and prerelease builds' operation")
-    # parser.add_argument('--release',
-    #                     action='store_true',
-    #                     help="executes only the 'prepare, prerelease and build releases' operation")
-    # parser.add_argument('--bump', action='store_true', help="executes only the 'post-release' operation")
-    # parser.add_argument('--no-edit',
-    #                     action='store_true',
-    #                     help="doesn't automatically invoke the editor for e.g. CHANGELOG.md'")
-    # parser.add_argument('--interim', action='store_false', help="doesn't insist on changes being pushed to github")
 
     args = parser.parse_args()
-
-    # ops = args.command.split(',')
-    # no_edit = args.no_edit
-    # interim = args.interim
     version = Version(args.version, args.node_red)
 
     print(f'VERSION: {version}')
@@ -116,9 +98,13 @@ def main():
                 state['uncommitted-changes'] = 'ok'
                 save_release_info(version, state)
 
-        #     if 'prepare' in ops:
-        #         build.prepare(unreleased, version, exit)
-        #         print()
+        # ... 'prepare' build
+        if not 'prepare' in state or state['prepare'] != 'ok':
+            build.prepare(unreleased, version, exit)
+            print()
+            if not exit.is_set():
+                state['prepare'] = 'ok'
+                save_release_info(version, state)
 
         #     if 'prerelease' in ops:
         #         build.prerelease(unreleased, version, exit)
@@ -185,14 +171,14 @@ def save_release_info(version, info):
         json.dump(info, f, ensure_ascii=False, indent=4)
 
 
-def has_uncommitted_changes(folder):
-    command = f"git -C {folder} status  -uno"
-    result = subprocess.check_output(command, shell=True)
-
-    if 'Changes not staged for commit' in str(result):
-        return True
-
-    return False
+# def has_uncommitted_changes(folder):
+#     command = f"git -C {folder} status  -uno"
+#     result = subprocess.check_output(command, shell=True)
+#
+#     if 'Changes not staged for commit' in str(result):
+#         return True
+#
+#     return False
 
 
 def checkout(project, info):
