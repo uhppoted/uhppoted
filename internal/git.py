@@ -41,14 +41,14 @@ def _uncommitted(project, info, version, exit):
 
         if (not project in ignore) and 'Changes not staged for commit' in str(result):
             command = f'cd {info["folder"]} && git show -s --format="%ci"'
-            modified = subprocess.check_output(command, shell=True)
+            modified = subprocess.check_output(command, shell=True).decode('UTF-8').strip()
 
             print(f'     ... {project} has uncommitted changes')
             say(f'{project} has uncommitted changes')
 
             while not exit.is_set():
                 exit.wait(1)
-                t = subprocess.check_output(command, shell=True)
+                t = subprocess.check_output(command, shell=True).decode('UTF-8').strip()
                 if t != modified:
                     break
 
