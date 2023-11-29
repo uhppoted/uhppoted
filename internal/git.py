@@ -52,7 +52,7 @@ def _uncommitted(project, info, version, exit):
                 if t != modified:
                     break
 
-        return False
+            return False
 
     except subprocess.CalledProcessError:
         raise Exception(f"{project}: command 'git status' failed")
