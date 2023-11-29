@@ -3,6 +3,8 @@ import json
 import os
 import subprocess
 
+from misc import say
+
 sublime2 = '"/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl"'
 ignore = []
 
@@ -38,7 +40,19 @@ def _uncommitted(project, info, version, exit):
         result = subprocess.check_output(command, shell=True)
 
         if (not project in ignore) and 'Changes not staged for commit' in str(result):
-            raise Exception(f"{project} has uncommitted changes")
+            command = f'cd {info["folder"]} && git show -s --format="%ci"'
+            modified = subprocess.check_output(command, shell=True)
+
+            print(f'     ... {project} has uncommitted changes')
+            say(f'{project} has uncommitted changes')
+
+            while not exit.is_set():
+                exit.wait(1)
+                t = subprocess.check_output(command, shell=True)
+                if t != modified:
+                    break
+
+        return False
 
     except subprocess.CalledProcessError:
         raise Exception(f"{project}: command 'git status' failed")

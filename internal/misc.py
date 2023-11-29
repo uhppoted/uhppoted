@@ -7,6 +7,7 @@ def sublime2():
 
 def say(msg):
     transliterated = msg.replace('uhppoted','u h p p o t e d') \
+                        .replace('uhppote','u h p p o t e') \
                         .replace('nodejs','node js') \
                         .replace('codegen', 'code gen') \
                         .replace('Errno','error number') \

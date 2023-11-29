@@ -38,7 +38,7 @@ def readme(project, info, version, exit):
     with open(path, 'r', encoding="utf-8") as f:
         README = f.read()
 
-    if re.compile(f'\|\s*{version}\s*\|').search(README) == None:
+    if re.compile(f'{version}').search(README) == None:
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
         command = f'{sublime2} {path}'
         subprocess.run([command], shell=True)
