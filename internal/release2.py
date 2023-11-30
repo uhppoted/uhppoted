@@ -45,12 +45,15 @@ def main():
     parser = argparse.ArgumentParser(description='release --version=<version>')
     parser.add_argument('--version', type=str, default='development', help='release version e.g. v0.8.7')
     parser.add_argument('--node-red', type=str, default='development', help='NodeRED release version e.g. v1.1.2')
+    parser.add_argument('--release', action='store_true', help="builds the release versions")
 
     args = parser.parse_args()
     version = Version(args.version, args.node_red)
+    release = args.release
 
     print(f'VERSION: {version}')
     print()
+    print('>>>>>>>>>>>>>>>>>>>>>>>>> RELEASE', release)
 
     try:
         # ... get release state
@@ -92,20 +95,35 @@ def main():
 
         # ... uncommitted changes
         if not 'uncommitted-changes' in state or state['uncommitted-changes'] != 'ok':
-            uncommitted(unreleased, version, exit)
+            ok = uncommitted(unreleased, version, exit)
             print()
-            if not exit.is_set():
+            if ok and not exit.is_set():
                 state['uncommitted-changes'] = 'ok'
                 save_release_info(version, state)
 
-        # ... 'prepare' build
+        # ... 'prepare' builds
+        print('>>>>>>>>>> wooot/1')
         if not 'prepared' in state or state['prepared'] != 'ok':
+            print('>>>>>>>>>> wooot/2')
             build.prepare(unreleased, version, exit)
-            uncommitted(unreleased, version, exit)
+            print('>>>>>>>>>> wooot/3')
+            state['uncommitted-changes'] = '??'
+            print('>>>>>>>>>> wooot/4')
+            save_release_info(version, state)
+            print('>>>>>>>>>> wooot/5')
+            ok = uncommitted(unreleased, version, exit)
+            print('>>>>>>>>>> wooot/6')
             print()
-            if not exit.is_set():
+            if ok and not exit.is_set():
+                print('>>>>>>>>>> wooot/7')
                 state['prepared'] = 'ok'
+                state['uncommitted-changes'] = 'ok'
                 save_release_info(version, state)
+                print('>>>>>>>>>> wooot/8')
+
+        # ... 'release' builds
+        if release:
+            print(">>>>>>>>>>>>>>>>>>> wooot - releasing all the things")
 
         #     if 'prerelease' in ops:
         #         build.prerelease(unreleased, version, exit)
@@ -170,16 +188,6 @@ def save_release_info(version, info):
 
     with open(file, 'w', encoding='utf-8') as f:
         json.dump(info, f, ensure_ascii=False, indent=4)
-
-
-# def has_uncommitted_changes(folder):
-#     command = f"git -C {folder} status  -uno"
-#     result = subprocess.check_output(command, shell=True)
-#
-#     if 'Changes not staged for commit' in str(result):
-#         return True
-#
-#     return False
 
 
 def checkout(project, info):

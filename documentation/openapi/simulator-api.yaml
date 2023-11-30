@@ -1,7 +1,7 @@
 openapi: "3.0.2"
 
 info:
-  version: 0.8.6
+  version: 0.8.7
   title: "uhppote-simulator"
   description: "REST API for the UHPPOTE simulator command interface"
   license:
@@ -130,6 +130,47 @@ paths:
         default:
           description: "Request failed"
 
+
+  /simulator/{device-id}/code:
+    post:
+      tags:
+        - simulator
+      summary: "Simulates a super passcode entry on an access keypad"
+      description: "Simulates a super passcode entry on an access keypad, generating an access event"
+      operationId: passcode
+      parameters:
+        - name: device-id
+          in: path
+          description: "Simulator device ID"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 405419896
+      requestBody:
+        description: "Door and passcode"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Passcode"
+      responses:
+        '200':
+          description: "Access granted/denied"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PasscodeResult"
+        '400':
+          description: "Invalid request format"
+        '404':
+          description: "No device with ID matching device-id"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
+
   /simulator/{device-id}/door/{door}:
     post:
       tags:
@@ -237,10 +278,13 @@ components:
           format: true/false
           description: "Persisted as gzipped file if true"
           example: false
+
     Swipe:
       required: 
         - door
         - card-number
+        - direction
+        - PIN
       properties:
         door:
           type: number
@@ -252,6 +296,16 @@ components:
           format: uint32
           description: "Wiegand-26 card number"
           example: 65538
+        direction:
+          type: number
+          format: uint8
+          description: "1: in, 2: out"
+          example: 1
+        PIN:
+          type: number
+          format: uint32
+          description: "PIN code [0..999999]"
+          example: 1234
 
     Swiped:
       required: 
@@ -265,6 +319,37 @@ components:
         message:
           type: string
           description: "Display message"
+
+
+    Passcode:
+      required:
+        - door
+        - passcode
+      properties:
+        door:
+          type: number
+          format: uint8
+          description: "Door # [1..4]"
+          example: 4
+        Passcode:
+          type: number
+          format: uint32
+          description: "Super passcode [1..999999]"
+          example: 12345
+
+    PasscodeResult:
+      required: 
+        - access-granted
+        - door-opened
+        - message
+      properties:
+        access-granted:
+          type: boolean
+          description: "true if access was granted"
+        message:
+          type: string
+          description: "Display message"
+
 
     DoorAction:
       required: 
