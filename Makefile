@@ -1,5 +1,6 @@
-RELEASE ?= 0.8.7
+VERSION ?= 0.8.7
 NODERED ?= 1.1.6
+RELEASE ?= 
 DEBUG   ?= --debug
 DIST    ?= development
 
@@ -285,7 +286,7 @@ release: build-all docker
 
 release-v0.8.7: 
 	yapf -ri ./internal
-	python ./internal/release2.py --version=$(RELEASE) --node-red=$(NODERED)
+	python ./internal/release2.py --version=$(VERSION) --node-red=$(NODERED) $(RELEASE)
 
 publish: release
 	echo "Releasing version $(VERSION)"

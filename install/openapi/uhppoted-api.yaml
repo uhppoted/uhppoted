@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 
 info:
-  version: 0.8.6
+  version: 0.8.7
   title: "uhppoted"
   description: "REST API for the uhppoted-rest service. The API currently supports both device level functions and higher level access control list management."
   license:
@@ -607,6 +607,69 @@ paths:
             application/json:
               schema:
                   $ref: "#/components/schemas/AccessKeypads"
+        '404':
+          description: "No controller with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"
+
+  /device/{device-id}/door/{door}/passcodes:
+    put:
+      tags:
+        - device
+      summary: "Sets the supervisor passcodes for a door"
+      description: "Sets up to four supervisor passcodes for a door"
+      operationId: putSuperPasscodes
+      parameters:
+        - name: device-id
+          in: path
+          description: "Controller serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: door
+          in: path
+          description: "Door number"
+          required: true
+          schema:
+            type: integer
+            format: uint8
+            example: 3
+      requestBody:
+        description: "Supervisor passcodes"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuperPasscodes"
+      responses:
+        '200':
+          description: "Supervisor passcodes configured ok"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/SuperPasscodes"
         '404':
           description: "No controller with ID matching device-id"
           content:
@@ -1952,6 +2015,15 @@ components:
             3: false,
             4: true
           }
+
+    SuperPasscodes:
+      properties:
+        keypads:
+          type: array
+          additionalProperties: false
+          format: array[uint32]
+          description: "Array of up to four passcodes in the range [1..999999]"
+          example: [ 12345,99999,54321]
 
     CardList:
       required: 
