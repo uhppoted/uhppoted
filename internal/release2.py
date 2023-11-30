@@ -53,7 +53,6 @@ def main():
 
     print(f'VERSION: {version}')
     print()
-    print('>>>>>>>>>>>>>>>>>>>>>>>>> RELEASE', release)
 
     try:
         # ... get release state
@@ -102,37 +101,45 @@ def main():
                 save_release_info(version, state)
 
         # ... 'prepare' builds
-        print('>>>>>>>>>> wooot/1')
         if not 'prepared' in state or state['prepared'] != 'ok':
-            print('>>>>>>>>>> wooot/2')
             build.prepare(unreleased, version, exit)
-            print('>>>>>>>>>> wooot/3')
             state['uncommitted-changes'] = '??'
-            print('>>>>>>>>>> wooot/4')
             save_release_info(version, state)
-            print('>>>>>>>>>> wooot/5')
             ok = uncommitted(unreleased, version, exit)
-            print('>>>>>>>>>> wooot/6')
             print()
             if ok and not exit.is_set():
-                print('>>>>>>>>>> wooot/7')
                 state['prepared'] = 'ok'
                 state['uncommitted-changes'] = 'ok'
                 save_release_info(version, state)
-                print('>>>>>>>>>> wooot/8')
 
         # ... 'release' builds
         if release:
-            print(">>>>>>>>>>>>>>>>>>> wooot - releasing all the things")
+            if not 'release-notes' in state or state['release-notes'] != 'ok':
+                ok = github.release_notes(unreleased, version, exit)
+                print()
+                if ok and not exit.is_set():
+                    state['release-notes'] = 'ok'
+                    save_release_info(version, state)
+
+            if 'uhppote-core' in unreleased:
+                ok = build.release('uhppote-core', plist['uhppote-core'], version, exit)
+                if ok and not exit.is_set():
+                    ok = github.publish('uhppote-core', plist['uhppote-core'], version, exit)
+                    if ok and not exit.is_set():
+                        del unreleased['uhppote-core']
+                        # del state['unreleased']['uhppote-core']
+                        save_release_info(version, state)
+
+            if 'uhppoted-lib' in unreleased:
+                ok = build.release('uhppoted-lib', plist['uhppoted-lib'], version, exit)
+                if ok and not exit.is_set():
+                    ok = github.publish('uhppoted-lib', plist['uhppoted-lib'], version, exit)
+                    if ok and not exit.is_set():
+                        del unreleased['uhppoted-lib']
+                        save_release_info(version, state)
 
         #     if 'prerelease' in ops:
         #         build.prerelease(unreleased, version, exit)
-        #         print()
-
-        #     if 'release' in ops:
-        #         github.release_notes(unreleased, version, exit)
-        #         build.release(unreleased, version, exit)
-        #         github.publish(unreleased, version, exit)
         #         print()
 
         #     if 'bump' in ops:
@@ -146,9 +153,9 @@ def main():
         #             bump_changelog(p, project)
         #         print()
 
-        #     print()
-        #     print(f'*** OK!')
-        #     print()
+        print()
+        print(f'*** OK!')
+        print()
         say('OK')
 
     except BaseException as x:

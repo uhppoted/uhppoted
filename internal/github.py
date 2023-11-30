@@ -1,8 +1,10 @@
 import itertools
 import subprocess
+import re
 
 from build import checksum
 from misc import say
+from git import _uncommitted
 
 ignore = []
 
@@ -77,53 +79,92 @@ def _release_notes(project, info, version, exit):
     return True
 
 
-def publish(projects, version, exit):
-    print(f'>>>> publishing releases ({version})')
+def publish(project, p, version, exit):
+    print(f'>>>> publishing {project} ({version})')
 
-    plist = {p: projects[p] for p in itertools.filterfalse(lambda p: p in ignore, projects)}
+    # ... confirm uhppoted and submodule binary checksums match
+    print(f'     >>> verifying checksums')
+    if not checksum(project, p, version.version(p)):
+        raise Exception(f"{project} 'dist' checksums differ")
 
-    while True:
-        ok = True
+    # ... confirm no uncommitted changes
+    print(f'     >>> checking for uncommitted changes')
+    if not _uncommitted(project, p, version, exit):
+        raise Exception(f"{project} has uncommitted changes")
 
-        # ... confirm uhppoted and submodule binary checksums match
-        print(f'     >>> verifying checksums')
-        for p in plist:
-            print(f'     ... {p}')
-            if not checksum(p, plist[p], version.version(p)):
-                raise Exception(f"{project} 'dist' checksums differ")
-
-            if exit.is_set():
-                return False
-
-        for p in plist:
-            # ... remote updated?
-            print(f'     ... {p}')
-
-            if not pushed(p, plist[p]):
-                print(f'     ... {p} has unpushed changes')
-                say(f'{p} has unpushed changes')
-                ok = False
-                exit.wait(10)
-                while not pushed(p, plist[p]) and not exit.is_set():
-                    exit.wait(10)
-
-            if exit.is_set():
-                return False
-
-            _publish(p, plist[p], version.version(p))
-            print(f'     ... {p} is waiting for release on github')
-            say(f'{p} is waiting for release on github')
+    # ... confirm changes have been pushed to github repo
+    if not pushed(project, p):
+        print(f'     ... {project} has unpushed changes')
+        say(f'{project} has unpushed changes')
+        exit.wait(10)
+        while not pushed(project, p) and not exit.is_set():
             exit.wait(10)
-            while not published(p, plist[p], version.version(p)) and not exit.is_set():
-                exit.wait(10)
 
-            if exit.is_set():
-                return False
+        if exit.is_set():
+            return False
 
-        if ok:
-            return True
+    # ... publish release
+    _publish(project, p, version.version(p))
+    print(f'     ... {project} is waiting for release on github')
+    say(f'{project} is waiting for release on github')
+
+    exit.wait(10)
+    while not published(project, p, version.version(p)) and not exit.is_set():
+        exit.wait(10)
+
+    if exit.is_set():
+        return False
 
     return True
+
+
+# def publish(projects, version, exit):
+#     print(f'>>>> publishing releases ({version})')
+#
+#     plist = {p: projects[p] for p in itertools.filterfalse(lambda p: p in ignore, projects)}
+#
+#     while True:
+#         ok = True
+#
+#         # ... confirm uhppoted and submodule binary checksums match
+#         print(f'     >>> verifying checksums')
+#         for p in plist:
+#             print(f'     ... {p}')
+#             if not checksum(p, plist[p], version.version(p)):
+#                 raise Exception(f"{project} 'dist' checksums differ")
+#
+#             if exit.is_set():
+#                 return False
+#
+#         for p in plist:
+#             # ... remote updated?
+#             print(f'     ... {p}')
+#
+#             if not pushed(p, plist[p]):
+#                 print(f'     ... {p} has unpushed changes')
+#                 say(f'{p} has unpushed changes')
+#                 ok = False
+#                 exit.wait(10)
+#                 while not pushed(p, plist[p]) and not exit.is_set():
+#                     exit.wait(10)
+#
+#             if exit.is_set():
+#                 return False
+#
+#             _publish(p, plist[p], version.version(p))
+#             print(f'     ... {p} is waiting for release on github')
+#             say(f'{p} is waiting for release on github')
+#             exit.wait(10)
+#             while not published(p, plist[p], version.version(p)) and not exit.is_set():
+#                 exit.wait(10)
+#
+#             if exit.is_set():
+#                 return False
+#
+#         if ok:
+#             return True
+#
+#     return True
 
 
 def pushed(project, info):
