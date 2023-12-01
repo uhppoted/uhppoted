@@ -1,6 +1,7 @@
-VERSION ?= 0.8.7
-NODERED ?= 1.1.6
+VERSION ?= 0.8.8
+NODERED ?= 1.1.7
 RELEASE ?= 
+BUMP    ?= 
 DEBUG   ?= --debug
 DIST    ?= uhppoted_v${VERSION}
 
@@ -284,7 +285,7 @@ release: update-release build-all docker
 
 release-v0.8.7: 
 	yapf -ri ./internal
-	python ./internal/release2.py --version=$(VERSION) --node-red=$(NODERED) $(RELEASE)
+	python ./internal/release2.py --version=$(VERSION) --node-red=$(NODERED) $(RELEASE) $(BUMP)
 
 publish: release
 	echo "Releasing version $(VERSION)"
