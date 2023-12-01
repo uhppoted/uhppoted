@@ -2,7 +2,7 @@ VERSION ?= 0.8.7
 NODERED ?= 1.1.6
 RELEASE ?= 
 DEBUG   ?= --debug
-DIST    ?= development
+DIST    ?= uhppoted_v${VERSION}
 
 LINUX   = env GOWORK=off GOOS=linux   GOARCH=amd64       
 DARWIN  = env GOWORK=off GOOS=darwin  GOARCH=amd64        
@@ -91,11 +91,9 @@ update-all:
 	make update	
 
 update:
-	go get -u github.com/uhppoted/uhppote-core@master
 	go mod tidy
 
 update-release:
-	go get -u github.com/uhppoted/uhppote-core
 	go mod tidy
 
 format: 
@@ -254,7 +252,7 @@ build-all: test vet
 	cp uhppoted-mqtt/documentation/signatures.md cookbook/mqtt/
 	cp uhppoted-app-s3/documentation/signing.md  cookbook/s3/
 
-release: build-all docker
+release: update-release build-all docker
 	find . -name ".DS_Store" -delete
 
 	tar --directory=uhppoted-codegen --exclude=".DS_Store" -cvzf dist/linux/$(DIST)/uhppoted-codegen-bindings.tar.gz   bindings

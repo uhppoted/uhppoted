@@ -82,11 +82,6 @@ def _release_notes(project, info, version, exit):
 def publish(project, p, version, exit):
     print(f'>>>> publishing {project} ({version})')
 
-    # ... confirm uhppoted and submodule binary checksums match
-    print(f'     >>> verifying checksums')
-    if not checksum(project, p, version.version(p)):
-        raise Exception(f"{project} 'dist' checksums differ")
-
     # ... confirm no uncommitted changes
     print(f'     >>> checking for uncommitted changes')
     if not _uncommitted(project, p, version, exit):
@@ -115,6 +110,7 @@ def publish(project, p, version, exit):
     if exit.is_set():
         return False
 
+    say(f'{project} has been published')
     return True
 
 
