@@ -4,11 +4,13 @@ import argparse
 import subprocess
 import sys
 import os
+import shutil
 import json
 import re
 import hashlib
 import signal
 import time
+import datetime
 import itertools
 import traceback
 import tempfile
@@ -25,6 +27,7 @@ from git import uncommitted
 from misc import say
 import build
 
+sublime2 = '"/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl"'
 exit = Event()
 
 
@@ -46,10 +49,10 @@ def main():
     parser.add_argument('--version', type=str, default='development', help='release version e.g. v0.8.7')
     parser.add_argument('--node-red', type=str, default='development', help='NodeRED release version e.g. v1.1.2')
     parser.add_argument('--release', action='store_true', help="builds the release versions")
+    parser.add_argument('--bump', action='store_true', help="bumps version and cleans up after a release")
 
     args = parser.parse_args()
     version = Version(args.version, args.node_red)
-    release = args.release
 
     print(f'VERSION: {version}')
     print()
@@ -112,8 +115,8 @@ def main():
                 state['uncommitted-changes'] = 'ok'
                 save_release_info(version, state)
 
-        # ... 'release' builds
-        if release:
+        # ... build release versions and publish
+        if args.release:
             if not 'release-notes' in state or state['release-notes'] != 'ok':
                 ok = github.release_notes(unreleased, version, exit)
                 print()
@@ -154,13 +157,13 @@ def main():
             if 'uhppoted' in unreleased:
                 ok = build.release('uhppoted', plist['uhppoted'], version, exit)
                 if ok and not exit.is_set():
-                    # # ... confirm uhppoted and submodule binary checksums match
-                    # print(f'     >>> verifying checksums')
-                    # ignore = [ 'uhppoted', 'uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-python' ]
-                    # it = itertools.filterfalse(lambda p: p in ignore, plist)
-                    # for p in it:
-                    #     if not build.checksum(p, plist[p], version.version(p)):
-                    #         raise Exception(f"{p} 'dist' checksums differ")
+                    # ... confirm uhppoted and submodule binary checksums match
+                    print(f'     >>> verifying checksums')
+                    ignore = ['uhppoted', 'uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-python']
+                    it = itertools.filterfalse(lambda p: p in ignore, plist)
+                    for p in it:
+                        if not build.checksum(p, plist[p], version.version(p)):
+                            raise Exception(f"{p} 'dist' checksums differ")
 
                     ok = uncommitted({'uhppoted': plist['uhppoted']}, version, exit)
                     if ok and not exit.is_set():
@@ -170,20 +173,21 @@ def main():
                             save_release_info(version, state)
 
             ### TODO release nodejs, node-red and python
-            ### TODO remove dist files
-            ### TODO bump version
-            ### TODO remove release notes
 
-        #     if 'bump' in ops:
-        #         if len(unreleased) != 0:
-        #             raise Exception(f'Projects {unreleased} have not been released')
+        # ... post-release cleanup
+        if args.bump:
+            if len(unreleased) != 0:
+                raise Exception(f'Projects {unreleased} have not been released')
 
-        #         for p in plist:
-        #             print(f'>>>> bumping {p}')
-        #             project = plist[p]
-        #             clean_release_notes(p, project)
-        #             bump_changelog(p, project)
-        #         print()
+            for p in plist:
+                project = plist[p]
+                clean_release_notes(p, project)
+                bump_changelog(p, project)
+                clean_dist(p, project)
+                bump_version(p, project, version, exit)
+                print(f'>>>> bumped {p}')
+
+            print()
 
         print()
         print(f'*** OK!')
@@ -229,44 +233,41 @@ def save_release_info(version, info):
         json.dump(info, f, ensure_ascii=False, indent=4)
 
 
-def checkout(project, info):
-    try:
-        command = f"cd {info['folder']} && git checkout {info['branch']}"
-        subprocess.run(command, shell=True, check=True)
-    except subprocess.CalledProcessError:
-        raise Exception(f"command 'checkout {project}' failed")
+# def checkout(project, info):
+#     try:
+#         command = f"cd {info['folder']} && git checkout {info['branch']}"
+#         subprocess.run(command, shell=True, check=True)
+#     except subprocess.CalledProcessError:
+#         raise Exception(f"command 'checkout {project}' failed")
 
+# def update(project, info):
+#     try:
+#         command = f"cd {info['folder']} && make update && make build"
+#         subprocess.run(command, shell=True, check=True)
+#     except subprocess.CalledProcessError:
+#         raise Exception(f"command 'update {project}' failed")
 
-def update(project, info):
-    try:
-        command = f"cd {info['folder']} && make update && make build"
-        subprocess.run(command, shell=True, check=True)
-    except subprocess.CalledProcessError:
-        raise Exception(f"command 'update {project}' failed")
+# def git(project, info, interim):
+#     try:
+#         command = f"cd {info['folder']} && git remote update"
+#         subprocess.run(command, shell=True, check=True)
+#
+#         command = f"cd {info['folder']} && git status -uno"
+#         result = subprocess.check_output(command, shell=True)
+#
+#         if 'Changes not staged for commit' in str(result):
+#             raise Exception(f"{project} has uncommitted changes")
+#         elif (not interim) and 'Your branch is ahead' in str(result):
+#             raise Exception(f"{project} has commits that have not been pushed")
+#
+#     except subprocess.CalledProcessError:
+#         raise Exception(f"{project}: command 'git status' failed")
 
-
-def git(project, info, interim):
-    try:
-        command = f"cd {info['folder']} && git remote update"
-        subprocess.run(command, shell=True, check=True)
-
-        command = f"cd {info['folder']} && git status -uno"
-        result = subprocess.check_output(command, shell=True)
-
-        if 'Changes not staged for commit' in str(result):
-            raise Exception(f"{project} has uncommitted changes")
-        elif (not interim) and 'Your branch is ahead' in str(result):
-            raise Exception(f"{project} has commits that have not been pushed")
-
-    except subprocess.CalledProcessError:
-        raise Exception(f"{project}: command 'git status' failed")
-
-
-def release(project, info, version):
-    command = f"cd {info['folder']} && make release DIST={project}_{version}"
-    result = subprocess.call(command, shell=True)
-    if result != 0:
-        raise Exception(f"command 'build {project}' failed")
+# def release(project, info, version):
+#     command = f"cd {info['folder']} && make release DIST={project}_{version}"
+#     result = subprocess.call(command, shell=True)
+#     if result != 0:
+#         raise Exception(f"command 'build {project}' failed")
 
 
 def clean_release_notes(project, info):
@@ -303,28 +304,107 @@ def bump_changelog(project, info):
             os.rename(tmpfile.name, f"{info['folder']}/CHANGELOG.md")
             if os.path.isfile(f"{info['folder']}/CHANGELOG.bak"):
                 os.remove(f"{info['folder']}/CHANGELOG.bak")
+
+            print(f'     ... {project} updated CHANGELOG for next dev cycle')
     finally:
         tmpfile.close()
         if os.path.isfile(tmpfile.name):
             os.remove(tmpfile.name)
 
 
-def hash(file):
-    hash = hashlib.sha256()
+def clean_dist(project, info):
+    folder = f'{info["folder"]}/dist'
 
-    with open(file, "rb") as f:
-        bytes = f.read(65536)
-        hash.update(bytes)
+    if os.path.exists(folder) and os.listdir(folder):
+        for filename in os.listdir(folder):
+            file_path = os.path.join(folder, filename)
 
-    return hash.hexdigest()
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+
+        print(f"     ... {project} cleaned 'dist' folder")
 
 
-# def say(msg):
-#     transliterated = msg.replace('nodejs','node js') \
-#                         .replace('codegen', 'code gen') \
-#                         .replace('Errno','error number') \
-#                         .replace('exe','e x e')
-#     subprocess.call(f'say {transliterated}', shell=True)
+def bump_version(project, info, version, exit):
+    if project == 'uhppote-core':
+        path = f'{info["folder"]}/uhppote/uhppote.go'
+        modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+        command = f'{sublime2} {path}'
+        subprocess.run([command], shell=True)
+
+        print(f'     ... {project} bump VERSION')
+        while not exit.is_set():
+            exit.wait(1)
+            t = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+            if t != modified:
+                break
+
+    if project == 'uhppoted-httpd':
+        path = f'{info["folder"]}/package.json'
+        modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+        command = f'{sublime2} {path}'
+        subprocess.run([command], shell=True)
+
+        print(f'     ... {project} bump package json')
+        while not exit.is_set():
+            exit.wait(1)
+            t = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+            if t != modified:
+                break
+
+    if project == 'uhppoted-nodejs':
+        path = f'{info["folder"]}/package.json'
+        modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+        command = f'{sublime2} {path}'
+        subprocess.run([command], shell=True)
+
+        print(f'     ... {project} bump package json')
+        while not exit.is_set():
+            exit.wait(1)
+            t = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+            if t != modified:
+                break
+
+    if project == 'node-red-contrib-uhppoted':
+        path = f'{info["folder"]}/package.json'
+        modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+        command = f'{sublime2} {path}'
+        subprocess.run([command], shell=True)
+
+        print(f'     ... {project} bump package json')
+        while not exit.is_set():
+            exit.wait(1)
+            t = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+            if t != modified:
+                break
+
+    if project == 'uhppoted-python':
+        path = f'{info["folder"]}/pyproject.toml'
+        modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+        command = f'{sublime2} {path}'
+        subprocess.run([command], shell=True)
+
+        print(f'     ... {project} bump package json')
+        while not exit.is_set():
+            exit.wait(1)
+            t = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+            if t != modified:
+                break
+
+    if project == 'uhppoted':
+        path = f'{info["folder"]}/Makefile'
+        modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+        command = f'{sublime2} {path}'
+        subprocess.run([command], shell=True)
+
+        print(f'     ... {project} bump Makefile versions')
+        while not exit.is_set():
+            exit.wait(1)
+            t = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+            if t != modified:
+                break
 
 
 def usage():
