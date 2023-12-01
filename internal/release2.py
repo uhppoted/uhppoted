@@ -138,9 +138,41 @@ def main():
                         del unreleased['uhppoted-lib']
                         save_release_info(version, state)
 
-        #     if 'prerelease' in ops:
-        #         build.prerelease(unreleased, version, exit)
-        #         print()
+            ignore = ['uhppoted', 'uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-python']
+            it = itertools.filterfalse(lambda p: p in ignore, unreleased)
+            rl = {p: plist[p] for p in it}
+            for p in rl:
+                ok = build.release(p, plist[p], version, exit)
+                if ok and not exit.is_set():
+                    ok = uncommitted({p: plist[p]}, version, exit)
+                    if ok and not exit.is_set():
+                        ok = github.publish(p, plist[p], version, exit)
+                        if ok and not exit.is_set():
+                            del unreleased[p]
+                            save_release_info(version, state)
+
+            if 'uhppoted' in unreleased:
+                ok = build.release('uhppoted', plist['uhppoted'], version, exit)
+                if ok and not exit.is_set():
+                    # # ... confirm uhppoted and submodule binary checksums match
+                    # print(f'     >>> verifying checksums')
+                    # ignore = [ 'uhppoted', 'uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-python' ]
+                    # it = itertools.filterfalse(lambda p: p in ignore, plist)
+                    # for p in it:
+                    #     if not build.checksum(p, plist[p], version.version(p)):
+                    #         raise Exception(f"{p} 'dist' checksums differ")
+
+                    ok = uncommitted({'uhppoted': plist['uhppoted']}, version, exit)
+                    if ok and not exit.is_set():
+                        ok = github.publish('uhppoted', plist['uhppoted'], version, exit)
+                        if ok and not exit.is_set():
+                            del unreleased['uhppoted']
+                            save_release_info(version, state)
+
+            ### TODO release nodejs, node-red and python
+            ### TODO remove dist files
+            ### TODO bump version
+            ### TODO remove release notes
 
         #     if 'bump' in ops:
         #         if len(unreleased) != 0:
@@ -235,30 +267,6 @@ def release(project, info, version):
     result = subprocess.call(command, shell=True)
     if result != 0:
         raise Exception(f"command 'build {project}' failed")
-
-
-def checksum(project, info, version):
-    if 'binary' in info:
-        binary = info['binary']
-        root = f"{info['folder']}"
-        platforms = ['linux', 'darwin', 'windows', 'arm', 'arm7']
-
-        for platform in platforms:
-            filename = binary
-            if platform == 'windows':
-                filename = f'{binary}.exe'
-
-            exe = os.path.join(root, 'dist', f"{project}_{version}", platform, filename)
-            combined = os.path.join('dist', platform, f"uhppoted_{version}", filename)
-
-            if version == 'development':
-                exe = os.path.join(root, 'dist', f"{version}", platform, filename)
-                combined = os.path.join('dist', platform, f"{version}", filename)
-
-            if hash(combined) != hash(exe):
-                print(f'{project:<25}  {exe:<82}  {hash(exe)}')
-                print(f'{"":<25}  {combined:<82}  {hash(combined)}')
-                raise Exception(f"{project} 'dist' checksums differ")
 
 
 def clean_release_notes(project, info):
