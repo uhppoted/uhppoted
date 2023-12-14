@@ -1,4 +1,4 @@
-VERSION ?= 0.8.8
+	VERSION ?= 0.8.8
 NODERED ?= 1.1.7
 RELEASE ?= 
 BUMP    ?= 
@@ -337,8 +337,6 @@ docker:
 	cd uhppoted-rest     && env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../docker/uhppoted-rest ./...
 	cd uhppoted-mqtt     && env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../docker/uhppoted-mqtt ./...
 	
-	docker image     prune -f
-	docker container prune -f
 	cd ./docker/simulator     && docker build -f Dockerfile -t uhppoted/simulator . 
 	cd ./docker/uhppoted-rest && docker build -f Dockerfile -t uhppoted/rest      . 
 	cd ./docker/uhppoted-mqtt && docker build -f Dockerfile -t uhppoted/mqtt      . 
@@ -347,12 +345,18 @@ docker:
 	cd ./docker/integration-tests/mqttd     && docker build -f Dockerfile -t integration-tests/mqttd     . 
 	cd ./docker/integration-tests/hivemq    && docker build -f Dockerfile -t integration-tests/hivemq    . 
 
+docker-clean:
+	docker image     prune -f
+	docker container prune -f
+
+docker-build-all: docker-clean docker
+
 docker-simulator:
 	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --name simulator --rm uhppoted/simulator
 	sleep 1
-	./bin/uhppote-cli --debug set-listener 405419896 192.168.1.100:60001
-	./bin/uhppote-cli --debug set-listener 303986753 192.168.1.100:60001
-	./bin/uhppote-cli --debug set-listener 201020304 192.168.1.100:60001
+	./uhppote-cli/bin/uhppote-cli --debug set-listener 405419896 192.168.1.100:60001
+	./uhppote-cli/bin/uhppote-cli --debug set-listener 303986753 192.168.1.100:60001
+	./uhppote-cli/bin/uhppote-cli --debug set-listener 201020304 192.168.1.100:60001
 
 docker-simulator-tunnel:
 	docker run --detach --publish 8000:8000 --publish 60005:60000/udp --name simulator --rm uhppoted/simulator
