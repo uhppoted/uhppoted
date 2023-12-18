@@ -63,6 +63,10 @@ bindings to:
 
 - [ioBroker](https://www.iobroker.net) - [kBrausew/ioBroker.wiegand-tcpip](https://github.com/kBrausew/ioBroker.wiegand-tcpip)
 
+- [Andre Becker](https://github.com/Andre1Becker) has written a short guide to getting up and running with
+  [_uhppoted-mqtt_](https://github.com/uhppoted/uhppoted/discussions/46#discussioncomment-7886167) and _OpenHAB_ using
+  _Docker_.
+
 ### Compatible Hardware
 
 As per this issue [[Question] Compatible Hardware](https://github.com/uhppoted/uhppote-core/issues/1), 
