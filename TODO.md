@@ -263,3 +263,6 @@
 108. [Matter](https://interrupt.memfault.com/blog/memfault-matter)
 109. [marimo](https://docs.marimo.io)
 110. https://github.com/huginn/huginn
+111. [slint](https://slint.dev)
+112. https://github.com/francoismichel/ssh3
+113. https://steampipe.io/

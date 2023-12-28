@@ -1,6 +1,6 @@
 ![build](https://github.com/uhppoted/uhppoted/workflows/build/badge.svg)
 
-# uhppoted
+# uhppoted [(juː hɒp ɪt eɪd)](/internal/uhppoted.mp3)
 
 `uhppoted` implements a set of cross-platform building blocks for access control systems based on the 
 *UHPPOTE UT0311-L0x* TCP/IP Wiegand access control boards. Currently available components include:
@@ -23,6 +23,8 @@
 
 The components supplement the manufacturer supplied application which is 'Windows-only' and provides limited support 
 for integration with other systems. 
+
+FYA, after much discussion it has been decided that _uhppoted_ is pronounced _u-hop-id-ay-d_ (juː hɒp ɪt eɪd).
 
 ### Operating systems
 
