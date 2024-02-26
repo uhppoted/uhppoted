@@ -337,13 +337,13 @@ docker:
 	cd uhppoted-rest     && env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../docker/uhppoted-rest ./...
 	cd uhppoted-mqtt     && env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../docker/uhppoted-mqtt ./...
 	
-	cd ./docker/simulator     && docker build -f Dockerfile -t uhppoted/simulator . 
-	cd ./docker/uhppoted-rest && docker build -f Dockerfile -t uhppoted/rest      . 
-	cd ./docker/uhppoted-mqtt && docker build -f Dockerfile -t uhppoted/mqtt      . 
-	cd ./docker/hivemq        && docker build -f Dockerfile -t hivemq/uhppoted    . 
-	cd ./docker/integration-tests/simulator && docker build -f Dockerfile -t integration-tests/simulator . 
-	cd ./docker/integration-tests/mqttd     && docker build -f Dockerfile -t integration-tests/mqttd     . 
-	cd ./docker/integration-tests/hivemq    && docker build -f Dockerfile -t integration-tests/hivemq    . 
+	cd ./docker/simulator     && docker build --no-cache -f Dockerfile -t uhppoted/simulator .
+	cd ./docker/uhppoted-rest && docker build --no-cache -f Dockerfile -t uhppoted/rest      .
+	cd ./docker/uhppoted-mqtt && docker build --no-cache -f Dockerfile -t uhppoted/mqtt      .
+	cd ./docker/hivemq        && docker build --no-cache -f Dockerfile -t hivemq/uhppoted    .
+	cd ./docker/integration-tests/simulator && docker build --no-cache -f Dockerfile -t integration-tests/simulator .
+	cd ./docker/integration-tests/mqttd     && docker build --no-cache -f Dockerfile -t integration-tests/mqttd     .
+	cd ./docker/integration-tests/hivemq    && docker build --no-cache -f Dockerfile -t integration-tests/hivemq    .
 
 docker-clean:
 	docker image     prune -f
