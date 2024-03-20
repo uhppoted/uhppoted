@@ -331,13 +331,12 @@ swagger:
 	open http://127.0.0.1:80
 
 docker:
-	cd uhppote-simulator && env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../docker/simulator     ./...
 	cd uhppote-simulator && env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../docker/uhppoted-rest ./...
 	cd uhppote-simulator && env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../docker/integration-tests/simulator ./...
 	cd uhppoted-rest     && env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../docker/uhppoted-rest ./...
 	cd uhppoted-mqtt     && env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../docker/uhppoted-mqtt ./...
 	
-	cd ./docker/simulator     && docker build --no-cache -f Dockerfile -t uhppoted/simulator .
+	cd uhppote-simulator && make docker-dev
 	cd ./docker/uhppoted-rest && docker build --no-cache -f Dockerfile -t uhppoted/rest      .
 	cd ./docker/uhppoted-mqtt && docker build --no-cache -f Dockerfile -t uhppoted/mqtt      .
 	cd ./docker/hivemq        && docker build --no-cache -f Dockerfile -t hivemq/uhppoted    .
@@ -352,7 +351,7 @@ docker-clean:
 docker-build-all: docker-clean docker
 
 docker-simulator:
-	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --name simulator --rm uhppoted/simulator
+	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --name simulator --rm uhppoted/simulator-dev
 	sleep 1
 	./uhppote-cli/bin/uhppote-cli --debug set-listener 405419896 192.168.1.100:60001
 	./uhppote-cli/bin/uhppote-cli --debug set-listener 303986753 192.168.1.100:60001
