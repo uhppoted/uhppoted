@@ -15,8 +15,8 @@
   - [IBM Watson IoT Platform](https://internetofthings.ibmcloud.com)
 - AWS S3 integration for file managed access control lists
 - Google Sheets integration for spreadsheet managed access control lists
-- Integration with the [Wild Apricot] member management system
-- [uhppoted-db](https://github.com/uhppoted/uhppoted-app-db) SQL DB integration for access control lists managed in a database
+- Integration with the [Wild Apricot](https://www.wildapricot.com) member management system
+- [uhppoted-app-db](https://github.com/uhppoted/uhppoted-app-db) SQL DB integration for access control lists managed in a database
 - [Node-RED](https://nodered.org) low code environment integration
 - [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs) NodeJS package
 - [uhppoted-python](https://github.com/uhppoted/uhppoted-python) Python package
@@ -137,6 +137,7 @@ but the readers below are in active use:
 | [uhppoted-mqtt](https://github.com/uhppoted/uhppoted-mqtt)                         | daemon/service with MQTT endpoint for remote access to UT0311-L0x controllers |
 | [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                     | cron'able utility to download/upload access control lists from/to AWS S3 |
 | [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)             | cron'able utility to download/upload access control lists from/to Google Sheets |
+| [uhppoted-app-db](https://github.com/uhppoted/uhppoted-app-db)                     | cron'able utility to download/upload access control lists from/to a SQL DB |
 | [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot) | cron'able utility to manage access control lists from Wild Apricot    |
 | [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted) | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
 | [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                     | Standalone NodeJS module                                              |
@@ -149,6 +150,7 @@ but the readers below are in active use:
 
 | *Module*                                                                              | *Description*                                                                   |
 | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| [uhppoted-app-db](https://github.com/uhppoted/uhppoted-app-db)                        | cron'able utility to download/upload access control lists from/to a SQL DB |
 | [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                        | cron'able utility to download/upload access control lists from/to AWS S3 |
 | [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)                | cron'able utility to download/upload access control lists from/to Google Sheets |
 | [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-sheets)          | cron'able utility to manage access control lists from/t Wild Apricot |
