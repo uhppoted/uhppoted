@@ -69,3 +69,6 @@
 [submodule "uhppoted-python"]
 	path = uhppoted-python
 	url = https://github.com/uhppoted/uhppoted-python
+[submodule "uhppoted-app-home-assistant"]
+	path = uhppoted-app-home-assistant
+	url = https://github.com/uhppoted/uhppoted-app-home-assistant.git
