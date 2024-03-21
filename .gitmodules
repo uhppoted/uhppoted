@@ -62,10 +62,6 @@
 	path = uhppoted-app-wild-apricot
 	url = https://github.com/uhppoted/uhppoted-app-wild-apricot
 
-[submodule "uhppoted-app-home-assistant"]
-	path = uhppoted-app-home-assistant
-	url = https://github.com/uhppoted/uhppoted-app-home-assistant.git
-
 [submodule "uhppoted-wiegand"]
 	path = uhppoted-wiegand
 	url = https://github.com/uhppoted/uhppoted-wiegand.git
