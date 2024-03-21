@@ -46,6 +46,10 @@
 	path = uhppoted-codegen
 	url = https://github.com/uhppoted/uhppoted-codegen.git
 
+[submodule "uhppoted-python"]
+	path = uhppoted-python
+	url = https://github.com/uhppoted/uhppoted-python
+
 [submodule "uhppoted-app-sheets"]
 	path = uhppoted-app-sheets
 	url = https://github.com/uhppoted/uhppoted-app-sheets.git
@@ -62,13 +66,10 @@
 	path = uhppoted-app-wild-apricot
 	url = https://github.com/uhppoted/uhppoted-app-wild-apricot
 
-[submodule "uhppoted-wiegand"]
-	path = uhppoted-wiegand
-	url = https://github.com/uhppoted/uhppoted-wiegand.git
-
-[submodule "uhppoted-python"]
-	path = uhppoted-python
-	url = https://github.com/uhppoted/uhppoted-python
 [submodule "uhppoted-app-home-assistant"]
 	path = uhppoted-app-home-assistant
 	url = https://github.com/uhppoted/uhppoted-app-home-assistant.git
+
+[submodule "uhppoted-wiegand"]
+	path = uhppoted-wiegand
+	url = https://github.com/uhppoted/uhppoted-wiegand.git

@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Added
+1. Added _uhppoted-app-home-assistant_ experimental Home Assistant integration.
+2. `restore-default-parameters` function across all subprojects.
+3. Added public Docker images for _uhppote-simulator_, uhppoted-rest_, uhppoted-mqtt_, and
+   _uhppoted-httpd_ to ghcr.io.
+
+### Updated
+1. Bumped Go version to 1.22.
+2. Reworked _uhppoted-app-wild-apricot_ member/group resolution logic.
+
 
 ## [0.8.7](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.7) - 2023-12-01
 
