@@ -316,15 +316,6 @@ build-github:
 debug: 
 	cd uhppote-simulator && $(WINDOWS) go build -trimpath -o ../dist/windows/$(DIST) ./...
 
-simulator: 
-	./bin/uhppote-simulator --debug --bind 0.0.0.0:60000 --rest 0.0.0.0:8000 --devices "./runtime/simulation/devices"
-
-uhppoted-rest:
-	./bin/uhppoted-rest --console
-
-uhppoted-mqtt: 
-	./bin/uhppoted-mqtt --console
-
 swagger: 
 	docker run --detach --publish 80:8080 --name swagger --rm swaggerapi/swagger-editor 
 	sleep 1
@@ -332,12 +323,11 @@ swagger:
 
 docker:
 	cd uhppote-simulator && env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../docker/integration-tests/simulator ./...
-	cd uhppoted-mqtt     && env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../docker/uhppoted-mqtt ./...
 	
 	cd uhppote-simulator && make docker-dev
 	cd uhppoted-rest     && make docker-dev
-	cd ./docker/uhppoted-mqtt && docker build --no-cache -f Dockerfile -t uhppoted/mqtt      .
-	cd ./docker/hivemq        && docker build --no-cache -f Dockerfile -t hivemq/uhppoted    .
+	cd uhppoted-mqtt     && make docker-dev
+	cd ./docker/hivemq   && docker build --no-cache -f Dockerfile -t hivemq/uhppoted    .
 	cd ./docker/integration-tests/simulator && docker build --no-cache -f Dockerfile -t integration-tests/simulator .
 	cd ./docker/integration-tests/mqttd     && docker build --no-cache -f Dockerfile -t integration-tests/mqttd     .
 	cd ./docker/integration-tests/hivemq    && docker build --no-cache -f Dockerfile -t integration-tests/hivemq    .
@@ -358,14 +348,14 @@ docker-simulator:
 docker-simulator-tunnel:
 	docker run --detach --publish 8000:8000 --publish 60005:60000/udp --name simulator --rm uhppoted/simulator-dev
 
-docker-hivemq:
-	docker run --detach --publish 8081:8080 --publish 1883:1883 --publish 8883:8883 --name hivemq --rm hivemq/uhppoted
-
 docker-rest:
 	docker run --detach --publish 8080:8080 --name restd --rm uhppoted/rest
 
 docker-mqtt:
-	docker run --detach --name mqttd --rm uhppoted/mqtt
+	docker run --detach --name mqttd --rm uhppoted/uhppoted-mqtt-dev
+
+docker-hivemq:
+	docker run --detach --publish 8081:8080 --publish 1883:1883 --publish 8883:8883 --name hivemq --rm hivemq/uhppoted
 
 docker-sql-server:
 #	docker run -d --name sqld -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=UBxNxrQiKWsjncow7mMx' -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
@@ -390,7 +380,6 @@ docker-integration-tests:
 hivemq-listen:
 	# mqtt subscribe --topic 'uhppoted/reply/#' | jq '.' 
 	mqtt subscribe --topic 'uhppoted/#' | jq '.' 
-#	open runtime/mqtt-spy-0.5.4-jar-with-dependencies.jar
 
 hivemq-listen-events:
 	mqtt subscribe --topic 'uhppoted/gateway/events' | jq '.' 
