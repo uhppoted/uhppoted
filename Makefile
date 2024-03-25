@@ -283,7 +283,7 @@ release: update-release build-all docker
 	tar --directory=dist/arm7   --exclude=".DS_Store" -cvzf dist/$(DIST)-arm7.tar.gz $(DIST)
 	cd dist/windows && zip --recurse-paths ../$(DIST)-windows.zip $(DIST)
 
-release-v0.8.7: 
+release-v0.8.8: 
 	yapf -ri ./internal
 	python ./internal/release2.py --version=$(VERSION) --node-red=$(NODERED) $(RELEASE) $(BUMP)
 

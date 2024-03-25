@@ -1,7 +1,7 @@
 openapi: "3.0.2"
 
 info:
-  version: 0.8.7
+  version: 0.8.8
   title: "uhppote-simulator"
   description: "REST API for the UHPPOTE simulator command interface"
   license:
@@ -108,12 +108,28 @@ paths:
             format: uint64
             example: 405419896
       requestBody:
-        description: "Wiegand-26 access card details"
+        description: "Door, card number and optional PIN code"
         required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/Swipe"     
+            example:
+              swipe:
+                door: 1
+                card-number: 10058400
+                direction: 1
+              swipe-in:
+                door: 1
+                card-number: 10058400
+                direction: 1
+                PIN: 1357
+              swipe-ou:
+                door: 1
+                card-number: 10058400
+                direction: 2
+                PIN: 1357
+
       responses:
         '200':
           description: "Access granted/denied"
@@ -295,7 +311,7 @@ components:
           type: number
           format: uint32
           description: "Wiegand-26 card number"
-          example: 65538
+          example: 10058400
         direction:
           type: number
           format: uint8
@@ -359,12 +375,18 @@ components:
           type: string
           format: "open/close/button"
           description: "Open/close door or press the door button"
-          example: "open"
+          example: 
+            open: 
+              action: "open"
+            close: 
+              action: "close"
+            button: 
+              action: "button"
+              duration: 10
         duration:  
           type: number
           format: uint32
-          description: "Open duration (in seconds)"
-          example: 15
+          description: "Button press duration (in seconds)"
 
     DoorResult:
       required: 

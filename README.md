@@ -20,6 +20,7 @@
 - [Node-RED](https://nodered.org) low code environment integration
 - [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs) NodeJS package
 - [uhppoted-python](https://github.com/uhppoted/uhppoted-python) Python package
+- [Home Assistant](https://www.home-assistant.io/) custom component
 
 The components supplement the manufacturer supplied application which is 'Windows-only' and provides limited support 
 for integration with other systems. 
@@ -64,7 +65,6 @@ bindings to:
 ### 3rd party integrations
 
 - [ioBroker](https://www.iobroker.net) - [kBrausew/ioBroker.wiegand-tcpip](https://github.com/kBrausew/ioBroker.wiegand-tcpip)
-
 - [Andre Becker](https://github.com/Andre1Becker) has written a short guide to getting up and running with
   [_uhppoted-mqtt_](https://github.com/uhppoted/uhppoted/discussions/46#discussioncomment-7886167) and _OpenHAB_ using
   _Docker_.
@@ -127,42 +127,45 @@ but the readers below are in active use:
 
 ## Modules
 
-| *Module*                                                                           | *Description*                                                                   |
-| ---------------------------------------------------------------------------------- | -------------------------------------------------- |
-| [uhppote-core](https://github.com/uhppoted/uhppote-core)                           | core library, implements the UP interface to UT0311-L0x controllers |
-| [uhppoted-lib](https://github.com/uhppoted/uhppoted-lib)                           | common utility function library          |
-| [uhppote-simulator](https://github.com/uhppoted/uhppote-simulator)                 | UT0311-L04 simulator for development use |
-| [uhppote-cli](https://github.com/uhppoted/uhppote-cli)                             | command line interface                   |
-| [uhppoted-rest](https://github.com/uhppoted/uhppoted-rest)                         | daemon/service with REST API for remote access to UT0311-L0x controllers |
-| [uhppoted-mqtt](https://github.com/uhppoted/uhppoted-mqtt)                         | daemon/service with MQTT endpoint for remote access to UT0311-L0x controllers |
-| [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                     | cron'able utility to download/upload access control lists from/to AWS S3 |
-| [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)             | cron'able utility to download/upload access control lists from/to Google Sheets |
-| [uhppoted-app-db](https://github.com/uhppoted/uhppoted-app-db)                     | cron'able utility to download/upload access control lists from/to a SQL DB |
-| [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot) | cron'able utility to manage access control lists from Wild Apricot    |
-| [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted) | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
-| [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                     | Standalone NodeJS module                                              |
-| [uhppoted-python](https://github.com/uhppoted/uhppoted-python)                     | Standalone Python package for PyPI                                    |
-| [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll)                           | shared-lib/DLL for cross-language interop                             |
-| [uhppoted-codegen](https://github.com/uhppoted/uhppoted-codegen)                   | Model based code generator for native language bindings               |
-| [uhppoted-tunnel](https://github.com/uhppoted/uhppoted-tunnel)                     | UDP tunnel for remote access                                          |
+| *Module*                                                                               | *Description*                                                                   |
+| ---------------------------------------------------------------------------------------| --------------------------------------------------------------------------------|
+| [uhppote-core](https://github.com/uhppoted/uhppote-core)                               | core library, implements the UP interface to UT0311-L0x controllers             |
+| [uhppoted-lib](https://github.com/uhppoted/uhppoted-lib)                               | common utility function library                                                 |
+| [uhppote-simulator](https://github.com/uhppoted/uhppote-simulator)                     | UT0311-L04 simulator for development use                                        |
+| [uhppote-cli](https://github.com/uhppoted/uhppote-cli)                                 | command line interface                                                          |
+| [uhppoted-rest](https://github.com/uhppoted/uhppoted-rest)                             | daemon/service with REST API for remote access to UT0311-L0x controllers        |
+| [uhppoted-mqtt](https://github.com/uhppoted/uhppoted-mqtt)                             | daemon/service with MQTT endpoint for remote access to UT0311-L0x controllers   |
+| [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                         | cron'able utility to download/upload access control lists from/to AWS S3        |
+| [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)                 | cron'able utility to download/upload access control lists from/to Google Sheets |
+| [uhppoted-app-db](https://github.com/uhppoted/uhppoted-app-db)                         | cron'able utility to download/upload access control lists from/to a SQL DB      |
+| [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot)     | cron'able utility to manage access control lists from Wild Apricot              |
+| [uhppoted-app-home-assistant](https://github.com/uhppoted/uhppoted-app-home-assistant) | Home Assistant custom component                                                 |
+| [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted)     | NodeJS nodes for [Node-RED](https://nodered.org) low code environment           |
+| [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                         | Standalone NodeJS module                                                        |
+| [uhppoted-python](https://github.com/uhppoted/uhppoted-python)                         | Standalone Python package for PyPI                                              |
+| [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll)                               | shared-lib/DLL for cross-language interop                                       |
+| [uhppoted-codegen](https://github.com/uhppoted/uhppoted-codegen)                       | Model based code generator for native language bindings                         |
+| [uhppoted-tunnel](https://github.com/uhppoted/uhppoted-tunnel)                         | UDP tunnel for remote access                                                    |
 
 ## Integrations
 
-| *Module*                                                                              | *Description*                                                                   |
-| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| [uhppoted-app-db](https://github.com/uhppoted/uhppoted-app-db)                        | cron'able utility to download/upload access control lists from/to a SQL DB |
-| [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                        | cron'able utility to download/upload access control lists from/to AWS S3 |
-| [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)                | cron'able utility to download/upload access control lists from/to Google Sheets |
-| [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-sheets)          | cron'able utility to manage access control lists from/t Wild Apricot |
-| [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted)    | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
-| [kBrausew/ioBroker.wiegand-tcpip](https://github.com/kBrausew/ioBroker.wiegand-tcpip) | [ioBroker](https://www.iobroker.net)  |
+| *Module*                                                                               | *Description*                                                                   |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| [uhppoted-app-db](https://github.com/uhppoted/uhppoted-app-db)                         | cron'able utility to download/upload access control lists from/to a SQL DB |
+| [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                         | cron'able utility to download/upload access control lists from/to AWS S3 |
+| [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)                 | cron'able utility to download/upload access control lists from/to Google Sheets |
+| [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot)     | cron'able utility to manage access control lists from/t Wild Apricot  |
+| [uhppoted-app-home-assistant](https://github.com/uhppoted/uhppoted-app-home-assistant) | Home Assistant custom component                                       |
+| [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted)     | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
+| [kBrausew/ioBroker.wiegand-tcpip](https://github.com/kBrausew/ioBroker.wiegand-tcpip)  | [ioBroker](https://www.iobroker.net)  |
 
 
 ## UI
 
-| *Module*                                                               | *Description*                                                                   |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| [uhppote-cli](https://github.com/uhppoted/uhppote-cli)                 | Command line interface                                                          |
+| *Module*                                                               | *Description*            |
+| ---------------------------------------------------------------------- | -------------------------|
+| [uhppote-cli](https://github.com/uhppoted/uhppote-cli)                 | Command line interface   |
+| [uhppoted-httpd](https://github.com/uhppoted/uhppote-httpd)            | HTML browser interface   |
 
 ## Installation
 
@@ -220,6 +223,6 @@ If you like the project and you really want to :slightly_smiling_face::
 10. [kBrausew/ioBroker.wiegand-tcpip](https://github.com/kBrausew/ioBroker.wiegand-tcpip)
 11. [TCP/IP Wiegand Access Controller (Zutrittskontrolle)](https://ingenier.wordpress.com/zutrittskontrolle)
 12. [YouTube: UHPPOTE 2 door basic set-up](https://www.youtube.com/watch?v=P8mxOY_IF4I&t=197s)
-13. [wouterdebie/Rust library](https://github.com/wouterdebie/uhppote-rs)
+13. [wouterdebie/uhppote-rs](https://github.com/wouterdebie/uhppote-rs)
 
 
