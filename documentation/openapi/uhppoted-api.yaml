@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 
 info:
-  version: 0.8.7
+  version: 0.8.8
   title: "uhppoted"
   description: "REST API for the uhppoted-rest service. The API currently supports both device level functions and higher level access control list management."
   license:
@@ -60,13 +60,13 @@ paths:
     get:
       tags:
         - device
-      summary: "Retrieves a single device information"
-      description: "Retrieves the basic configuration for a UHPPOTE device"
+      summary: "Retrieves the configuration for a controller"
+      description: "Retrieves the IPv4 configuration for a UHPPOTE access controller"
       operationId: getDevice
       parameters:
         - name: device-id
           in: path
-          description: "Device serial number"
+          description: "Controller serial number"
           required: true
           schema:
             type: integer
@@ -74,7 +74,7 @@ paths:
             example: 405419896
       responses:
         '200':
-          description: "Device configuration"
+          description: "Controller configuration"
           content:
             application/json:
               schema:
@@ -83,7 +83,50 @@ paths:
                   device:
                     $ref: "#/components/schemas/Device"        
         '404':
-          description: "No device with ID matching device-id"
+          description: "No controller with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        
+    delete:
+      tags:
+        - device
+      summary: "Restores the manufacturer default configuration"
+      description: "Deletes all configuration information and restores the manufacturer default settings"
+      operationId: restoreDefaultParameters
+      parameters:
+        - name: device-id
+          in: path
+          description: "Controller serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      responses:
+        '200':
+          description: "Restored default controller parameters"
+        '404':
+          description: "No controller with ID matching device-id"
           content:
             application/json:
               schema:
