@@ -1,6 +1,7 @@
 import hashlib
 import itertools
 import os
+import re
 import subprocess
 
 from misc import say
@@ -104,6 +105,10 @@ def release(project, p, version, exit):
 
     # ... update for release and build
     if not update_release(project, p):
+        return False
+
+    # ... confirm go.mod has release versions of uhppote-core and uhppoted-lib
+    if not updated_for_release(project, p, version):
         return False
 
     if not _release(project, p, version.version(project)):
@@ -211,6 +216,36 @@ def update_release(project, info):
         folder = info['folder']
         command = f'cd {folder} && make update-release'
         subprocess.run(command, shell=True, check=True)
+    except subprocess.CalledProcessError:
+        raise Exception(f"command 'update {project}' failed")
+
+    return True
+
+
+def updated_for_release(project, info, version):
+    try:
+        folder = info['folder']
+        path = os.path.join(folder, 'go.mod')
+
+        if os.path.isfile(path):
+            core = ''
+            lib = None
+            r = re.compile('(\S+)\s+(\S+)')
+
+            with open(path, 'rt') as f:
+                while line := f.readline():
+                    match = r.match(line.strip())
+                    if match:
+                        if match.group(1) == 'github.com/uhppoted/uhppote-core':
+                            core = match.group(2)
+                        if match.group(2) == 'github.com/uhppoted/uhppoted-lib':
+                            lib = match.group(2)
+            if core != version:
+                raise Exception(f"'{project}' has not been updated to the release version of uhppote-core")
+
+            if lib and lib != version:
+                raise Exception(f"{project}' has not been updated to the release version of uhppoted-lib")
+
     except subprocess.CalledProcessError:
         raise Exception(f"command 'update {project}' failed")
 

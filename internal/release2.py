@@ -130,7 +130,6 @@ def main():
                     ok = github.publish('uhppote-core', plist['uhppote-core'], version, exit)
                     if ok and not exit.is_set():
                         del unreleased['uhppote-core']
-                        # del state['unreleased']['uhppote-core']
                         save_release_info(version, state)
 
             if 'uhppoted-lib' in unreleased:
