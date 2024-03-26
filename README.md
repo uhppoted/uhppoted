@@ -116,14 +116,14 @@ but the readers below are in active use:
 
 ### Current Release
 
-**[v0.8.7](https://github.com/uhppoted/uhppoted-wiegand/releases/tag/v0.8.67) - 2023-12-01**
+**[v0.8.8](https://github.com/uhppoted/uhppoted-wiegand/releases/tag/v0.8.8) - 2024-03-28**
 
-1. Keypad emulation
-2. Passcode access override
-3. Card + optional PIN access
-4. _clear-acl_ command
-5. Fixed bug in SD card _store-acl_ logic.
-6. Renamed 'reference' implementation to 'universal'
+1. Added _uhppoted-app-home-assistant_ experimental Home Assistant integration.
+2. `restore-default-parameters` function across all subprojects.
+3. Added public Docker images for _uhppote-simulator_, uhppoted-rest_, uhppoted-mqtt_, and
+   _uhppoted-httpd_ to ghcr.io.
+4. Bumped Go version to 1.22.
+5. Reworked _uhppoted-app-wild-apricot_ member/group resolution logic.
 
 ## Modules
 

@@ -67,6 +67,11 @@ def projects():
             'branch': 'main',
             'binary': 'uhppoted-app-db'
         },
+        'uhppoted-app-home-assistant': {
+            'folder': './uhppoted-app-home-assistant',
+            'branch': 'main',
+            'binary': 'uhppoted-app-home-assistant'
+        },
         'uhppoted-nodejs': {
             'folder': './uhppoted-nodejs',
             'branch': 'main',
