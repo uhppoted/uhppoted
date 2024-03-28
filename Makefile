@@ -1,4 +1,4 @@
-VERSION ?= 0.8.8
+VERSION ?= 0.8.9
 NODERED ?= 1.1.7
 RELEASE ?= 
 BUMP    ?= 
