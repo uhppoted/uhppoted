@@ -101,7 +101,7 @@ def prepare(projects, version, exit):
 
 
 def release(project, p, version, exit):
-    print(f'>>>> build release for {project} ({version})')
+    print(f'>>>> build release for {project} ({version.version(project)})')
 
     # ... update for release and build
     if not update_release(project, p):
@@ -228,9 +228,9 @@ def updated_for_release(project, info, version):
         path = os.path.join(folder, 'go.mod')
 
         if os.path.isfile(path):
-            core = ''
+            core = None
             lib = None
-            r = re.compile('(\S+)\s+(\S+)')
+            r = re.compile('(?:require\s+)?(\S+)\s+(\S+)')
 
             with open(path, 'rt') as f:
                 while line := f.readline():
@@ -238,12 +238,13 @@ def updated_for_release(project, info, version):
                     if match:
                         if match.group(1) == 'github.com/uhppoted/uhppote-core':
                             core = match.group(2)
-                        if match.group(2) == 'github.com/uhppoted/uhppoted-lib':
+                        if match.group(1) == 'github.com/uhppoted/uhppoted-lib':
                             lib = match.group(2)
-            if core != version:
+
+            if core and f'{core}' != f'{version}':
                 raise Exception(f"'{project}' has not been updated to the release version of uhppote-core")
 
-            if lib and lib != version:
+            if lib and f'{lib}' != f'{version}':
                 raise Exception(f"{project}' has not been updated to the release version of uhppoted-lib")
 
     except subprocess.CalledProcessError:

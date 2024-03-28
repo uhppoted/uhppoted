@@ -80,7 +80,7 @@ def _release_notes(project, info, version, exit):
 
 
 def publish(project, p, version, exit):
-    print(f'>>>> publishing {project} ({version})')
+    print(f'>>>> publishing {project} ({version.version(p)})')
 
     # ... confirm no uncommitted changes
     print(f'     >>> checking for uncommitted changes')
