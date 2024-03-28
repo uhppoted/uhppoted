@@ -6,6 +6,13 @@
       - [ ] Bump version in uhppote-core and Makefiles
       - [ ] https://pydoit.org/
 
+- [ ] ghcr
+      - [ ] Build versioned images before 'latest' so that the install instruction refers to 'latest'
+      - [ ] Extract version fromm release tag
+            - https://stackoverflow.com/questions/58177786/get-the-current-pushed-tag-in-github-actions
+            - https://github.com/orgs/community/discussions/26625
+            - https://stackoverflow.com/questions/67231657/how-to-replace-string-in-expression-with-github-actions
+
 - [ ] Make `uhppoted` a service user (`sudo adduser --system uhppoted`)
 - [ ] https://forum.universal-devices.com/topic/38892-wiegand-wg26-four-door-access-controller-aka-wgaccess-uhppote-wg2004/
 

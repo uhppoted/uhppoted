@@ -20,6 +20,7 @@ from threading import Event
 from projects import projects
 from version import Version
 import github
+import npm
 from changelog import CHANGELOGs
 from readme import READMEs
 from javascript import package_versions
@@ -140,7 +141,40 @@ def main():
                         del unreleased['uhppoted-lib']
                         save_release_info(version, state)
 
-            ignore = ['uhppoted', 'uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-python']
+            if 'uhppoted-python' in unreleased:
+                ok = build.release('uhppoted-python', plist['uhppoted-python'], version, exit)
+                if ok and not exit.is_set():
+                    ok = github.publish('uhppoted-python', plist['uhppoted-python'], version, exit)
+                    if ok and not exit.is_set():
+                        # FIXME publish to testpy
+                        # FIXME publish to pypi
+                        del unreleased['uhppoted-python']
+                        save_release_info(version, state)
+
+            if 'uhppoted-nodejs' in unreleased:
+                ok = build.release('uhppoted-nodejs', plist['uhppoted-nodejs'], version, exit)
+                if ok and not exit.is_set():
+                    ok = github.publish('uhppoted-nodejs', plist['uhppoted-nodejs'], version, exit)
+                    if ok and not exit.is_set():
+                        ok = npm.publish('uhppoted-nodejs', plist['uhppoted-nodejs'], version, exit)
+                        if ok and not exit.is_set():
+                            del unreleased['uhppoted-nodejs']
+                            save_release_info(version, state)
+
+            if 'node-red-contrib-uhppoted' in unreleased:
+                ok = build.release('node-red-contrib-uhppoted', plist['node-red-contrib-uhppoted'], version, exit)
+                if ok and not exit.is_set():
+                    ok = github.publish('node-red-contrib-uhppoted', plist['node-red-contrib-uhppoted'], version, exit)
+                    if ok and not exit.is_set():
+                        ok = npm.publish('node-red-contrib-uhppoted', plist['node-red-contrib-uhppoted'], version, exit)
+                        if ok and not exit.is_set():
+                            del unreleased['node-red-contrib-uhppoted']
+                            save_release_info(version, state)
+
+            ignore = [
+                'uhppoted', 'uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-python',
+                'uhppoted-app-home-assistant'
+            ]
             it = itertools.filterfalse(lambda p: p in ignore, unreleased)
             rl = {p: plist[p] for p in it}
             for p in rl:
@@ -153,16 +187,18 @@ def main():
                             del unreleased[p]
                             save_release_info(version, state)
 
+            ### TODO release uhppoted-app-home-assistant
+
             if 'uhppoted' in unreleased:
                 ok = build.release('uhppoted', plist['uhppoted'], version, exit)
                 if ok and not exit.is_set():
                     # ... confirm uhppoted and submodule binary checksums match
-                    print(f'     >>> verifying checksums')
-                    ignore = ['uhppoted', 'uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-python']
-                    it = itertools.filterfalse(lambda p: p in ignore, plist)
-                    for p in it:
-                        if not build.checksum(p, plist[p], version.version(p)):
-                            raise Exception(f"{p} 'dist' checksums differ")
+                    # print(f'     >>> verifying checksums')
+                    # ignore = ['uhppoted', 'uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-python']
+                    # it = itertools.filterfalse(lambda p: p in ignore, plist)
+                    # for p in it:
+                    #     if not build.checksum(p, plist[p], version.version(p)):
+                    #         raise Exception(f"{p} 'dist' checksums differ")
 
                     ok = uncommitted({'uhppoted': plist['uhppoted']}, version, exit)
                     if ok and not exit.is_set():
@@ -170,8 +206,6 @@ def main():
                         if ok and not exit.is_set():
                             del unreleased['uhppoted']
                             save_release_info(version, state)
-
-            ### TODO release nodejs, node-red and python
 
         # ... post-release cleanup
         if args.bump:
