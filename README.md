@@ -120,8 +120,7 @@ but the readers below are in active use:
 
 1. Added _uhppoted-app-home-assistant_ experimental Home Assistant integration.
 2. `restore-default-parameters` function across all subprojects.
-3. Added public Docker images for _uhppote-simulator_, uhppoted-rest_, uhppoted-mqtt_, and
-   _uhppoted-httpd_ to ghcr.io.
+3. Added public Docker images for _uhppote-simulator_, _uhppoted-rest_, _uhppoted-mqtt_, and _uhppoted-httpd_ to ghcr.io.
 4. Bumped Go version to 1.22.
 5. Reworked _uhppoted-app-wild-apricot_ member/group resolution logic.
 
