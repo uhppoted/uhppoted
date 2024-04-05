@@ -19,3 +19,6 @@ wiegand
 
 REPL
 - https://yogthos.net/posts/2022-11-26-nREPL-system-interaction.html
+
+Alternatives:
+- https://www.waveshare.com/esp32-s3-relay-6ch.htm

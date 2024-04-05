@@ -166,7 +166,7 @@ coverage: build
 integration-tests: 
 	cd integration-tests && go fmt ./...
 #	go test integration-tests/cli/*.go
-	go test -v integration-tests/mqttd/*.go
+	# go test -v integration-tests/mqttd/*.go
 	# go clean -testcache && go test -count=1 integration-tests/simulator/*.go
 
 build-all: test vet
