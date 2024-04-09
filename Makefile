@@ -164,10 +164,10 @@ coverage: build
 	go test -cover ./...
 
 integration-tests: 
-	cd integration-tests && go fmt ./...
 #	go test integration-tests/cli/*.go
-	# go test -v integration-tests/mqttd/*.go
-	# go clean -testcache && go test -count=1 integration-tests/simulator/*.go
+#	go test -v integration-tests/mqttd/*.go
+#	go clean -testcache && go test -count=1 integration-tests/simulator/*.go
+	cd integration-tests/codegen && go fmt ./... && go build -o bin/ && ./bin/codegen
 
 build-all: test vet
 	mkdir -p dist/linux/$(DIST)
