@@ -273,3 +273,4 @@
 111. [slint](https://slint.dev)
 112. https://github.com/francoismichel/ssh3
 113. https://steampipe.io/
+114. https://nats.io/

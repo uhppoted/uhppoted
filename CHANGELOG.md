@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Updated
+1. Renamed _uhppoted-lib_ _master_ branch to _main_.
+
 
 ## [0.8.8](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.8) - 2024-03-28
 
