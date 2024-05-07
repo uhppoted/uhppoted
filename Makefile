@@ -339,7 +339,7 @@ docker-clean:
 docker-build-all: docker-clean docker
 
 docker-simulator:
-	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --name simulator --rm uhppoted/simulator-dev
+	docker run --detach --publish 8000:8000 --publish 60000:60000 --publish 60000:60000/udp --name simulator --rm uhppoted/simulator-dev
 	sleep 1
 	./uhppote-cli/bin/uhppote-cli --debug set-listener 405419896 192.168.1.100:60001
 	./uhppote-cli/bin/uhppote-cli --debug set-listener 303986753 192.168.1.100:60001
