@@ -36,12 +36,11 @@ protocol.synctex.gz
 # External
 documentation/UHPPOTE-SDK.zip
 documentation/SDK
-uhppoted-breakout-dev
 
 # Experimental stuff
 logseq
 uhppoted-documentation
-uhppoted-breakout
+uhppoted-breakout-dev
 .buymeacoffee.md
 
 # Docker
