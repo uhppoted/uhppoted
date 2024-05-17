@@ -5,11 +5,12 @@
 `uhppoted` implements a set of cross-platform building blocks for access control systems based on the 
 *UHPPOTE UT0311-L0x* TCP/IP Wiegand access control boards. Currently available components include:
 
-- device API
-- external application API
+- controller API
 - CLI for scripting and system administration
 - REST service for integration with HTTP servers and mobile clients
 - MQTT endpoint for integration with IOT systems e.g.
+  - [Eclipse Mosquitto](https://mosquitto.org)
+  - [HiveMQ](https://www.hivemq.com/)
   - [AWS IoT](https://aws.amazon.com/iot)
   - [Google Cloud IoT](https://cloud.google.com/solutions/iot)
   - [IBM Watson IoT Platform](https://internetofthings.ibmcloud.com)
@@ -33,10 +34,7 @@ Supported operating systems:
 - Linux
 - MacOS
 - Windows
-- ARM7 _(e.g. RaspberryPi)_
-
-This project is a fork of the original [Go CLI](https://github.com/twystd/uhppote-go) project which had outgrown
-its initial scope and was relocated to [uhppoted](https://github.com/uhppoted) to simplify future development.
+- ARM and ARM7 _(e.g. RaspberryPi)_
 
 ### Language Bindings
 
