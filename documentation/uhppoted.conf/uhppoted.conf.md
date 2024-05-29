@@ -1,6 +1,6 @@
 # _uhppoted.conf_
 
-`uhppoted.conf` is the communal configuration file shared by all the `uhppoted` project modules, an example of which
+`uhppoted.conf` is the common configuration file shared by all the `uhppoted` project modules, an example of which
 can be found [here](uhppoted.conf).
 
 It comprises the following sections:
@@ -42,7 +42,7 @@ A controller entry comprises:
 | Parameter   | Description                                                                                          |
 |-------------|------------------------------------------------------------------------------------------------------|
 | name        | Alphanumeric controller name (optional). CLI commands can use the name instead of the serial number. |
-| address     | IPv4 UDP address in the format _address:port_. Defaults to port 60000.                               |
+| address     | IPv4 address in the format _protocol:address:port_. The protocol may be either 'udp' or 'tcp'. Defaults to UDP, port 60000. |
 | door 1      | Unique alphanumeric door name. Used to resolve ACL access permissions.                               |
 | door 2      | Unique alphanumeric door name. Used to resolve ACL access permissions.                               |
 | door 3      | Unique alphanumeric door name. Used to resolve ACL access permissions.                               |
@@ -52,7 +52,7 @@ A controller entry comprises:
 Example controller entry for the controller with serial number 405419896:
 ```
 UT0311-L0x.405419896.name = Alpha
-UT0311-L0x.405419896.address = 192.168.1.100:60000
+UT0311-L0x.405419896.address = tcp:192.168.1.100:60000
 UT0311-L0x.405419896.door.1 = Gryffindor
 UT0311-L0x.405419896.door.2 = Hufflepuff
 UT0311-L0x.405419896.door.3 = Ravenclaw
