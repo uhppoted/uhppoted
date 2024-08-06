@@ -8,6 +8,7 @@
   "released": "2020-01-01",
   "offset": "0s",
   "doors": {
+    "interlock": 0,
     "1": {
       "control": 3,
       "delay": "5s"
@@ -25,24 +26,24 @@
       "delay": "5s"
     }
   },
-  "listener": {
-    "IP": "192.168.1.100",
-    "Port": 60001,
-    "Zone": ""
+  "keypads": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0
   },
+  "listener": "[::ffff:192.168.1.100]:60001",
   "record-special-events": true,
+  "pc-control": false,
   "system-error": 0,
   "sequence-id": 0,
   "special-info": 0,
   "input-state": 0,
-  "tasklist": {
-    "tasks": null
-  },
+  "tasklist": {},
   "cards": [],
   "events": {
     "size": 32,
-    "first": 2,
-    "last": 1,
+    "chunk": 8,
     "index": 1,
     "events": [
       {

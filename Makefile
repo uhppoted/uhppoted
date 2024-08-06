@@ -346,7 +346,7 @@ docker-simulator:
 	./uhppote-cli/bin/uhppote-cli --debug set-listener 201020304 192.168.1.100:60001
 
 docker-simulator-tunnel:
-	docker run --detach --publish 8000:8000 --publish 60005:60000/udp --name simulator --rm uhppoted/simulator-dev
+	docker run --detach --publish 8000:8000 --publish 60005:60000 --publish 60005:60000/udp --name simulator --rm uhppoted/simulator-dev
 
 docker-rest:
 	docker run --detach --publish 8080:8080 --name restd --rm uhppoted/rest
