@@ -1,5 +1,7 @@
 # TODO
 
+- [x] Update to Go 1.23 (cf. https://github.com/uhppoted/uhppoted/issues/53)
+
 - [ ] Release script
       - [ ] Pre-release builds
       - [ ] Build checksums
