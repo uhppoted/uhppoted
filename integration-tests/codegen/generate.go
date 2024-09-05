@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"path/filepath"
 	"text/template"

@@ -1,12 +1,17 @@
 # CHANGELOG
 
-## Unreleased
+## [0.8.9](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.9) - 2024-09-06
+
+### Added
+1. Added TCP transport support throughout.
+2. Added _uhppoted-breakout_ project.
 
 ### Updated
 1. Renamed _uhppoted-lib_ _master_ branch to _main_.
 2. Renamed _uhppoted_ _master_ branch to _main_.
 3. Renamed _uhppote-core_ _master_ branch to _main_.
 4. Updated to Go 1.23
+5. Updated _uhppoted-dll_ to support Windows LTSC.
 
 
 ## [0.8.8](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.8) - 2024-03-28
