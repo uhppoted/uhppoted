@@ -47,8 +47,8 @@ def main():
         return -1
 
     parser = argparse.ArgumentParser(description='release --version=<version>')
-    parser.add_argument('--version', type=str, default='development', help='release version e.g. v0.8.8')
-    parser.add_argument('--node-red', type=str, default='development', help='NodeRED release version e.g. v1.1.7')
+    parser.add_argument('--version', type=str, default='development', help='release version e.g. v0.8.9')
+    parser.add_argument('--node-red', type=str, default='development', help='NodeRED release version e.g. v1.1.8')
     parser.add_argument('--release', action='store_true', help="builds the release versions")
     parser.add_argument('--bump', action='store_true', help="bumps version and cleans up after a release")
 
