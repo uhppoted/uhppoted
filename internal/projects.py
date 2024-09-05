@@ -2,11 +2,11 @@ def projects():
     return {
         'uhppote-core': {
             'folder': './uhppote-core',
-            'branch': 'master'
+            'branch': 'main'
         },
         'uhppoted-lib': {
             'folder': './uhppoted-lib',
-            'branch': 'master',
+            'branch': 'main',
         },
         'uhppote-simulator': {
             'folder': './uhppote-simulator',
@@ -90,6 +90,6 @@ def projects():
         },
         'uhppoted': {
             'folder': '.',
-            'branch': 'master'
+            'branch': 'main'
         }
     }

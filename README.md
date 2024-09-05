@@ -114,13 +114,13 @@ but the readers below are in active use:
 
 ### Current Release
 
-**[v0.8.8](https://github.com/uhppoted/uhppoted-wiegand/releases/tag/v0.8.8) - 2024-03-28**
+**[v0.8.9](https://github.com/uhppoted/uhppoted-wiegand/releases/tag/v0.8.9) - 2024-09-06**
 
-1. Added _uhppoted-app-home-assistant_ experimental Home Assistant integration.
-2. `restore-default-parameters` function across all subprojects.
-3. Added public Docker images for _uhppote-simulator_, _uhppoted-rest_, _uhppoted-mqtt_, and _uhppoted-httpd_ to ghcr.io.
-4. Bumped Go version to 1.22.
-5. Reworked _uhppoted-app-wild-apricot_ member/group resolution logic.
+1. Added TCP transport support throughout.
+2. Added _uhppoted-breakout_ project.
+3. Updated _uhppoted-dll_ to support Windows LTSC.
+4. Added support for default card start/end dates to _uhppoted-httpd_.
+5. Updated to Go 1.23.
 
 ## Modules
 

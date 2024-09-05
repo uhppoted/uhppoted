@@ -73,6 +73,7 @@
 [submodule "uhppoted-wiegand"]
 	path = uhppoted-wiegand
 	url = https://github.com/uhppoted/uhppoted-wiegand.git
+
 [submodule "uhppoted-breakout"]
 	path = uhppoted-breakout
 	url = https://github.com/uhppoted/uhppoted-breakout
