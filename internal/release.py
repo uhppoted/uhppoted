@@ -266,43 +266,6 @@ def save_release_info(version, info):
         json.dump(info, f, ensure_ascii=False, indent=4)
 
 
-# def checkout(project, info):
-#     try:
-#         command = f"cd {info['folder']} && git checkout {info['branch']}"
-#         subprocess.run(command, shell=True, check=True)
-#     except subprocess.CalledProcessError:
-#         raise Exception(f"command 'checkout {project}' failed")
-
-# def update(project, info):
-#     try:
-#         command = f"cd {info['folder']} && make update && make build"
-#         subprocess.run(command, shell=True, check=True)
-#     except subprocess.CalledProcessError:
-#         raise Exception(f"command 'update {project}' failed")
-
-# def git(project, info, interim):
-#     try:
-#         command = f"cd {info['folder']} && git remote update"
-#         subprocess.run(command, shell=True, check=True)
-#
-#         command = f"cd {info['folder']} && git status -uno"
-#         result = subprocess.check_output(command, shell=True)
-#
-#         if 'Changes not staged for commit' in str(result):
-#             raise Exception(f"{project} has uncommitted changes")
-#         elif (not interim) and 'Your branch is ahead' in str(result):
-#             raise Exception(f"{project} has commits that have not been pushed")
-#
-#     except subprocess.CalledProcessError:
-#         raise Exception(f"{project}: command 'git status' failed")
-
-# def release(project, info, version):
-#     command = f"cd {info['folder']} && make release DIST={project}_{version}"
-#     result = subprocess.call(command, shell=True)
-#     if result != 0:
-#         raise Exception(f"command 'build {project}' failed")
-
-
 def clean_release_notes(project, info):
     file = f"{info['folder']}/release-notes.md"
     if os.path.isfile(file):

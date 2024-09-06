@@ -1,7 +1,7 @@
 openapi: "3.0.2"
 
 info:
-  version: 0.8.8
+  version: 0.8.9
   title: "uhppote-simulator"
   description: "REST API for the UHPPOTE simulator command interface"
   license:
@@ -247,6 +247,47 @@ paths:
         default:
           description: "Request failed"
 
+  /simulator/{device-id}/cards/{card}:
+    put:
+      tags:
+        - cards
+      summary: "Adds or updates a card"
+      description: "Adds or updates a card on a simulator."
+      operationId: putCard
+      parameters:
+        - name: device-id
+          in: path
+          description: "Simulator device ID"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: card
+          in: path
+          description: "Card number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 10058400
+      requestBody:
+        description: "Card information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Card"     
+      responses:
+        '200':
+          description: "Card updated"
+        '405':
+          description: "Invalid request"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
 components:
   schemas:
     Device:
@@ -400,3 +441,26 @@ components:
           type: string
           description: "Display message"
           example: "Door opened"
+
+    Card:
+      properties:
+        start-date:
+          type: string
+          format: yyyy-mm-dd
+          description: "Card start date"
+          example: "2024-01-01"
+        end-date:
+          type: string
+          format: yyyy-mm-dd
+          description: "Card end date"
+          example: "2024-12-31"
+        doors:
+          type: array
+          format: array of uint8
+          description: "List of doors for which the card has access"
+          example: [1,2,4]
+        PIN:
+          type: integer
+          format: uint32
+          description: "Card PIN"
+          example: 7531
