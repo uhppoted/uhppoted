@@ -114,7 +114,6 @@ format:
 	cd uhppoted-app-sheets       && make format
 	cd uhppoted-app-wild-apricot && make format
 	cd uhppoted-app-db           && make format
-	cd integration-tests         && go fmt ./...
 	go fmt ./...
 
 build: format
@@ -367,15 +366,10 @@ swagger:
 	open http://127.0.0.1:80
 
 docker:
-	cd uhppote-simulator && env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../docker/integration-tests/simulator ./...
-	
 	cd uhppote-simulator && make docker-dev
 	cd uhppoted-rest     && make docker-dev
 	cd uhppoted-mqtt     && make docker-dev
 	cd ./docker/hivemq   && docker build --no-cache -f Dockerfile -t hivemq/uhppoted    .
-	cd ./docker/integration-tests/simulator && docker build --no-cache -f Dockerfile -t integration-tests/simulator .
-	cd ./docker/integration-tests/mqttd     && docker build --no-cache -f Dockerfile -t integration-tests/mqttd     .
-	cd ./docker/integration-tests/hivemq    && docker build --no-cache -f Dockerfile -t integration-tests/hivemq    .
 
 docker-clean:
 	docker image     prune -f
@@ -418,9 +412,6 @@ docker-mysql-cli:
 
 docker-stop:
 	docker stop $$(docker container ls -q)
-
-docker-integration-tests:
-	docker run --detach --publish 8000:8000 --publish 60000:60000/udp --name qwerty --rm integration-tests/simulator
 
 hivemq-listen:
 	# mqtt subscribe --topic 'uhppoted/reply/#' | jq '.' 
