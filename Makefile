@@ -1,5 +1,5 @@
-VERSION ?= 0.8.9
-NODERED ?= 1.1.8
+VERSION ?= 0.8.10
+NODERED ?= 1.1.9
 RELEASE ?= 
 BUMP    ?= 
 DEBUG   ?= --debug
@@ -327,7 +327,7 @@ release: update-release build-all docker
 	tar --directory=dist/arm7         --exclude=".DS_Store" -cvzf dist/$(DIST)-arm7.tar.gz         $(DIST)
 	cd dist/windows && zip --recurse-paths ../$(DIST)-windows.zip $(DIST)
 
-release-v0.8.9: 
+release-v0.8.10: 
 	yapf -ri ./internal
 	python ./internal/release.py --version=$(VERSION) --node-red=$(NODERED) $(RELEASE) $(BUMP)
 
