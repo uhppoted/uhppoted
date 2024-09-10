@@ -26,6 +26,12 @@
 The components supplement the manufacturer supplied application which is 'Windows-only' and provides limited support 
 for integration with other systems. 
 
+Hardware:
+- [uhppoted-breakout](https://github.com/uhppoted/uhppoted-breakout), a customisable/hackable replacement CPU board
+- [uhppoted-wiegand](https://github.com/uhppoted/uhppoted-wiegand), a prototype RaspberryPi Pico/PicoW Wiegand reader/emulator
+
+_Note_:
+
 FYA, after much discussion it has been decided that _uhppoted_ is pronounced _u-hop-id-ay-d_ (juː hɒp ɪt eɪd).
 
 ### Operating systems
@@ -164,6 +170,13 @@ but the readers below are in active use:
 | [uhppote-cli](https://github.com/uhppoted/uhppote-cli)                 | Command line interface   |
 | [uhppoted-httpd](https://github.com/uhppoted/uhppote-httpd)            | HTML browser interface   |
 
+## Hardware
+
+| *Module*                                                          | *Description*                            |
+| ----------------------------------------------------------------- | -----------------------------------------|
+| [uhppoted-wiegand](https://github.com/uhppoted/uhppoted-wiegand)  | Prototype RP2040 Wiegand reader/emulator |
+| [uhppoted-breakout](https://github.com/uhppoted/uhppote-breakout) | Customisable replacement CPU board       |
+
 ## Installation
 
 Binaries for Linux, Windows, MacOS and Raspbian/ARM7 are distributed in the tarball for each release. To install
@@ -205,7 +218,7 @@ If you like the project and you really want to :slightly_smiling_face::
 [<img height="41" width="174" src="https://cdn.buymeacoffee.com/buttons/default-orange.png">](https://www.buymeacoffee.com/uhppoted)
 
 
-## References and Related Projects
+## References and related projects
 
 1.  [carbonsphere/UHPPOTE](https://github.com/carbonsphere/UHPPOTE) `PHP`
 2.  [carbonsphere/DoorControl](https://github.com/carbonsphere/DoorControl) `PHP`
