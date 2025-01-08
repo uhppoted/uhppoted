@@ -77,3 +77,6 @@
 [submodule "uhppoted-breakout"]
 	path = uhppoted-breakout
 	url = https://github.com/uhppoted/uhppoted-breakout
+[submodule "uhppoted-lib-dotnet"]
+	path = uhppoted-lib-dotnet
+	url = https://github.com/uhppoted/uhppoted-lib-dotnet.git
