@@ -14,5 +14,6 @@ def say(msg):
                         .replace('exe','e x e') \
                         .replace('unpushed','un pushed') \
                         .replace('cli','c l i') \
-                        .replace('github','ggithub')
+                        .replace('github','ggithub') \
+                        .replace('.10','.ten')
     subprocess.call(f'say {transliterated}', shell=True)

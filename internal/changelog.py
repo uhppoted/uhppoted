@@ -18,6 +18,9 @@ def CHANGELOGs(projects, version, exit):
                 project = projects[p]
                 v = version.version(p)
 
+                if 'changelog' in project.keys():
+                    project['changelog']()
+
                 if not changelog(p, project, v[1:], exit):
                     ok = False
 

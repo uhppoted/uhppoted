@@ -40,7 +40,7 @@ Supported operating systems:
 - Linux
 - MacOS
 - Windows
-- ARM and ARM7 _(e.g. RaspberryPi)_
+- RaspberryPi (ARM/ARM7/ARM6)
 
 ### Language Bindings
 
