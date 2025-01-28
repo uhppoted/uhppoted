@@ -164,7 +164,7 @@ coverage: build
 	go test -cover ./...
 
 integration-tests: 
-	echo "Nothing to do"
+	@echo "Nothing to do"
 
 build-all: test vet
 	mkdir -p dist/linux/$(DIST)
@@ -327,10 +327,6 @@ release: update-release build-all docker
 	tar --directory=dist/arm7         --exclude=".DS_Store" -cvzf dist/$(DIST)-arm7.tar.gz         $(DIST)
 	cd dist/windows && zip --recurse-paths ../$(DIST)-windows.zip $(DIST)
 
-release-v0.8.10: 
-	yapf -ri ./internal
-	python ./internal/release.py --version=$(VERSION) --node-red=$(NODERED) $(RELEASE) $(BUMP)
-
 publish: release
 	echo "Releasing version $(VERSION)"
 	rm -f dist/development-arm.tar.gz
@@ -339,6 +335,10 @@ publish: release
 	rm -f dist/development-linux.tar.gz
 	rm -f dist/development-windows.zip
 	gh release create "$(VERSION)" ./dist/*.tar.gz ./dist/*.zip --draft --prerelease --title "$(VERSION)-beta" --notes-file release-notes.md
+
+release-v0.8.10: 
+	yapf -ri ./internal
+	python ./internal/release.py --version=$(VERSION) --node-red=$(NODERED) $(RELEASE) $(BUMP)
 
 build-github: 
 	cd uhppote-core              && go build -trimpath ./...

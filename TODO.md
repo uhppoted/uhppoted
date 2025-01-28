@@ -15,6 +15,8 @@
             - https://github.com/orgs/community/discussions/26625
             - https://stackoverflow.com/questions/67231657/how-to-replace-string-in-expression-with-github-actions
 
+- [ ] Some config ideas
+      - https://chshersh.com/blog/2025-01-06-the-most-elegant-configuration-language.html
 - [ ] Make `uhppoted` a service user (`sudo adduser --system uhppoted`)
 - [ ] https://forum.universal-devices.com/topic/38892-wiegand-wg26-four-door-access-controller-aka-wgaccess-uhppote-wg2004/
 

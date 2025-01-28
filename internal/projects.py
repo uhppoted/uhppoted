@@ -1,8 +1,12 @@
+from submodules.uhppote_core import uhppote_core_changelog
+
+
 def projects():
     return {
         'uhppote-core': {
             'folder': './uhppote-core',
-            'branch': 'main'
+            'branch': 'main',
+            # 'changelog': uhppote_core_changelog,
         },
         'uhppoted-lib': {
             'folder': './uhppoted-lib',
@@ -82,6 +86,10 @@ def projects():
         },
         'node-red-contrib-uhppoted': {
             'folder': './node-red-contrib-uhppoted',
+            'branch': 'main',
+        },
+        'uhppoted-lib-dotnet': {
+            'folder': './uhppoted-lib-dotnet',
             'branch': 'main',
         },
         'uhppoted-wiegand': {

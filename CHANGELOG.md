@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Added
+1. Added _uhppoted-lib-dotnet_ submodule.
+
 
 ## [0.8.9](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.9) - 2024-09-06
 
