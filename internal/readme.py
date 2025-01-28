@@ -5,7 +5,7 @@ import subprocess
 import time
 
 sublime2 = '"/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl"'
-ignore = ['uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-python']
+ignore = []
 
 
 def READMEs(projects, version, exit):
