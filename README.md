@@ -120,35 +120,37 @@ but the readers below are in active use:
 
 ### Current Release
 
-**[v0.8.9](https://github.com/uhppoted/uhppoted-wiegand/releases/tag/v0.8.9) - 2024-09-06**
+**[v0.8.10](https://github.com/uhppoted/uhppoted-wiegand/releases/tag/v0.8.10) - 2025-01-31**
 
-1. Added TCP transport support throughout.
-2. Added _uhppoted-breakout_ project.
-3. Updated _uhppoted-dll_ to support Windows LTSC.
-4. Added support for default card start/end dates to _uhppoted-httpd_.
-5. Updated to Go 1.23.
+1. Added _uhppoted-lib-dotnet_ submodule.
+2. Added support for _auto-send interval_ throughout.
+3. Renamed _uhppoted-python_ submodule to _uhppoted-lib-python_.
+4. Fixed performance regression in _uhppoted-httpd_.
+5. Updated _uhppoted-app-home-assistant_ for HACS 2.0.
+
 
 ## Modules
 
 | *Module*                                                                               | *Description*                                                                   |
 | ---------------------------------------------------------------------------------------| --------------------------------------------------------------------------------|
-| [uhppote-core](https://github.com/uhppoted/uhppote-core)                               | core library, implements the UP interface to UT0311-L0x controllers             |
-| [uhppoted-lib](https://github.com/uhppoted/uhppoted-lib)                               | common utility function library                                                 |
-| [uhppote-simulator](https://github.com/uhppoted/uhppote-simulator)                     | UT0311-L04 simulator for development use                                        |
-| [uhppote-cli](https://github.com/uhppoted/uhppote-cli)                                 | command line interface                                                          |
-| [uhppoted-rest](https://github.com/uhppoted/uhppoted-rest)                             | daemon/service with REST API for remote access to UT0311-L0x controllers        |
-| [uhppoted-mqtt](https://github.com/uhppoted/uhppoted-mqtt)                             | daemon/service with MQTT endpoint for remote access to UT0311-L0x controllers   |
-| [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                         | cron'able utility to download/upload access control lists from/to AWS S3        |
-| [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)                 | cron'able utility to download/upload access control lists from/to Google Sheets |
-| [uhppoted-app-db](https://github.com/uhppoted/uhppoted-app-db)                         | cron'able utility to download/upload access control lists from/to a SQL DB      |
-| [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot)     | cron'able utility to manage access control lists from Wild Apricot              |
-| [uhppoted-app-home-assistant](https://github.com/uhppoted/uhppoted-app-home-assistant) | Home Assistant custom component                                                 |
-| [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted)     | NodeJS nodes for [Node-RED](https://nodered.org) low code environment           |
-| [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                         | Standalone NodeJS module                                                        |
-| [uhppoted-python](https://github.com/uhppoted/uhppoted-python)                         | Standalone Python package for PyPI                                              |
-| [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll)                               | shared-lib/DLL for cross-language interop                                       |
-| [uhppoted-codegen](https://github.com/uhppoted/uhppoted-codegen)                       | Model based code generator for native language bindings                         |
-| [uhppoted-tunnel](https://github.com/uhppoted/uhppoted-tunnel)                         | UDP tunnel for remote access                                                    |
+| [uhppote-core](https://github.com/uhppoted/uhppote-core)                               | core library, implements the UP interface to UT0311-L0x controllers |
+| [uhppoted-lib](https://github.com/uhppoted/uhppoted-lib)                               | common utility function library |
+| [uhppote-simulator](https://github.com/uhppoted/uhppote-simulator)                     | UT0311-L04 simulator for development use |
+| [uhppote-cli](https://github.com/uhppoted/uhppote-cli)                                 | command line interface  |
+| [uhppoted-rest](https://github.com/uhppoted/uhppoted-rest)                             | daemon/service with REST API for remote access to UT0311-L0x controllers |
+| [uhppoted-mqtt](https://github.com/uhppoted/uhppoted-mqtt)                             | daemon/service with MQTT endpoint for remote access to UT0311-L0x controllers |
+| [uhppoted-app-s3](https://github.com/uhppoted/uhppoted-app-s3)                         | cron'able utility to download/upload access control lists from/to AWS S3 |
+| [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)                 | cron'able utility to download/upload access control lists from/to Google Sheets|
+| [uhppoted-app-db](https://github.com/uhppoted/uhppoted-app-db)                         | cron'able utility to download/upload access control lists from/to a SQL DB |
+| [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot)     | cron'able utility to manage access control lists from Wild Apricot |
+| [uhppoted-app-home-assistant](https://github.com/uhppoted/uhppoted-app-home-assistant) | Home Assistant custom component |
+| [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted)     | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
+| [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                         | Standalone NodeJS module |
+| [uhppoted-python](https://github.com/uhppoted/uhppoted-python)                         | Standalone Python package for PyPI |
+| [uhppoted-lib-dotnet](https://github.com/uhppoted/uhppoted-lib-dotnet)                 | .NET package for NuGet |
+| [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll)                               | shared-lib/DLL for cross-language interop |
+| [uhppoted-codegen](https://github.com/uhppoted/uhppoted-codegen)                       | Model based code generator for native language bindings |
+| [uhppoted-tunnel](https://github.com/uhppoted/uhppoted-tunnel)                         | UDP tunnel for remote access |
 
 ## Integrations
 

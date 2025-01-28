@@ -8,7 +8,7 @@ ignore = []
 
 
 def package_versions(projects, version, exit):
-    print(f'>>>> checking package.json versions ({version})')
+    print(f'>>>> checking package versions ({version})')
 
     while True:
         ok = True
@@ -17,8 +17,14 @@ def package_versions(projects, version, exit):
                 project = projects[p]
                 v = version.version(p)
 
-                if not package_version(p, project, v[1:], exit):
-                    ok = False
+                if 'packaging' in project:
+                    if project['packaging'] == 'javascript':
+                        if not javascript_package_version(p, project, v[1:], exit):
+                            ok = False
+                    elif project['packaging'] == 'python':
+                        return False
+                    elif project['packaging'] == 'dotnet':
+                        return False
 
                 if exit.is_set():
                     return False
@@ -28,7 +34,7 @@ def package_versions(projects, version, exit):
     return True
 
 
-def package_version(project, info, version, exit):
+def javascript_package_version(project, info, version, exit):
     print(f'     ... {project}')
 
     path = f"{info['folder']}/package.json"

@@ -138,7 +138,7 @@ def build(project, info):
         command = f'cd {folder} && make build'
         subprocess.run(command, shell=True, check=True)
     except subprocess.CalledProcessError:
-        raise Exception(f"command 'update {project}' failed")
+        raise Exception(f"command 'build {project}' failed")
 
     return True
 
@@ -150,7 +150,7 @@ def build_all(project, info):
         subprocess.run(command, shell=True, check=True)
         return True
     except subprocess.CalledProcessError:
-        raise Exception(f"command 'update {project}' failed")
+        raise Exception(f"command 'build-all {project}' failed")
 
 
 def _release(project, info, version):

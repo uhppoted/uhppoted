@@ -1,9 +1,15 @@
 # CHANGELOG
 
-## Unreleased
+## [0.8.10](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.10) - 2024-01-31
 
 ### Added
 1. Added _uhppoted-lib-dotnet_ submodule.
+2. Added support for _auto-send interval_ throughout.
+
+### Updated
+1. Renamed _uhppoted-python_ submodule to _uhppoted-lib-python_.
+2. Fixed performance regression in _uhppoted-httpd_.
+3. Updated _uhppoted-app-home-assistant_ for HACS 2.0.
 
 
 ## [0.8.9](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.9) - 2024-09-06

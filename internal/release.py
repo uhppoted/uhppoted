@@ -23,7 +23,7 @@ import github
 import npm
 from changelog import CHANGELOGs
 from readme import READMEs
-from javascript import package_versions
+from packaging import package_versions
 from git import uncommitted
 from misc import say
 import build
@@ -82,7 +82,7 @@ def main():
                 state['changelogs'] = 'ok'
                 save_release_info(version, state)
 
-        # ... REAMDME.md
+        # ... README.md
         if not 'readmes' in state or state['readmes'] != 'ok':
             READMEs(unreleased, version, exit)
             print()
@@ -108,7 +108,7 @@ def main():
             print()
             if exit.is_set():
                 return -1
-            else if ok:
+            elif ok:
                 state['uncommitted-changes'] = 'ok'
                 save_release_info(version, state)
 
@@ -121,7 +121,7 @@ def main():
             print()
             if exit.is_set():
                 return -1
-            else if ok:
+            elif ok:
                 state['prepared'] = 'ok'
                 state['uncommitted-changes'] = 'ok'
                 save_release_info(version, state)
@@ -133,7 +133,7 @@ def main():
                 print()
                 if exit.is_set():
                     return -1
-                else if ok:
+                elif ok:
                     state['release-notes'] = 'ok'
                     save_release_info(version, state)
 
@@ -141,11 +141,11 @@ def main():
                 ok = build.release('uhppote-core', plist['uhppote-core'], version, exit)
                 if exit.is_set():
                     return -1
-                else if ok:
+                elif ok:
                     ok = github.publish('uhppote-core', plist['uhppote-core'], version, exit)
                     if exit.is_set():
                         return -1
-                    else if ok:
+                    elif ok:
                         del unreleased['uhppote-core']
                         save_release_info(version, state)
 
@@ -153,11 +153,11 @@ def main():
                 ok = build.release('uhppoted-lib', plist['uhppoted-lib'], version, exit)
                 if exit.is_set():
                     return -1
-                else if ok:
+                elif ok:
                     ok = github.publish('uhppoted-lib', plist['uhppoted-lib'], version, exit)
                     if exit.is_set():
                         return -1
-                    else if ok:
+                    elif ok:
                         del unreleased['uhppoted-lib']
                         save_release_info(version, state)
 
@@ -165,11 +165,11 @@ def main():
                 ok = build.release('uhppoted-python', plist['uhppoted-python'], version, exit)
                 if exit.is_set():
                     return -1
-                else if ok:
+                elif ok:
                     ok = github.publish('uhppoted-python', plist['uhppoted-python'], version, exit)
                     if exit.is_set():
                         return -1
-                    else if ok:
+                    elif ok:
                         # FIXME publish to testpy
                         # FIXME publish to pypi
                         del unreleased['uhppoted-python']
@@ -179,15 +179,15 @@ def main():
                 ok = build.release('uhppoted-nodejs', plist['uhppoted-nodejs'], version, exit)
                 if exit.is_set():
                     return -1
-                else if ok:
+                elif ok:
                     ok = github.publish('uhppoted-nodejs', plist['uhppoted-nodejs'], version, exit)
                     if exit.is_set():
                         return -1
-                    else if ok:
+                    elif ok:
                         ok = npm.publish('uhppoted-nodejs', plist['uhppoted-nodejs'], version, exit)
                         if exit.is_set():
                             return -1
-                        else if ok:
+                        elif ok:
                             del unreleased['uhppoted-nodejs']
                             save_release_info(version, state)
 
@@ -195,15 +195,15 @@ def main():
                 ok = build.release('node-red-contrib-uhppoted', plist['node-red-contrib-uhppoted'], version, exit)
                 if exit.is_set():
                     return -1
-                else if ok:
+                elif ok:
                     ok = github.publish('node-red-contrib-uhppoted', plist['node-red-contrib-uhppoted'], version, exit)
                     if exit.is_set():
                         return -1
-                    else if ok:
+                    elif ok:
                         ok = npm.publish('node-red-contrib-uhppoted', plist['node-red-contrib-uhppoted'], version, exit)
                         if exit.is_set():
                             return -1
-                        else if ok:
+                        elif ok:
                             del unreleased['node-red-contrib-uhppoted']
                             save_release_info(version, state)
 
@@ -217,15 +217,15 @@ def main():
                 ok = build.release(p, plist[p], version, exit)
                 if exit.is_set():
                     return -1
-                else if ok:
+                elif ok:
                     ok = uncommitted({p: plist[p]}, version, exit)
                     if exit.is_set():
                         return -1
-                    else if ok:
+                    elif ok:
                         ok = github.publish(p, plist[p], version, exit)
                         if exit.is_set():
                             return -1
-                        else if ok:
+                        elif ok:
                             del unreleased[p]
                             save_release_info(version, state)
 
@@ -235,7 +235,7 @@ def main():
                 ok = build.release('uhppoted', plist['uhppoted'], version, exit)
                 if exit.is_set():
                     return -1
-                else if ok:
+                elif ok:
                     # ... confirm uhppoted and submodule binary checksums match
                     # print(f'     >>> verifying checksums')
                     # ignore = ['uhppoted', 'uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-python']
@@ -247,11 +247,11 @@ def main():
                     ok = uncommitted({'uhppoted': plist['uhppoted']}, version, exit)
                     if exit.is_set():
                         return -1
-                    else if ok:
+                    elif ok:
                         ok = github.publish('uhppoted', plist['uhppoted'], version, exit)
                         if exit.is_set():
                             return -1
-                        else if ok:
+                        elif ok:
                             del unreleased['uhppoted']
                             save_release_info(version, state)
 
