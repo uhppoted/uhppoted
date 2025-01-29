@@ -18,12 +18,12 @@ def package_versions(projects, version, exit):
                 v = version.version(p)
 
                 if 'packaging' in project:
-                    if project['packaging'] == 'javascript':
+                    if project.packaging == 'javascript':
                         if not javascript_package_version(p, project, v[1:], exit):
                             ok = False
-                    elif project['packaging'] == 'python':
+                    elif project.packaging == 'python':
                         return False
-                    elif project['packaging'] == 'dotnet':
+                    elif project.packaging == 'dotnet':
                         return False
 
                 if exit.is_set():
@@ -37,7 +37,7 @@ def package_versions(projects, version, exit):
 def javascript_package_version(project, info, version, exit):
     print(f'     ... {project}')
 
-    path = f"{info['folder']}/package.json"
+    path = f"{info.folder}/package.json"
 
     if version != 'development' and os.path.isfile(f'{path}'):
         with open(path, 'r', encoding="utf-8") as f:

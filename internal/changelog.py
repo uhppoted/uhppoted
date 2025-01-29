@@ -35,7 +35,7 @@ def CHANGELOGs(projects, version, exit):
 def changelog(project, info, version, exit):
     print(f'     ... {project}')
 
-    path = f"{info['folder']}/CHANGELOG.md"
+    path = f"{info.folder}/CHANGELOG.md"
     CHANGELOG = ''
 
     with open(path, 'r', encoding="utf-8") as f:

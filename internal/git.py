@@ -33,14 +33,14 @@ def uncommitted(projects, version, exit):
 def _uncommitted(project, info, version, exit):
     print(f'     ... {project}')
     try:
-        command = f"cd {info['folder']} && git remote update"
+        command = f"cd {info.folder} && git remote update"
         subprocess.run(command, shell=True, check=True)
 
-        command = f"cd {info['folder']} && git status -uno"
+        command = f"cd {info.folder} && git status -uno"
         result = subprocess.check_output(command, shell=True)
 
         if (not project in ignore) and 'Changes not staged for commit' in str(result):
-            command = f'cd {info["folder"]} && git show -s --format="%ci"'
+            command = f'cd {info.folder} && git show -s --format="%ci"'
             modified = subprocess.check_output(command, shell=True).decode('UTF-8').strip()
 
             print(f'     ... {project} has uncommitted changes')

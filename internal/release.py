@@ -146,6 +146,7 @@ def main():
                     if exit.is_set():
                         return -1
                     elif ok:
+                        state['unreleased'] = [v for v in state['unreleased'] if v != 'uhppote-core']
                         del unreleased['uhppote-core']
                         save_release_info(version, state)
 
@@ -158,22 +159,28 @@ def main():
                     if exit.is_set():
                         return -1
                     elif ok:
+                        state['unreleased'] = [v for v in state['unreleased'] if v != 'uhppoted-lib']
                         del unreleased['uhppoted-lib']
                         save_release_info(version, state)
 
-            if 'uhppoted-python' in unreleased:
-                ok = build.release('uhppoted-python', plist['uhppoted-python'], version, exit)
+            return -2  # FIXME remove (debugging)
+
+            if 'uhppoted-lib-python' in unreleased:
+                ok = build.release('uhppoted-lib-python', plist['uhppoted-lib-python'], version, exit)
                 if exit.is_set():
                     return -1
                 elif ok:
-                    ok = github.publish('uhppoted-python', plist['uhppoted-python'], version, exit)
+                    ok = github.publish('uhppoted-lib-python', plist['uhppoted-lib-python'], version, exit)
                     if exit.is_set():
                         return -1
                     elif ok:
                         # FIXME publish to testpy
                         # FIXME publish to pypi
-                        del unreleased['uhppoted-python']
+                        state['unreleased'] = [v for v in state['unreleased'] if v != 'uhppoted-lib-python']
+                        del unreleased['uhppoted-lib-python']
                         save_release_info(version, state)
+
+            return -2  # FIXME remove (debugging)
 
             if 'uhppoted-nodejs' in unreleased:
                 ok = build.release('uhppoted-nodejs', plist['uhppoted-nodejs'], version, exit)
@@ -191,6 +198,8 @@ def main():
                             del unreleased['uhppoted-nodejs']
                             save_release_info(version, state)
 
+            return -2  # FIXME remove (debugging)
+
             if 'node-red-contrib-uhppoted' in unreleased:
                 ok = build.release('node-red-contrib-uhppoted', plist['node-red-contrib-uhppoted'], version, exit)
                 if exit.is_set():
@@ -207,8 +216,10 @@ def main():
                             del unreleased['node-red-contrib-uhppoted']
                             save_release_info(version, state)
 
+            return -2  # FIXME remove (debugging)
+
             ignore = [
-                'uhppoted', 'uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-python',
+                'uhppoted', 'uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-lib-python', 'uhppoted-lib-dotnet'
                 'uhppoted-app-home-assistant'
             ]
             it = itertools.filterfalse(lambda p: p in ignore, unreleased)
@@ -238,7 +249,7 @@ def main():
                 elif ok:
                     # ... confirm uhppoted and submodule binary checksums match
                     # print(f'     >>> verifying checksums')
-                    # ignore = ['uhppoted', 'uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-python']
+                    # ignore = ['uhppoted', 'uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-lib-python']
                     # it = itertools.filterfalse(lambda p: p in ignore, plist)
                     # for p in it:
                     #     if not build.checksum(p, plist[p], version.version(p)):
@@ -315,14 +326,14 @@ def save_release_info(version, info):
 
 
 def clean_release_notes(project, info):
-    file = f"{info['folder']}/release-notes.md"
+    file = f"{info.folder}/release-notes.md"
     if os.path.isfile(file):
         os.remove(file)
         print(f'     ... {project} removed release-notes.md')
 
 
 def bump_changelog(project, info):
-    with open(f"{info['folder']}/CHANGELOG.md", 'r', encoding="utf-8") as f:
+    with open(f"{info.folder}/CHANGELOG.md", 'r', encoding="utf-8") as f:
         CHANGELOG = f.read()
         if 'Unreleased' in CHANGELOG:
             return
@@ -330,7 +341,7 @@ def bump_changelog(project, info):
     tmpfile = tempfile.NamedTemporaryFile(mode="w+t", delete=False)
 
     try:
-        with open(f"{info['folder']}/CHANGELOG.md", 'r', encoding="utf-8") as f:
+        with open(f"{info.folder}/CHANGELOG.md", 'r', encoding="utf-8") as f:
             CHANGELOG = f.read()
             rest = CHANGELOG
             heading, _, rest = rest.partition('\n')
@@ -344,10 +355,10 @@ def bump_changelog(project, info):
             tmpfile.write(rest)
             tmpfile.close()
 
-            os.rename(f"{info['folder']}/CHANGELOG.md", f"{info['folder']}/CHANGELOG.bak")
-            os.rename(tmpfile.name, f"{info['folder']}/CHANGELOG.md")
-            if os.path.isfile(f"{info['folder']}/CHANGELOG.bak"):
-                os.remove(f"{info['folder']}/CHANGELOG.bak")
+            os.rename(f"{info.folder}/CHANGELOG.md", f"{info.folder}/CHANGELOG.bak")
+            os.rename(tmpfile.name, f"{info.folder}/CHANGELOG.md")
+            if os.path.isfile(f"{info.folder}/CHANGELOG.bak"):
+                os.remove(f"{info.folder}/CHANGELOG.bak")
 
             print(f'     ... {project} updated CHANGELOG for next dev cycle')
     finally:
@@ -357,7 +368,7 @@ def bump_changelog(project, info):
 
 
 def clean_dist(project, info):
-    folder = f'{info["folder"]}/dist'
+    folder = f'{info.folder}/dist'
 
     if os.path.exists(folder) and os.listdir(folder):
         for filename in os.listdir(folder):
@@ -373,7 +384,7 @@ def clean_dist(project, info):
 
 def bump_version(project, info, version, exit):
     if project == 'uhppote-core':
-        path = f'{info["folder"]}/uhppote/uhppote.go'
+        path = f'{info.folder}/uhppote/uhppote.go'
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
         command = f'{sublime2} {path}'
         subprocess.run([command], shell=True)
@@ -386,7 +397,7 @@ def bump_version(project, info, version, exit):
                 break
 
     if project == 'uhppoted-httpd':
-        path = f'{info["folder"]}/package.json'
+        path = f'{info.folder}/package.json'
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
         command = f'{sublime2} {path}'
         subprocess.run([command], shell=True)
@@ -399,7 +410,7 @@ def bump_version(project, info, version, exit):
                 break
 
     if project == 'uhppoted-nodejs':
-        path = f'{info["folder"]}/package.json'
+        path = f'{info.folder}/package.json'
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
         command = f'{sublime2} {path}'
         subprocess.run([command], shell=True)
@@ -412,7 +423,7 @@ def bump_version(project, info, version, exit):
                 break
 
     if project == 'node-red-contrib-uhppoted':
-        path = f'{info["folder"]}/package.json'
+        path = f'{info.folder}/package.json'
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
         command = f'{sublime2} {path}'
         subprocess.run([command], shell=True)
@@ -424,8 +435,8 @@ def bump_version(project, info, version, exit):
             if t != modified:
                 break
 
-    if project == 'uhppoted-python':
-        path = f'{info["folder"]}/pyproject.toml'
+    if project == 'uhppoted-lib-python':
+        path = f'{info.folder}/pyproject.toml'
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
         command = f'{sublime2} {path}'
         subprocess.run([command], shell=True)
@@ -438,7 +449,7 @@ def bump_version(project, info, version, exit):
                 break
 
     if project == 'uhppoted':
-        path = f'{info["folder"]}/Makefile'
+        path = f'{info.folder}/Makefile'
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
         command = f'{sublime2} {path}'
         subprocess.run([command], shell=True)

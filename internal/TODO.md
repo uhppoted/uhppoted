@@ -1,17 +1,15 @@
 # TODO
 
 ## All
-   - [x] Publish executables for platforms
-         - [x] uhppote-cli: use DIST in publish target
-         - [x] uhppote-simulator
    - [ ] Scrub _dist_ folder on release
+   - [ ] Version check uhppoted-lib-dotnet
+   - [ ] Version check uhppoted-lib-python
    - [ ] Remove release-notes.md in _bump_
          
-## _uhppoted-python_
+## _uhppoted-lib-python_
    - [ ] Release to github and wait for published
    - [ ] Publish to testpy and wait for published
    - [ ] Publish to pypi and wait for published
-   - [x] Fix README
 
 ## _uhppoted-nodejs_
    - [ ] published

@@ -10,12 +10,12 @@ ignore = []
 
 
 def already_released(project, info, version):
-    command = f"cd {info['folder']} && git fetch --tags"
+    command = f"cd {info.folder} && git fetch --tags"
     result = subprocess.call(command, shell=True)
     if result != 0:
         raise Exception(f"command 'git fetch --tags' failed")
     else:
-        command = f"cd {info['folder']} && git tag {version} --list"
+        command = f"cd {info.folder} && git tag {version} --list"
         result = subprocess.check_output(command, shell=True)
 
         if f'{version}' in str(result):
@@ -51,8 +51,8 @@ def _release_notes(project, info, version, exit):
     print(f'     ... {project}')
 
     regex = r'##\s+\[(.*?)\](?:.*?)\n(.*?)##\s+\[(.*?)\]'
-    path = f"{info['folder']}/release-notes.md"
-    changelog = f"{info['folder']}/CHANGELOG.md"
+    path = f"{info.folder}/release-notes.md"
+    changelog = f"{info.folder}/CHANGELOG.md"
 
     try:
         with open(changelog, 'r', encoding="utf-8") as f:
@@ -74,7 +74,7 @@ def _release_notes(project, info, version, exit):
             f.write('\n')
 
     except FileExistsError:
-        f"... keeping existing {info['folder']}/release-notes.md"
+        f"... keeping existing {info.folder}/release-notes.md"
 
     return True
 
@@ -85,7 +85,14 @@ def publish(project, p, version, exit):
     # ... confirm no uncommitted changes
     print(f'     >>> checking for uncommitted changes')
     if not _uncommitted(project, p, version, exit):
-        raise Exception(f"{project} has uncommitted changes")
+        print(f'     ... {project} has uncommitted changes')
+        say(f'{project} has uncommitted changes')
+        exit.wait(10)
+        while not _uncommitted(project, p, version, exit) and not exit.is_set():
+            exit.wait(10)
+
+        if exit.is_set():
+            return False
 
     # ... confirm changes have been pushed to github repo
     if not pushed(project, p):
@@ -116,10 +123,10 @@ def publish(project, p, version, exit):
 
 def pushed(project, info):
     try:
-        command = f"cd {info['folder']} && git remote update"
+        command = f"cd {info.folder} && git remote update"
         subprocess.run(command, shell=True, check=True)
 
-        command = f"cd {info['folder']} && git status -uno"
+        command = f"cd {info.folder} && git status -uno"
         result = subprocess.check_output(command, shell=True)
 
         if "Your branch is up to date with 'origin/" in str(result):
@@ -133,7 +140,7 @@ def pushed(project, info):
 
 def _publish(project, info, version):
     try:
-        folder = info['folder']
+        folder = info.folder
         command = f"cd {folder} && make publish DIST={project}_{version} VERSION={version}"
         subprocess.run(command, shell=True, check=True)
     except subprocess.CalledProcessError:
@@ -143,12 +150,12 @@ def _publish(project, info, version):
 
 
 def published(project, info, version):
-    command = f"cd {info['folder']} && git fetch --tags"
+    command = f"cd {info.folder} && git fetch --tags"
     result = subprocess.call(command, shell=True)
     if result != 0:
         raise Exception(f"command 'git fetch --tags' failed")
     else:
-        command = f"cd {info['folder']} && git tag {version} --list"
+        command = f"cd {info.folder} && git tag {version} --list"
         result = subprocess.check_output(command, shell=True)
 
         if f'{version}' in str(result):

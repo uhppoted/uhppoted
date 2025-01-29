@@ -18,9 +18,10 @@
 - Google Sheets integration for spreadsheet managed access control lists
 - Integration with the [Wild Apricot](https://www.wildapricot.com) member management system
 - [uhppoted-app-db](https://github.com/uhppoted/uhppoted-app-db) SQL DB integration for access control lists managed in a database
+- [uhppoted-lib-python](https://github.com/uhppoted/uhppoted-lib-python) Python PyPI package
+- [uhppoted-lib-dotnet](https://github.com/uhppoted/uhppoted-lib-dotnet) .NET NuGet package
 - [Node-RED](https://nodered.org) low code environment integration
 - [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs) NodeJS package
-- [uhppoted-python](https://github.com/uhppoted/uhppoted-python) Python package
 - [Home Assistant](https://www.home-assistant.io/) custom component
 
 The components supplement the manufacturer supplied application which is 'Windows-only' and provides limited support 
@@ -47,7 +48,7 @@ Supported operating systems:
 The primary development language for this repository is Go, but code generated native bindings for the following languages
 also exist:
 - [NodeJS](https://github.com/uhppoted/uhppoted-nodejs)
-- [Python](https://github.com/uhppoted/uhppoted-python)
+- [Python](https://github.com/uhppoted/uhppoted-lib-python)
 - [Rust](https://github.com/uhppoted/uhppoted-codegen/tree/main/bindings/rust)
 - [Zig](https://github.com/uhppoted/uhppoted-codegen/tree/main/bindings/zig)
 - [Erlang](https://github.com/uhppoted/uhppoted-codegen/tree/main/bindings/erlang)
@@ -103,7 +104,7 @@ been fixed in later firmware versions but patches to support these events are in
 - [`node-red-contrib-uhppoted`](https://github.com/uhppoted/node-red-contrib-uhppoted/blob/main/nodes/codec.js#L107-L109)
 - [`uhppoted-nodejs`](https://github.com/uhppoted/uhppoted-nodejs/blob/master/src/codec.js#L114-L121)
 - [`uhppoted-codegen`](https://github.com/uhppoted/uhppoted-codegen/blob/main/bindings/go/uhppote/decode.go#L36-L40)
-- [`uhppoted-python`](https://github.com/uhppoted/uhppoted-python/blob/main/src/uhppoted/decode.py#L63-L65)
+- [`uhppoted-lib-python`](https://github.com/uhppoted/uhppoted-lib-python/blob/main/src/uhppoted/decode.py#L63-L65)
 
 #### Readers
 
@@ -146,7 +147,7 @@ but the readers below are in active use:
 | [uhppoted-app-home-assistant](https://github.com/uhppoted/uhppoted-app-home-assistant) | Home Assistant custom component |
 | [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted)     | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
 | [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                         | Standalone NodeJS module |
-| [uhppoted-python](https://github.com/uhppoted/uhppoted-python)                         | Standalone Python package for PyPI |
+| [uhppoted-lib-python](https://github.com/uhppoted/uhppoted-lib-python)                         | Standalone Python package for PyPI |
 | [uhppoted-lib-dotnet](https://github.com/uhppoted/uhppoted-lib-dotnet)                 | .NET package for NuGet |
 | [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll)                               | shared-lib/DLL for cross-language interop |
 | [uhppoted-codegen](https://github.com/uhppoted/uhppoted-codegen)                       | Model based code generator for native language bindings |
