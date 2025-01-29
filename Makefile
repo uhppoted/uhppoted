@@ -43,7 +43,7 @@ status-all:
 	git -C uhppoted-dll              status
 	git -C uhppoted-codegen          status
 	git -C uhppoted-nodejs           status
-	git -C uhppoted-python           status
+	git -C uhppoted-lib-python       status
 	git -C uhppoted-app-s3           status
 	git -C uhppoted-app-sheets       status
 	git -C uhppoted-app-wild-apricot status
@@ -68,7 +68,7 @@ push-all:
 	git -C uhppoted-dll              push
 	git -C uhppoted-codegen          push
 	git -C uhppoted-nodejs           push
-	git -C uhppoted-python           push
+	git -C uhppoted-lib-python       push
 	git -C uhppoted-wiegand          push
 	git                              push
 
@@ -88,7 +88,7 @@ update-all:
 	cd uhppoted-dll              && make update && cd ..
 	cd uhppoted-codegen          && make update && cd ..
 	cd uhppoted-nodejs           && make update && cd ..
-	cd uhppoted-python           && make update && cd ..
+	cd uhppoted-lib-python       && make update && cd ..
 	cd uhppoted-wiegand          && make update && cd ..
 	make update	
 
@@ -109,7 +109,7 @@ format:
 	cd uhppoted-tunnel           && make format
 	cd uhppoted-dll              && make format
 	cd uhppoted-codegen          && make format
-	cd uhppoted-python           && make format
+	cd uhppoted-lib-python       && make format
 	cd uhppoted-app-s3           && make format
 	cd uhppoted-app-sheets       && make format
 	cd uhppoted-app-wild-apricot && make format
@@ -128,7 +128,7 @@ build: format
 	cd uhppoted-tunnel           && go build -trimpath -o ../bin/ ./...
 #	cd uhppoted-dll              && make build
 	cd uhppoted-codegen          && go build -trimpath -o ../bin/ ./...
-	cd uhppoted-python           && make build
+	cd uhppoted-lib-python       && make build
 	cd uhppoted-app-s3           && go build -trimpath -o ../bin/ ./...
 	cd uhppoted-app-sheets       && go build -trimpath -o ../bin/ ./...
 	cd uhppoted-app-wild-apricot && go build -trimpath -o ../bin/ ./...
@@ -145,7 +145,7 @@ test: build
 	cd uhppoted-tunnel           && go test ./...
 #	cd uhppoted-dll              && make tests
 	cd uhppoted-codegen          && go test ./...
-	cd uhppoted-python           && make test
+	cd uhppoted-lib-python       && make test
 	cd uhppoted-app-s3           && go test ./...
 	cd uhppoted-app-sheets       && go test ./...
 	cd uhppoted-app-wild-apricot && go test ./...
@@ -350,8 +350,8 @@ build-github:
 	cd uhppoted-httpd            && go build -trimpath ./...
 	cd uhppoted-tunnel           && go build -trimpath ./...
 	cd uhppoted-codegen          && go build -trimpath ./...
-#	make -C ./uhppoted-python -f Makefile build-all
-#	make -C ./uhppoted-dll    -f Makefile build-all
+#	make -C ./uhppoted-lib-python -f Makefile build-all
+#	make -C ./uhppoted-dll        -f Makefile build-all
 	cd uhppoted-app-s3           && go build -trimpath ./...
 	cd uhppoted-app-sheets       && go build -trimpath ./...
 	cd uhppoted-app-wild-apricot && go build -trimpath ./...

@@ -32,7 +32,7 @@ def READMEs(projects, version, exit):
 def readme(project, info, version, exit):
     print(f'     ... {project}')
 
-    path = f"{info['folder']}/README.md"
+    path = f"{info.folder}/README.md"
     README = ''
 
     with open(path, 'r', encoding="utf-8") as f:

@@ -22,17 +22,9 @@
 	path = uhppoted-mqtt
 	url = https://github.com/uhppoted/uhppoted-mqtt.git
 
-[submodule "node-red-contrib-uhppoted"]
-	path = node-red-contrib-uhppoted
-	url = https://github.com/uhppoted/node-red-contrib-uhppoted.git
-
 [submodule "uhppoted-httpd"]
 	path = uhppoted-httpd
 	url = https://github.com/uhppoted/uhppoted-httpd
-
-[submodule "uhppoted-nodejs"]
-	path = uhppoted-nodejs
-	url = https://github.com/uhppoted/uhppoted-nodejs.git
 
 [submodule "uhppoted-dll"]
 	path = uhppoted-dll
@@ -45,10 +37,6 @@
 [submodule "uhppoted-codegen"]
 	path = uhppoted-codegen
 	url = https://github.com/uhppoted/uhppoted-codegen.git
-
-[submodule "uhppoted-python"]
-	path = uhppoted-python
-	url = https://github.com/uhppoted/uhppoted-python
 
 [submodule "uhppoted-app-sheets"]
 	path = uhppoted-app-sheets
@@ -70,6 +58,22 @@
 	path = uhppoted-app-home-assistant
 	url = https://github.com/uhppoted/uhppoted-app-home-assistant.git
 
+[submodule "uhppoted-lib-python"]
+	path = uhppoted-lib-python
+	url = https://github.com/uhppoted/uhppoted-lib-python.git
+
+[submodule "uhppoted-lib-dotnet"]
+	path = uhppoted-lib-dotnet
+	url = https://github.com/uhppoted/uhppoted-lib-dotnet.git
+
+[submodule "uhppoted-nodejs"]
+	path = uhppoted-nodejs
+	url = https://github.com/uhppoted/uhppoted-nodejs.git
+
+[submodule "node-red-contrib-uhppoted"]
+	path = node-red-contrib-uhppoted
+	url = https://github.com/uhppoted/node-red-contrib-uhppoted.git
+
 [submodule "uhppoted-wiegand"]
 	path = uhppoted-wiegand
 	url = https://github.com/uhppoted/uhppoted-wiegand.git
@@ -77,6 +81,4 @@
 [submodule "uhppoted-breakout"]
 	path = uhppoted-breakout
 	url = https://github.com/uhppoted/uhppoted-breakout
-[submodule "uhppoted-lib-dotnet"]
-	path = uhppoted-lib-dotnet
-	url = https://github.com/uhppoted/uhppoted-lib-dotnet.git
+

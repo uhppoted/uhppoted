@@ -54,7 +54,7 @@ def release(project, p, version, exit):
 
 def checkout(project, info):
     try:
-        command = f"cd {info['folder']} && git checkout {info['branch']}"
+        command = f"cd {info.folder} && git checkout {info.branch}"
         subprocess.run(command, shell=True, check=True)
     except subprocess.CalledProcessError:
         raise Exception(f"command 'checkout {project}' failed")
@@ -64,7 +64,7 @@ def checkout(project, info):
 
 def update(project, info):
     try:
-        folder = info['folder']
+        folder = info.folder
         command = f'cd {folder} && make update'
         subprocess.run(command, shell=True, check=True)
     except subprocess.CalledProcessError:
@@ -75,7 +75,7 @@ def update(project, info):
 
 def update_release(project, info):
     try:
-        folder = info['folder']
+        folder = info.folder
         command = f'cd {folder} && make update-release'
         subprocess.run(command, shell=True, check=True)
     except subprocess.CalledProcessError:
@@ -86,13 +86,13 @@ def update_release(project, info):
 
 def updated_for_release(project, info, version):
     try:
-        folder = info['folder']
+        folder = info.folder
         path = os.path.join(folder, 'go.mod')
 
         if os.path.isfile(path):
             core = None
             lib = None
-            r = re.compile('(?:require\s+)?(\S+)\s+(\S+)')
+            r = re.compile(r'(?:require\s+)?(\S+)\s+(\S+)')
 
             with open(path, 'rt') as f:
                 while line := f.readline():
@@ -117,10 +117,10 @@ def updated_for_release(project, info, version):
 
 def uncommitted(project, info):
     try:
-        command = f"cd {info['folder']} && git remote update"
+        command = f"cd {info.folder} && git remote update"
         subprocess.run(command, shell=True, check=True)
 
-        command = f"cd {info['folder']} && git status -uno"
+        command = f"cd {info.folder} && git status -uno"
         result = subprocess.check_output(command, shell=True)
 
         if not 'Changes not staged for commit' in str(result):
@@ -134,7 +134,7 @@ def uncommitted(project, info):
 
 def build(project, info):
     try:
-        folder = info['folder']
+        folder = info.folder
         command = f'cd {folder} && make build'
         subprocess.run(command, shell=True, check=True)
     except subprocess.CalledProcessError:
@@ -145,7 +145,7 @@ def build(project, info):
 
 def build_all(project, info):
     try:
-        folder = info['folder']
+        folder = info.folder
         command = f'cd {folder} && make build-all'
         subprocess.run(command, shell=True, check=True)
         return True
@@ -155,7 +155,7 @@ def build_all(project, info):
 
 def _release(project, info, version):
     try:
-        folder = info['folder']
+        folder = info.folder
         command = f'cd {folder} && make release DIST={project}_{version}'
         subprocess.run(command, shell=True, check=True)
     except subprocess.CalledProcessError:
@@ -166,8 +166,8 @@ def _release(project, info, version):
 
 def checksum(project, info, version):
     if 'binary' in info:
-        binary = info['binary']
-        root = f"{info['folder']}"
+        binary = info.binary
+        root = f"{info.folder}"
         platforms = ['linux', 'darwin', 'windows', 'arm', 'arm7']
 
         for platform in platforms:
