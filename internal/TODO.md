@@ -1,28 +1,32 @@
 # TODO
 
+- [ ] github.released() check should use node-red-contrib version
+- [ ] Implement npm.published()
+
 ## All
    - [ ] Scrub _dist_ folder on release
-   - [ ] Version check uhppoted-lib-dotnet
-   - [ ] Version check uhppoted-lib-python
+   - [x] Version check uhppoted-lib-dotnet
+   - [x] Version check uhppoted-lib-python
    - [ ] Remove release-notes.md in _bump_
          
 ## _uhppoted-lib-python_
-   - [ ] Release to github and wait for published
-   - [ ] Publish to testpy and wait for published
-   - [ ] Publish to pypi and wait for published
+   - [x] Release to github and wait for published
+   - [x] Publish to testpy and wait for published
+   - [x] Publish to pypi and wait for published
+   - [ ] Publish to TestPyPI from github
+   - [ ] Publish to PyPI from github
+   - [ ] Use twine in venv rather than conda
 
 ## _uhppoted-nodejs_
-   - [ ] published
+   - [ ] Publish to npm from github
 
 ## _node-red-contrib-uhppoted_
-   - [x] Publish with node-red version from command line
-   - [ ] published
-   - [ ] Remove old tarballs before publishing
-   - [ ] github released check should use node-red version
    - [ ] Version in README should be node-red-version
+   - [ ] Publish to npm from github
+   - [ ] Remove old tarballs before publishing
 
 ## _uhppoted-app-home-assistant
    - [ ] add to release script
 
-## Use sub-project Makefiles to generate uhppoted dist
-   - (?) or drop uhppoted dist altogether
+## _uhppoted_
+   - [ ] Use sub-project Makefiles to generate uhppoted dist files

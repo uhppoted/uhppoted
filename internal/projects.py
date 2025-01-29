@@ -9,6 +9,7 @@ class Project:
     branch: str = 'main'
     binary: str = None
     packaging: str = None
+    package: str = None
 
 
 # yapf: disable
@@ -30,8 +31,8 @@ PROJECTS = [
     Project(name='uhppoted-app-home-assistant', folder='./uhppoted-app-home-assistant', binary='uhppoted-app-home-assistant'),
     Project(name='uhppoted-lib-python',         folder='./uhppoted-lib-python',       packaging='python'),
     Project(name='uhppoted-lib-dotnet',         folder='./uhppoted-lib-dotnet',       packaging='dotnet'),
-    Project(name='uhppoted-nodejs',             folder='./uhppoted-nodejs',           packaging='nodejs'),
-    Project(name='node-red-contrib-uhppoted',   folder='./node-red-contrib-uhppoted', packaging='nodejs'),
+    Project(name='uhppoted-nodejs',             folder='./uhppoted-nodejs',           packaging='nodejs', package='uhppoted'),
+    Project(name='node-red-contrib-uhppoted',   folder='./node-red-contrib-uhppoted', packaging='nodejs', package='node-red-contrib-uhppoted'),
     Project(name='uhppoted-wiegand',            folder='./uhppoted-wiegand'),
     Project(name='uhppoted',                    folder='.'),
 ]

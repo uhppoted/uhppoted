@@ -163,8 +163,6 @@ def main():
                         del unreleased['uhppoted-lib']
                         save_release_info(version, state)
 
-            return -2  # FIXME remove (debugging)
-
             if 'uhppoted-lib-python' in unreleased:
                 ok = build.release('uhppoted-lib-python', plist['uhppoted-lib-python'], version, exit)
                 if exit.is_set():
@@ -180,8 +178,6 @@ def main():
                         del unreleased['uhppoted-lib-python']
                         save_release_info(version, state)
 
-            return -2  # FIXME remove (debugging)
-
             if 'uhppoted-nodejs' in unreleased:
                 ok = build.release('uhppoted-nodejs', plist['uhppoted-nodejs'], version, exit)
                 if exit.is_set():
@@ -195,10 +191,9 @@ def main():
                         if exit.is_set():
                             return -1
                         elif ok:
+                            state['unreleased'] = [v for v in state['unreleased'] if v != 'uhppoted-nodejs']
                             del unreleased['uhppoted-nodejs']
                             save_release_info(version, state)
-
-            return -2  # FIXME remove (debugging)
 
             if 'node-red-contrib-uhppoted' in unreleased:
                 ok = build.release('node-red-contrib-uhppoted', plist['node-red-contrib-uhppoted'], version, exit)
@@ -213,15 +208,18 @@ def main():
                         if exit.is_set():
                             return -1
                         elif ok:
+                            state['unreleased'] = [v for v in state['unreleased'] if v != 'node-red-contrib-uhppoted']
                             del unreleased['node-red-contrib-uhppoted']
                             save_release_info(version, state)
 
-            return -2  # FIXME remove (debugging)
-
             ignore = [
-                'uhppoted', 'uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-lib-python', 'uhppoted-lib-dotnet'
-                'uhppoted-app-home-assistant'
+              'uhppoted', 
+              'uhppoted-nodejs', 
+              'node-red-contrib-uhppoted', 
+              'uhppoted-lib-python',
+              'uhppoted-app-home-assistant'
             ]
+
             it = itertools.filterfalse(lambda p: p in ignore, unreleased)
             rl = {p: plist[p] for p in it}
             for p in rl:
@@ -237,10 +235,15 @@ def main():
                         if exit.is_set():
                             return -1
                         elif ok:
+                            state['unreleased'] = [v for v in state['unreleased'] if v != p]
                             del unreleased[p]
                             save_release_info(version, state)
 
+            return -2  # FIXME remove (debugging)
+
             ### TODO release uhppoted-app-home-assistant
+
+            return -2  # FIXME remove (debugging)
 
             if 'uhppoted' in unreleased:
                 ok = build.release('uhppoted', plist['uhppoted'], version, exit)
