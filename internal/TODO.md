@@ -2,12 +2,19 @@
 
 - [ ] github.released() check should use node-red-contrib version
 - [ ] Implement npm.published()
+- [ ] Move state to each individual project
+      - [ ] Serialise projects list
+      - [ ] Make nice json names for fields
+- [ ] Sort project list by dependencies
+- [ ] --debug that exits after each step/project
 
 ## All
    - [ ] Scrub _dist_ folder on release
    - [x] Version check uhppoted-lib-dotnet
    - [x] Version check uhppoted-lib-python
    - [ ] Remove release-notes.md in _bump_
+   - [ ] Check CHANGELOG date before release/publish
+   - [ ] Check README date before release/publish
          
 ## _uhppoted-lib-python_
    - [x] Release to github and wait for published
