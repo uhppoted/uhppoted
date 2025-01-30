@@ -35,7 +35,9 @@ def prepare(projects, version, exit):
             return True
 
 
-def release(project, p, version, exit):
+def release(_project, p, version, exit):
+    project = p.name
+
     print(f'>>>> build release for {project} ({version.version(project)})')
 
     # ... update for release and build

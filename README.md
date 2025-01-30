@@ -105,6 +105,7 @@ been fixed in later firmware versions but patches to support these events are in
 - [`uhppoted-nodejs`](https://github.com/uhppoted/uhppoted-nodejs/blob/master/src/codec.js#L114-L121)
 - [`uhppoted-codegen`](https://github.com/uhppoted/uhppoted-codegen/blob/main/bindings/go/uhppote/decode.go#L36-L40)
 - [`uhppoted-lib-python`](https://github.com/uhppoted/uhppoted-lib-python/blob/main/src/uhppoted/decode.py#L63-L65)
+- [`uhppoted-lib-dotnet`](https://github.com/uhppoted/uhppoted-lib-dotnet/blob/main/uhppoted/uhppoted/decode.fs#L466-L467)
 
 #### Readers
 
@@ -121,7 +122,7 @@ but the readers below are in active use:
 
 ### Current Release
 
-**[v0.8.10](https://github.com/uhppoted/uhppoted-wiegand/releases/tag/v0.8.10) - 2025-01-31**
+**[v0.8.10](https://github.com/uhppoted/uhppoted-wiegand/releases/tag/v0.8.10) - 2025-01-30**
 
 1. Added _uhppoted-lib-dotnet_ submodule.
 2. Added support for _auto-send interval_ throughout.
