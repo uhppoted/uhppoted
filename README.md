@@ -129,7 +129,7 @@ but the readers below are in active use:
 3. Renamed _uhppoted-python_ submodule to _uhppoted-lib-python_.
 4. Fixed performance regression in _uhppoted-httpd_.
 5. Updated _uhppoted-app-home-assistant_ for HACS 2.0.
-
+6. Added build targets for ARM6 (RaspberryPi ZeroW)
 
 ## Modules
 
