@@ -254,6 +254,7 @@ def main():
                         if exit.is_set():
                             return -1
                         elif ok:
+                            state['unreleased'] = [v for v in state['unreleased'] if v != 'uhppoted']
                             del unreleased['uhppoted']
                             save_release_info(version, state)
 
