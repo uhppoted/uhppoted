@@ -354,7 +354,7 @@ publish: release
 	rm -f dist/development-windows.zip
 	gh release create "$(VERSION)" ./dist/*.tar.gz ./dist/*.zip --draft --prerelease --title "$(VERSION)-beta" --notes-file release-notes.md
 
-release-v0.8.10: 
+release-v0.8.11: 
 	yapf -ri ./internal
 	python ./internal/release.py --version=$(VERSION) --node-red=$(NODERED) $(RELEASE) $(BUMP)
 
