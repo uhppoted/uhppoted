@@ -1,3 +1,6 @@
+import projects
+
+
 class Version:
 
     def __init__(self, version, node_red):
@@ -15,7 +18,9 @@ class Version:
         return self._version
 
     def version(self, project):
-        if project == 'node-red-contrib-uhppoted':
+        name = project.name if isinstance(project, projects.Project) else f'{project}'
+
+        if name == 'node-red-contrib-uhppoted':
             return self._node_red
         else:
             return self._version

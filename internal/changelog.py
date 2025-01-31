@@ -5,27 +5,21 @@ import subprocess
 import time
 
 sublime2 = '"/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl"'
-ignore = []
 
 
-def CHANGELOGs(projects, version, exit):
-    print(f'>>>> checking CHANGELOGs ({version})')
+def CHANGELOGs(projects, versions, exit):
+    print(f'>>>> checking CHANGELOGs')
 
     while True:
         ok = True
-        for p in projects:
-            if not p in ignore:
-                project = projects[p]
-                v = version.version(p)
+        for project in projects:
+            version = versions.version(project)
 
-                if 'changelog' in project.keys():
-                    project['changelog']()
+            if not changelog(project.name, project, version[1:], exit):
+                ok = False
 
-                if not changelog(p, project, v[1:], exit):
-                    ok = False
-
-                if exit.is_set():
-                    return False
+            if exit.is_set():
+                return False
         if ok:
             break
 

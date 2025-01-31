@@ -5,24 +5,21 @@ import subprocess
 import time
 
 sublime2 = '"/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl"'
-ignore = []
 
 
-def READMEs(projects, version, exit):
-    print(f'>>>> checking READMEs ({version})')
+def READMEs(projects, versions, exit):
+    print(f'>>>> checking READMEs')
 
     while True:
         ok = True
-        for p in projects:
-            if not p in ignore:
-                project = projects[p]
-                v = version.version(p)
+        for project in projects:
+            versions = versions.version(project)
 
-                if not readme(p, project, v, exit):
-                    ok = False
+            if not readme(p, project, version, exit):
+                ok = False
 
-                if exit.is_set():
-                    return False
+            if exit.is_set():
+                return False
         if ok:
             break
 
