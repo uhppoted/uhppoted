@@ -1,5 +1,5 @@
 VERSION ?= 0.8.11
-NODERED ?= 1.1.10
+NODERED ?= 1.1.11
 RELEASE ?= 
 BUMP    ?= 
 DEBUG   ?= --debug

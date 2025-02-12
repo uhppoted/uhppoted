@@ -1,7 +1,8 @@
 # TODO
 
-- [ ] github.released() check should use node-red-contrib version
 - [ ] Scrub _dist_ folder on release
+- [ ] github.released() check should use node-red-contrib version
+      - (?) make Versions a singleton
 - [ ] Check CHANGELOG date before release/publish
 - [ ] Check README date before release/publish
 - [ ] Implement npm.published()
@@ -14,7 +15,7 @@
 - [ ] --debug that exits after each step/project
 
 ## _uhppoted-httpd_
-- [ ] Check _package.json_ version
+   - [ ] Check _package.json_ version
          
 ## _uhppoted-lib-python_
    - [ ] Publish to TestPyPI from github
