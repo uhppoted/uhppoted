@@ -1,6 +1,16 @@
 # CHANGELOG
 
-## Unreleased
+## [0.8.11](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.11) - 2024-07-01
+
+### Added
+1. API function for `get/set-anti-passback` throughout.
+2. Added _decorated events_ and caching to _uhppoted-app-home-assistant.
+3. Added M5 stack Wiegand emulator (in progress).
+
+### Updated
+1. Updated to Go 1.24 throughout.
+2. Renamed _upppoted-nodejs_ repository to _uhppoted-lib-nodejs_.
+3. Added check to prevent UDP bind address from using broadcast port.
 
 
 ## [0.8.10](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.10) - 2024-01-30

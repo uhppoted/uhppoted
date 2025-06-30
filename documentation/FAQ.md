@@ -71,3 +71,11 @@ References:
 2. [_How to change/view the ephemeral port range on Windows machines?_](https://stackoverflow.com/questions/7006939/how-to-change-view-the-ephemeral-port-range-on-windows-machines#7007159)
 3. [_You cannot exclude ports by using the ReservedPorts registry key in Windows Server 2008 or in Windows Server 2008 R2_](https://support.microsoft.com/en-us/topic/you-cannot-exclude-ports-by-using-the-reservedports-registry-key-in-windows-server-2008-or-in-windows-server-2008-r2-a68373fd-9f64-4bde-9d68-c5eded74ea35)
 4. [_Listen to UDP data on local port with netcat_](https://serverfault.com/questions/207683/listen-to-udp-data-on-local-port-with-netcat)
+
+
+3. Docker + UDP
+
+In _bridge networking mode_ (_MacOS_ and _Windows_), the Docker UDP transport drops incoming packets at a significantly higher rate than 
+typically experienced on a LAN/WAN. _host networking mode_ (Linux, RaspberryPi, etc) appears to operate normally an reliably.
+
+The TCP transport doesn't appear to be affected.

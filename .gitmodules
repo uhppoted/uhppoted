@@ -66,10 +66,6 @@
 	path = uhppoted-lib-dotnet
 	url = https://github.com/uhppoted/uhppoted-lib-dotnet.git
 
-[submodule "uhppoted-nodejs"]
-	path = uhppoted-nodejs
-	url = https://github.com/uhppoted/uhppoted-nodejs.git
-
 [submodule "node-red-contrib-uhppoted"]
 	path = node-red-contrib-uhppoted
 	url = https://github.com/uhppoted/node-red-contrib-uhppoted.git
@@ -82,3 +78,6 @@
 	path = uhppoted-breakout
 	url = https://github.com/uhppoted/uhppoted-breakout
 
+[submodule "uhppoted-lib-nodejs"]
+	path = uhppoted-lib-nodejs
+	url = https://github.com/uhppoted/uhppoted-lib-nodejs

@@ -1,12 +1,20 @@
 # TODO
 
-- [x] Update to Go 1.23 (cf. https://github.com/uhppoted/uhppoted/issues/53)
+- [x] Update to Go 1.24
+- [x] anti-passback (cf. https://github.com/uhppoted/uhppoted/issues/60)
+
+- [ ] Format/lint Makefile (https://github.com/EbodShojaei/bake)
+- [ ] Format README like https://github.com/BelfrySCAD/BOSL2/wiki
 
 - [ ] Release script
+      - [x] npm: `... uhppoted-lib-nodejs is waiting for release on npm`
+      - [ ] README: doesn't check uhppoted-lib-python
+      - [ ] README: copy CHANGELOG to clipboard
       - [ ] Pre-release builds
       - [ ] Build checksums
       - [ ] Bump version in uhppote-core and Makefiles
       - [ ] https://pydoit.org/
+      - [ ] https://github.com/bitfield/script
 
 - [ ] ghcr
       - [ ] Build versioned images before 'latest' so that the install instruction refers to 'latest'
@@ -280,3 +288,4 @@
 113. https://steampipe.io/
 114. https://nats.io/
 115. https://www.jolie-lang.org/index.html
+116. https://arxiv.org/pdf/2503.04084v1
