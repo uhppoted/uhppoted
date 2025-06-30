@@ -39,6 +39,24 @@ PROJECTS = [
             folder='./uhppoted-lib',
             dependencies=['uhppote-core']),
 
+    Project(name='uhppoted-lib-python',
+            folder='./uhppoted-lib-python',
+            packaging='python'),
+
+    Project(name='uhppoted-lib-dotnet',
+            folder='./uhppoted-lib-dotnet',
+            packaging='dotnet'),
+
+    Project(name='uhppoted-lib-nodejs',
+            folder='./uhppoted-lib-nodejs',
+            packaging='nodejs',
+            package='uhppoted'),
+
+    Project(name='node-red-contrib-uhppoted',
+            folder='./node-red-contrib-uhppoted',
+            packaging='nodejs',
+            package='node-red-contrib-uhppoted'),
+
     Project(name='uhppote-simulator',
             folder='./uhppote-simulator',
             binary='uhppote-simulator',
@@ -102,24 +120,6 @@ PROJECTS = [
             folder='./uhppoted-app-home-assistant',
             binary='uhppoted-app-home-assistant',
             dependencies=['uhppoted-lib-python']),
-
-    Project(name='uhppoted-lib-python',
-            folder='./uhppoted-lib-python',
-            packaging='python'),
-
-    Project(name='uhppoted-lib-dotnet',
-            folder='./uhppoted-lib-dotnet',
-            packaging='dotnet'),
-
-    Project(name='uhppoted-nodejs',
-            folder='./uhppoted-nodejs',
-            packaging='nodejs',
-            package='uhppoted'),
-
-    Project(name='node-red-contrib-uhppoted',
-            folder='./node-red-contrib-uhppoted',
-            packaging='nodejs',
-            package='node-red-contrib-uhppoted'),
 
     Project(name='uhppoted-wiegand',
             folder='./uhppoted-wiegand'),

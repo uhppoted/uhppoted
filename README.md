@@ -18,10 +18,10 @@
 - Google Sheets integration for spreadsheet managed access control lists
 - Integration with the [Wild Apricot](https://www.wildapricot.com) member management system
 - [uhppoted-app-db](https://github.com/uhppoted/uhppoted-app-db) SQL DB integration for access control lists managed in a database
+- [uhppoted-lib-nodejs](https://github.com/uhppoted/uhppoted-lib-nodejs) NodeJS package
 - [uhppoted-lib-python](https://github.com/uhppoted/uhppoted-lib-python) Python PyPI package
 - [uhppoted-lib-dotnet](https://github.com/uhppoted/uhppoted-lib-dotnet) .NET NuGet package
 - [Node-RED](https://nodered.org) low code environment integration
-- [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs) NodeJS package
 - [Home Assistant](https://www.home-assistant.io/) custom component
 
 The components supplement the manufacturer supplied application which is 'Windows-only' and provides limited support 
@@ -122,14 +122,15 @@ but the readers below are in active use:
 
 ### Current Release
 
-**[v0.8.10](https://github.com/uhppoted/uhppoted-wiegand/releases/tag/v0.8.10) - 2025-01-30**
+**[v0.8.11](https://github.com/uhppoted/uhppoted-wiegand/releases/tag/v0.8.11) - 2025-07-01**
 
-1. Added _uhppoted-lib-dotnet_ submodule.
-2. Added support for _auto-send interval_ throughout.
-3. Renamed _uhppoted-python_ submodule to _uhppoted-lib-python_.
-4. Fixed performance regression in _uhppoted-httpd_.
-5. Updated _uhppoted-app-home-assistant_ for HACS 2.0.
-6. Added build targets for ARM6 (RaspberryPi ZeroW)
+1. Added support `get/set-anti-passback` API function.
+2. Added _decorated events_ and caching to _uhppoted-app-home-assistant.
+3. Added M5 stack Wiegand emulator (in progress).
+4. Renamed _upppoted-nodejs_ repository to _uhppoted-lib-nodejs_.
+5. Added check to prevent UDP bind address from using broadcast port.
+6. Updated to Go 1.24 throughout.
+
 
 ## Modules
 

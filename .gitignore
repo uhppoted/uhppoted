@@ -1,5 +1,6 @@
 .DS_Store
 internal/__pycache__
+internal/.venv
 
 # Imports
 github.com

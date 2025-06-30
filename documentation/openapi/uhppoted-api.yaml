@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 
 info:
-  version: 0.8.8
+  version: 0.8.10
   title: "uhppoted"
   description: "REST API for the uhppoted-rest service. The API currently supports both device level functions and higher level access control list management."
   license:
@@ -286,6 +286,114 @@ paths:
                   $ref: "#/components/schemas/Error"        
         '404':
           description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/antipassback:
+    get:
+      tags:
+        - device
+      summary: "Gets the controller anti-passback mode"
+      description: "Gets the controller anti-passback mode"
+      operationId: getAntiPassback
+      parameters:
+        - name: device-id
+          in: path
+          description: "Controller serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      responses:
+        '200':
+          description: "Controller anti-passback"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/AntiPassback"        
+        '404':
+          description: "No controller with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+    put:
+      tags:
+        - device
+      summary: "Sets the controller anti-passback mode"
+      description: "Sets the controller anti-passback mode"
+      operationId: putAntiPassback
+      parameters:
+        - name: device-id
+          in: path
+          description: "Controller serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      requestBody:
+        description: "Anti-passback"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AntiPassback"        
+      responses:
+        '200':
+          description: "Controller anti-passback"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/AntiPassback"        
+        '403':
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '404':
+          description: "No controller with ID matching device-id"
           content:
             application/json:
               schema:
@@ -1999,6 +2107,19 @@ components:
           format: yyyy-mm-dd HH:mm:ss
           description: "Current device date/time"
           example: "2023-03-28 15:32:29"
+
+    AntiPassback:
+      properties:
+        anti-passback:
+          type: string
+          format: string enum
+                  - disabled
+                  - (1:2);(3:4)
+                  - (1,3):(2:4)
+                  - 1:(2,3)
+                  - 1:(2,3,4)
+          description: "Controller anti-passback mode"
+          example: "(1,3):(2,4)"
 
     Door:
       properties:

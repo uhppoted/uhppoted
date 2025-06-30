@@ -1,5 +1,5 @@
 VERSION ?= 0.8.11
-NODERED ?= 1.1.11
+NODERED ?= 1.1.12
 RELEASE ?= 
 BUMP    ?= 
 DEBUG   ?= --debug
@@ -43,7 +43,7 @@ status-all:
 	git -C uhppoted-tunnel           status
 	git -C uhppoted-dll              status
 	git -C uhppoted-codegen          status
-	git -C uhppoted-nodejs           status
+	git -C uhppoted-lib-nodejs       status
 	git -C uhppoted-lib-python       status
 	git -C uhppoted-app-s3           status
 	git -C uhppoted-app-sheets       status
@@ -68,7 +68,7 @@ push-all:
 	git -C uhppoted-tunnel           push
 	git -C uhppoted-dll              push
 	git -C uhppoted-codegen          push
-	git -C uhppoted-nodejs           push
+	git -C uhppoted-lib-nodejs       push
 	git -C uhppoted-lib-python       push
 	git -C uhppoted-wiegand          push
 	git                              push
@@ -88,7 +88,7 @@ update-all:
 	cd uhppoted-tunnel           && make update && cd ..
 	cd uhppoted-dll              && make update && cd ..
 	cd uhppoted-codegen          && make update && cd ..
-	cd uhppoted-nodejs           && make update && cd ..
+	cd uhppoted-lib-nodejs       && make update && cd ..
 	cd uhppoted-lib-python       && make update && cd ..
 	cd uhppoted-wiegand          && make update && cd ..
 	make update	
@@ -354,7 +354,11 @@ publish: release
 	rm -f dist/development-windows.zip
 	gh release create "$(VERSION)" ./dist/*.tar.gz ./dist/*.zip --draft --prerelease --title "$(VERSION)-beta" --notes-file release-notes.md
 
-release-v0.8.11: 
+# e.g.
+# make release-all
+# make release-all RELEASE=--release
+# make release-all BUMP=--bump
+release-all: 
 	yapf -ri ./internal
 	python ./internal/release.py --version=$(VERSION) --node-red=$(NODERED) $(RELEASE) $(BUMP)
 
@@ -376,7 +380,7 @@ build-github:
 	cd uhppoted-app-db           && go build -trimpath ./...
 
 debug: 
-	cd uhppote-simulator && $(WINDOWS) go build -trimpath -o ../dist/windows/$(DIST) ./...
+	python ./internal/debug.py
 
 swagger: 
 	docker run --detach --publish 80:8080 --name swagger --rm swaggerapi/swagger-editor 

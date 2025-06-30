@@ -14,6 +14,7 @@ import datetime
 import itertools
 import traceback
 import tempfile
+import build
 
 from threading import Event
 
@@ -26,7 +27,6 @@ from readme import READMEs
 from packaging import package_versions
 from git import uncommitted
 from misc import say
-import build
 
 sublime2 = '"/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl"'
 exit = Event()
@@ -178,21 +178,21 @@ def main():
                         del unreleased['uhppoted-lib-python']
                         save_release_info(versions, state)
 
-            if 'uhppoted-nodejs' in unreleased:
-                ok = build.release('uhppoted-nodejs', plist['uhppoted-nodejs'], versions, exit)
+            if 'uhppoted-lib-nodejs' in unreleased:
+                ok = build.release('uhppoted-lib-nodejs', plist['uhppoted-lib-nodejs'], versions, exit)
                 if exit.is_set():
                     return -1
                 elif ok:
-                    ok = github.publish('uhppoted-nodejs', plist['uhppoted-nodejs'], versions, exit)
+                    ok = github.publish('uhppoted-lib-nodejs', plist['uhppoted-lib-nodejs'], versions, exit)
                     if exit.is_set():
                         return -1
                     elif ok:
-                        ok = npm.publish('uhppoted-nodejs', plist['uhppoted-nodejs'], versions, exit)
+                        ok = npm.publish('uhppoted-lib-nodejs', plist['uhppoted-lib-nodejs'], versions, exit)
                         if exit.is_set():
                             return -1
                         elif ok:
-                            state['unreleased'] = [v for v in state['unreleased'] if v != 'uhppoted-nodejs']
-                            del unreleased['uhppoted-nodejs']
+                            state['unreleased'] = [v for v in state['unreleased'] if v != 'uhppoted-lib-nodejs']
+                            del unreleased['uhppoted-lib-nodejs']
                             save_release_info(versions, state)
 
             if 'node-red-contrib-uhppoted' in unreleased:
@@ -213,7 +213,7 @@ def main():
                             del unreleased['node-red-contrib-uhppoted']
                             save_release_info(versions, state)
 
-            ignore = ['uhppoted', 'uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-lib-python']
+            ignore = ['uhppoted', 'uhppoted-lib-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-lib-python']
 
             it = itertools.filterfalse(lambda p: p in ignore, unreleased)
             rl = {p: plist[p] for p in it}
@@ -241,7 +241,7 @@ def main():
                 elif ok:
                     # ... confirm uhppoted and submodule binary checksums match
                     # print(f'     >>> verifying checksums')
-                    # ignore = ['uhppoted', 'uhppoted-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-lib-python']
+                    # ignore = ['uhppoted', 'uhppoted-lib-nodejs', 'node-red-contrib-uhppoted', 'uhppoted-lib-python']
                     # it = itertools.filterfalse(lambda p: p in ignore, plist)
                     # for p in it:
                     #     if not build.checksum(p, plist[p], versions.version(p)):
@@ -402,7 +402,7 @@ def bump_version(project, info, version, exit):
             if t != modified:
                 break
 
-    if project == 'uhppoted-nodejs':
+    if project == 'uhppoted-lib-nodejs':
         path = f'{info.folder}/package.json'
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
         command = f'{sublime2} {path}'

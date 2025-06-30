@@ -68,11 +68,12 @@ def published(project, info, version):
     command = f"npm view {info.package} version"
     result = subprocess.check_output(command, shell=True)
 
-    if f'{version}' == str(result):
+    version = re.sub(r'[^0-9.]', '', version)
+    result = re.sub(r'[^0-9.]', '', result.decode('utf-8'))
+
+    if version == result:
         print(f'     +++ {project} has been published to npm')
         return True
-    else:
-        print(f'     ... {project} has not been published to npm')
-        return False
 
+    print(f'     ... {project} has not been published to npm')
     return False
