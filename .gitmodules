@@ -81,3 +81,8 @@
 [submodule "uhppoted-lib-nodejs"]
 	path = uhppoted-lib-nodejs
 	url = https://github.com/uhppoted/uhppoted-lib-nodejs
+
+[submodule "uhppoted-lib-go"]
+	path = uhppoted-lib-go
+	url = https://github.com/uhppoted/uhppoted-lib-go
+
