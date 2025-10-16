@@ -21,6 +21,7 @@
 - [uhppoted-lib-nodejs](https://github.com/uhppoted/uhppoted-lib-nodejs) NodeJS package
 - [uhppoted-lib-python](https://github.com/uhppoted/uhppoted-lib-python) Python PyPI package
 - [uhppoted-lib-dotnet](https://github.com/uhppoted/uhppoted-lib-dotnet) .NET NuGet package
+- [uhppoted-lib-go](https://github.com/uhppoted/uhppoted-lib-go) standalone Go library for external use
 - [Node-RED](https://nodered.org) low code environment integration
 - [Home Assistant](https://www.home-assistant.io/) custom component
 
@@ -29,7 +30,7 @@ for integration with other systems.
 
 Hardware:
 - [uhppoted-breakout](https://github.com/uhppoted/uhppoted-breakout), a customisable/hackable replacement CPU board
-- [uhppoted-wiegand](https://github.com/uhppoted/uhppoted-wiegand), a prototype RaspberryPi Pico/PicoW Wiegand reader/emulator
+- [uhppoted-wiegand](https://github.com/uhppoted/uhppoted-wiegand) an M5Stack form factor Wiegand reader/emulator
 
 _Note_:
 
@@ -106,6 +107,7 @@ been fixed in later firmware versions but patches to support these events are in
 - [`uhppoted-codegen`](https://github.com/uhppoted/uhppoted-codegen/blob/main/bindings/go/uhppote/decode.go#L36-L40)
 - [`uhppoted-lib-python`](https://github.com/uhppoted/uhppoted-lib-python/blob/main/src/uhppoted/decode.py#L63-L65)
 - [`uhppoted-lib-dotnet`](https://github.com/uhppoted/uhppoted-lib-dotnet/blob/main/uhppoted/uhppoted/decode.fs#L466-L467)
+- [`uhppoted-lib-go`](https://github.com/uhppoted/uhppoted-lib-go)
 
 #### Readers
 
@@ -151,6 +153,7 @@ but the readers below are in active use:
 | [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                         | Standalone NodeJS module |
 | [uhppoted-lib-python](https://github.com/uhppoted/uhppoted-lib-python)                         | Standalone Python package for PyPI |
 | [uhppoted-lib-dotnet](https://github.com/uhppoted/uhppoted-lib-dotnet)                 | .NET package for NuGet |
+| [uhppoted-lib-go](https://github.com/uhppoted/uhppoted-lib-go)                         | Standalone Go library (for external use) |
 | [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll)                               | shared-lib/DLL for cross-language interop |
 | [uhppoted-codegen](https://github.com/uhppoted/uhppoted-codegen)                       | Model based code generator for native language bindings |
 | [uhppoted-tunnel](https://github.com/uhppoted/uhppoted-tunnel)                         | UDP tunnel for remote access |
@@ -177,10 +180,11 @@ but the readers below are in active use:
 
 ## Hardware
 
-| *Module*                                                          | *Description*                            |
-| ----------------------------------------------------------------- | -----------------------------------------|
-| [uhppoted-wiegand](https://github.com/uhppoted/uhppoted-wiegand)  | Prototype RP2040 Wiegand reader/emulator |
-| [uhppoted-breakout](https://github.com/uhppoted/uhppote-breakout) | Customisable replacement CPU board       |
+| *Module*                                                          | *Description*                               |
+| ----------------------------------------------------------------- | --------------------------------------------|
+| [uhppoted-wiegand](https://github.com/uhppoted/uhppoted-wiegand)  | M5Stack form factor Wiegand reader/emulator |
+| [uhppoted-breakout](https://github.com/uhppoted/uhppote-breakout) | Customisable replacement CPU board          |
+
 
 ## Installation
 
@@ -239,5 +243,4 @@ If you like the project and you really want to :slightly_smiling_face::
 11. [TCP/IP Wiegand Access Controller (Zutrittskontrolle)](https://ingenier.wordpress.com/zutrittskontrolle)
 12. [YouTube: UHPPOTE 2 door basic set-up](https://www.youtube.com/watch?v=P8mxOY_IF4I&t=197s)
 13. [wouterdebie/uhppote-rs](https://github.com/wouterdebie/uhppote-rs)
-
 
