@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Added
+1. Added _uhppoted-lib-go_ submodule.
+
 
 ## [0.8.11](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.11) - 2024-07-01
 
