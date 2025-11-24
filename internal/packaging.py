@@ -2,6 +2,7 @@ import datetime
 import json
 import tomllib
 import os
+import re
 import subprocess
 import xml.etree.ElementTree as ET
 
@@ -20,7 +21,10 @@ def package_versions(projects, version, exit):
                 v = version.version(p)
 
                 if project.packaging:
-                    if project.packaging == 'javascript':
+                    if project.packaging == 'go':
+                        if not go_package_version(p, project, v[1:], exit):
+                            ok = False
+                    elif project.packaging == 'javascript':
                         if not javascript_package_version(p, project, v[1:], exit):
                             ok = False
                     elif project.packaging == 'python':
@@ -36,6 +40,42 @@ def package_versions(projects, version, exit):
             break
 
     return True
+
+
+# NTS: not tested and debugged
+def go_package_version(project, info, version, exit):
+    print(f'     ... {project}')
+
+    if project != 'uhppoted-app-wild-apricot':
+        return True
+
+    path = f"{info.folder}/cmd/uhppoted-app-wild-apricot/main.go"
+
+    if version != 'development' and os.path.isfile(f'{path}'):
+        with open(path, 'r', encoding="utf-8") as f:
+            for line in f:
+                if match := re.search('^const VERSION string = "(v[0-9]+.[0-9]+.[0-9]+)"', line):
+                    print(f'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DEBUG {line}')
+                    print(f'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DEBUG {match}')
+                    break
+
+    #     if package['version'] != version:
+    #         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+    #         command = f'{sublime2} {path}'
+    #         subprocess.run([command], shell=True)
+    #
+    #         print(f"     ... package version:{package['version']} - expected {version}")
+    #
+    #         while not exit.is_set():
+    #             exit.wait(1)
+    #             t = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
+    #             if t != modified:
+    #                 break
+    #
+    #         return False
+    #
+    # return True
+    return False
 
 
 def javascript_package_version(project, info, version, exit):
