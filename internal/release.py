@@ -48,12 +48,13 @@ def main():
 
     parser = argparse.ArgumentParser(description='release --version=<version>')
     parser.add_argument('--version', type=str, default='development', help='release version e.g. v0.8.10')
+    parser.add_argument('--wild-apricot', type=str, help='uhppoted-app-wild-apricot release version e.g. v0.8.13')
     parser.add_argument('--node-red', type=str, default='development', help='NodeRED release version e.g. v1.1.9')
     parser.add_argument('--release', action='store_true', help="builds the release versions")
     parser.add_argument('--bump', action='store_true', help="bumps version and cleans up after a release")
 
     args = parser.parse_args()
-    versions = Version(args.version, args.node_red)
+    versions = Version(args.version, args.wild_apricot, args.node_red)
 
     print(f'VERSION: {versions}')
     print()

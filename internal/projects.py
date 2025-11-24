@@ -109,7 +109,8 @@ PROJECTS = [
     Project(name='uhppoted-app-wild-apricot',
             folder='./uhppoted-app-wild-apricot',
             binary='uhppoted-app-wild-apricot',
-            dependencies=['uhppote-core', 'uhppoted-lib']),
+            dependencies=['uhppote-core', 'uhppoted-lib'],
+            packaging='go'),
 
     Project(name='uhppoted-app-db',
             folder='./uhppoted-app-db',
