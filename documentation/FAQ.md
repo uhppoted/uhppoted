@@ -76,6 +76,25 @@ References:
 3. Docker + UDP
 
 In _bridge networking mode_ (_MacOS_ and _Windows_), the Docker UDP transport drops incoming packets at a significantly higher rate than 
-typically experienced on a LAN/WAN. _host networking mode_ (Linux, RaspberryPi, etc) appears to operate normally an reliably.
+typically experienced on a LAN/WAN. _host networking mode_ (Linux, RaspberryPi, etc) appears to operate normally and reliably.
 
 The TCP transport doesn't appear to be affected.
+
+
+4. [Entering card numbers on a keypad](https://github.com/uhppoted/uhppoted-lib-python/discussions/14#discussioncomment-15113138)
+
+For systems with a keypad but without a card reader it is possible to use card numbers for access by entering:
+```
+*card-number* or *card-number*PIN*
+```
+e.g.:
+```
+*10058400* or *10058400*7531*
+```
+
+If you're using Windows app, configure the controller with:
+```
+Configuration > Password Management > Card + PIN
+Configuration > Password Management > Manual Input Password
+```
+
