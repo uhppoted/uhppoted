@@ -1,6 +1,14 @@
 # FAQ
 
-1. [Upgrading UT0311-L0x Firmware](https://github.com/uhppoted/uhppote-core/issues/6)
+1. _[Upgrading UT0311-L0x Firmware](#upgrading-ut0311-l0x-firmware)_
+2. _[Ephemeral ports and binding to `0.0.0.0:0`](#ephemeral-ports-and-binding-to-00000)_
+3. _[Docker + UDP](#docker--udp)_
+4. _[Entering card numbers on a keypad](entering-card-numbers-on-a-keypad)_
+ 
+----
+### 1. Upgrading UT0311-L0x Firmware
+
+Ref. [Upgrading UT0311-L0x Firmware](https://github.com/uhppoted/uhppote-core/issues/6)
 
 According to the vendor's [Amazon page](https://www.amazon.com/UHPPOTE-Professional-Wiegand-Network-Software):
 
@@ -18,8 +26,9 @@ A: Here are the anwsers of your questions:\
 2\) what kind of the check do you want to made on the door using the software. We recommend that you could tell us. Thanks.\
 _By Xiaojia Huang on January 18, 2022_
 
+----
 
-2. Ephemeral ports and binding to `0.0.0.0:0`
+### 2. Ephemeral ports and binding to `0.0.0.0:0`
 
 As per [Microsoft Knowledgebase Article 929851](https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/default-dynamic-port-range-tcpip-chang),
 the default Windows ephemeral port range extends from 49152 to 65535, which includes the default UHPPOTE UDP port (`60000`). Present-day BSD and Linux
@@ -72,16 +81,18 @@ References:
 3. [_You cannot exclude ports by using the ReservedPorts registry key in Windows Server 2008 or in Windows Server 2008 R2_](https://support.microsoft.com/en-us/topic/you-cannot-exclude-ports-by-using-the-reservedports-registry-key-in-windows-server-2008-or-in-windows-server-2008-r2-a68373fd-9f64-4bde-9d68-c5eded74ea35)
 4. [_Listen to UDP data on local port with netcat_](https://serverfault.com/questions/207683/listen-to-udp-data-on-local-port-with-netcat)
 
-
-3. Docker + UDP
+----
+### 3. Docker + UDP
 
 In _bridge networking mode_ (_MacOS_ and _Windows_), the Docker UDP transport drops incoming packets at a significantly higher rate than 
 typically experienced on a LAN/WAN. _host networking mode_ (Linux, RaspberryPi, etc) appears to operate normally and reliably.
 
 The TCP transport doesn't appear to be affected.
 
+----
+### 4. Entering card numbers on a keypad
 
-4. [Entering card numbers on a keypad](https://github.com/uhppoted/uhppoted-lib-python/discussions/14#discussioncomment-15113138)
+Ref. [Entering card numbers on a keypad](https://github.com/uhppoted/uhppoted-lib-python/discussions/14#discussioncomment-15113138)
 
 For systems with a keypad but without a card reader it is possible to use card numbers for access by entering:
 ```
