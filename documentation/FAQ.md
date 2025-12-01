@@ -8,7 +8,7 @@
 ----
 ### 1. Upgrading UT0311-L0x Firmware
 
-_cf. [Upgrading UT0311-L0x Firmware](https://github.com/uhppoted/uhppote-core/issues/6)_
+_(cf. [Upgrading UT0311-L0x Firmware](https://github.com/uhppoted/uhppote-core/issues/6))_
 
 According to the vendor's [Amazon page](https://www.amazon.com/UHPPOTE-Professional-Wiegand-Network-Software):
 
@@ -92,7 +92,7 @@ The TCP transport doesn't appear to be affected.
 ----
 ### 4. Entering card numbers on a keypad
 
-_cf. [Entering card numbers on a keypad](https://github.com/uhppoted/uhppoted-lib-python/discussions/14#discussioncomment-15113138)_
+_(cf. [Entering card numbers on a keypad](https://github.com/uhppoted/uhppoted-lib-python/discussions/14#discussioncomment-15113138))_
 
 For systems with a keypad but without a card reader it is possible to use card numbers for access by entering:
 ```
