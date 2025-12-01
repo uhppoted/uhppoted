@@ -3,8 +3,8 @@
 1. _[Upgrading UT0311-L0x Firmware](#upgrading-ut0311-l0x-firmware)_
 2. _[Ephemeral ports and binding to `0.0.0.0:0`](#ephemeral-ports-and-binding-to-00000)_
 3. _[Docker + UDP](#docker--udp)_
-4. _[Entering card numbers on a keypad](entering-card-numbers-on-a-keypad)_
- 
+4. _[Entering card numbers on a keypad](#entering-card-numbers-on-a-keypad)_
+
 ----
 ### 1. Upgrading UT0311-L0x Firmware
 
