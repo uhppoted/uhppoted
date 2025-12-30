@@ -109,3 +109,52 @@ Configuration > Password Management > Card + PIN
 Configuration > Password Management > Manual Input Password
 ```
 
+----
+### 5. `bind`, `broadcast`, `listen` and `listener` addresses
+
+#### `bind` address
+
+The `bind` address is the IPv4 address of the host computer (RaspberryPi, etc, etc). For most configurations, using "0.0.0.0"
+(_INADDR_ANY_) is fine, but you may want to bind it to a specific interface if you have:
+   - a machine with multiple network cards
+   - are running both WiFi and a wired LAN
+   - a firewall rule for outgoing connections that restrict the source port
+
+
+#### `broadcast` address
+
+The `broadcast` address is the IPv4 UDP broadcast address of the host computer (RaspberryPi, etc, etc). For most configurations, 
+using "255.255.255.255" is fine, but you may want to use to use the `broadcast` address of a specific interface if you have:
+   - a machine with multiple network cards
+   - are running both WiFi and a wired LAN
+
+
+#### `listen` address
+
+The `listen` address is the IPv4 address of the host computer (RaspberryPi, etc, etc) on which to receive events from a controller.
+For most configurations, something like "0.0.0.0:60001" is fine, but you may want to bind it to a specific interface if you have:
+   - a machine with multiple network cards
+   - are running both WiFi and a wired LAN
+   - a firewall rule for incoming UDP messages connections that restrict the destination interface
+
+The _unhppoted_xxx_ subsystems default to UDP port 60001 but you may use any port you like.
+
+
+#### `listener` address
+
+The `listener` address is the IPv4 address to which the controller sends UDP event messages i.e. it is the IPv4 _address:port_ of the 
+host computer (RaspberryPi, etc, etc) which expects to receive events from a controller.
+  
+#### Example
+
+Assuming:
+- a host computer with IPv4 address 192.169.1.100
+- a UHPPOTE controller with IPv4 address 192.168.1.25
+- you are using UDP port 60001 for events
+
+then:
+
+- the `bind` address is either `0.0.0.0` or `192.168.1.100`
+- the `broadcast` address is (typically) `255.255.255.255` or `192.168.1.255`
+- the `listen` address is either `0.0.0.0:60001` or `192.168.1.100:60001`
+- the `listener` address for the _set-listener_ function is `192.168.1.100:60001`
