@@ -4,6 +4,8 @@
 2. _[Ephemeral ports and binding to `0.0.0.0:0`](https://github.com/uhppoted/uhppoted/edit/main/documentation/FAQ.md#2-ephemeral-ports-and-binding-to-00000)_
 3. _[Docker + UDP](https://github.com/uhppoted/uhppoted/edit/main/documentation/FAQ.md#3-docker--udp)_
 4. _[Entering card numbers on a keypad](https://github.com/uhppoted/uhppoted/blob/main/documentation/FAQ.md#4-entering-card-numbers-on-a-keypad)_
+5. _[`bind`, `broadcast`, `listen` and `listener` addresses](https://github.com/uhppoted/uhppoted/blob/main/documentation/FAQ.md#5-bind-broadcast-listen-and-listener-addresses)_
+
 
 ----
 ### 1. Upgrading UT0311-L0x Firmware
