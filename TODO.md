@@ -1,13 +1,14 @@
 # TODO
 
-- [x] Update to Go 1.24
-- [x] anti-passback (cf. https://github.com/uhppoted/uhppoted/issues/60)
+## IN PROGRESS
+- [x] Check Go release versions for standalone versions (cf. https://github.com/uhppoted/uhppoted/issues/73)
+
 
 - [ ] Format/lint Makefile (https://github.com/EbodShojaei/bake)
 - [ ] Format README like https://github.com/BelfrySCAD/BOSL2/wiki
+- [ ] Format/lint READMEs (https://github.com/errata-ai/vale)
 
 - [ ] Release script
-      - [x] npm: `... uhppoted-lib-nodejs is waiting for release on npm`
       - [ ] README: doesn't check uhppoted-lib-python
       - [ ] README: copy CHANGELOG to clipboard
       - [ ] Pre-release builds

@@ -18,17 +18,18 @@ import build
 
 from threading import Event
 
-from projects import projects
-from version import Version
 import github
 import npm
+
+from projects import projects
+from version import Version
 from changelog import CHANGELOGs
 from readme import READMEs
 from packaging import package_versions
 from git import uncommitted
 from misc import say
 
-sublime2 = '"/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl"'
+editor = '"/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl"'
 exit = Event()
 
 
@@ -47,14 +48,12 @@ def main():
         return -1
 
     parser = argparse.ArgumentParser(description='release --version=<version>')
-    parser.add_argument('--version', type=str, default='development', help='release version e.g. v0.8.10')
-    parser.add_argument('--wild-apricot', type=str, help='uhppoted-app-wild-apricot release version e.g. v0.8.13')
-    parser.add_argument('--node-red', type=str, default='development', help='NodeRED release version e.g. v1.1.9')
+    parser.add_argument('--versions', type=str, default='.versions', help='YAML file with release version numbers')
     parser.add_argument('--release', action='store_true', help="builds the release versions")
-    parser.add_argument('--bump', action='store_true', help="bumps version and cleans up after a release")
+    parser.add_argument('--bump', action='store_true', help="bumps versions and cleans up after a release")
 
     args = parser.parse_args()
-    versions = Version(args.version, args.wild_apricot, args.node_red)
+    versions = Version.read(args.versions)
 
     print(f'VERSION: {versions}')
     print()
@@ -205,8 +204,7 @@ def main():
                     if exit.is_set():
                         return -1
                     elif ok:
-                        ok = npm.publish('node-red-contrib-uhppoted', plist['node-red-contrib-uhppoted'], versions,
-                                         exit)
+                        ok = npm.publish('node-red-contrib-uhppoted', plist['node-red-contrib-uhppoted'], versions, exit)
                         if exit.is_set():
                             return -1
                         elif ok:
@@ -380,7 +378,7 @@ def bump_version(project, info, version, exit):
     if project == 'uhppote-core':
         path = f'{info.folder}/uhppote/uhppote.go'
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
-        command = f'{sublime2} {path}'
+        command = f'{editor} {path}'
         subprocess.run([command], shell=True)
 
         print(f'     ... {project} bump VERSION')
@@ -393,7 +391,7 @@ def bump_version(project, info, version, exit):
     if project == 'uhppoted-httpd':
         path = f'{info.folder}/package.json'
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
-        command = f'{sublime2} {path}'
+        command = f'{editor} {path}'
         subprocess.run([command], shell=True)
 
         print(f'     ... {project} bump package json')
@@ -406,7 +404,7 @@ def bump_version(project, info, version, exit):
     if project == 'uhppoted-lib-nodejs':
         path = f'{info.folder}/package.json'
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
-        command = f'{sublime2} {path}'
+        command = f'{editor} {path}'
         subprocess.run([command], shell=True)
 
         print(f'     ... {project} bump package json')
@@ -419,7 +417,7 @@ def bump_version(project, info, version, exit):
     if project == 'node-red-contrib-uhppoted':
         path = f'{info.folder}/package.json'
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
-        command = f'{sublime2} {path}'
+        command = f'{editor} {path}'
         subprocess.run([command], shell=True)
 
         print(f'     ... {project} bump package json')
@@ -432,7 +430,7 @@ def bump_version(project, info, version, exit):
     if project == 'uhppoted-lib-python':
         path = f'{info.folder}/pyproject.toml'
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
-        command = f'{sublime2} {path}'
+        command = f'{editor} {path}'
         subprocess.run([command], shell=True)
 
         print(f'     ... {project} bump package json')
@@ -445,7 +443,7 @@ def bump_version(project, info, version, exit):
     if project == 'uhppoted':
         path = f'{info.folder}/Makefile'
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
-        command = f'{sublime2} {path}'
+        command = f'{editor} {path}'
         subprocess.run([command], shell=True)
 
         print(f'     ... {project} bump Makefile versions')

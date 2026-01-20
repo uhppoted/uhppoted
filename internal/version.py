@@ -1,7 +1,22 @@
+import yaml
+
 import projects
 
 
 class Version:
+
+    @classmethod
+    def read(cls, file):
+        path = file if not None else '.versions'
+
+        with open(path, 'r', encoding='utf-8') as f:
+            yml = yaml.safe_load(f)
+
+            version = yml['versions']['default']
+            wild_apricot = yml['versions']['uhppoted-app-wild-apricot']
+            node_red = yml['versions']['node-red-contrib-uhppoted']
+
+            return Version(version, wild_apricot, node_red)
 
     def __init__(self, version, wild_apricot, node_red):
         if version != 'development' and not version.startswith('v'):
@@ -27,7 +42,7 @@ class Version:
 
         if name == 'node-red-contrib-uhppoted':
             return self._node_red
-        else if name == 'uhppoted-app-wild-apricot':
+        elif name == 'uhppoted-app-wild-apricot':
             return self._uhppoted_app_wild_apricot
         else:
             return self._version

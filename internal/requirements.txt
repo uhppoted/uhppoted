@@ -1,0 +1,3 @@
+platformdirs==4.5.1
+PyYAML==6.0.3
+yapf==0.43.0

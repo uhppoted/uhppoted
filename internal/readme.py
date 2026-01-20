@@ -4,7 +4,7 @@ import re
 import subprocess
 import time
 
-sublime2 = '"/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl"'
+editor = '"/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl"'
 
 
 def READMEs(projects, versions, exit):
@@ -39,7 +39,7 @@ def readme(project, version, exit):
         copy_release_notes(project, version)
 
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
-        command = f'{sublime2} {path}'
+        command = f'{editor} {path}'
         subprocess.run([command], shell=True)
 
         print(f'     ... {project.name} README has not been updated for release')

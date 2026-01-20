@@ -380,7 +380,8 @@ build-github:
 	cd uhppoted-app-db           && go build -trimpath ./...
 
 debug: 
-	python ./internal/debug.py
+	. .venv/bin/activate; yapf -ri ./internal
+	. .venv/bin/activate; python ./internal/debug.py
 
 swagger: 
 	docker run --detach --publish 80:8080 --name swagger --rm swaggerapi/swagger-editor 

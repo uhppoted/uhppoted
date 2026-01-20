@@ -6,7 +6,7 @@ import subprocess
 
 from misc import say
 
-sublime2 = '"/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl"'
+editor = '"/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl"'
 ignore = []
 
 

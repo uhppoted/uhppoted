@@ -25,6 +25,7 @@ key.*
 notes
 release-notes.md
 .release-*
+.versions
 
 # Test binary, build with `go test -c`
 *.test
