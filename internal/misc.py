@@ -1,8 +1,8 @@
 import subprocess
 
 
-def sublime2():
-    return '"/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl"'
+def editor():
+    return '"/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl"'
 
 
 def say(msg):

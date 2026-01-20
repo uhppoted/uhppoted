@@ -4,8 +4,20 @@ import re
 import signal
 import traceback
 import subprocess
+import threading
 
 from misc import say
+
+from version import Version
+from projects import projects
+from packaging import package_versions
+
+exit = threading.Event()
+
+
+def quit(signo, _frame):
+    print("Interrupted by %d, shutting down" % signo)
+    exit.set()
 
 
 def main():
@@ -14,16 +26,11 @@ def main():
     print()
 
     try:
-        with open('./uhppote-core/CHANGELOG.md', 'r', encoding='utf-8') as f:
-            changelog = f.read()
-            matches = list(re.finditer(r'(?m)^## \[[^\]]+\].*?(?=^## \[|\Z)', changelog,
-                                       flags=re.DOTALL | re.MULTILINE))
+        with open('.versions', 'r', encoding='utf-8') as f:
+            _versions = Version.read('.versions')
+            _projects = projects()
 
-            if matches:
-                release_notes = matches[0].group().strip() + '\n'
-                subprocess.run("pbcopy", text=True, input=release_notes)
-            else:
-                subprocess.run("pbcopy", text=True, input='')
+            package_versions(_projects, _versions, exit)
 
     except BaseException as x:
         print(traceback.format_exc())

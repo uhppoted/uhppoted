@@ -4,7 +4,7 @@ import signal
 import subprocess
 import time
 
-sublime2 = '"/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl"'
+editor = '"/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl"'
 
 
 def CHANGELOGs(projects, versions, exit):
@@ -42,7 +42,7 @@ def changelog(project, info, version, exit):
             print(f'>> {line}')
 
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
-        command = f'{sublime2} {path}'
+        command = f'{editor} {path}'
         subprocess.run([command], shell=True)
 
         print(f'     ... {project} CHANGELOG has not been updated for release')
@@ -65,7 +65,7 @@ def changelog(project, info, version, exit):
             print(f'>> {line}')
 
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
-        command = f'{sublime2} {path}'
+        command = f'{editor} {path}'
         subprocess.run([command], shell=True)
 
         print(f'     ... {project} CHANGELOG has not been updated for release')
