@@ -158,7 +158,7 @@ def build_all(project, info):
 def _release(project, info, version):
     try:
         folder = info.folder
-        command = f'cd {folder} && make release DIST={project}_{version}'
+        command = f'cd {folder} && make release VERSION={version} DIST={project}_{version}'
         subprocess.run(command, shell=True, check=True)
     except subprocess.CalledProcessError:
         raise Exception(f"command 'release {project}' failed")

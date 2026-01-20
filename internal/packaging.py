@@ -42,7 +42,6 @@ def package_versions(projects, version, exit):
     return True
 
 
-# NTS: not tested and debugged
 def go_package_version(project, info, version, exit):
     print(f'     ... {project}')
 
@@ -50,7 +49,7 @@ def go_package_version(project, info, version, exit):
         if 'main.go' in files:
             path = os.path.join(root, 'main.go')
 
-            if version != 'development' and os.path.isfile(f'{path}'):
+            if version != 'development':
                 with open(path, 'r', encoding="utf-8") as f:
                     for line in f:
                         if match := re.search('^const VERSION string = "(v[0-9]+.[0-9]+.[0-9]+)"', line):
