@@ -1,6 +1,28 @@
 # TODO
 
 ## IN PROGRESS
+
+- [ ] Release v0.9.0
+    - [x] update and rebuild
+        - [x] uhppote-core
+        - [x] uhppoted-lib
+        - [x] uhppote-simulator
+        - [x] uhppote-cli
+        - [x] uhppoted-rest
+        - [x] uhppoted-mqtt
+        - [x] uhppoted-httpd
+        - [x] uhppoted-codegen
+        - [x] uhppoted-dll
+        - [x] uhppoted-lib-dotnet
+        - [x] uhppoted-lib-go
+        - [x] uhppoted-lib-nodejs
+        - [x] uhppoted-lib-python
+        - [x] uhppoted-tunnel
+        - [x] ~~uhppoted-breakout~~
+        - [x] node-red-contrib-uhppoted
+        - [x] uhppoted-wiegand
+
+
 - [x] Check Go release versions for standalone versions (cf. https://github.com/uhppoted/uhppoted/issues/73)
 
 

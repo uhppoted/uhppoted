@@ -359,8 +359,9 @@ publish: release
 # make release-all RELEASE=--release
 # make release-all BUMP=--bump
 release-all: 
-	yapf -ri ./internal
-	python ./internal/release.py --version=$(VERSION) --node-red=$(NODERED) $(RELEASE) $(BUMP)
+	. .venv/bin/activate; yapf -ri ./internal
+	. .venv/bin/activate; python3 ./internal/release.py --versions=.versions $(RELEASE) $(BUMP)
+# 	python ./internal/release.py --version=$(VERSION) --node-red=$(NODERED) $(RELEASE) $(BUMP)
 
 build-github: 
 	cd uhppote-core              && go build -trimpath ./...
