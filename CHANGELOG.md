@@ -1,16 +1,17 @@
 # CHANGELOG
 
-## Unreleased
+## [0.9.0](https://github.com/uhppoted/uhppoted/releases/tag/v0.9.0) - 2025-01-27
 
 ### Added
 1. Added _uhppoted-lib-go_ submodule.
+2. Updated FAQ.
 
 
-## [0.8.11](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.11) - 2024-07-01
+## [0.8.11](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.11) - 2025-07-01
 
 ### Added
 1. API function for `get/set-anti-passback` throughout.
-2. Added _decorated events_ and caching to _uhppoted-app-home-assistant.
+2. Added _decorated events_ and caching to _uhppoted-app-home-assistant_.
 3. Added M5 stack Wiegand emulator (in progress).
 
 ### Updated
@@ -19,7 +20,7 @@
 3. Added check to prevent UDP bind address from using broadcast port.
 
 
-## [0.8.10](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.10) - 2024-01-30
+## [0.8.10](https://github.com/uhppoted/uhppoted/releases/tag/v0.8.10) - 2025-01-30
 
 ### Added
 1. Added _uhppoted-lib-dotnet_ submodule.
@@ -150,7 +151,7 @@ running on disparate networks
 1. Replaced event rollover throughout with handling for _nil_ and _overwritten_ events
 2. Reworked [`uhppoted-nodejs`](https://github.com/uhppoted/uhppoted-nodejs) for compatibility with NodeJS v14.18.3
    (cf. https://github.com/uhppoted/uhppoted-nodejs/issues/5)
-3. Reworked [`node-red-contrib-uhppoted`](https://github.com/uhppoted/node-red-contrib-uhppoted) for compatibility with NodeJS v14.18.3
+3. Reworked [`node-red-contrib-uhppoted`](https://github.com/uhppoted/uhppoted-lib-node-red) for compatibility with NodeJS v14.18.3
    (cf. https://github.com/uhppoted/uhppoted-nodejs/issues/5)
 
 

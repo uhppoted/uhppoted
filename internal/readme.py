@@ -35,7 +35,10 @@ def readme(project, version, exit):
     with open(path, 'r', encoding="utf-8") as f:
         README = f.read()
 
-    if re.compile(f'{version}').search(README) == None:
+    if m := re.search(r"^[#]+\s+Release Notes.*$", README, re.MULTILINE | re.IGNORECASE):
+        README = README[m.start():]
+
+    if re.compile(f'{version}').search(README) is None:
         copy_release_notes(project, version)
 
         modified = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime('%Y-%m-%d %H:%M:%S')
@@ -67,7 +70,7 @@ def copy_release_notes(project, version):
             tomorrow = (datetime.date.today() + datetime.timedelta(days=1)).isoformat()
             heading = f'**[{version}](https://github.com/uhppoted/{project.name}/releases/tag/{version}) - {today}**'
             release_notes = matches[0].group().strip() + '\n'
-            clip = tag + '\n\n' + release_notes + '\n'
+            clip = heading + '\n\n' + release_notes + '\n'
             subprocess.run("pbcopy", text=True, input=clip)
         else:
             subprocess.run("pbcopy", text=True, input='')

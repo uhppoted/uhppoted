@@ -4,6 +4,7 @@
 
 - [ ] Release v0.9.0
     - [x] update and rebuild
+    - [ ] release
         - [x] uhppote-core
         - [x] uhppoted-lib
         - [x] uhppote-simulator
@@ -14,13 +15,18 @@
         - [x] uhppoted-codegen
         - [x] uhppoted-dll
         - [x] uhppoted-lib-dotnet
-        - [x] uhppoted-lib-go
+        - [ ] uhppoted-lib-go
+        - [x] uhppoted-app-s3
+        - [ ] uhppoted-app-sheets
+        - [ ] uhppoted-app-db
+        - [ ] uhppoted-app-wild-apricot
+        - [ ] uhppoted-app-home-assistant
         - [x] uhppoted-lib-nodejs
         - [x] uhppoted-lib-python
-        - [x] uhppoted-tunnel
+        - [ ] uhppoted-tunnel
         - [x] ~~uhppoted-breakout~~
         - [x] node-red-contrib-uhppoted
-        - [x] uhppoted-wiegand
+        - [ ] uhppoted-wiegand
 
 
 - [x] Check Go release versions for standalone versions (cf. https://github.com/uhppoted/uhppoted/issues/73)
@@ -31,8 +37,12 @@
 - [ ] Format/lint READMEs (https://github.com/errata-ai/vale)
 
 - [ ] Release script
+      - [x] README: copy CHANGELOG to clipboard
+      - [ ] nodejs: heck uhppoted-lib-nodejs version
+      - [ ] nodejs: check if published before gh publish (ditto python, node-red, dotnet)
+      - [ ] Put CHANGELOG tag in clipboard
+      - [ ] CHANGELOG check tag, link and date
       - [ ] README: doesn't check uhppoted-lib-python
-      - [ ] README: copy CHANGELOG to clipboard
       - [ ] Pre-release builds
       - [ ] Build checksums
       - [ ] Bump version in uhppote-core and Makefiles

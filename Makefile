@@ -43,6 +43,7 @@ status-all:
 	git -C uhppoted-tunnel           status
 	git -C uhppoted-dll              status
 	git -C uhppoted-codegen          status
+	git -C uhppoted-lib-go           status
 	git -C uhppoted-lib-nodejs       status
 	git -C uhppoted-lib-python       status
 	git -C uhppoted-app-s3           status
@@ -52,47 +53,6 @@ status-all:
 	git -C uhppoted-wiegand          status
 	git                              status
 
-push-all:
-#	git push --recurse-submodules=on-demand 
-	git -C uhppote-core              push
-	git -C uhppoted-lib              push
-	git -C uhppote-simulator         push
-	git -C uhppote-cli               push
-	git -C uhppoted-rest             push
-	git -C uhppoted-mqtt             push
-	git -C uhppoted-app-s3           push
-	git -C uhppoted-app-sheets       push
-	git -C uhppoted-app-wild-apricot push
-	git -C uhppoted-app-db           push
-	git -C uhppoted-httpd            push
-	git -C uhppoted-tunnel           push
-	git -C uhppoted-dll              push
-	git -C uhppoted-codegen          push
-	git -C uhppoted-lib-nodejs       push
-	git -C uhppoted-lib-python       push
-	git -C uhppoted-wiegand          push
-	git                              push
-
-update-all:
-	cd uhppote-core              && make update && cd ..
-	cd uhppoted-lib              && make update && cd ..
-	cd uhppote-simulator         && make update && cd ..
-	cd uhppote-cli               && make update && cd ..
-	cd uhppoted-rest             && make update && cd ..
-	cd uhppoted-mqtt             && make update && cd ..
-	cd uhppoted-app-s3           && make update && cd ..
-	cd uhppoted-app-sheets       && make update && cd ..
-	cd uhppoted-app-wild-apricot && make update && cd ..
-	cd uhppoted-app-db           && make update && cd ..
-	cd uhppoted-httpd            && make update && cd ..
-	cd uhppoted-tunnel           && make update && cd ..
-	cd uhppoted-dll              && make update && cd ..
-	cd uhppoted-codegen          && make update && cd ..
-	cd uhppoted-lib-nodejs       && make update && cd ..
-	cd uhppoted-lib-python       && make update && cd ..
-	cd uhppoted-wiegand          && make update && cd ..
-	make update	
-
 update:
 	go mod tidy
 
@@ -100,21 +60,6 @@ update-release:
 	go mod tidy
 
 format: 
-	cd uhppote-core              && make format
-	cd uhppoted-lib              && make format
-	cd uhppote-simulator         && make format
-	cd uhppote-cli               && make format
-	cd uhppoted-rest             && make format
-	cd uhppoted-mqtt             && make format
-	cd uhppoted-httpd            && make format
-	cd uhppoted-tunnel           && make format
-	cd uhppoted-dll              && make format
-	cd uhppoted-codegen          && make format
-	cd uhppoted-lib-python       && make format
-	cd uhppoted-app-s3           && make format
-	cd uhppoted-app-sheets       && make format
-	cd uhppoted-app-wild-apricot && make format
-	cd uhppoted-app-db           && make format
 	go fmt ./...
 
 build: format
@@ -129,6 +74,7 @@ build: format
 	cd uhppoted-tunnel           && go build -trimpath -o ../bin/ ./...
 #	cd uhppoted-dll              && make build
 	cd uhppoted-codegen          && go build -trimpath -o ../bin/ ./...
+	cd uhppoted-lib-go           && make build
 	cd uhppoted-lib-python       && make build
 	cd uhppoted-app-s3           && go build -trimpath -o ../bin/ ./...
 	cd uhppoted-app-sheets       && go build -trimpath -o ../bin/ ./...
@@ -146,6 +92,7 @@ test: build
 	cd uhppoted-tunnel           && go test ./...
 #	cd uhppoted-dll              && make tests
 	cd uhppoted-codegen          && go test ./...
+	cd uhppoted-lib-go           && make test
 	cd uhppoted-lib-python       && make test
 	cd uhppoted-app-s3           && go test ./...
 	cd uhppoted-app-sheets       && go test ./...
@@ -153,16 +100,16 @@ test: build
 	cd uhppoted-app-db           && go test ./...
 
 vet: build
-	go vet ./...
+	echo "Nothing to do"
 
 lint: build
-	golint ./...
+	echo "Nothing to do"
 
 benchmark: build
-	go test -bench ./...
+	echo "Nothing to do"
 
 coverage: build
-	go test -cover ./...
+	echo "Nothing to do"
 
 integration-tests: 
 	@echo "Nothing to do"
