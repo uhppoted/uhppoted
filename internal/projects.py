@@ -53,7 +53,7 @@ PROJECTS = [
             package='uhppoted'),
 
     Project(name='node-red-contrib-uhppoted',
-            folder='./node-red-contrib-uhppoted',
+            folder='./uhppoted-lib-node-red',
             packaging='nodejs',
             package='node-red-contrib-uhppoted'),
 
@@ -87,14 +87,18 @@ PROJECTS = [
             binary='uhppoted-tunnel',
             dependencies=['uhppote-core', 'uhppoted-lib']),
 
-    Project(name='uhppoted-dll',
-            folder='./uhppoted-dll',
-            dependencies=['uhppote-core', 'uhppoted-lib']),
-
     Project(name='uhppoted-codegen',
             folder='./uhppoted-codegen',
             binary='uhppoted-codegen',
             dependencies=['uhppote-core', 'uhppoted-lib']),
+
+    Project(name='uhppoted-dll',
+            folder='./uhppoted-dll',
+            dependencies=['uhppote-core', 'uhppoted-lib']),
+
+    Project(name='uhppoted-lib-go',
+            folder='./uhppoted-lib-go',
+            dependencies=['uhppote-codegen']),
 
     Project(name='uhppoted-app-s3',
             folder='./uhppoted-app-s3',

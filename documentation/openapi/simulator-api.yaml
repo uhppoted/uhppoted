@@ -288,6 +288,46 @@ paths:
         default:
           description: "Request failed"
 
+  /simulator/{device-id}/reset:
+    post:
+      tags:
+        - simulator
+      summary: "Simulates a controller reset"
+      description: "Simulates a controller reset, generating a controller reset event"
+      operationId: resetController
+      parameters:
+        - name: device-id
+          in: path
+          description: "Simulator device ID"
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 405419896
+      requestBody:
+        description: "(placeholder)"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Reset"     
+
+      responses:
+        '200':
+          description: "Controller reset"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ControllerReset"        
+        '400':
+          description: "Invalid request format"
+        '404':
+          description: "No device with ID matching device-id"
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+
 components:
   schemas:
     Device:
@@ -464,3 +504,18 @@ components:
           format: uint32
           description: "Card PIN"
           example: 7531
+
+    Reset:
+      type: object
+      description: "Empty placeholder object for controller reset"
+      example: {}
+
+    ControllerReset:
+      required: 
+      properties:
+        ok:
+          type: boolean
+          description: "true if the controller was reset"
+        message:
+          type: string
+          description: "Display message"

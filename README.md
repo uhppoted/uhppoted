@@ -102,7 +102,7 @@ _Notes:_
 been fixed in later firmware versions but patches to support these events are included in:
 
 - [`uhppote-core`](https://github.com/uhppoted/uhppote-core/blob/master/encoding/UTO311-L0x/UT0311-L0x.go#L234-L237)
-- [`node-red-contrib-uhppoted`](https://github.com/uhppoted/node-red-contrib-uhppoted/blob/main/nodes/codec.js#L107-L109)
+- [`uhppoted-lib-node-red`](https://github.com/uhppoted/uhppoted-lib-node-red/blob/main/nodes/codec.js#L107-L109)
 - [`uhppoted-nodejs`](https://github.com/uhppoted/uhppoted-nodejs/blob/master/src/codec.js#L114-L121)
 - [`uhppoted-codegen`](https://github.com/uhppoted/uhppoted-codegen/blob/main/bindings/go/uhppote/decode.go#L36-L40)
 - [`uhppoted-lib-python`](https://github.com/uhppoted/uhppoted-lib-python/blob/main/src/uhppoted/decode.py#L63-L65)
@@ -124,14 +124,14 @@ but the readers below are in active use:
 
 ### Current Release
 
-**[v0.8.11](https://github.com/uhppoted/uhppoted-wiegand/releases/tag/v0.8.11) - 2025-07-01**
-
-1. Added support `get/set-anti-passback` API function.
-2. Added _decorated events_ and caching to _uhppoted-app-home-assistant.
-3. Added M5 stack Wiegand emulator (in progress).
-4. Renamed _upppoted-nodejs_ repository to _uhppoted-lib-nodejs_.
-5. Added check to prevent UDP bind address from using broadcast port.
-6. Updated to Go 1.24 throughout.
+**[v0.9.0](https://github.com/uhppoted/uhppoted/releases/tag/v0.9.0) - 2026-01-27**
+1. Added _uhppoted-lib-go_ submodule.
+2. Updated FAQ.
+3. Renamed _node-red-contrib-upppoted_ repository to _uhppoted-lib-node-red_.
+4. Updated _uhppoted-app-wild-apricot_ for revised _Wild Apricot_ API.
+5. Reworked _uhppoted-app-home-assistant_ to use `async` throughout.
+6. Added decorated door and card event to _uhppoted-home-assistant_.
+7. Updated to Go 1.25 throughout.
 
 
 ## Modules
@@ -149,9 +149,9 @@ but the readers below are in active use:
 | [uhppoted-app-db](https://github.com/uhppoted/uhppoted-app-db)                         | cron'able utility to download/upload access control lists from/to a SQL DB |
 | [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot)     | cron'able utility to manage access control lists from Wild Apricot |
 | [uhppoted-app-home-assistant](https://github.com/uhppoted/uhppoted-app-home-assistant) | Home Assistant custom component |
-| [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted)     | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
+| [node-red-contrib-uhppoted](https://github.com/uhppoted/uhppoted-lib-node-red)         | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
 | [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                         | Standalone NodeJS module |
-| [uhppoted-lib-python](https://github.com/uhppoted/uhppoted-lib-python)                         | Standalone Python package for PyPI |
+| [uhppoted-lib-python](https://github.com/uhppoted/uhppoted-lib-python)                 | Standalone Python package for PyPI |
 | [uhppoted-lib-dotnet](https://github.com/uhppoted/uhppoted-lib-dotnet)                 | .NET package for NuGet |
 | [uhppoted-lib-go](https://github.com/uhppoted/uhppoted-lib-go)                         | Standalone Go library (for external use) |
 | [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll)                               | shared-lib/DLL for cross-language interop |
@@ -167,7 +167,7 @@ but the readers below are in active use:
 | [uhppoted-app-sheets](https://github.com/uhppoted/uhppoted-app-sheets)                 | cron'able utility to download/upload access control lists from/to Google Sheets |
 | [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot)     | cron'able utility to manage access control lists from/t Wild Apricot  |
 | [uhppoted-app-home-assistant](https://github.com/uhppoted/uhppoted-app-home-assistant) | Home Assistant custom component                                       |
-| [node-red-contrib-uhppoted](https://github.com/uhppoted/node-red-contrib-uhppoted)     | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
+| [node-red-contrib-uhppoted](https://github.com/uhppoted/uhppoted-lib-node-red)         | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
 | [kBrausew/ioBroker.wiegand-tcpip](https://github.com/kBrausew/ioBroker.wiegand-tcpip)  | [ioBroker](https://www.iobroker.net)  |
 
 
