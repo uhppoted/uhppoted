@@ -2,35 +2,8 @@
 
 ## IN PROGRESS
 
-- [ ] Release v0.9.0
-    - [x] update and rebuild
-    - [ ] release
-        - [x] uhppote-core
-        - [x] uhppoted-lib
-        - [x] uhppote-simulator
-        - [x] uhppote-cli
-        - [x] uhppoted-rest
-        - [x] uhppoted-mqtt
-        - [x] uhppoted-httpd
-        - [x] uhppoted-codegen
-        - [x] uhppoted-dll
-        - [x] uhppoted-lib-dotnet
-        - [ ] uhppoted-lib-go
-        - [x] uhppoted-app-s3
-        - [ ] uhppoted-app-sheets
-        - [ ] uhppoted-app-db
-        - [ ] uhppoted-app-wild-apricot
-        - [ ] uhppoted-app-home-assistant
-        - [x] uhppoted-lib-nodejs
-        - [x] uhppoted-lib-python
-        - [ ] uhppoted-tunnel
-        - [x] ~~uhppoted-breakout~~
-        - [x] node-red-contrib-uhppoted
-        - [ ] uhppoted-wiegand
-
-
-- [x] Check Go release versions for standalone versions (cf. https://github.com/uhppoted/uhppoted/issues/73)
-
+- [x] Update to Go v1.26 (cf. https://github.com/uhppoted/uhppoted/issues/80)
+- [x] Update to modern Go with 'go fix' (cf. https://github.com/uhppoted/uhppoted/issues/80)
 
 - [ ] Format/lint Makefile (https://github.com/EbodShojaei/bake)
 - [ ] Format README like https://github.com/BelfrySCAD/BOSL2/wiki

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Added
+1. _uhppoted-lib-ada_ Ada library.
+
+### Updated
+1. Updated to Go v1.26.
+2. Updated to _modern_ Go with 'go fix'.
+
 
 ## [0.9.0](https://github.com/uhppoted/uhppoted/releases/tag/v0.9.0) - 2025-01-27
 

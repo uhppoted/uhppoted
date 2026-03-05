@@ -85,3 +85,6 @@
 [submodule "uhppoted-lib-node-red"]
 	path = uhppoted-lib-node-red
 	url = https://github.com/uhppoted/uhppoted-lib-node-red.git
+[submodule "uhppoted-lib-ada"]
+	path = uhppoted-lib-ada
+	url = git@github.com:uhppoted/uhppoted-lib-ada.git
