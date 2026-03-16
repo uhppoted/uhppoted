@@ -58,5 +58,8 @@ jobs:
     - name: Checkout uhppoted-app-wild-apricot
       run: git clone https://github.com/uhppoted/uhppoted-app-wild-apricot.git uhppoted-app-wild-apricot
 
+    - name: Checkout uhppoted-app-db
+      run: git clone https://github.com/uhppoted/uhppoted-app-db.git uhppoted-app-db
+
     - name: Build
       run: make build-github
