@@ -33,13 +33,19 @@ _By Xiaojia Huang on January 18, 2022_
 ### 2. Ephemeral ports and binding to `0.0.0.0:0`
 
 As per [Microsoft Knowledgebase Article 929851](https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/default-dynamic-port-range-tcpip-chang),
-the default Windows ephemeral port range extends from 49152 to 65535, which includes the default UHPPOTE UDP port (`60000`). Present-day BSD and Linux
+the default Windows ephemeral port range extends from 49152 to 65535, which includes the default UHPPOTE UDP port (`60000`). Present-day MacOS, BSD and Linux
 have similar ranges.
 
-If an application is assigned port `60000` when binding to e.g. `0.0.0.0:0` it will receive the any outgoing UDP broadcast requests and interpret
-them as replies - which will be, uh, a little confusing, e.g.:
+If an application is assigned port `60000` when binding to `0.0.0.0:0` it will receive any outgoing UDP broadcast requests and interpret
+them as replies - which will be, uh, more than a little confusing, e.g.:
 ```
 request:
+   17 94 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+   00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+   00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+   00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+
+reply:
    17 94 00 00 00 00 00 00  00 00 00 00 00 00 00 00
    00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
    00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
@@ -69,19 +75,127 @@ get-all-controllers:
          date: 2018-11-05
 ```
 
-In general this doesn't seem to have been a problem (or at least nobody has raised it as an issue), but if you run into it:
-- Exclude port `60000` from the ephemeral range using whatever is recommended for your operating system of choice.
-- (OR) Reduce (or move) the ephemeral port range.
-- (OR) Bind a netcat listener to port `60000` before running the application:
+Barring a programming or configuration error which assigns a bind port of 60000, this condition has an about 1 in ~20000 chance of occurring and is unlikely
+to be picked up during testing. The _uhppoted_ libraries now return an error (or raise exception) when the bind port is the same as the broadcast port, and
+the application is expected to retry.
+
+However, the correct fix is to exclude port 60000 from the ephemeral ports that can be assigned by the OS:
+
+#### Linux
+
+Ref. [Understanding and Utilizing Linux Ephemeral Port Range](https://linuxvox.com/blog/linux-ephemeral-port-range).
+
+1. Show the current ephemeral port range and reserved ports:
 ```
-nc -lu 600000
+sysctl net.ipv4.ip_local_port_range 
+sysctl net.ipv4.ip_local_reserved_ports 
 ```
 
-References:
+2. Limit the ephemeral port range to exclude port 60000, e.g.:
+```
+sudo sysctl -w net.ipv4.ip_local_port_range="49152 59999"
+```
+or
+```
+sudo sysctl -w net.ipv4.ip_local_reserved_ports=60000"
+```
+
+3. Update _/etc/sysctl.conf_ with:
+```
+net.ipv4.ip_local_port_range = 49152 59999
+```
+or
+```
+net.ipv4.ip_local_reserved_ports=60000
+```
+
+4. _(optionally)_ reload configuration:
+```
+sudo sysctl -p
+```
+
+#### MacOS
+
+**NOT TESTED - USE AT OWN RISK**
+
+See [com.startup.sysctl.plist](https://gist.github.com/pythoninthegrass/8073e5e3b24f385c9d9b712f6f243982). 
+
+1. Show the current ephemeral port range:
+```
+sysctl net.inet.ip.portrange.first net.inet.ip.portrange.last
+```
+2. Limit the ephemeral port range to exclude port 60000, e.g.:
+```
+sudo sysctl -w net.inet.ip.portrange.first=49152
+sudo sysctl -w net.inet.ip.portrange.last=59999
+```
+3. Create a _launchd_ daemon:
+    - _/Library/LaunchDaemons/com.user.sysctl.plist_
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.user.sysctl</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/sbin/sysctl</string>
+        <string>-w</string>
+        <string>net.inet.ip.portrange.first=49152</string>
+        <string>net.inet.ip.portrange.last=59999</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+</dict>
+</plist>
+```
+4. Reload configuration:
+```
+sudo launchctl load -w /Library/LaunchDaemons/com.user.sysctl.plist
+```
+or
+```
+sudo launchctl bootstrap system /Library/LaunchDaemons/com.user.sysctl.plist
+```
+
+#### Windows
+
+1. Show the current ephemeral port range:
+```
+netsh int ipv4 show dynamicport udp
+```
+2. Limit the ephemeral port range to exclude port 60000, e.g.:
+```
+netsh int ipv4 set dynamicport udp start=49152 num=10848
+```
+or
+```
+netsh int ipv4 add excludedportrange protocol=udp startport=60000 numberofports=1
+```
+
+#### Other
+For systems where it's not possible to modify the ephemeral port range, other workarounds include:
+- If you know the destination address use the TCP transport protocol.
+- Bind a _netcat_ or _socat_ listener to port `60000` before running the application:
+   ```
+   nc -lu 60000 > /dev/null
+   ```
+   or
+   ```
+   socat -u UDP-RECV:60000 - > /dev/null
+   ```
+
+#### References:
 1. [_The Ephemeral Port Range_](https://www.ncftp.com/ncftpd/doc/misc/ephemeral_ports.html)
 2. [_How to change/view the ephemeral port range on Windows machines?_](https://stackoverflow.com/questions/7006939/how-to-change-view-the-ephemeral-port-range-on-windows-machines#7007159)
 3. [_You cannot exclude ports by using the ReservedPorts registry key in Windows Server 2008 or in Windows Server 2008 R2_](https://support.microsoft.com/en-us/topic/you-cannot-exclude-ports-by-using-the-reservedports-registry-key-in-windows-server-2008-or-in-windows-server-2008-r2-a68373fd-9f64-4bde-9d68-c5eded74ea35)
 4. [_Listen to UDP data on local port with netcat_](https://serverfault.com/questions/207683/listen-to-udp-data-on-local-port-with-netcat)
+5. [How to view and edit the ephemeral port range on Linux?](https://stackoverflow.com/questions/28573390/how-to-view-and-edit-the-ephemeral-port-range-on-linux)
+6. [Understanding and Utilizing Linux Ephemeral Port Range](https://linuxvox.com/blog/linux-ephemeral-port-range)
+7. [How safe is it to change the Linux Ephemeral Port range](https://unix.stackexchange.com/questions/211647/how-safe-is-it-to-change-the-linux-ephemeral-port-range)
+8. [SYSCTL Command: Get or set the kernel state in macOS](https://ss64.com/mac/sysctl.html)
+9. [com.startup.sysctl.plist](https://gist.github.com/pythoninthegrass/8073e5e3b24f385c9d9b712f6f243982)
 
 ----
 ### 3. Docker + UDP
