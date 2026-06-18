@@ -295,3 +295,4 @@
 114. https://nats.io/
 115. https://www.jolie-lang.org/index.html
 116. https://arxiv.org/pdf/2503.04084v1
+117. [The Smallest, Ultimate Security Board](https://hackaday.io/project/205407-the-smallest-ultimate-security-board)
