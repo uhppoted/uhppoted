@@ -5,6 +5,13 @@
 - [x] Update to Go v1.26 (cf. https://github.com/uhppoted/uhppoted/issues/80)
 - [x] Update to modern Go with 'go fix' (cf. https://github.com/uhppoted/uhppoted/issues/80)
 
+- [ ] UDP and TCP self connection (cf. https://github.com/uhppoted/uhppoted/issues/86)
+    [ ] FAQ
+```
+FAQ Snippet Idea: "Per RFC 9293, the TCP state machine allows a socket to transition straight from SYN-SENT to SYN-RECEIVED if it receives its own inbound SYN packet, validating a connection to itself."
+```
+
+
 - [ ] Format/lint Makefile (https://github.com/EbodShojaei/bake)
 - [ ] Format README like https://github.com/BelfrySCAD/BOSL2/wiki
 - [ ] Format/lint READMEs (https://github.com/errata-ai/vale)

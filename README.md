@@ -102,12 +102,13 @@ _Notes:_
 been fixed in later firmware versions but patches to support these events are included in:
 
 - [`uhppote-core`](https://github.com/uhppoted/uhppote-core/blob/master/encoding/UTO311-L0x/UT0311-L0x.go#L234-L237)
-- [`uhppoted-lib-node-red`](https://github.com/uhppoted/uhppoted-lib-node-red/blob/main/nodes/codec.js#L107-L109)
-- [`uhppoted-nodejs`](https://github.com/uhppoted/uhppoted-nodejs/blob/master/src/codec.js#L114-L121)
 - [`uhppoted-codegen`](https://github.com/uhppoted/uhppoted-codegen/blob/main/bindings/go/uhppote/decode.go#L36-L40)
+- [`uhppoted-lib-node-red`](https://github.com/uhppoted/uhppoted-lib-node-red/blob/main/nodes/codec.js#L107-L109)
+- [`uhppoted-lib-nodejs`](https://github.com/uhppoted/uhppoted-lib-nodejs/blob/master/src/codec.js#L114-L121)
 - [`uhppoted-lib-python`](https://github.com/uhppoted/uhppoted-lib-python/blob/main/src/uhppoted/decode.py#L63-L65)
 - [`uhppoted-lib-dotnet`](https://github.com/uhppoted/uhppoted-lib-dotnet/blob/main/uhppoted/uhppoted/decode.fs#L466-L467)
 - [`uhppoted-lib-go`](https://github.com/uhppoted/uhppoted-lib-go)
+- [`uhppoted-lib-ada`](https://github.com/uhppoted/uhppoted-lib-ada)
 
 #### Readers
 
@@ -149,11 +150,12 @@ but the readers below are in active use:
 | [uhppoted-app-db](https://github.com/uhppoted/uhppoted-app-db)                         | cron'able utility to download/upload access control lists from/to a SQL DB |
 | [uhppoted-app-wild-apricot](https://github.com/uhppoted/uhppoted-app-wild-apricot)     | cron'able utility to manage access control lists from Wild Apricot |
 | [uhppoted-app-home-assistant](https://github.com/uhppoted/uhppoted-app-home-assistant) | Home Assistant custom component |
-| [node-red-contrib-uhppoted](https://github.com/uhppoted/uhppoted-lib-node-red)         | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
-| [uhppoted-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                         | Standalone NodeJS module |
+| [uhppoted-lib-node-red](https://github.com/uhppoted/uhppoted-lib-node-red)             | NodeJS nodes for [Node-RED](https://nodered.org) low code environment |
+| [uhppoted-lib-nodejs](https://github.com/uhppoted/uhppoted-nodejs)                     | Standalone NodeJS module |
 | [uhppoted-lib-python](https://github.com/uhppoted/uhppoted-lib-python)                 | Standalone Python package for PyPI |
 | [uhppoted-lib-dotnet](https://github.com/uhppoted/uhppoted-lib-dotnet)                 | .NET package for NuGet |
 | [uhppoted-lib-go](https://github.com/uhppoted/uhppoted-lib-go)                         | Standalone Go library (for external use) |
+| [uhppoted-lib-ada](https://github.com/uhppoted/uhppoted-lib-ada)                       | Alire create for Ada |
 | [uhppoted-dll](https://github.com/uhppoted/uhppoted-dll)                               | shared-lib/DLL for cross-language interop |
 | [uhppoted-codegen](https://github.com/uhppoted/uhppoted-codegen)                       | Model based code generator for native language bindings |
 | [uhppoted-tunnel](https://github.com/uhppoted/uhppoted-tunnel)                         | UDP tunnel for remote access |
@@ -198,8 +200,7 @@ The NodeRED, NodeJS and Python packages are installable from the public reposito
 
 ### Building from source
 
-*uhppoted* is the parent project for the individual components which are referenced as git submodules -
-to clone the entire source tree:
+*uhppoted* is the parent project for the individual components which are referenced as git submodules - to clone the entire source tree:
 
 ```
 git clone --recurse-submodules https://github.com/uhppoted/uhppoted.git

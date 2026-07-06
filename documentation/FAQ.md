@@ -10,6 +10,8 @@
 ----
 ### 1. Upgrading UT0311-L0x Firmware
 
+**NOTE: the information below is out of date - apparently more recent versions can be upgraded using the manufacturer application.**
+
 _(cf. [Upgrading UT0311-L0x Firmware](https://github.com/uhppoted/uhppote-core/issues/6))_
 
 According to the vendor's [Amazon page](https://www.amazon.com/UHPPOTE-Professional-Wiegand-Network-Software):
@@ -196,6 +198,8 @@ For systems where it's not possible to modify the ephemeral port range, other wo
 7. [How safe is it to change the Linux Ephemeral Port range](https://unix.stackexchange.com/questions/211647/how-safe-is-it-to-change-the-linux-ephemeral-port-range)
 8. [SYSCTL Command: Get or set the kernel state in macOS](https://ss64.com/mac/sysctl.html)
 9. [com.startup.sysctl.plist](https://gist.github.com/pythoninthegrass/8073e5e3b24f385c9d9b712f6f243982)
+10. [Powershell: Check Excluded Port Ranges](https://powershell.xevion.dev/scripts/excluded-ports)
+
 
 ----
 ### 3. Docker + UDP
