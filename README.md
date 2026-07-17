@@ -178,7 +178,7 @@ but the readers below are in active use:
 | *Module*                                                               | *Description*            |
 | ---------------------------------------------------------------------- | -------------------------|
 | [uhppote-cli](https://github.com/uhppoted/uhppote-cli)                 | Command line interface   |
-| [uhppoted-httpd](https://github.com/uhppoted/uhppote-httpd)            | HTML browser interface   |
+| [uhppoted-httpd](https://github.com/uhppoted/uhppoted-httpd)           | HTML browser interface   |
 
 ## Hardware
 
