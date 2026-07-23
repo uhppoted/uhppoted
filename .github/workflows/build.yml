@@ -1,0 +1,65 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v6
+      with:
+        go-version: '1.26'
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v6
+
+    - name: Checkout uhppote-core
+      run: git clone https://github.com/uhppoted/uhppote-core.git uhppote-core
+
+    - name: Checkout uhppoted-lib
+      run: git clone https://github.com/uhppoted/uhppoted-lib.git uhppoted-lib
+
+    - name: Checkout uhppote-simulator
+      run: git clone https://github.com/uhppoted/uhppote-simulator.git uhppote-simulator
+
+    - name: Checkout uhppote-cli
+      run: git clone https://github.com/uhppoted/uhppote-cli.git uhppote-cli
+
+    - name: Checkout uhppoted-rest
+      run: git clone https://github.com/uhppoted/uhppoted-rest.git uhppoted-rest
+
+    - name: Checkout uhppoted-mqtt
+      run: git clone https://github.com/uhppoted/uhppoted-mqtt.git uhppoted-mqtt
+
+    - name: Checkout uhppoted-httpd
+      run: git clone https://github.com/uhppoted/uhppoted-httpd.git uhppoted-httpd
+
+    - name: Checkout uhppoted-tunnel
+      run: git clone https://github.com/uhppoted/uhppoted-tunnel.git uhppoted-tunnel
+
+    - name: Checkout uhppoted-codegen
+      run: git clone https://github.com/uhppoted/uhppoted-codegen.git uhppoted-codegen
+
+    - name: Checkout uhppoted-app-s3
+      run: git clone https://github.com/uhppoted/uhppoted-app-s3.git uhppoted-app-s3
+
+    - name: Checkout uhppoted-app-sheets
+      run: git clone https://github.com/uhppoted/uhppoted-app-sheets.git uhppoted-app-sheets
+
+    - name: Checkout uhppoted-app-wild-apricot
+      run: git clone https://github.com/uhppoted/uhppoted-app-wild-apricot.git uhppoted-app-wild-apricot
+
+    - name: Checkout uhppoted-app-db
+      run: git clone https://github.com/uhppoted/uhppoted-app-db.git uhppoted-app-db
+
+    - name: Build
+      run: make build-github

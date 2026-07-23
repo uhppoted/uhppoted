@@ -1,0 +1,2739 @@
+openapi: "3.0.3"
+
+info:
+  version: 0.8.10
+  title: "uhppoted"
+  description: "REST API for the uhppoted-rest service. The API currently supports both device level functions and higher level access control list management."
+  license:
+    name: "MIT"
+    url: "https://github.com/uhppoted/uhppoted/blob/master/LICENSE"
+    
+servers:    
+  - url: "http://127.0.0.1:8080/uhppote"
+  - url: "https://127.0.0.1:8443/uhppote"
+  
+tags:
+  - name: "device"
+    description: "Low level device API"
+  - name: "acl"
+    description: "Access control list API"
+
+security:
+  - basic: []
+  - hotp: []
+
+paths:
+  /device:
+    get:
+      tags:
+        - device
+      summary: "Retrieves a list of active devices"
+      description: "Retrieves the list of active UHPPOTE devices"
+      operationId: listDevices
+      responses:
+        '200':
+          description: "List of active devices"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DeviceList"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}:
+    get:
+      tags:
+        - device
+      summary: "Retrieves the configuration for a controller"
+      description: "Retrieves the IPv4 configuration for a UHPPOTE access controller"
+      operationId: getDevice
+      parameters:
+        - name: device-id
+          in: path
+          description: "Controller serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      responses:
+        '200':
+          description: "Controller configuration"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  device:
+                    $ref: "#/components/schemas/Device"        
+        '404':
+          description: "No controller with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        
+    delete:
+      tags:
+        - device
+      summary: "Restores the manufacturer default configuration"
+      description: "Deletes all configuration information and restores the manufacturer default settings"
+      operationId: restoreDefaultParameters
+      parameters:
+        - name: device-id
+          in: path
+          description: "Controller serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      responses:
+        '200':
+          description: "Restored default controller parameters"
+        '404':
+          description: "No controller with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+          
+  /device/{device-id}/status:
+    get:
+      tags:
+        - device
+      summary: "Retrieves the device status"
+      description: "Retrieves the current status of a device"
+      operationId: getDeviceStatus
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      responses:
+        '200':
+          description: "Device current status"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    $ref: "#/components/schemas/DeviceStatus"        
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/time:
+    get:
+      tags:
+        - device
+      summary: "Retrieves the device time"
+      description: "Retrieves the device current date/time"
+      operationId: getDeviceTime
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      responses:
+        '200':
+          description: "Device current date/time"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DeviceTime"        
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+    put:
+      tags:
+        - device
+      summary: "Sets the device time"
+      description: "Sets the device current date/time"
+      operationId: putDeviceTime
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      requestBody:
+        description: "Date time"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceTime"        
+      responses:
+        '200':
+          description: "Device current date/time"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DeviceTime"        
+        '403':
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/antipassback:
+    get:
+      tags:
+        - device
+      summary: "Gets the controller anti-passback mode"
+      description: "Gets the controller anti-passback mode"
+      operationId: getAntiPassback
+      parameters:
+        - name: device-id
+          in: path
+          description: "Controller serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      responses:
+        '200':
+          description: "Controller anti-passback"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/AntiPassback"        
+        '404':
+          description: "No controller with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+    put:
+      tags:
+        - device
+      summary: "Sets the controller anti-passback mode"
+      description: "Sets the controller anti-passback mode"
+      operationId: putAntiPassback
+      parameters:
+        - name: device-id
+          in: path
+          description: "Controller serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      requestBody:
+        description: "Anti-passback"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AntiPassback"        
+      responses:
+        '200':
+          description: "Controller anti-passback"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/AntiPassback"        
+        '403':
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '404':
+          description: "No controller with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/door/{door}:
+    get:
+      tags:
+        - device
+      summary: "Retrieves the door configuration"
+      description: "Retrieves the door delay setting and current control state"
+      operationId: getDoor
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: door
+          in: path
+          description: "Door number"
+          required: true
+          schema:
+            type: integer
+            format: uint8
+            example: 3
+      responses:
+        '200':
+          description: "Door delay (in seconds)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  door:
+                    $ref: "#/components/schemas/Door"        
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/door/{door}/swipes:
+    post:
+      tags:
+        - device
+      summary: "Opens a door"
+      description: "Issues the 'open door' command to an access controller"
+      operationId: openDoor
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: number
+            format: uint32
+            example: 405419896
+        - name: door
+          in: path
+          description: "Door number"
+          required: true
+          schema:
+            type: number
+            format: uint8
+            example: 3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardSwipe'
+      responses:
+        '200':
+          description: "Door opened"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  door:
+                    $ref: "#/components/schemas/DoorOpened"        
+        '401':
+          description: "User does not have permssions to open door"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"     
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/door/{door}/delay:
+    put:
+      tags:
+        - device
+      summary: "Sets the door delay"
+      description: "Sets the door delay in seconds"
+      operationId: putDoorDelay
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: door
+          in: path
+          description: "Door number"
+          required: true
+          schema:
+            type: integer
+            format: uint8
+            example: 3
+      requestBody:
+        description: "Door delay in seconds"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DoorDelay"        
+      responses:
+        '200':
+          description: "Door delay in seconds"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DoorDelay"        
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/door/{door}/control:
+    put:
+      tags:
+        - device
+      summary: "Sets the door control state"
+      description: "Sets the door control state (normally open, normally closed or controlled"
+      operationId: putDoorControlState
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: door
+          in: path
+          description: "Door number"
+          required: true
+          schema:
+            type: integer
+            format: uint8
+            example: 3
+      requestBody:
+        description: "Door control state"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DoorControlState"
+      responses:
+        '200':
+          description: "Door control state"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DoorControlState"
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/door/interlock:
+    put:
+      tags:
+        - device
+      summary: "Sets the controller door interlock mode"
+      description: "Sets the door interlock mode (none, 1&2, 3&4, 1&2+3&4, 1&2&3 or 1&2&3&4)"
+      operationId: putDoorInterlock
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      requestBody:
+        description: "Door interlock mode"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DoorInterlock"
+      responses:
+        '200':
+          description: "Door interlock mode"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/DoorInterlock"
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+
+  /device/{device-id}/door/keypads:
+    put:
+      tags:
+        - device
+      summary: "Activates or deactivates the reader keypads"
+      description: "Activates or deactivates reader access keypads for cards with an associated PIN"
+      operationId: putActivateKeypads
+      parameters:
+        - name: device-id
+          in: path
+          description: "Controller serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      requestBody:
+        description: "Reader keypad state"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccessKeypads"
+      responses:
+        '200':
+          description: "Activated keypads"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/AccessKeypads"
+        '404':
+          description: "No controller with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"
+
+  /device/{device-id}/door/{door}/passcodes:
+    put:
+      tags:
+        - device
+      summary: "Sets the supervisor passcodes for a door"
+      description: "Sets up to four supervisor passcodes for a door"
+      operationId: putSuperPasscodes
+      parameters:
+        - name: device-id
+          in: path
+          description: "Controller serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: door
+          in: path
+          description: "Door number"
+          required: true
+          schema:
+            type: integer
+            format: uint8
+            example: 3
+      requestBody:
+        description: "Supervisor passcodes"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuperPasscodes"
+      responses:
+        '200':
+          description: "Supervisor passcodes configured ok"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/SuperPasscodes"
+        '404':
+          description: "No controller with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"
+
+  /device/{device-id}/cards:
+    get:
+      tags:
+        - device
+      summary: "Retrieves the device card list"
+      description: "Retrieves the list of stored card numbers"
+      operationId: getCards
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      responses:
+        '200':
+          description: "Card list"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/CardList"        
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+    delete:
+      tags:
+        - device
+      summary: "Deletes the entire device card list"
+      description: "Deletes all stored card numbers"
+      operationId: deleteCards
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      responses:
+        '200':
+          description: "Stored card list cleared"
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/card/{card-number}:
+    get:
+      tags:
+        - device
+      summary: "Retrieves card access information"
+      description: "Retrieves the access permissions associated with a card number"
+      operationId: getCard
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: card-number
+          in: path
+          description: "Card number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 10058400
+      responses:
+        '200':
+          description: "Card access information"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  card:
+                    $ref: "#/components/schemas/Card"        
+        '404':
+          description: "No matching device and/or card"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+    put:
+      tags:
+        - device
+      summary: "Adds or updates a card"
+      description: "Adds or updates the access permissions associated with a card number"
+      operationId: putCard
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: card-number
+          in: path
+          description: "Card number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 192837465
+      requestBody:
+        description: "Card valid dates and access permissions"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CardDetails"        
+      responses:
+        '200':
+          description: "Card details added/updated"
+        '404':
+          description: "No matching device and/or card"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+    delete:
+      tags:
+        - device
+      summary: "Deletes a card"
+      description: "Removes the card associated with the card number from the stored card list"
+      operationId: deleteCard
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: card-number
+          in: path
+          description: "Card number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 192837465
+      responses:
+        '200':
+          description: "Card deleted"
+        '404':
+          description: "No matching device and/or card"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/time-profiles:
+    get:
+      tags:
+        - device
+      summary: "Retrieves all time profiles"
+      description: "Retrieves all the time profiles defined on a controller"
+      operationId: getTimeProfiles
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      responses:
+        '200':
+          description: "List of time profiles"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/TimeProfileList"        
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+    put:
+      tags:
+        - device
+      summary: "Updates a list of time profiles"
+      description: "Creates/updates a set of time profiles on a controller"
+      operationId: setTimeProfiles
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      requestBody:
+        description: "List of time profiles"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TimeProfileList"        
+      responses:
+        '200':
+          description: "Time profiles updated"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/TimeProfileListResult"        
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+    delete:
+      tags:
+        - device
+      summary: "Deletes all time profiles"
+      description: "Deletes all time profiles from a controller"
+      operationId: clearTimeProfiles
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      responses:
+        '200':
+          description: "Time profiles cleared"
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/time-profile/{time-profile-id}:
+    get:
+      tags:
+        - device
+      summary: "Retrieves a time profile"
+      description: "Retrieves a time profile from a controller"
+      operationId: getDeviceTimeProfile
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: time-profile-id
+          in: path
+          description: "Time profile ID in the interval [2..254]"
+          required: true
+          schema:
+            type: integer
+            format: uint8 
+            example: 29
+      responses:
+        '200':
+          description: "Time profile defined for the time-profile-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/TimeProfile"        
+        '404':
+          description: "No time profile defined for device-id + time-profile-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"    
+              example: {
+                  tag: "get-time-profile",
+                  message: "Time profile 29 not found"
+              }
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+    
+    put:
+      tags:
+        - device
+      summary: "Adds or updates a time profile"
+      description: "Adds or updates a controller time profile"
+      operationId: putTimeProfile
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: time-profile-id
+          in: path
+          description: "Time profile ID in the interval [2..254]"
+          required: true
+          schema:
+            type: integer
+            format: uint8 
+            example: 29
+      requestBody:
+        description: "Time profile definition"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TimeProfileBody"        
+      responses:
+        '200':
+          description: "Time profile added/updated"
+        '404':
+          description: "No matching device"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/tasklist:
+    put:
+      tags:
+        - device
+      summary: "Sets the controller task list"
+      description: "Replaces any existing task list on the controller with the supplied list of scheduled tasks"
+      operationId: setTaskList
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      requestBody:
+        description: "List of tasks"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskList"        
+      responses:
+        '200':
+          description: "Task list updated"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/TaskListResult"         
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/events:
+    get:
+      tags:
+        - device
+      summary: "Retrieves the device event list indices"
+      description: "Retrieves the indices of the first, last and current events"
+      operationId: getEventIndices
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      responses:
+        '200':
+          description: "Event indices"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Events"        
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/events/{range}:
+    get:
+      tags:
+        - device
+      summary: "Retrieves up to N 'next' events"
+      description: "Retrieves the controller event list indices and up to N 'next' events"
+      operationId: getEvents
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: range
+          in: path
+          description: "Number of events to retrieve"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 5
+      responses:
+        '200':
+          description: "Event list"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Events"        
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/event/{event-index}:
+    get:
+      tags:
+        - device
+      summary: "Retrieves a single event record"
+      description: "Retrieves the event record for an event ID"
+      operationId: getEvent
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+        - name: event-index
+          in: path
+          description: "Numeric event index or 'first', 'last', 'current' or 'next'"
+          required: true
+          schema:
+            type: string
+            example: 31
+      responses:
+        '200':
+          description: "Event record"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  event:
+                    $ref: "#/components/schemas/Event"        
+        '404':
+          description: "No matching device and/or event"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /device/{device-id}/special-events:
+    put:
+      tags:
+        - device
+      summary: "Enable or disable special events"
+      description: "Enables or disables events on door open, door closed and door button pressed"
+      operationId: putRecordSpecialEvents
+      parameters:
+        - name: device-id
+          in: path
+          description: "Device serial number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 405419896
+      requestBody:
+        description: "Enable/disable special events"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpecialEvents"        
+            examples:
+              enable: 
+                value:
+                  enabled: true
+              disable: 
+                value:
+                  enabled: false
+
+      responses:
+        '200':
+          description: "Device record special events"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/SpecialEvents"        
+        '403':
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '404':
+          description: "No device with ID matching device-id"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        
+  /acl:
+    get:
+      tags:
+        - acl
+      summary: "Retrieves an access control list from a set of controllers"
+      description: "Retrieves and consolidates the card lists from a set of controllers into a list of access permissions associated with each card."
+      operationId: aclGet
+      responses:
+        '200':
+          description: "Consolidated access control lists"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ACL"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+  
+    put:
+      tags:
+        - acl
+      summary: "Loads an access control list to a set of controllers"
+      description: "Updates the cards on a set of controllers from an access control list that specifies the access permissions for all users. Cards with invalid start or end dates are discarded."
+      operationId: aclPut
+      requestBody:
+        description: "Access control list"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ACL"        
+      responses:
+        '200':
+          description: "Result of access control lists update"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/PutACLResult"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        
+  /acl/card/{card-number}:
+    get:
+      tags:
+        - acl
+      summary: "Retrieves the access permissions for a card"
+      description: "Retrieves the access permissions for a card, using the configuration to resolve the door ID to the controller + door number."
+      operationId: aclShow
+      parameters:
+        - name: card-number
+          in: path
+          description: "Card number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 10058400
+      responses:
+        '200':
+          description: "List of current card access permissions"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/CardPermissions"        
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+  /acl/card/{card-number}/door/{door}:
+    put:
+      tags:
+        - acl
+      summary: "Grants a card access to a door"
+      description: "Grants a card access to a single named door, using the configuration to resolve the door ID to the controller + door number. A granted access is added to the existing permissions for the card and access dates are widened to accommodate the earliest start date and the latest end date. The ALL door will grant access to all configured doors."
+      operationId: aclGrantDoor
+      parameters:
+        - name: card-number
+          in: path
+          description: "Card number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 10058400
+        - name: door
+          in: path
+          description: "Door ID ('ALL' will grant access to all doors)"
+          required: true
+          explode: true
+          schema:
+            type: string
+            format: Alphanumeric door name (space- and case-insensitive).
+            example: "Great Hall"
+      requestBody:
+        description: "Card valid dates and (optional) time profile"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DateRangeAndProfile"        
+      responses:
+        '200':
+          description: "Access granted"
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+    delete:
+      tags:
+        - acl
+      summary: "Revokes a card access to a door"
+      description: "Revokes a card's access to a door, using the configuration to resolve the door ID to the controller + door number. A revoked access is removed from the existing permissions for the card without modifying the card start/end dates or removing the card from the controllers' internal lists."
+      operationId: aclRevokeDoor
+      parameters:
+        - name: card-number
+          in: path
+          description: "Card number"
+          required: true
+          schema:
+            type: integer
+            format: uint32
+            example: 10058400
+        - name: door
+          in: path
+          description: "Door ID ('ALL' will revoke access to all doors)"
+          required: true
+          explode: true
+          schema:
+            type: string
+            format: Alphanumeric door name (space- and case-insensitive).
+            example: "Great Hall"
+      responses:
+        '200':
+          description: "Access revoked"
+        '405':
+          description: "Invalid request"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+        '500':
+          description: "Internal system error"
+        default:
+          description: "Request failed"
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Error"        
+
+components:
+  securitySchemes:
+    basic:
+      type: http
+      scheme: basic
+      description: "RFC 2617 user:password credentials"
+    hotp:
+      type: http
+      scheme: bearer
+      bearerFormat: HOTP:user-id:OTP, base64 encoded
+      description: "Lightweight user:OTP authorization scheme for IOT devices"
+      
+  schemas:
+    CardSwipe:
+      required: 
+        - card-number
+      properties:
+        card-number:
+          type: number
+          format: uint32
+          description: "Card number"
+          example: 10058400
+
+    DeviceList:
+      required: 
+        - devices
+      properties:
+        devices:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeviceID"        
+          description: "List of 'found' devices"
+
+    DeviceID:
+      required: 
+        - device-id
+        - device-type
+      properties:
+        device-id:  
+          type: number
+          format: uint32
+          description: "UHPPOTE device serial number"
+          example: 405419896
+        device-type:  
+          type: string
+          format: string
+          description: "UHPPOTE device type"
+          example: "UT0311-L04"
+
+    Device:
+      required: 
+        - device-type
+        - ip-address
+        - subnet-mask
+        - gateway-address
+        - mac-address
+        - version
+        - date
+      properties:
+        device-type:  
+          type: string
+          format: string
+          description: "UHPPOTE device type"
+          example: "UT0311-L04"
+        ip-address:  
+          type: string
+          format: IPv4 address
+          description: "Device IP address"
+          example: "192.168.1.50"
+        subnet-mask:  
+          type: string
+          format: IPv4 address
+          description: "Device IP subnet mask"
+          example: "255.255.255.0"
+        gateway-address:  
+          type: string
+          format: IPv4 address
+          description: "Device IP gateway address"
+          example: "192.168.1.1"
+        mac-address:  
+          type: string
+          format: 6 byte hexadecimal
+          description: "Device MAC address"
+          example: "00:12:23:34:45:56"
+        version:  
+          type: string
+          format: uint16 hexadecimal
+          description: "Device firmware version"
+          example: "0892"
+        date:  
+          type: string
+          format: yyyy-mm-dd
+          description: "Device current date"
+          example: "2023-03-28"
+
+    DeviceStatus:
+      required: 
+        - last-event-index
+        - event-type
+        - access-granted
+        - door
+        - door-opened
+        - user-id
+        - event-timestamp
+        - event-result
+        - door-state 
+        - door-buttons
+        - system-state
+        - system-datetime
+        - packet-number
+        - backup-state
+        - special-message
+        - battery-status
+        - fire-alarm-status
+      properties:
+        door-state:  
+          type: object
+          # properties:
+          #   1: bool
+          #   2: bool
+          #   3: bool
+          #   4: bool
+          additionalProperties: false 
+          format: map[uint8]boolean
+          description: "maps door number 1..4 to the corresponding door open/closed state"
+          example: { 
+            1: true, 
+            2: false, 
+            3: false, 
+            4: true 
+          }
+        door-buttons:  
+          type: object
+          format: map[uint8]boolean
+          description: "maps door number 1..4 to the corresponding door button pressed/released state"
+          example: { 
+            1: true, 
+            2: true, 
+            3: false, 
+            4: true 
+          }
+        system-state:  
+          type: integer
+          format: uint8
+          description: "System state flag set"
+          example: 0
+        system-datetime:  
+          type: string
+          format: yyyy-mm-dd HH:mm:ss
+          description: "Current system date and time"
+          example: "2023-03-28 15:32:29"
+        packet-number:  
+          type: integer
+          format: uint8
+          description: "Packet number, whatever that entails"
+          example: 0
+        backup-state:  
+          type: integer
+          format: uint8
+          description: "Backup state code, whatever that entails"
+          example: 0
+        special-message:  
+          type: integer
+          format: uint8
+          description: "Special message code, whatever that entails"
+          example: 0
+        battery-status:  
+          type: integer
+          format: uint8
+          description: "Battery status flag set"
+          example: 0
+        fire-alarm-status:  
+          type: integer
+          format: uint8
+          description: "Fire alarm status flag set"
+          example: 0
+        event:
+          type: object
+          $ref: "#/components/schemas/DeviceStatus" 
+          format: json
+          description: "Last event (if present)"
+          example:  { 
+              index: 37, 
+              type: 3, 
+              access-granted: true, 
+              door: 2, 
+              user-id: 10058400,  
+              timestamp: "2023-01-14 12:34:56", 
+              reason: 6 
+            }
+
+    StatusEvent:
+      required: 
+        - index
+        - type
+        - access-granted
+        - door
+        - door-opened
+        - user-id
+        - event-timestamp
+        - event-result
+      properties:
+        index:
+          type: number
+          format: uint32
+          description: "Index of last recorded event"
+          example: 37
+        type:
+          type: number
+          format: uint8
+          description: "Type of last recorded event"
+          example: 3
+        code:
+          type: number
+          format: uint8
+          description: "Type of last recorded event"
+          example: 3
+        access-granted:
+          type: boolean
+          format: true/false
+          description: "Access granted/refused"
+          example: true
+        door:
+          type: number
+          format: uint8 (1..4)
+          description: "Door ID for event"
+          example: 3
+        door-opened:
+          type: boolean
+          format: true/false
+          description: "Door opened to request"
+          example: true
+        user-id:
+          type: number
+          format: uint32
+          description: "User ID (card number for swipe events)"
+          example: 10059400
+        timestamp:  
+          type: string
+          format: yyyy-mm-dd HH:mm:ss
+          description: "Event timestamp"
+          example: "2023-01-28 15:32:29"
+        reason:  
+          type: integer
+          format: event reason code
+          description: "Event reason code"
+          example: 6
+
+    DeviceTime:
+      properties:
+        datetime:
+          type: string
+          format: yyyy-mm-dd HH:mm:ss
+          description: "Current device date/time"
+          example: "2023-03-28 15:32:29"
+
+    AntiPassback:
+      properties:
+        anti-passback:
+          type: string
+          format: string enum
+                  - disabled
+                  - (1:2);(3:4)
+                  - (1,3):(2:4)
+                  - 1:(2,3)
+                  - 1:(2,3,4)
+          description: "Controller anti-passback mode"
+          example: "(1,3):(2,4)"
+
+    Door:
+      properties:
+        delay:
+          type: number
+          format: uint8
+          description: "Door delay in seconds"
+          example: 5
+        control:
+          type: string
+          format: "'normally open', 'normally closed' or 'controlled'"
+          description: "Door control state"
+          example: 'normally closed'
+
+    DoorOpened:
+      properties:
+        opened:
+          type: boolean
+          format: true/false
+          description: "Door opened/not opened"
+          example: true
+
+    DoorDelay:
+      properties:
+        delay:
+          type: number
+          format: uint8
+          description: "Door delay in seconds"
+          example: 5
+          
+    DoorControlState:
+      properties:
+        control:
+          type: string
+          format: "'normally open', 'normally closed' or 'controlled'"
+          description: "Door control state"
+          example: 'normally closed'
+
+    DoorInterlock:
+      properties:
+        interlock:
+          type: number
+          format: uint8
+          description: "Door interlock mode - 0:none, 1:1&2, 2:3&4, 3:1&2,3&4, 4:1&2&3, 8: 1&2&3&4"
+          example: 4
+
+    AccessKeypads:
+      properties:
+        keypads:
+          type: object
+          additionalProperties: false
+          format: map[uint8]boolean
+          description: "Maps keypads 1..4 to the corresponding activated/deactivated state"
+          example: {
+            1: true,
+            2: true,
+            3: false,
+            4: true
+          }
+
+    SuperPasscodes:
+      properties:
+        keypads:
+          type: array
+          additionalProperties: false
+          format: array[uint32]
+          description: "Array of up to four passcodes in the range [1..999999]"
+          example: [ 12345,99999,54321]
+
+    CardList:
+      required: 
+        - cards
+      properties:
+        cards:
+          type: array
+          items:
+             type: number
+             format: uint32
+             description: "Card number"
+          example: [ 10058400, 10058401 ]
+          description: "List of card numbers"
+
+    Card:
+      required: 
+        - card-number
+        - start-date
+        - end-date
+        - doors
+        - PIN
+      properties:
+        card-number:  
+          type: number
+          format: uint32
+          description: "Card number"
+          example: 10058400
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "First date card is valid"
+          example: "2023-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Last date card is valid"
+          example: "2023-12-31"
+        doors:  
+          type: object
+          items:
+             type: boolean
+             format: true/false
+             description: "Door access permitted"
+          example: { "1":true, "2":false, "3":false, "4":true }
+          description: "List of doors and access"
+        PIN:  
+          type: number
+          format: uint32
+          description: "(optional) keypad PIN code in the range 0 to 999999"
+          example: 7531
+
+    CardDetails:
+      required: 
+        - start-date
+        - end-date
+        - doors
+        - PIN
+      properties:
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "First date card is valid"
+          example: "2023-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Last date card is valid"
+          example: "2023-12-31"
+        doors:  
+          type: object
+          items:
+             type: object
+             format: map[uint8]boolean
+             description: "maps door number 1..4 to the corresponding door access permission (true, false or a valid time profile ID"
+          example: { "1":true, "2":false, "3":55, "4":true }
+          description: "List of doors and access"
+        PIN:  
+          type: number
+          format: uint32
+          description: "(optional) keypad PIN code in the range 0 to 999999"
+          example: 7531
+
+    CardPermissions:
+      required:
+        - permissions
+      properties:
+        permissions:
+          type: array
+          items:
+            $ref: "#/components/schemas/CardPermission"                
+      description: "List of doors to which the card has been granted access, along with associated access date ranges"      
+      example: { "permissions": [ { "door":"Entrance", "start-date":"2020-01-01", "end-date":"2020-12-31" },{ "door":"Workshop", "start-date":"2020-01-01", "end-date":"2020-12-31" }] }
+          
+    CardPermission:
+      required: 
+        - door
+        - start-date
+        - end-date
+      properties:
+        door:  
+          type: string
+          format: door ID
+          description: "Door ID corresponding to an entry in the controller configuration"
+          example: "Entrance"
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "First date card access is enabled (as from 00:00)"
+          example: "2023-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Last date card is enabled (until 23:59)"
+          example: "2023-12-31"
+        profile:  
+          type: number
+          format: integer in the range [2..254]
+          description: "Time profile ID for access to the door"
+          example: 29
+          
+    TimeProfileList:
+      required: 
+        - profiles
+      properties:
+        profiles:
+          type: array
+          items:
+            $ref: "#/components/schemas/TimeProfile"                
+          description: "List of time profiles"
+
+    TimeProfileListResult:
+      required: 
+        - warnings
+      properties:
+        warnings:
+          type: array
+          items: 
+            type: string
+          description: "List of warnings for individual time profiles"
+
+    TimeProfile:
+      required: 
+        - id
+        - start-date
+        - end-date
+        - weekdays
+        - segments
+      properties:
+        id:  
+          type: number
+          format: uint8
+          description: "Time profile ID in the range [2..254]"
+          example: 29
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Date from which time profile is active"
+          example: "2023-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Date after which time profile is no longer active"
+          example: "2023-12-31"
+        weekdays:  
+          type: string
+          items:
+             type: string
+             format: "comma seperated list of weekdays"
+             description: "List of weekdays for which the time profile is active. Weekday name are case-insensitive and 3 letter abbreviations are valid."
+          example: "Monday,Wednesday,Friday"
+          description: "List of weekdays for which the time profile is active"
+        segments:  
+          type: array
+          # properties:
+          #   1: "#/components/schemas/TimeSegment"
+          #   2: "#/components/schemas/TimeSegment"
+          #   3: "#/components/schemas/TimeSegment"
+          additionalProperties: false 
+          example:  [ { "start":"08:30", "end":"11:15" }, { "start":"12:00", "end":"16:45" }  ]
+          description: "Array of up to 3 time intervals during which the time profile is active"
+        linked-profile:  
+          type: number
+          format: uint8
+          description: "ID of time profile linked to this time profile."
+          example: 71
+
+    TimeProfileBody:
+      required: 
+        - start-date
+        - end-date
+        - weekdays
+        - segments
+      properties:
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Date from which time profile is active"
+          example: "2023-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Date after which time profile is no longer active"
+          example: "2023-12-31"
+        weekdays:  
+          type: string
+          items:
+             type: string
+             format: "comma seperated list of weekdays"
+             description: "List of weekdays for which the time profile is active. Weekday name are case-insensitive and 3 letter abbreviations are valid."
+          example: "Monday,Wednesday,Friday"
+          description: "List of weekdays for which the time profile is active"
+        segments:  
+          type: array
+          additionalProperties: false 
+          example:  [ { "start":"08:30", "end":"11:15" }, { "start":"12:00", "end":"16:45" } ]
+          description: "Array of up to 3 time intervals during which the time profile is active"
+        linked-profile:  
+          type: number
+          format: uint8
+          description: "ID of time profile linked to this time profile."
+          example: 71
+                    
+    TimeSegment:
+      required: 
+        - start
+        - end
+      properties:
+        start:  
+          type: string
+          format: HH:mm
+          description: "Time from which segment is active"
+          example: "08:30"
+        end:  
+          type: string
+          format: HH:mm
+          description: "Time until after which segment is no longer active"
+          example: "11:15"
+      example: { "start":"08:30", "end":"11:15" }
+
+    TaskList:
+      required: 
+        - tasks
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"                
+          description: "List of scheduled tasks"
+
+    TaskListResult:
+      required: 
+        - warnings
+      properties:
+        warnings:
+          type: array
+          items: 
+            type: string
+          description: "List of warnings for individual tasks"
+
+    Task:
+      required: 
+        - task
+        - door
+        - start-date
+        - end-date
+        - weekdays
+        - start-time
+      properties:
+        task:  
+          type: string
+          format: enum
+          description: "Standard task description"
+          example: "enable time profile"
+        door:  
+          type: number
+          format: uint8
+          description: "Door [1..4] for which to run task"
+          example: 3
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Date from which task is active"
+          example: "2023-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Date after which task is no longer active"
+          example: "2023-12-31"
+        weekdays:  
+          type: string
+          items:
+             type: string
+             format: "comma seperated list of weekdays"
+             description: "List of weekdays for which the task is active. Weekday name are case-insensitive and 3 letter abbreviations are valid."
+          example: "Monday,Wednesday,Friday"
+          description: "List of weekdays for which the time profile is active"
+        start:  
+          type: string
+          format: HH:mm
+          description: "Time at which to run task"
+          example: "15:30"
+        cards:  
+          type: number
+          format: uint8
+          description: "Number of cards to allow for the 'more-cards' task."
+          example: 7
+
+    SpecialEvents:
+      properties:
+        enabled:
+          type: boolean
+          format: true/false
+          description: "Enables or disables events for door open, door closed or door button pressed"
+          example: true
+
+    ACL:
+      required:
+        - acl
+      properties:
+        acl:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccessListRecord"                
+          description: "List of cards and doors to which the cards have been granted access, along with associated card access date ranges"      
+          
+    AccessListRecord:
+      required: 
+        - card-number
+        - door
+        - start-date
+        - end-date
+        - doors
+      properties:
+        card-number:  
+          type: number
+          format: uint32
+          description: "Card number"
+          example: 10058400
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "First date card access is enabled (as from 00:00)"
+          example: "2023-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Last date card is enabled (until 23:59)"
+          example: "2023-12-31"
+        doors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Permission"                
+
+    Permission:
+      required: 
+        - door
+      properties:
+        door:  
+          type: string
+          format: string
+          description: "Door name"
+          example: "Dungeon"
+        profile:
+          type: number
+          format: integer
+          description: "Optional time profile ID (in the range [2..254]) for access to a door"
+          example: 29
+      example: { "door":"Hogsmeade", "profile": 55 }
+
+    PutACLResult:
+      required:
+        - report
+      properties:
+        report:
+          type: array
+          items: 
+            $ref: "#/components/schemas/PutACLResultRecord"  
+        warnings:
+          type: array
+          items: 
+            type: string
+          description: "List of warnings for time profiles that could not be created or updated"
+      description: "Summary list of changes made to controller card lists"
+      example: { "report": [ { "device-id":405419896, "unchanged":1, "updated":3, "added": 2, "deleted":1, "failed":0 } ] }
+        
+    PutACLResultRecord:
+      required: 
+        - device-id
+        - unchanged
+        - updated
+        - added
+        - deleted
+        - failed
+      properties:
+        device-id:  
+          type: number
+          format: uint32
+          description: "UHPPOTE device serial number"
+          example: 405419896
+        unchanged:  
+          type: number
+          format: integer
+          description: "Number of records unaffected by ACL update"
+          example: 3
+        updated:  
+          type: number
+          format: integer
+          description: "Number of records updated by ACL update"
+          example: 5
+        added:  
+          type: number
+          format: integer
+          description: "Number of records added by ACL update"
+          example: 3
+        deleted:  
+          type: number
+          format: integer
+          description: "Number of records deleted by ACL update"
+          example: 1
+        failed:  
+          type: number
+          format: integer
+          description: "Number of records failed to updated by ACL update"
+          example: 0
+      description: "Summary list of changes made to a controller card list"
+      example: { "device-id":405419896, "unchanged":2, "updated":5, "added": 3, "deleted":1, "failed":0 }
+
+    Events:
+      required: 
+        - events
+      properties:
+        events:
+          $ref: "#/components/schemas/EventsList"        
+
+    EventsList:
+      properties:
+        first:
+          description: "Index of the first stored event. Not provided if device has no events."
+          type: number
+          format: uint32
+          example: 3
+        last:
+          description: "Index of the last stored event. Not provided if device has no events."
+          type: number
+          format: uint32
+          example: 78
+        current:
+          description: "Current event index"
+          type: number
+          format: uint32
+          example: 17
+        events:
+          description: "List of events"
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"                
+          example: [ { "event-id": 13,
+                       "event-type": 1,
+                       "access-granted": true,
+                       "door-id": 2,
+                       "user-id": 192837465,
+                       "timestamp": '2020-03-27 12:34:56',
+                       "event-result": 6
+                      }
+                    ]
+
+    Event:
+      required: 
+        - event-id
+        - event-type
+        - access-granted
+        - door-id
+        - door-opened
+        - user-id
+        - timestamp
+        - event-result
+      properties:
+        event-id:  
+          type: number
+          format: uint32
+          description: "Event id"
+          example: 13
+        event-type:  
+          type: number
+          format: uint8
+          description: "Event type"
+          example: 1
+        access-granted:  
+          type: boolean
+          format: true/false
+          description: "Access granted"
+          example: true
+        door-id:  
+          type: number
+          format: uint8
+          description: "Door number [1..4]"
+          example: 2
+        user-id:  
+          type: number
+          format: uint32
+          description: "User ID, typically card number"
+          example: 192837465
+        timestamp:  
+          type: string
+          format: yyyy-MM-dd HH:mm:ss
+          description: "Event timestamp"
+          example: "2020-03-27 12:34:56"
+        event-result:  
+          type: number
+          format: uint8
+          description: "Event result"
+          example: 6
+
+    DateRangeAndProfile:
+      required: 
+        - start-date
+        - end-date
+      properties:
+        start-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "First date card is valid"
+          example: "2023-01-01"
+        end-date:  
+          type: string
+          format: yyyy-MM-dd
+          description: "Last date card is valid"
+          example: "2023-12-31"
+        profile:  
+          type: number
+          format: uint8
+          description: "Optional time profile ID (in the range [2..254])"
+          example: 29
+
+    Error:
+      required: 
+        - tag
+        - message
+      properties:
+        tag:  
+          type: string
+          format: string
+          description: "Operation identifier"
+          example: "put-card"
+        message:  
+          type: string
+          format: string
+          description: "User level error message"
+          example: "Invalid card number"

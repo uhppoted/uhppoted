@@ -1,0 +1,310 @@
+\documentclass[11pt, oneside]{article}  
+\usepackage[parfill]{parskip} 
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage[iso,english]{isodate}    
+\usepackage{fontspec}
+\usepackage{tikz}
+\usetikzlibrary{shapes,snakes}
+\usepackage{color}
+
+\usepackage[paperwidth=16cm,paperheight=25cm,margin=0cm]{geometry}
+\usepackage[a4,center,noinfo]{crop}
+\usepackage{fancyhdr}
+
+\usepackage[a4,center,noinfo]{crop}
+\definecolor{airforceblue}{rgb}{0.36, 0.54, 0.66}
+\definecolor{asparagus}{rgb}{0.53, 0.66, 0.42}
+\definecolor{bisque}{rgb}{1.0, 0.89, 0.77}
+\definecolor{bittersweet}{rgb}{1.0, 0.44, 0.37}
+\definecolor{brickred}{rgb}{0.8, 0.25, 0.33}
+\definecolor{buff}{rgb}{0.94, 0.86, 0.51}
+\definecolor{celadon}{rgb}{0.67, 0.88, 0.69}
+\definecolor{corn}{rgb}{0.98, 0.93, 0.36}
+\definecolor{darkpastelblue}{rgb}{0.47, 0.62, 0.8}
+\definecolor{salmon}{rgb}{1.0, 0.55, 0.41}
+
+\definecolor{burlywood}{rgb}{0.87, 0.72, 0.53}
+\definecolor{darkpastelpurple}{rgb}{0.59, 0.44, 0.84}
+\definecolor{verylightgray}{rgb}{0.9, 0.9, 0.9}
+
+\setmainfont[Ligatures=TeX,ItalicFont={Elena Basic Regular Italic}]{Elena Basic}
+
+\title{UHPPOTE-UTO0311-L0x - PROTOCOL}
+\author{}
+\date{\today}
+
+\pagestyle{fancy} 
+\lhead{\footnotesize UHPPOTE UTO0311 L0X}
+\chead{\footnotesize PROTOCOL DESCRIPTION}
+
+\lfoot{\footnotesize UHPPOTE-UT0311-L0X Rev. 0}
+\cfoot{\footnotesize UNCLASSIFIED}
+\rfoot{\footnotesize \thepage}
+
+\renewcommand{\footrulewidth}{0.4pt}
+
+% -- MACRO'S
+
+% -- TITLE PAGE
+
+\begin{document}
+
+\thispagestyle{empty}
+
+\begin{tikzpicture}
+\draw [fill=white]   (0,0) rectangle(16,24.9);
+
+%\node[anchor=north]  (logo) at (8,20) 
+%  { \includegraphics[width=8.5cm]{twyst.png}
+%  };
+
+\node[anchor=north]  (title)  at (8,12.5) 
+  { \fontsize{16}{16}
+    \selectfont
+    \textbf{UHPPOTE UTX031 L0X}
+ };
+
+\node[anchor=north]  (subtitle)  at (8,11.25) 
+  { \fontsize{13}{16} 
+    \selectfont
+    \textit{Protocol Description}
+ };
+  
+\end{tikzpicture}
+
+% -- CONTENT
+
+\clearpage
+
+\setcounter{page}{1}
+\renewcommand{\arraystretch}{1.75}
+   
+\begingroup\centering 
+\fontsize{16}{20}
+\selectfont
+\textbf{UHPPOTE UTO0311 L0X}
+\vspace{1cm}
+
+\fontsize{13}{16}
+\selectfont
+\textit{Protocol Description}
+\vspace{0.25cm}
+
+\hrulefill
+\endgroup
+
+% -- OVERVIEW
+
+\section*{Overview}
+
+The UHPPOTE-UTO031-L0X protocol is a UDP packet protocol that provides the functionality required to:
+
+\begin{itemize}  
+\item identify the UHPPOTE-UTO031-L0X controllers present on a TCP/IP network
+\item configure the controllers present on a TCP/IP network
+\item listen for access events from controllers present on a TCP/IP network
+\end{itemize}
+
+\textbf{
+}
+
+A request is 64 byte UDP packet with the following general format:
+
+{ \begin{tikzpicture}[]
+  \draw [] (0,0)    rectangle (16,1); 
+  \draw [] (0,0)    rectangle (1.2,1); 
+  \draw [] (1.2,0)    rectangle (2.7,1); 
+  \draw [] (2.7,0) rectangle (16,1); 
+  \draw (0.6,0.5) node [] { \large 0x17 }; 
+  \draw (1.95,0.5) node [] { \large CODE }; 
+  \draw (2.75,0.5) node [anchor=west] { \large PARAMETERS\ldots }; 
+ \end{tikzpicture}
+}
+
+A response is 64 byte UDP packet with the following general format:
+
+{ \begin{tikzpicture}[]
+  \draw [] (0,0)    rectangle (16,1); 
+  \draw [] (0,0)    rectangle (1.2,1); 
+  \draw [] (1.2,0)    rectangle (2.7,1); 
+  \draw [] (2.7,0) rectangle (16,1); 
+  \draw (0.6,0.5) node [] { \large 0x17 }; 
+  \draw (1.95,0.5) node [] { \large CODE }; 
+  \draw (2.75,0.5) node [anchor=west] { \large DATA\ldots }; 
+ \end{tikzpicture}
+}
+
+Message elements
+
+{ \begin{tabular}{ | l | l | l | }
+   \hline
+   & TYPE & ENCODING \\ 
+   \hline
+   Device ID & uint32 & binary \\ 
+   \hline
+   Card Number & uint32 & binary \\ 
+   \hline
+   Date & YYMMDD & BCD \\ 
+   \hline
+   Time & HHmm & BCD \\ 
+   \hline
+   IPv4  & N.N.N.N & binary[4] \\ 
+   \hline
+   MAC  & X.X.X.X.X & binary[6] \\ 
+   \hline
+   \end{tabular}
+   \vspace{0.5cm}
+}
+
+
+{ \begin{tabular}{ | l | c | l | }
+   \hline
+   COMMAND & CODE & DESCRIPTION \\ 
+   \hline
+   find-devices & 0x94 &  Broadcast command to identify all devices on a subnet \\ 
+   \hline
+   get-status &  &  \\ 
+   \hline
+   get-time &  &  \\ 
+   \hline
+   get-cards & 0x58  &  Retrieves the number of card records stored in the internal access list \\ 
+   \hline
+   get-card-by-number & 0x5A &  Retrieves the card record for the card number from the internal access list \\ 
+   \hline
+   get-card-by-index & 0x5C &  Retrieves the card record at the index in the internal access list \\ 
+   \hline
+   get-swipes &  &  \\
+   \hline
+   set-time &  &  \\
+   \hline
+   set-ip-address &  &  \\
+   \hline
+   grant &  &  \\
+   \hline
+   revoke &  &  \\ 
+   \hline
+   open-door &  &  \\ 
+   \hline
+   \end{tabular}
+   \vspace{0.5cm}
+}
+
+% -- find-devices
+
+\section*{FIND DEVICES}
+
+UDP broadcast command to identify all UHPPOTE-UTO031-L0X controllers present on the local TCP/IP network.
+
+REQUEST:
+
+{ \begin{tabular}{ | l | l | l | l | }
+   \hline
+   OFFSET & LENGTH & FIELD & VALUE \\ 
+   \hline
+   0 & 1 & SOM & 0x17 \\ 
+   \hline
+   1 & 1 & CODE & 0x94 \\ 
+   \hline
+   2 & 1 & PAD & 0x00 \\ 
+   \hline
+   3 & 1 & PAD & 0x00 \\ 
+   \hline
+   4 & 60 & PADDING & 0x00 0x00 \ldots \\ 
+   \hline
+   \end{tabular}
+   \vspace{0.5cm}
+}
+
+RESPONSE:
+
+{ \begin{tabular}{ | l | l | l | l | }
+   \hline
+   OFFSET & LENGTH & FIELD & VALUE \\ 
+   \hline
+   0 & 1 & SOM & 0x17 \\ 
+   \hline
+   1 & 1 & CODE & 0x94 \\ 
+   \hline
+   2 & 1 & PAD & 0x00 \\ 
+   \hline
+   3 & 1 & PAD & 0x00 \\ 
+   \hline
+   4 & 4 & SERIAL NUMBER & uint32 \\ 
+   \hline
+   8 & 4 & IP ADDRESS & IPv4 \\ 
+   \hline
+   12 & 4 & SUBNET MASK & IPv4 \\ 
+   \hline
+   16 & 4 & GATEWAY ADDRESS & IPv4 \\ 
+   \hline
+   20 & 6 & MAC ADDRESS & MAC \\ 
+   \hline
+   26 & 2 & VERSION & VERSION \\ 
+   \hline
+   28 & 6 & DATE & DATE \\ 
+   \hline
+   34 & 30 & PADDING & 0x00 0x00 \ldots \\ 
+   \hline
+   \end{tabular}
+   \vspace{0.5cm}
+}
+
+Example:
+
+\texttt{{\color{blue}\textbf{17}} 
+{\color{red}\textbf{94}} 
+00 00 00 00 00 00  00 00 00 00 00 00 00 00}\newline
+\texttt{00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00}\newline
+\texttt{00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00}\newline
+\texttt{00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00}\newline
+
+\texttt{{\color{blue}\textbf{17}} 
+{\color{red}\textbf{94}} 
+00 00 2d 55 39 19  c0 a8 01 7d ff ff ff 00}\newline
+\texttt{ff ff ff 00 00 66 19 39  55 2d 08 92 20 18 08 16}\newline
+\texttt{00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00}\newline
+\texttt{00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00}\newline
+
+
+%{ \begin{tikzpicture}[]
+%  \draw [] (0,0)    rectangle (16,1); 
+% \draw [] (0,0)    rectangle (1,1); 
+%  \draw [] (1,0)    rectangle (2,1); 
+%  \draw [] (2,0)    rectangle (3,1); 
+%  \draw [] (2,0)    rectangle (4,1); 
+%  \draw [] (2,0)    rectangle (16,1); 
+%  \draw (0.5,0.5) node [] { \large 17 }; 
+%  \draw (1.5,0.5) node [] { \large 94 }; 
+%  \draw (2.5,0.5) node [] { \large 00 }; 
+%  \draw (3.5,0.5) node [] { \large 00 }; 
+% \end{tikzpicture}
+%}
+
+%{ \begin{tikzpicture}[]
+%  \draw [] (0,0)    rectangle (16,1); 
+ % \draw [] (0,0)    rectangle (1,1); 
+%  \draw [] (1,0)    rectangle (2,1); 
+%  \draw [] (2,0)    rectangle (3,1); 
+%  \draw [] (2,0)    rectangle (4,1); 
+%  \draw [] (4,0)    rectangle (5.8,1); 
+%  \draw [] (5.8,0)    rectangle (7.7,1); 
+%  \draw [] (7.7,0)    rectangle (9.15,1); 
+%  \draw [] (9.15,0)    rectangle (11.1,1); 
+%  \draw [] (11.1,0)    rectangle (12.4,1); 
+%  \draw [] (12.4,0)    rectangle (14.1,1); 
+%  \draw (0.5,0.5) node [] { \large 17 }; 
+%  \draw (1.5,0.5) node [] { \large 94 }; 
+%  \draw (2.5,0.5) node [] { \large 00 }; 
+%  \draw (3.5,0.5) node [] { \large 00 }; 
+%  \draw (4.1,0.5) node [anchor=west] { \small SERIAL \# }; 
+%  \draw (5.9,0.5) node [anchor=west] { \small ADDRESS }; 
+%  \draw (7.8,0.5) node [anchor=west] { \small MASK }; 
+%  \draw (9.2,0.5) node [anchor=west] { \small GATEWAY }; 
+%  \draw (11.2,0.5) node [anchor=west] { \small MAC }; 
+%  \draw (12.4,0.5) node [anchor=west] { \small VERSION }; 
+%  \draw (14.25,0.5) node [anchor=west] { \small DATE }; 
+% \end{tikzpicture}
+%}
+
+\end{document}  

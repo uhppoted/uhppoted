@@ -1,0 +1,39 @@
+rule AddCardNumber "Card number must be greater than 6000000" {
+     when
+	     OP == "add" && CH.Card > 6000000
+	 then
+	     RESULT.Allow = true;
+         Retract("AddCardNumber");
+}
+
+rule AddGryffindor "Gryffindor should not be ticked" {
+     when
+         OP == "add" && CH.HasGroup("G04")
+     then
+        RESULT.Refuse = true;
+        Retract("AddGryffindor");
+}
+
+rule UpdateCardNumber "Card number must be greater than 6000000 and original and updated card numbers must be the same" {
+     when
+	     OP == "update" && ORIGINAL.Card > 6000000 && ORIGINAL.Card == UPDATED.Card
+	 then
+	     RESULT.Allow = true;
+         Retract("UpdateCardNumber");
+}
+
+rule DeleteCardNumber "Card number must be greater than 6000000" {
+     when
+	     OP == "delete" && CH.Card > 6000000
+	 then
+	     RESULT.Allow = true;
+         Retract("DeleteCardNumber");
+}
+
+rule DeleteTeacher "Teacher should not be ticked" {
+     when
+         OP == "delete" && CH.HasGroup("G01")
+     then
+        RESULT.Refuse = true;
+        Retract("DeleteTeacher");
+}

@@ -1,0 +1,91 @@
+[submodule "uhppoted-core"]
+	path = uhppoted-core
+	url = https://codeberg.org/uhppoted/uhppoted-core
+
+[submodule "uhppoted-lib"]
+	path = uhppoted-lib
+	url = https://codeberg.org/uhppoted/uhppoted-lib.git
+
+[submodule "uhppoted-simulator"]
+	path = uhppoted-simulator
+	url = https://codeberg.org/uhppoted/uhppoted-simulator
+
+[submodule "uhppoted-cli"]
+	path = uhppoted-cli
+	url = https://codeberg.org/uhppoted/uhppoted-cli
+
+[submodule "uhppoted-rest"]
+	path = uhppoted-rest
+	url = https://codeberg.org/uhppoted/uhppoted-rest.git
+
+[submodule "uhppoted-mqtt"]
+	path = uhppoted-mqtt
+	url = https://github.com/uhppoted/uhppoted-mqtt.git
+
+[submodule "uhppoted-httpd"]
+	path = uhppoted-httpd
+	url = https://codeberg.org/uhppoted/uhppoted-httpd.git
+
+[submodule "uhppoted-tunnel"]
+	path = uhppoted-tunnel
+	url = https://github.com/uhppoted/uhppoted-tunnel.git
+
+[submodule "uhppoted-codegen"]
+	path = uhppoted-codegen
+	url = https://github.com/uhppoted/uhppoted-codegen.git
+
+[submodule "uhppoted-dll"]
+	path = uhppoted-dll
+	url = https//bitbucket.org:uhppoted-development/uhppoted-dll.git
+
+[submodule "uhppoted-app-sheets"]
+	path = uhppoted-app-sheets
+	url = https://github.com/uhppoted/uhppoted-app-sheets.git
+
+[submodule "uhppoted-app-s3"]
+	path = uhppoted-app-s3
+	url = https://github.com/uhppoted/uhppoted-app-s3.git
+
+[submodule "uhppoted-app-db"]
+	path = uhppoted-app-db
+	url = https://github.com/uhppoted/uhppoted-app-db.git
+
+[submodule "uhppoted-app-wild-apricot"]
+	path = uhppoted-app-wild-apricot
+	url = https://github.com/uhppoted/uhppoted-app-wild-apricot
+
+[submodule "uhppoted-app-home-assistant"]
+	path = uhppoted-app-home-assistant
+	url = https://github.com/uhppoted/uhppoted-app-home-assistant.git
+
+[submodule "uhppoted-lib-python"]
+	path = uhppoted-lib-python
+	url = https://github.com/uhppoted/uhppoted-lib-python.git
+
+[submodule "uhppoted-lib-dotnet"]
+	path = uhppoted-lib-dotnet
+	url = https://github.com/uhppoted/uhppoted-lib-dotnet.git
+
+[submodule "uhppoted-wiegand"]
+	path = uhppoted-wiegand
+	url = https://github.com/uhppoted/uhppoted-wiegand.git
+
+[submodule "uhppoted-breakout"]
+	path = uhppoted-breakout
+	url = https://github.com/uhppoted/uhppoted-breakout
+
+[submodule "uhppoted-lib-nodejs"]
+	path = uhppoted-lib-nodejs
+	url = https://github.com/uhppoted/uhppoted-lib-nodejs
+
+[submodule "uhppoted-lib-go"]
+	path = uhppoted-lib-go
+	url = https://github.com/uhppoted/uhppoted-lib-go
+
+[submodule "uhppoted-lib-node-red"]
+	path = uhppoted-lib-node-red
+	url = https://github.com/uhppoted/uhppoted-lib-node-red.git
+
+[submodule "uhppoted-lib-ada"]
+	path = uhppoted-lib-ada
+	url = git@github.com:uhppoted/uhppoted-lib-ada.git
