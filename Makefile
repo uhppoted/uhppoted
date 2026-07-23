@@ -32,6 +32,10 @@ clean:
 	go clean
 	rm -rf bin
 
+push:
+	git push
+	git push bitbucket
+
 status-all:
 	git -C uhppote-core              status
 	git -C uhppoted-lib              status

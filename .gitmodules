@@ -20,7 +20,7 @@
 
 [submodule "uhppoted-mqtt"]
 	path = uhppoted-mqtt
-	url = https://github.com/uhppoted/uhppoted-mqtt.git
+	url = https://codeberg.org/uhppoted/uhppoted-mqtt.git
 
 [submodule "uhppoted-httpd"]
 	path = uhppoted-httpd
