@@ -8,7 +8,7 @@
 ### Updated
 1. Updated to Go v1.26.
 2. Updated to _modern_ Go with 'go fix'.
-3. Migrated from _github.com/uhppoted-httpd_ to _codeberg.org/uhppoted/uhppoted-httpd_.
+3. Migrated from _github.com/uhppoted_ to _codeberg.org/uhppoted/uhppoted_.
 
 
 ## [0.9.0](https://github.com/uhppoted/uhppoted/releases/tag/v0.9.0) - 2025-01-27
