@@ -1,4 +1,4 @@
-![build](https://github.com/uhppoted/uhppoted/workflows/build/badge.svg)
+<!-- ![build](https://github.com/uhppoted/uhppoted/workflows/build/badge.svg) -->
 
 # uhppoted [(juː hɒp ɪt eɪd)](/internal/uhppoted.mp3)
 
