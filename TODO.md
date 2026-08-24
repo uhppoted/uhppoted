@@ -4,6 +4,35 @@
 
 - [x] Update to Go v1.26 (cf. https://github.com/uhppoted/uhppoted/issues/80)
 - [x] Update to modern Go with 'go fix' (cf. https://github.com/uhppoted/uhppoted/issues/80)
+- [x] Rebuild v0.9.0 releases for codeberg (cf. https://codeberg.org/uhppoted/uhppoted/issues/1)
+- [ ] Mirror codeberg to bitbucket (cf. https://codeberg.org/uhppoted/uhppoted/issues/1)
+    - https://jeffkreeftmeijer.com/git-multiple-remotes/
+    - [x] uhppoted-core
+    - [x] uhppoted-lib
+    - [x] uhppoted-simulator
+    - [x] uhppoted-cli
+    - [x] uhppoted-httpd
+    - [x] uhppoted-rest
+    - [x] uhppoted-mqtt
+    - [x] uhppoted-tunnel
+    - [x] uhppoted-dll
+    - [x] uhppoted-codegen
+    - [x] uhppoted-wiegand
+    - [x] uhppoted-breakout
+    - [x] uhppoted-lib-go
+    - [x] uhppoted-lib-python
+    - [x] uhppoted-lib-dotnet
+    - [x] uhppoted-lib-nodejs
+    - [x] uhppoted-lib-node-red
+    - [x] uhppoted-lib-ada
+    - [x] uhppoted-app-s3
+    - [x] uhppoted-app-sheets
+    - [x] uhppoted-app-db
+    - [x] uhppoted-app-wild-apricot
+    - [x] uhppoted-app-home-assistant
+    - [ ] uhppoted
+
+
 
 - [ ] UDP and TCP self connection (cf. https://github.com/uhppoted/uhppoted/issues/86)
     [ ] FAQ
@@ -18,7 +47,7 @@ FAQ Snippet Idea: "Per RFC 9293, the TCP state machine allows a socket to transi
 
 - [ ] Release script
       - [x] README: copy CHANGELOG to clipboard
-      - [ ] nodejs: heck uhppoted-lib-nodejs version
+      - [ ] nodejs: check uhppoted-lib-nodejs version
       - [ ] nodejs: check if published before gh publish (ditto python, node-red, dotnet)
       - [ ] Put CHANGELOG tag in clipboard
       - [ ] CHANGELOG check tag, link and date
