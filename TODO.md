@@ -5,31 +5,33 @@
 - [x] Update to Go v1.26 (cf. https://github.com/uhppoted/uhppoted/issues/80)
 - [x] Update to modern Go with 'go fix' (cf. https://github.com/uhppoted/uhppoted/issues/80)
 - [x] Rebuild v0.9.0 releases for codeberg (cf. https://codeberg.org/uhppoted/uhppoted/issues/1)
-- [ ] Mirror codeberg to bitbucket (cf. https://codeberg.org/uhppoted/uhppoted/issues/1)
-    - https://jeffkreeftmeijer.com/git-multiple-remotes/
-    - [x] uhppoted-core
-    - [x] uhppoted-lib
-    - [x] uhppoted-simulator
-    - [x] uhppoted-cli
-    - [x] uhppoted-httpd
-    - [x] uhppoted-rest
-    - [x] uhppoted-mqtt
-    - [x] uhppoted-tunnel
-    - [x] uhppoted-dll
-    - [x] uhppoted-codegen
-    - [x] uhppoted-wiegand
-    - [x] uhppoted-breakout
-    - [x] uhppoted-lib-go
-    - [x] uhppoted-lib-python
-    - [x] uhppoted-lib-dotnet
-    - [x] uhppoted-lib-nodejs
-    - [x] uhppoted-lib-node-red
-    - [x] uhppoted-lib-ada
-    - [x] uhppoted-app-s3
-    - [x] uhppoted-app-sheets
-    - [x] uhppoted-app-db
-    - [x] uhppoted-app-wild-apricot
-    - [x] uhppoted-app-home-assistant
+- [x] Build badges (cf. https://codeberg.org/uhppoted/uhppoted/issues/1)
+```
+https://github.com/deteppohu/uhppoted-core/workflows/build/badge.svg 
+```
+    - [ ] uhppoted-core
+    - [ ] uhppoted-lib
+    - [ ] uhppoted-simulator
+    - [ ] uhppoted-cli
+    - [ ] uhppoted-httpd
+    - [ ] uhppoted-rest
+    - [ ] uhppoted-mqtt
+    - [ ] uhppoted-tunnel
+    - [ ] uhppoted-dll
+    - [ ] uhppoted-codegen
+    - [ ] uhppoted-wiegand
+    - [ ] uhppoted-breakout
+    - [ ] uhppoted-lib-go
+    - [ ] uhppoted-lib-python
+    - [ ] uhppoted-lib-dotnet
+    - [ ] uhppoted-lib-nodejs
+    - [ ] uhppoted-lib-node-red
+    - [ ] uhppoted-lib-ada
+    - [ ] uhppoted-app-s3
+    - [ ] uhppoted-app-sheets
+    - [ ] uhppoted-app-db
+    - [ ] uhppoted-app-wild-apricot
+    - [ ] uhppoted-app-home-assistant
     - [ ] uhppoted
 
 
