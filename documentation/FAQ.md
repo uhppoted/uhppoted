@@ -77,11 +77,10 @@ get-all-controllers:
          date: 2018-11-05
 ```
 
-Barring a programming or configuration error which assigns a bind port of 60000, this condition has an about 1 in ~20000 chance of occurring and is unlikely
-to be picked up during testing. The _uhppoted_ libraries now return an error (or raise exception) when the bind port is the same as the broadcast port, and
-the application is expected to retry.
+Per RFX 9293, the TCP state machine allows a socket to transition straight from SYN-SENT to SYN-RECEIVED if it receives its own inbound SYN packet, validating a connection to itself, so the same condition can occur with both connected UDP and TCP. Barring a programming or configuration error which assigns a bind port of 60000, this condition has an about 1 in ~20000 chance of occurring and is unlikely to be picked up during testing. 
 
-However, the correct fix is to exclude port 60000 from the ephemeral ports that can be assigned by the OS:
+The _uhppoted_ libraries mitigate this by retrying (up to five times before returning an error or raising an exception) when the bind port is the same as the
+broadcast port. However, the correct fix is to exclude port 60000 from the ephemeral ports that can be assigned by the OS:
 
 #### Linux
 
@@ -99,7 +98,7 @@ sudo sysctl -w net.ipv4.ip_local_port_range="49152 59999"
 ```
 or
 ```
-sudo sysctl -w net.ipv4.ip_local_reserved_ports=60000"
+sudo sysctl -w net.ipv4.ip_local_reserved_ports=60000
 ```
 
 3. Update _/etc/sysctl.conf_ with:

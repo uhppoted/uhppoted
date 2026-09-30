@@ -1,47 +1,41 @@
 # TODO
 
-## IN PROGRESS
+## In Progress
 
 - [x] Update to Go v1.26 (cf. https://github.com/uhppoted/uhppoted/issues/80)
 - [x] Update to modern Go with 'go fix' (cf. https://github.com/uhppoted/uhppoted/issues/80)
+- [x] FAQ: UDP and TCP self connection (cf. https://codeberg.org/uhppoted/uhppoted/issues/4)
+- [x] Default bind and listen addresses to 0.0.0.0
 - [x] Rebuild v0.9.0 releases for codeberg (cf. https://codeberg.org/uhppoted/uhppoted/issues/1)
 - [x] Build badges (cf. https://codeberg.org/uhppoted/uhppoted/issues/1)
-```
-https://github.com/deteppohu/uhppoted-core/workflows/build/badge.svg 
-```
-    - [ ] uhppoted-core
-    - [ ] uhppoted-lib
-    - [ ] uhppoted-simulator
-    - [ ] uhppoted-cli
-    - [ ] uhppoted-httpd
-    - [ ] uhppoted-rest
-    - [ ] uhppoted-mqtt
-    - [ ] uhppoted-tunnel
-    - [ ] uhppoted-dll
-    - [ ] uhppoted-codegen
-    - [ ] uhppoted-wiegand
-    - [ ] uhppoted-breakout
-    - [ ] uhppoted-lib-go
-    - [ ] uhppoted-lib-python
-    - [ ] uhppoted-lib-dotnet
-    - [ ] uhppoted-lib-nodejs
-    - [ ] uhppoted-lib-node-red
-    - [ ] uhppoted-lib-ada
-    - [ ] uhppoted-app-s3
-    - [ ] uhppoted-app-sheets
-    - [ ] uhppoted-app-db
-    - [ ] uhppoted-app-wild-apricot
-    - [ ] uhppoted-app-home-assistant
+    - [x] uhppoted-core
+    - [x] uhppoted-lib
+    - [x] uhppoted-simulator
+    - [x] uhppoted-cli
+    - [x] uhppoted-httpd
+    - [x] uhppoted-rest
+    - [x] uhppoted-mqtt
+    - [x] uhppoted-tunnel
+    - [x] uhppoted-dll
+    - [x] uhppoted-codegen
+    - [x] uhppoted-lib-go
+    - [x] uhppoted-lib-python
+    - [x] uhppoted-lib-nodejs
+    - [x] uhppoted-lib-dotnet
+    - [x] uhppoted-lib-node-red
+    - [x] uhppoted-lib-ada
+    - [x] uhppoted-app-s3
+    - [x] uhppoted-app-sheets
+    - [x] uhppoted-app-db
+    - [x] uhppoted-app-wild-apricot
+    - [x] uhppoted-app-home-assistant
+    - [x] uhppoted-wiegand
+    - [x] uhppoted-breakout
     - [ ] uhppoted
+    - [x] Move docker badges to main gist
 
 
-
-- [ ] UDP and TCP self connection (cf. https://github.com/uhppoted/uhppoted/issues/86)
-    [ ] FAQ
-```
-FAQ Snippet Idea: "Per RFC 9293, the TCP state machine allows a socket to transition straight from SYN-SENT to SYN-RECEIVED if it receives its own inbound SYN packet, validating a connection to itself."
-```
-
+## To Be Done
 
 - [ ] Format/lint Makefile (https://github.com/EbodShojaei/bake)
 - [ ] Format README like https://github.com/BelfrySCAD/BOSL2/wiki
@@ -72,24 +66,18 @@ FAQ Snippet Idea: "Per RFC 9293, the TCP state machine allows a socket to transi
 - [ ] Make `uhppoted` a service user (`sudo adduser --system uhppoted`)
 - [ ] https://forum.universal-devices.com/topic/38892-wiegand-wg26-four-door-access-controller-aka-wgaccess-uhppote-wg2004/
 
-## TODO
-
 - [ ] Replace DeviceID with generic type
 - [ ] [TAK](https://hackaday.com/2022/09/08/the-tak-ecosystem-military-coordination-goes-open-source)
-- [ ] [Home Assistant](https://developers.home-assistant.io)
 - [ ] [Koyeb](https://www.koyeb.com)
 - [ ] Take a look at [CloudFlare Spectrum](https://www.cloudflare.com/products/cloudflare-spectrum) - proxies UDP!
 - [ ] Switch to libsodium
       - https://blog.trailofbits.com/2019/07/08/fuck-rsa/
 - [ ] [TOML](https://toml.io) files
 - [ ] Docker buildkit (Ref. https://pythonspeed.com/articles/docker-buildkit)
-- [ ] Docker compose (Ref. https://jvns.ca/blog/2021/01/04/docker-compose-is-nice)
 
 - [ ] Integration tests
       - https://stackoverflow.com/questions/57549439/how-do-i-use-docker-with-github-actions
-- [ ] Default bind and listen addresses to 0.0.0.0
 - [ ][Architectural Decision Records](https://github.com/joelparkerhenderson/architecture_decision_record)
-- [ ] Create release builds on github to avoid embedded references to local directories
 - [ ] Use REST call to wait for container initialisation to complete
 - [ ] Logo (https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible)
 
