@@ -31,7 +31,7 @@
     - [x] uhppoted-app-home-assistant
     - [x] uhppoted-wiegand
     - [x] uhppoted-breakout
-    - [ ] uhppoted
+    - [x] uhppoted
     - [x] Move docker badges to main gist
 
 
