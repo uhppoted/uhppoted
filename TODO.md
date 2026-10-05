@@ -8,31 +8,6 @@
 - [x] Default bind and listen addresses to 0.0.0.0
 - [x] Rebuild v0.9.0 releases for codeberg (cf. https://codeberg.org/uhppoted/uhppoted/issues/1)
 - [x] Build badges (cf. https://codeberg.org/uhppoted/uhppoted/issues/1)
-    - [x] uhppoted-core
-    - [x] uhppoted-lib
-    - [x] uhppoted-simulator
-    - [x] uhppoted-cli
-    - [x] uhppoted-httpd
-    - [x] uhppoted-rest
-    - [x] uhppoted-mqtt
-    - [x] uhppoted-tunnel
-    - [x] uhppoted-dll
-    - [x] uhppoted-codegen
-    - [x] uhppoted-lib-go
-    - [x] uhppoted-lib-python
-    - [x] uhppoted-lib-nodejs
-    - [x] uhppoted-lib-dotnet
-    - [x] uhppoted-lib-node-red
-    - [x] uhppoted-lib-ada
-    - [x] uhppoted-app-s3
-    - [x] uhppoted-app-sheets
-    - [x] uhppoted-app-db
-    - [x] uhppoted-app-wild-apricot
-    - [x] uhppoted-app-home-assistant
-    - [x] uhppoted-wiegand
-    - [x] uhppoted-breakout
-    - [x] uhppoted
-    - [x] Move docker badges to main gist
 
 
 ## To Be Done

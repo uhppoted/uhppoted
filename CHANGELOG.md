@@ -6,7 +6,7 @@
 1. _uhppoted-lib-ada_ Ada library.
 
 ### Updated
-1. Updated to Go v1.26.
+1. Updated to Go v1.27.
 2. Updated to _modern_ Go with 'go fix'.
 3. Migrated from _github.com/uhppoted_ to _codeberg.org/uhppoted/uhppoted_.
 

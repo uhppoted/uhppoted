@@ -96,6 +96,8 @@ The software in this repository has been tested and is known to work with these 
 | 6.56    | Minimum firmware version (cf. [carbonsphere/UHPPOTE](https://github.com/carbonsphere/UHPPOTE) |
 | 6.62    | Lowest firmware version in use |
 | 8.92    | Latest tested firmware version |
+| 9.158   | (provisional) there may be a [firmware bug](https://codeberg.org/uhppoted/uhppoted/issues/10) that corrupts the cards list when deleting a card |
+
 
 _Notes:_
 
