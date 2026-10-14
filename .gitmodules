@@ -36,7 +36,7 @@
 
 [submodule "uhppoted-dll"]
 	path = uhppoted-dll
-	url = https//bitbucket.org:uhppoted-development/uhppoted-dll.git
+	url = https//codeberg.org:uhppoted/uhppoted-dll.git
 
 [submodule "uhppoted-lib-go"]
 	path = uhppoted-lib-go
