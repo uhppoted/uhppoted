@@ -128,14 +128,17 @@ but the readers below are in active use:
 
 ### Current Release
 
-**[v0.9.0](https://github.com/uhppoted/uhppoted/releases/tag/v0.9.0) - 2026-01-27**
-1. Added _uhppoted-lib-go_ submodule.
-2. Updated FAQ.
-3. Renamed _node-red-contrib-upppoted_ repository to _uhppoted-lib-node-red_.
-4. Updated _uhppoted-app-wild-apricot_ for revised _Wild Apricot_ API.
-5. Reworked _uhppoted-app-home-assistant_ to use `async` throughout.
-6. Added decorated door and card event to _uhppoted-home-assistant_.
-7. Updated to Go 1.25 throughout.
+## [0.9.1](https://codebeg.org/uhppoted/uhppoted/releases/tag/v0.9.1) - 2026-10-14
+
+1. Migrated from _github_ to _codeberg.org_.
+2. Created _uhppoted-lib-ada_ Ada library.
+3. Added _set-first-card_ API for managing _first-card_ swipe privileges.
+4. Added _first-card_ privileges to _get-card_, _get-card-by-index_ and _put-card_ APIs.
+5. Added _first-card_ privileges to _get-acl_, _compare-acl_ and _load-acl_ APIs.
+6. Added check and retry for _send-to-self_ to UDP and TCP transports.
+7. Updated to Go v1.27 and _modern_ Go (using `go fix`).
+8. Renamed _uhppote-simulator_ to _uhppoted-simulator_.
+9. Renamed _uhppote-cli_ to _uhppoted-cli_.
 
 
 ## Modules

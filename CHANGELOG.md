@@ -1,17 +1,23 @@
 # CHANGELOG
 
-## Unreleased
+## [0.9.1](https://codebeg.org/uhppoted/uhppoted/releases/tag/v0.9.1) - 2026-10-14
 
 ### Added
 1. _uhppoted-lib-ada_ Ada library.
+2. Added _set-first-card_ API for managing _first-card_ swipe privileges.
+3. Added _first-card_ privileges to _get-card_, _get-card-by-index_ and _put-card_ APIs.
+4. Added _first-card_ privileges to _get-acl_, _compare-acl_ and _load-acl_ APIs.
 
 ### Updated
 1. Updated to Go v1.27.
 2. Updated to _modern_ Go with 'go fix'.
 3. Migrated from _github.com/uhppoted_ to _codeberg.org/uhppoted/uhppoted_.
+4. Added check and retry for _send-to-self_ to UDP and TCP transports.
+5. Renamed _uhppote-simulator_ to _uhppoted-simulator_.
+6. Renamed _uhppote-cli_ to _uhppoted-cli_.
 
 
-## [0.9.0](https://github.com/uhppoted/uhppoted/releases/tag/v0.9.0) - 2025-01-27
+## [0.9.0](https://github.com/uhppoted/uhppoted/releases/tag/v0.9.0) - 2026-01-27
 
 ### Added
 1. Added _uhppoted-lib-go_ submodule.
