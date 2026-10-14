@@ -130,7 +130,7 @@ but the readers below are in active use:
 
 ## [0.9.1](https://codebeg.org/uhppoted/uhppoted/releases/tag/v0.9.1) - 2026-10-14
 
-1. Migrated from _github_ to _codeberg.org_.
+1. Migrated from _github_ to _codeberg.
 2. Created _uhppoted-lib-ada_ Ada library.
 3. Added _set-first-card_ API for managing _first-card_ swipe privileges.
 4. Added _first-card_ privileges to _get-card_, _get-card-by-index_ and _put-card_ APIs.
