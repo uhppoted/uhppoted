@@ -30,7 +30,7 @@ status-all:
 	git -C uhppote-core              status
 	git -C uhppoted-lib              status
 	git -C uhppote-simulator         status
-	git -C uhppoted-cli               status
+	git -C uhppoted-cli              status
 	git -C uhppoted-rest             status
 	git -C uhppoted-mqtt             status
 	git -C uhppoted-httpd            status
