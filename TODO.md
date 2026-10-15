@@ -1,13 +1,8 @@
 # TODO
 
-## In Progress
 
-- [x] Update to Go v1.26 (cf. https://github.com/uhppoted/uhppoted/issues/80)
-- [x] Update to modern Go with 'go fix' (cf. https://github.com/uhppoted/uhppoted/issues/80)
-- [x] FAQ: UDP and TCP self connection (cf. https://codeberg.org/uhppoted/uhppoted/issues/4)
-- [x] Default bind and listen addresses to 0.0.0.0
-- [x] Rebuild v0.9.0 releases for codeberg (cf. https://codeberg.org/uhppoted/uhppoted/issues/1)
-- [x] Build badges (cf. https://codeberg.org/uhppoted/uhppoted/issues/1)
+## In Progress
+- https://support.gitlab.com/hc/en-us/articles/20705643267228-Resolving-sync-failure-gitmodulesUrl-disallowed-submodule-url
 
 
 ## To Be Done
