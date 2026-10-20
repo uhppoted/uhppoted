@@ -2,7 +2,6 @@
 
 
 ## In Progress
-- https://support.gitlab.com/hc/en-us/articles/20705643267228-Resolving-sync-failure-gitmodulesUrl-disallowed-submodule-url
 
 
 ## To Be Done
