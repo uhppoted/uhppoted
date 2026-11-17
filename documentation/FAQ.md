@@ -82,6 +82,9 @@ Per RFX 9293, the TCP state machine allows a socket to transition straight from 
 The _uhppoted_ libraries mitigate this by retrying (up to five times before returning an error or raising an exception) when the bind port is the same as the
 broadcast port. However, the correct fix is to exclude port 60000 from the ephemeral ports that can be assigned by the OS:
 
+Interesting reading:
+- [The Port That Does Not Exist](https://acid.vegas/blog/the-port-that-does-not-exist)
+
 #### Linux
 
 Ref. [Understanding and Utilizing Linux Ephemeral Port Range](https://linuxvox.com/blog/linux-ephemeral-port-range).

@@ -53,6 +53,9 @@ a way to identify the actual sender of a message. This does somewhat impact syst
   circumvented if the authorised user not inside the geo-fenced area sends a signed 'OPEN' request to a 
   non-authorised user inside the geo-fenced area who then forwards it to the access control system.
 
+## Networking
+- [The Port That Does Not Exist](https://acid.vegas/blog/the-port-that-does-not-exist)
+
 ## CRDTs
 
 - [Bidirectional Program Transformations](https://youtu.be/1gGd7pKSpRM?t=1855)

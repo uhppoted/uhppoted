@@ -62,6 +62,10 @@
 	path = uhppoted-lib-ada
 	url = https://codeberg.org/uhppoted/uhppoted-lib-ada.git
 
+[submodule "uhppoted-lib-rs"]
+	path = uhppoted-lib-rs
+	url = https://codeberg.org/uhppoted/uhppoted-lib-rs
+
 [submodule "uhppoted-app-sheets"]
 	path = uhppoted-app-sheets
 	url = https://codeberg.org/uhppoted/uhppoted-app-sheets.git

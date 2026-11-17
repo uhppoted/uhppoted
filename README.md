@@ -1,6 +1,17 @@
 ![build](https://github.com/uhppoted/uhppoted/workflows/build/badge.svg)
 
 
+<div align="center">
+
+_The primary repository for this project is hosted on codeberg:_
+_https://codeberg.org/uhppoted/uhppoted_
+
+_The [github repository](https://github.com/uhppoted/uhppoted) will be kept up to date and maintained as a courtesy (and for archival
+releases) but please use _codeberg_ for reporting issues, etc._
+</div>
+
+
+
 # uhppoted [(juː hɒp ɪt eɪd)](/internal/uhppoted.mp3)
 
 `uhppoted` implements a set of cross-platform building blocks for access control systems based on the 
